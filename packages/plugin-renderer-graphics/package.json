@@ -1,0 +1,23 @@
+{
+  "name": "@eva/plugin-renderer-graphics",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/plugin-renderer-graphics",
+  "main": "index.js",
+  "module": "dist/plugin-renderer-graphics.esm.js",
+  "bundle": "EVA.plugin.renderer.graphics",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-renderer-graphics.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/plugin-renderer": "^1.0.1-alpha.3",
+    "@eva/eva.js": "^1.0.1-alpha.3"
+  }
+}

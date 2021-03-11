@@ -1,0 +1,23 @@
+{
+  "name": "@eva/plugin-a11y",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/plugin-a11y",
+  "main": "index.js",
+  "module": "dist/plugin-a11y.esm.js",
+  "bundle": "EVA.plugin.a11y",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-a11y.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/eva.js": "^1.0.1-alpha.3",
+    "eventemitter3": "^3.1.2"
+  }
+}

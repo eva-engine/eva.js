@@ -1,0 +1,30 @@
+{
+  "name": "@eva/plugin-renderer-lottie",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/plugin-renderer-lottie",
+  "main": "index.js",
+  "module": "dist/plugin-renderer-lottie.esm.js",
+  "scripts": {
+    "postinstall": "npm i ./lib/lottie-pixi ./lib/lottie-core --save"
+  },
+  "bundle": "EVA.plugin.renderer.lottie",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-renderer-lottie.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@ali/lottie-core": "file:lib/lottie-core",
+    "@ali/lottie-pixi": "file:lib/lottie-pixi",
+    "@eva/eva.js": "^1.0.1-alpha.3",
+    "@eva/plugin-renderer": "^1.0.1-alpha.3",
+    "ios-version": "^1.0.1",
+    "pixi.js": "^4.8.7"
+  }
+}

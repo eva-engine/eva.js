@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "outDir": "dist/types",
+    "target": "es5",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "noUnusedLocals": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "sourceMap": false,
+    "downlevelIteration": true,
+    "noImplicitReturns": false,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "jest",
+      "node"
+    ],
+    "paths": {
+      "@eva/miniprogram-*": [
+        "packages/eva-miniprogram-*/lib"
+      ],
+      "@eva/eva.js": [
+        "packages/eva.js/lib"
+      ],
+      "@eva/*": [
+        "packages/*/lib"
+      ]
+    }
+  },
+  "include": [
+    "packages/global.d.ts",
+    "packages/*/lib",
+    "packages/*/__tests__"
+  ]
+}

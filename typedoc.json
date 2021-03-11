@@ -1,0 +1,11 @@
+{
+  "categorizeByGroup": false,
+  "categoryOrder": ["libs", "runtime"],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "excludeNotExported": false,
+  "hideGenerator": true,
+  "mode": "file",
+  "tsconfig": "./tsconfig.json"
+}

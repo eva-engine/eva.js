@@ -1,0 +1,10 @@
+{
+  "name": "@ali/lottie-pixi",
+  "version": "4.0.11",
+  "description": "",
+  "main": "./build/index.js",
+  "scripts": {
+    "postinstall": "npm i ../lottie-core --save"
+  },
+  "license": "MIT"
+}

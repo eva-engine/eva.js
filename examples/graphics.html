@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphics</title>
+  </head>
+
+  <body>
+    <canvas width="750" height="1000" id="canvas" style="width: 100%"></canvas>
+    <script src="https://cdn.bootcdn.net/ajax/libs/pixi.js/4.8.7/pixi.min.js"></script>
+
+    <script src="/EVA.js"></script>
+    <script src="/EVA.rendererAdapter.js"></script>
+    <script src="/EVA.plugin.renderer.js"></script>
+    <script src="/EVA.plugin.renderer.graphics.js"></script>
+    <script>
+      const {Game, GameObject, resource, RESOURCE_TYPE} = EVA;
+      const {RendererSystem} = EVA.plugin.renderer;
+      const {Graphics, GraphicsSystem} = EVA.plugin.renderer.graphics;
+
+      const game = new Game({
+        systems: [
+          new RendererSystem({
+            canvas: document.querySelector('#canvas'),
+            width: 750,
+            height: 1000,
+          }),
+          new GraphicsSystem(),
+        ],
+      });
+
+      const outter = new GameObject('container', {
+        position: {
+          x: 225,
+          y: 450,
+        },
+        size: {
+          width: 300,
+          height: 24,
+        },
+      });
+      const progress = new GameObject('container', {
+        position: {
+          x: 3,
+          y: 3,
+        },
+      });
+
+      const outterGraphics = outter.addComponent(new Graphics());
+      outterGraphics.graphics.beginFill(0xde3249, 1);
+      outterGraphics.graphics.drawRoundedRect(0, 0, 300, 24, 12);
+      outterGraphics.graphics.endFill();
+
+      const progressGraphics = progress.addComponent(new Graphics());
+
+      let i = 0;
+      setInterval(() => {
+        setProgress(i++);
+      }, 100);
+
+      outter.addChild(progress);
+
+      game.scene.addChild(outter);
+
+      function setProgress(progress) {
+        if (progress > 100) return;
+        const width = Math.max(12, (296 * progress) / 100);
+        progressGraphics.graphics.clear();
+        progressGraphics.graphics.beginFill(0x000000, 1);
+        progressGraphics.graphics.drawRoundedRect(0, 0, width, 18, 9);
+        progressGraphics.graphics.endFill();
+      }
+    </script>
+  </body>
+</html>

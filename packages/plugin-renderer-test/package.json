@@ -1,0 +1,23 @@
+{
+  "name": "plugin-renderer-test",
+  "version": "1.0.1-alpha.3",
+  "private": true,
+  "description": "test plugin",
+  "keywords": [
+    "evajs"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/index.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  }
+}

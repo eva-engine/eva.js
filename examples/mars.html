@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mars</title>
+  </head>
+
+  <body>
+    <canvas width="750" height="1000" id="canvas" style="width: 100%"></canvas>
+    <script src="https://cdn.bootcdn.net/ajax/libs/pixi.js/4.8.7/pixi.min.js"></script>
+
+    <script src="/EVA.js"></script>
+    <script src="/EVA.rendererAdapter.js"></script>
+    <script src="/EVA.plugin.renderer.js"></script>
+    <script src="/EVA.plugin.renderer.mars.js"></script>
+    <script>
+      const {Game, GameObject, resource, RESOURCE_TYPE} = EVA;
+      const {RendererSystem} = EVA.plugin.renderer;
+      const {Mars, MarsSystem} = EVA.plugin.renderer.mars;
+      resource.addResource([
+        {
+          name: 'marsName',
+          type: 'MARS',
+          src: {
+            json: {
+              type: 'json',
+              url:
+                // 'https://gw.alipayobjects.com/os/gltf-asset/mars-cli/RHFPJNXPWOBN/-1085805134-4f3cc.json',
+                'https://gw.alipayobjects.com/os/gltf-asset/mars-cli/CKXHXISUNNUI/-1548939472-5988b.json',
+            },
+          },
+          preload: true,
+        },
+      ]);
+      // resource.preload()
+      const game = new Game({
+        systems: [
+          new RendererSystem({
+            canvas: document.querySelector('#canvas'),
+            width: 750,
+            height: 1334,
+          }),
+          new MarsSystem(),
+        ],
+      });
+
+      const mars = new GameObject('mars', {
+        // size: { width: 750 / 2, height: 1319 / 2 },
+        // origin: { x: 0, y: 0 },
+        // position: {
+        //     x: 0,
+        //     y: 0,
+        // },
+        // anchor: {
+        //     x: 0,
+        //     y: 0,
+        // },
+      });
+
+      mars.addComponent(
+        new Mars({
+          resource: 'marsName',
+          options: {
+            fixCamera: true,
+            delegate: {
+              onItemClicked: (...args) => {
+                console.log(args);
+              },
+            },
+            interactive: true,
+          },
+        }),
+      );
+
+      game.scene.addChild(mars);
+    </script>
+  </body>
+</html>

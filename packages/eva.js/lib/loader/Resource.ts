@@ -1,0 +1,352 @@
+import { Loader, ResourceType, XhrResponseType } from 'resource-loader';
+import EE from 'eventemitter3';
+import Progress, { EventParam } from './Progress';
+
+/** Load event */
+export enum LOAD_EVENT {
+  'START' = 'start',
+  'PROGRESS' = 'progress',
+  'LOADED' = 'loaded',
+  'COMPLETE' = 'complete',
+  'ERROR' = 'error',
+}
+
+/** Resource type */
+export enum RESOURCE_TYPE {
+  'IMAGE' = 'IMAGE',
+  'SPRITE' = 'SPRITE',
+  'SPRITE_ANIMATION' = 'SPRITE_ANIMATION',
+  'DRAGONBONE' = 'DRAGONBONE',
+  'SPINE' = 'SPINE',
+  'AUDIO' = 'AUDIO',
+  'VIDEO' = 'VIDEO',
+}
+
+/** Resource item */
+interface SrcBase {
+  type: string;
+  url?: string;
+  data?: any;
+}
+
+/** Eva resource base */
+interface ResourceBase {
+  name?: string;
+  type?: RESOURCE_TYPE;
+  src?: {
+    json?: SrcBase;
+    image?: SrcBase;
+    tex?: SrcBase;
+    ske?: SrcBase;
+    video?: SrcBase;
+    audio?: SrcBase;
+    [propName: string]: SrcBase;
+  };
+  complete?: boolean;
+  preload?: boolean;
+}
+
+/** Resource with entity */
+export interface ResourceStruct extends ResourceBase {
+  data?: {
+    json?: any;
+    image?: HTMLImageElement;
+    tex?: any;
+    ske?: any;
+    video?: HTMLVideoElement;
+    audio?: HTMLAudioElement;
+    [propName: string]: any;
+  };
+  instance?: any;
+}
+
+interface ResourceResponse {
+  loadType: ResourceType;
+  responseType?: XhrResponseType;
+}
+
+const TYPE: Record<string, ResourceResponse> = {
+  png: {
+    loadType: ResourceType.Image,
+  },
+  jpg: {
+    loadType: ResourceType.Image,
+  },
+  jpeg: {
+    loadType: ResourceType.Image,
+  },
+  webp: {
+    loadType: ResourceType.Image,
+  },
+  json: {
+    loadType: ResourceType.Json,
+    responseType: XhrResponseType.Json,
+  },
+  tex: {
+    loadType: ResourceType.Json,
+    responseType: XhrResponseType.Json,
+  },
+  ske: {
+    loadType: ResourceType.Json,
+    responseType: XhrResponseType.Json,
+  },
+};
+
+type ResourceName = string;
+type ResourceProcessFn = (resource: ResourceStruct) => any;
+
+/**
+ * Resource manager
+ * @public
+ */
+class Resource extends EE {
+  // TODO: specify timeout in config to overwrite it
+  /** load resource timeout */
+  public timeout: number = 6000;
+
+  /** Resource cache  */
+  private resourcesMap: Record<ResourceName, ResourceStruct> = {};
+
+  /** Collection of make resource instance function */
+  private makeInstanceFunctions: Record<string, ResourceProcessFn> = {};
+
+  /** Collection of destroy resource instance function */
+  private destroyInstanceFunctions: Record<string, ResourceProcessFn> = {};
+
+  /** Resource load promise */
+  private promiseMap = {};
+
+  private loaders: Loader[] = [];
+
+  progress: Progress;
+
+  constructor(options?: { timeout: number }) {
+    super();
+    if (options && typeof options.timeout === 'number') {
+      this.timeout = options.timeout;
+    }
+  }
+
+  /** Add resource configs and then preload */
+  public loadConfig(resources: ResourceBase[]): void {
+    this.addResource(resources);
+    this.preload();
+  }
+
+  /** Add single resource config and then preload */
+  public loadSingle(resource: ResourceBase): Promise<ResourceStruct> {
+    this.addResource([resource]);
+    return this.getResource(resource.name);
+  }
+
+  /** Add resource configs */
+  public addResource(resources: ResourceBase[]): void {
+    if (!resources || resources.length < 1) {
+      console.warn('no resources');
+      return;
+    }
+    for (const res of resources) {
+      if (this.resourcesMap[res.name]) {
+        console.warn(res.name + ' was already added');
+        continue;
+      }
+      this.resourcesMap[res.name] = res;
+      this.resourcesMap[res.name].data = {};
+    }
+  }
+
+  /** Start preload */
+  public preload(): void {
+    const names = Object.values(this.resourcesMap)
+      .filter(({ preload }) => preload)
+      .map(({ name }) => name);
+    this.progress = new Progress({
+      resource: this,
+      resourceTotal: names.length,
+    });
+    this.loadResource({ names, preload: true });
+  }
+
+  /** Get resource by name */
+  public async getResource(name: string): Promise<ResourceStruct> {
+    this.loadResource({ names: [name] });
+    return this.promiseMap[name] || Promise.resolve({});
+  }
+
+  /** Make resource instance by resource type */
+  private async instance(name) {
+    const res = this.resourcesMap[name];
+    return this.makeInstanceFunctions[res.type] && (await this.makeInstanceFunctions[res.type](res));
+  }
+
+  /** destory this resource manager */
+  async destroy(name: string) {
+    await this._destroy(name);
+  }
+  private async _destroy(name, loadError = false) {
+    const resource = this.resourcesMap[name];
+    if (!resource) return;
+    if (!loadError) {
+      try {
+        if (this.destroyInstanceFunctions[resource.type]) {
+          await this.destroyInstanceFunctions[resource.type](resource);
+        }
+      } catch (e) {
+        console.warn(`destroy resource ${resource.name} error with '${e.message}'`);
+      }
+    }
+    delete this.promiseMap[name];
+    resource.complete = false;
+    resource.instance = undefined;
+  }
+
+  /** Add resource instance function */
+  public registerInstance(type: RESOURCE_TYPE | string, callback: ResourceProcessFn) {
+    this.makeInstanceFunctions[type] = callback;
+  }
+
+  /** Add resource destroy function */
+  public registerDestroy(type: RESOURCE_TYPE | string, callback: ResourceProcessFn) {
+    this.destroyInstanceFunctions[type] = callback;
+  }
+
+  private loadResource({ names = [], preload = false }) {
+    const unLoadNames = names.filter(name => !this.promiseMap[name] && this.resourcesMap[name]);
+    if (!unLoadNames.length) return;
+
+    const resolves = {};
+    const loader = this.getLoader(preload);
+
+    unLoadNames.forEach(name => {
+      this.promiseMap[name] = new Promise(r => (resolves[name] = r));
+      const res = this.resourcesMap[name];
+      for (const key in res.src) {
+        const resourceType = res.src[key].type;
+        if (resourceType === 'data') {
+          res.data[key] = res.src[key].data;
+          this.doComplete(name, resolves[name], preload);
+        } else {
+          loader.add({
+            url: res.src[key].url,
+            name: `${res.name}_${key}`,
+            metadata: {
+              key,
+              name: res.name,
+              resolves,
+            },
+            type: TYPE[resourceType] && TYPE[resourceType].loadType,
+            xhrType: this.getXhrType(resourceType),
+          });
+        }
+      }
+    });
+
+    loader.load();
+  }
+
+  async doComplete(name, resolve, preload = false) {
+    const res = this.resourcesMap[name];
+    const param: EventParam = {
+      name,
+      resource: this.resourcesMap[name],
+      success: true,
+    };
+    if (this.checkAllLoaded(name)) {
+      try {
+        res.instance = await this.instance(name);
+        res.complete = true;
+        if (preload) {
+          this.progress.onProgress(param);
+        }
+        resolve(res);
+      } catch (err) {
+        res.complete = false;
+        if (preload) {
+          param.errMsg = err.message;
+          param.success = false;
+          this.progress.onProgress(param);
+        }
+        resolve({});
+      }
+    }
+  }
+
+  checkAllLoaded(name) {
+    const res = this.resourcesMap[name];
+    return Array.from(Object.keys(res.src)).every(resourceKey => res.data[resourceKey]);
+  }
+
+  getLoader(preload: boolean = false) {
+    let loader = this.loaders.find(({ loading }) => !loading);
+    if (!loader) {
+      loader = new Loader();
+      this.loaders.push(loader);
+    }
+    if (preload) {
+      loader.onStart.once(() => {
+        this.progress.onStart();
+      });
+    }
+    loader.onLoad.add((loader, resource) => {
+      this.onLoad({ preload, loader, resource });
+    });
+    // @ts-ignore
+    loader.onError.add((errMsg, loader, resource) => {
+      this.onError({ errMsg, loader, resource, preload });
+    });
+    loader.onComplete.once(() => {
+      loader.onLoad.detachAll();
+      loader.onError.detachAll();
+      loader.reset();
+    });
+    return loader;
+  }
+
+  private async onLoad({
+    preload = false,
+    //@ts-ignore
+    loader,
+    resource,
+  }) {
+    const {
+      metadata: { key, name, resolves },
+      data,
+    } = resource;
+    const res = this.resourcesMap[name];
+    res.data[key] = data;
+    this.doComplete(name, resolves[name], preload);
+  }
+
+  private async onError({
+    errMsg,
+    preload = false,
+    // @ts-ignore
+    loader,
+    resource,
+  }) {
+    const {
+      metadata: { name, resolves },
+    } = resource;
+    this._destroy(name, true);
+    resolves[name]({});
+    if (preload) {
+      const param = {
+        name,
+        resource: this.resourcesMap[name],
+        success: false,
+        errMsg,
+      };
+      this.progress.onProgress(param);
+    }
+  }
+
+  private getXhrType(type) {
+    if (TYPE[type] && TYPE[type].loadType === ResourceType.Json) {
+      return TYPE[type].responseType;
+    }
+  }
+}
+
+/** Resource manager single instance */
+export const resource: Resource = new Resource();
+export default Resource;

@@ -1,0 +1,23 @@
+{
+  "name": "@eva/plugin-stats",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/plugin-stats",
+  "main": "index.js",
+  "module": "dist/plugin-stats.esm.js",
+  "bundle": "EVA.plugin.stats",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-stats.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/eva.js": "^1.0.1-alpha.3",
+    "lodash-es": "^4.17.21"
+  }
+}

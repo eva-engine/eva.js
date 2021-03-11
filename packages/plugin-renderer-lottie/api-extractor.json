@@ -1,0 +1,7 @@
+{
+  "extends": "../../api-extractor.json",
+  "mainEntryPointFilePath": "./dist/packages/plugin-renderer-lottie/lib/index.d.ts",
+  "dtsRollup": {
+    "publicTrimmedFilePath": "./dist/plugin-renderer-lottie.d.ts"
+  }
+}

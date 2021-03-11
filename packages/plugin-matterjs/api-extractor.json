@@ -1,0 +1,7 @@
+{
+  "extends": "../../api-extractor.json",
+  "mainEntryPointFilePath": "./dist/packages/plugin-matterjs/lib/index.d.ts",
+  "dtsRollup": {
+    "publicTrimmedFilePath": "./dist/plugin-matterjs.d.ts"
+  }
+}

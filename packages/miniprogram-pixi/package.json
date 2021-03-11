@@ -1,0 +1,23 @@
+{
+  "name": "@eva/miniprogram-pixi",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/miniprogram-pixi",
+  "main": "index.js",
+  "module": "dist/miniprogram-pixi.esm.js",
+  "bundle": "",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/miniprogram-pixi.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@tbminiapp/pixi-miniprogram-engine": "^1.0.19",
+    "@types/pixi.js": "^4.8.9"
+  }
+}

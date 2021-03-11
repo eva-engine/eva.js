@@ -1,0 +1,11 @@
+{
+  "npmClient": "npm",
+  "registry": "https://registry.npmjs.org/",
+  "version": "independent",
+  "bootstrap": {
+    "hoist": true,
+    "npmClientArgs": ["--no-shrinkwrap"]
+  },
+  "packages": ["packages/*"],
+  "loglevel": "verbose"
+}

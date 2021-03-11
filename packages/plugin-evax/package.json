@@ -1,0 +1,24 @@
+{
+  "name": "@eva/plugin-evax",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/plugin-evax",
+  "main": "index.js",
+  "module": "dist/plugin-evax.esm.js",
+  "bundle": "EVA.plugin.EVAX",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-evax.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/eva.js": "^1.0.1-alpha.3",
+    "eventemitter3": "^3.1.2",
+    "lodash-es": "^4.17.21"
+  }
+}

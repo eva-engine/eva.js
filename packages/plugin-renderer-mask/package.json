@@ -1,0 +1,25 @@
+{
+  "name": "@eva/plugin-renderer-mask",
+  "version": "1.0.1-alpha.3",
+  "description": "@eva/plugin-renderer-mask",
+  "main": "index.js",
+  "module": "dist/plugin-renderer-mask.esm.js",
+  "bundle": "EVA.plugin.renderer.mask",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-renderer-mask.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/plugin-renderer": "^1.0.1-alpha.3",
+    "@eva/renderer-adapter": "^1.0.1-alpha.3",
+    "@eva/eva.js": "^1.0.1-alpha.3",
+    "pixi.js": "^4.8.7"
+  }
+}
