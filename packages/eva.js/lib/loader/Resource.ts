@@ -85,7 +85,7 @@ const TYPE: Record<string, ResourceResponse> = {
     loadType: ResourceType.Image,
   },
   json: {
-    strategy: ImageLoadStrategy,
+    strategy: XhrLoadStrategy,
     loadType: ResourceType.Json,
     responseType: XhrResponseType.Json,
   },

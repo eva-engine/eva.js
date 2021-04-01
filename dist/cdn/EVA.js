@@ -5174,27 +5174,34 @@
     var TYPE = {
         png: {
             loadType: ResourceType.Image,
+            strategy: ImageLoadStrategy,
         },
         jpg: {
+            strategy: ImageLoadStrategy,
             loadType: ResourceType.Image,
         },
         jpeg: {
+            strategy: ImageLoadStrategy,
             loadType: ResourceType.Image,
         },
         webp: {
+            strategy: ImageLoadStrategy,
             loadType: ResourceType.Image,
         },
         json: {
+            strategy: XhrLoadStrategy,
             loadType: ResourceType.Json,
             responseType: XhrResponseType.Json,
         },
         tex: {
             loadType: ResourceType.Json,
             responseType: XhrResponseType.Json,
+            strategy: XhrLoadStrategy
         },
         ske: {
             loadType: ResourceType.Json,
             responseType: XhrResponseType.Json,
+            strategy: XhrLoadStrategy
         },
     };
     /**
@@ -5383,7 +5390,7 @@
                                 name: res.name,
                                 resolves: resolves,
                             },
-                            type: TYPE[resourceType] && TYPE[resourceType].loadType,
+                            strategy: TYPE[resourceType] && TYPE[resourceType].strategy,
                             xhrType: _this.getXhrType(resourceType),
                         });
                     }
