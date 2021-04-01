@@ -1,4 +1,4 @@
-import { Loader, ResourceType, XhrResponseType } from 'resource-loader';
+import { Loader, ResourceType, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
 
@@ -63,32 +63,41 @@ export interface ResourceStruct extends ResourceBase {
 interface ResourceResponse {
   loadType: ResourceType;
   responseType?: XhrResponseType;
+  strategy?:  typeof ImageLoadStrategy | typeof XhrLoadStrategy;
 }
+
 
 const TYPE: Record<string, ResourceResponse> = {
   png: {
     loadType: ResourceType.Image,
+    strategy: ImageLoadStrategy,
   },
   jpg: {
+    strategy: ImageLoadStrategy,
     loadType: ResourceType.Image,
   },
   jpeg: {
+    strategy: ImageLoadStrategy,
     loadType: ResourceType.Image,
   },
   webp: {
+    strategy: ImageLoadStrategy,
     loadType: ResourceType.Image,
   },
   json: {
+    strategy: ImageLoadStrategy,
     loadType: ResourceType.Json,
     responseType: XhrResponseType.Json,
   },
   tex: {
     loadType: ResourceType.Json,
     responseType: XhrResponseType.Json,
+    strategy: XhrLoadStrategy
   },
   ske: {
     loadType: ResourceType.Json,
     responseType: XhrResponseType.Json,
+    strategy: XhrLoadStrategy
   },
 };
 
@@ -234,7 +243,7 @@ class Resource extends EE {
               name: res.name,
               resolves,
             },
-            type: TYPE[resourceType] && TYPE[resourceType].loadType,
+            strategy: TYPE[resourceType] && TYPE[resourceType].strategy,
             xhrType: this.getXhrType(resourceType),
           });
         }
