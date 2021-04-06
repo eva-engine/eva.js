@@ -10,6 +10,7 @@ import {terser} from 'rollup-plugin-terser';
 import miniProgramPlugin from './rollup.miniprogram.plugin';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import copy from 'rollup-plugin-copy';
 
 if (!process.env.TARGET) {
   throw new Error('TARGET package must be specified via --environment flag.');
@@ -181,6 +182,11 @@ function createUmdDevelopConfig(format) {
       mainFields: ['jsnext', 'esnext', 'module', 'main'],
       rootDir: packageDir,
     }),
+    copy({
+        targets: [{ src: outputConfigs[format].file, dest: resolve(`dist`)}],
+        hook: 'writeBundle',
+        copyOnce: true
+    })
   ];
 
   if (process.env.ROLLUP_WATCH) {
@@ -220,12 +226,13 @@ function createCjsProductionConfig(format) {
 
 function createMinifiedConfig(format) {
   const {file, name} = outputConfigs[format];
+  const destFilename = file.replace('dist/cdn', 'dist/cdn/min').replace(/\.js$/, '.min.js');
   return createConfig(
     format,
     {
       name,
       format,
-      file: file.replace('dist/cdn', 'dist/cdn/min').replace(/\.js$/, '.min.js'),
+      file: destFilename,
     },
     [
       nodeResolve({
@@ -240,6 +247,10 @@ function createMinifiedConfig(format) {
         output: {comments: false},
         compress: true,
       }),
+      copy({
+          targets: [{ src: destFilename, dest: resolve(`dist`)}],
+          hook: 'writeBundle'
+      })
     ],
   );
 }
