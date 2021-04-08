@@ -134,8 +134,8 @@ function createConfig(format, output, plugins = []) {
       '@eva/eva.js',
       '@eva/plugin-renderer',
       '@eva/renderer-adapter',
-      '@eva/miniprogram-pixi',
-      '@eva/miniprogram-adapter',
+      // '@eva/miniprogram-pixi/dist/miniprogram',
+      // '@tbminiapp/pixi-miniprogram-engine'
     ],
     plugins: [
       ...plugins,

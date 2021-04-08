@@ -37,6 +37,9 @@ for (let name in adapterArray) {
 }
 
 const plugins = [
+  nodeResolve({
+    resolveOnly: ['resource-loader']
+  }),
   inject(adapterVars),
   modify({
     find: /@eva\/([\w\.\/-]*)/g,
@@ -52,9 +55,7 @@ const plugins = [
     find: /pixi\.js/g,
     replace: `@eva/miniprogram-pixi`,
   }),
-  nodeResolve({
-    resolveOnly: ['resource-loader']
-  })
+
 ];
 
 export default plugins;
