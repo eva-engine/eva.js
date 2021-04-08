@@ -1,6 +1,6 @@
 import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
-import nodeResolve from 'rollup-plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
@@ -134,8 +134,6 @@ function createConfig(format, output, plugins = []) {
       '@eva/eva.js',
       '@eva/plugin-renderer',
       '@eva/renderer-adapter',
-      // '@eva/miniprogram-pixi/dist/miniprogram',
-      // '@tbminiapp/pixi-miniprogram-engine'
     ],
     plugins: [
       ...plugins,

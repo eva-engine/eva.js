@@ -1,6 +1,6 @@
 import inject from 'rollup-plugin-inject';
 import modify from 'rollup-plugin-modify';
-import nodeResolve from 'rollup-plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
 
 const moduleName = '@eva/miniprogram-adapter';
 
@@ -44,7 +44,6 @@ const plugins = [
   modify({
     find: /@eva\/([\w\.\/-]*)/g,
     replace: (match, moduleName) => {
-      console.log(match, moduleName);
       if (moduleName.indexOf('/dist/miniprogram') > -1) {
         return `@eva/${moduleName}`;
       }
