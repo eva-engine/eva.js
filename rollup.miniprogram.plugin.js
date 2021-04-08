@@ -1,5 +1,6 @@
 import inject from 'rollup-plugin-inject';
 import modify from 'rollup-plugin-modify';
+import nodeResolve from 'rollup-plugin-node-resolve';
 
 const moduleName = '@eva/miniprogram-adapter';
 
@@ -51,6 +52,9 @@ const plugins = [
     find: /pixi\.js/g,
     replace: `@eva/miniprogram-pixi`,
   }),
+  nodeResolve({
+    resolveOnly: ['resource-loader']
+  })
 ];
 
 export default plugins;

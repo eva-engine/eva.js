@@ -6,5 +6,8 @@
   "scripts": {
     "postinstall": "npm i ../lottie-core --save"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@ali/lottie-core": "file:../lottie-core"
+  }
 }

@@ -43,7 +43,7 @@ const outputConfigs = {
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
-    format: 'cjs',
+    format: 'es',
   },
 };
 
@@ -53,7 +53,7 @@ let hasTypesChecked = false;
 // 开发环境 esm，cjs 打包
 const defaultFormats = ['esm', 'cjs'];
 const inlineFormats = process.env.FORMATS && process.env.FORMATS.split('-');
-const packageFormats = inlineFormats || packageOptions.formats || defaultFormats;
+const packageFormats = packageOptions.formats || inlineFormats || defaultFormats;
 
 const packageConfigs = [];
 if (!process.env.PROD_ONLY) {
