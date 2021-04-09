@@ -1,4 +1,4 @@
 // @ts-ignore
-import PIXI from '@eva/miniprogram-pixi';
-
+import * as PIXI from '@eva/miniprogram-pixi';
+// @ts-ignore
 export default PIXI.miniprogram;

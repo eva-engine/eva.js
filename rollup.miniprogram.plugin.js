@@ -36,14 +36,16 @@ for (let name in adapterArray) {
   adapterVars[name] = register(adapterArray[name]);
 }
 
-const plugins = [
+export const miniprogramPlugins1 = [
   nodeResolve({
-    resolveOnly: ['resource-loader']
+    resolveOnly: ['resource-loader', 'type-signals', 'parse-uri', 'tslib']
   }),
-  inject(adapterVars),
   modify({
     find: /@eva\/([\w\.\/-]*)/g,
     replace: (match, moduleName) => {
+      if(moduleName === 'miniprogram-pixi' || moduleName === 'miniprogram-adapter') {
+        return `@eva/${moduleName}`;
+      }
       if (moduleName.indexOf('/dist/miniprogram') > -1) {
         return `@eva/${moduleName}`;
       }
@@ -53,8 +55,9 @@ const plugins = [
   modify({
     find: /pixi\.js/g,
     replace: `@eva/miniprogram-pixi`,
-  }),
-
+  })
 ];
 
-export default plugins;
+export const miniprogramPlugins2 = [
+  inject(adapterVars)
+]

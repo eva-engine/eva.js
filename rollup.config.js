@@ -7,7 +7,7 @@ import typescript from 'rollup-plugin-typescript2';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import {terser} from 'rollup-plugin-terser';
-import miniProgramPlugin from './rollup.miniprogram.plugin';
+import {miniprogramPlugins1, miniprogramPlugins2} from './rollup.miniprogram.plugin';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 
@@ -93,7 +93,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-function createConfig(format, output, plugins = []) {
+function createConfig(format, output, plugins1 = [], plugins2 = []) {
   if (!output) {
     console.log(require('chalk').yellow(`invalid format: "${format}"`));
     process.exit(1);
@@ -136,12 +136,13 @@ function createConfig(format, output, plugins = []) {
       '@eva/renderer-adapter',
     ],
     plugins: [
-      ...plugins,
+      ...plugins1,
       globals(),
       builtins(),
       json({preferConst: true}),
       commonjs(),
       tsPlugin,
+      ...plugins2,
       replace({
         __DEV__: process.env.NODE_ENV === 'development',
         __TEST__: false,
@@ -243,7 +244,7 @@ function createMinifiedConfig(format) {
 }
 
 function createMiniProgramConfig(format) {
-  return createConfig(format, outputConfigs[format], miniProgramPlugin);
+  return createConfig(format, outputConfigs[format], miniprogramPlugins1, miniprogramPlugins2);
 }
 
 export default packageConfigs;
