@@ -1,4 +1,4 @@
-import { Loader, ResourceType, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy } from 'resource-loader';
+import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
 
@@ -54,51 +54,31 @@ export interface ResourceStruct extends ResourceBase {
     tex?: any;
     ske?: any;
     video?: HTMLVideoElement;
-    audio?: HTMLAudioElement;
+    audio?: ArrayBuffer;
     [propName: string]: any;
   };
   instance?: any;
 }
 
-interface ResourceResponse {
-  loadType: ResourceType;
-  responseType?: XhrResponseType;
-  strategy?:  typeof ImageLoadStrategy | typeof XhrLoadStrategy;
-}
+XhrLoadStrategy.setExtensionXhrType('json', XhrResponseType.Json);
+XhrLoadStrategy.setExtensionXhrType('tex', XhrResponseType.Json);
+XhrLoadStrategy.setExtensionXhrType('ske', XhrResponseType.Json);
 
+XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer)
+XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer)
+XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer)
+XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer)
 
-const TYPE: Record<string, ResourceResponse> = {
-  png: {
-    loadType: ResourceType.Image,
-    strategy: ImageLoadStrategy,
-  },
-  jpg: {
-    strategy: ImageLoadStrategy,
-    loadType: ResourceType.Image,
-  },
-  jpeg: {
-    strategy: ImageLoadStrategy,
-    loadType: ResourceType.Image,
-  },
-  webp: {
-    strategy: ImageLoadStrategy,
-    loadType: ResourceType.Image,
-  },
-  json: {
-    strategy: XhrLoadStrategy,
-    loadType: ResourceType.Json,
-    responseType: XhrResponseType.Json,
-  },
-  tex: {
-    loadType: ResourceType.Json,
-    responseType: XhrResponseType.Json,
-    strategy: XhrLoadStrategy
-  },
-  ske: {
-    loadType: ResourceType.Json,
-    responseType: XhrResponseType.Json,
-    strategy: XhrLoadStrategy
-  },
+const STRATEGY = {
+  png: ImageLoadStrategy,
+  jpg: ImageLoadStrategy,
+  jpeg: ImageLoadStrategy,
+  webp: ImageLoadStrategy,
+  json: XhrLoadStrategy,
+  tex: XhrLoadStrategy,
+  ske: XhrLoadStrategy,
+  audio: XhrLoadStrategy,
+  video: VideoLoadStrategy
 };
 
 type ResourceName = string;
@@ -243,8 +223,7 @@ class Resource extends EE {
               name: res.name,
               resolves,
             },
-            strategy: TYPE[resourceType] && TYPE[resourceType].strategy,
-            xhrType: this.getXhrType(resourceType),
+            strategy: STRATEGY[resourceType],
           });
         }
       }
@@ -296,12 +275,12 @@ class Resource extends EE {
         this.progress.onStart();
       });
     }
-    loader.onLoad.add((loader, resource) => {
-      this.onLoad({ preload, loader, resource });
+    loader.onLoad.add((_, resource) => {
+      this.onLoad({ preload, resource });
     });
     // @ts-ignore
-    loader.onError.add((errMsg, loader, resource) => {
-      this.onError({ errMsg, loader, resource, preload });
+    loader.onError.add((errMsg, _, resource) => {
+      this.onError({ errMsg, resource, preload });
     });
     loader.onComplete.once(() => {
       loader.onLoad.detachAll();
@@ -311,12 +290,7 @@ class Resource extends EE {
     return loader;
   }
 
-  private async onLoad({
-    preload = false,
-    //@ts-ignore
-    loader,
-    resource,
-  }) {
+  private async onLoad({ preload = false, resource }) {
     const {
       metadata: { key, name, resolves },
       data,
@@ -326,13 +300,7 @@ class Resource extends EE {
     this.doComplete(name, resolves[name], preload);
   }
 
-  private async onError({
-    errMsg,
-    preload = false,
-    // @ts-ignore
-    loader,
-    resource,
-  }) {
+  private async onError({ errMsg, preload = false, resource }) {
     const {
       metadata: { name, resolves },
     } = resource;
@@ -346,12 +314,6 @@ class Resource extends EE {
         errMsg,
       };
       this.progress.onProgress(param);
-    }
-  }
-
-  private getXhrType(type) {
-    if (TYPE[type] && TYPE[type].loadType === ResourceType.Json) {
-      return TYPE[type].responseType;
     }
   }
 }
