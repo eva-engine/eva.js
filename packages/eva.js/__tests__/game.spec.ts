@@ -83,7 +83,7 @@ describe('Game', () => {
     const system: any = null;
     const game = new Game();
     game.addSystem(system);
-    expect(`can only add System`).toHaveBeenWarned();
+    expect('can only add System').toHaveBeenWarned();
   });
   it('remove system successfully by systemName', () => {
     const game = new Game();
@@ -114,7 +114,7 @@ describe('Game', () => {
     const game = new Game();
     game.addSystem(TestSystem);
     expect(game.systems.length).toBe(1);
-    let system: any = null;
+    const system = null;
     game.removeSystem(system);
     expect(game.systems.length).toBe(1);
   });

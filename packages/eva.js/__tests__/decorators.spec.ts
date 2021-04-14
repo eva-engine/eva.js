@@ -5,10 +5,10 @@ const {IDEProp, componentObserver} = decorators;
 describe('decorators', () => {
   it('ide decorator should collect props', () => {
     class Test {
-      static IDEProps: Array<string> = [];
+      static IDEProps: string[] = [];
 
       @IDEProp public name: string = 'Test';
-      @IDEProp public size: Array<number> = [10, 10];
+      @IDEProp public size: number[] = [10, 10];
     }
     expect(Test.IDEProps.length).toBe(2);
     expect(Test.IDEProps).toEqual(['name', 'size']);
