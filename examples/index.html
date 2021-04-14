@@ -1,82 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>欢迎使用EVA互动游戏开发体系！</title>
-  </head>
-
-  <body>
-    <canvas width="750" height="1000" id="canvas" style="width: 100%"></canvas>
-    <script src="https://cdn.bootcdn.net/ajax/libs/pixi.js/4.8.7/pixi.min.js"></script>
-
-    <script src="/EVA.js"></script>
-    <script src="/EVA.rendererAdapter.js"></script>
-    <script src="/EVA.plugin.renderer.js"></script>
-    <script src="/EVA.plugin.renderer.text.js"></script>
-    <script>
-      const {Game, GameObject, resource, RESOURCE_TYPE} = EVA;
-      const {RendererSystem} = EVA.plugin.renderer;
-      const {Text, TextSystem} = EVA.plugin.renderer.text;
-
-      const game = new Game({
-        systems: [
-          new RendererSystem({
-            canvas: document.querySelector('#canvas'),
-            width: 750,
-            height: 1000,
-          }),
-          new TextSystem(),
-        ],
-      });
-
-      // 此处还在考虑如何设置默认场景的宽高
-      game.scene.transform.size = {
-        width: 750,
-        height: 1000,
-      };
-
-      const text = new GameObject('text', {
-        position: {
-          x: 0,
-          y: 0,
-        },
-        origin: {
-          x: 0.5,
-          y: 0.5,
-        },
-        anchor: {
-          x: 0.5,
-          y: 0.5,
-        },
-      });
-
-      text.addComponent(
-        new Text({
-          text: '欢迎使用EVA互动游戏开发体系！',
-          style: {
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            fill: ['#b35d9e', '#84c35f', '#ebe44f'], // gradient
-            fillGradientType: 1,
-            fillGradientStops: [0.1, 0.4],
-            stroke: '#4a1850',
-            strokeThickness: 5,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 400,
-            breakWords: true,
-          },
-        }),
-      );
-
-      game.scene.addChild(text);
-    </script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+    <ul>
+        <li><a href="http://local.tmall.com:8080/spine.html">spine</a></li>
+        <li><a href="http://local.tmall.com:8080/dragonbone.html">dragonbone</a></li>
+        <li><a href="http://local.tmall.com:8080/lottie.html">lottie</a></li>
+        <li><a href="http://local.tmall.com:8080/mars.html">mars</a></li>
+        <li><a href="http://local.tmall.com:8080/event.html">event</a></li>
+        <li><a href="http://local.tmall.com:8080/matterjs.html">matterjs</a></li>
+        <li><a href="http://local.tmall.com:8080/loader.html">loader</a></li>
+        <li><a href="http://local.tmall.com:8080/graphics.html">graphics</a></li>
+        <li><a href="http://local.tmall.com:8080/component.html">component</a></li>
+        <li><a href="http://local.tmall.com:8080/image.html">image</a></li>
+        <li><a href="http://local.tmall.com:8080/mask.html">mask</a></li>
+        <li><a href="http://local.tmall.com:8080/multi-canvas.html">multi-canvas</a></li>
+        <li><a href="http://local.tmall.com:8080/ninePatch.html">ninePatch</a></li>
+        <li><a href="http://local.tmall.com:8080/text.html">text</a></li>
+        <li><a href="http://local.tmall.com:8080/sprite.html">sprite</a></li>
+        <li><a href="http://local.tmall.com:8080/spriteAnimation.html">spriteAnimation</a></li>
+        <li><a href="http://local.tmall.com:8080/tilingSprite.html">tilingSprite</a></li>
+        <li><a href="http://local.tmall.com:8080/transition.html">transition</a></li>
+        <li><a href="http://local.tmall.com:8080/a11y/index.html">a11y</a></li>
+    </ul>
+</body>
 </html>
