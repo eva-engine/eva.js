@@ -103,7 +103,7 @@ describe('observer', () => {
   });
 
   it('should throw error when component not instanceof Component', () => {
-    let comp: any = {name: 'Test', size: [15, 15]};
+    const comp: any = {name: 'Test', size: [15, 15]};
     expect(() => {
       observer(comp);
     }).toThrow('component param must be an instance of Component');
@@ -124,7 +124,7 @@ describe('observer', () => {
   });
 
   it('the component represented by componentName does not exist', () => {
-    let testComp = new TestComponent();
+    const testComp = new TestComponent();
     observer(testComp, 'any');
     expect(testComp['_size']).toBeUndefined();
   });
@@ -194,13 +194,13 @@ describe('observer', () => {
     it('observer add component is null', () => {
       expect(() => {
         observerRemoved(null, TestComponent.componentName);
-      }).toThrow("Cannot read property 'gameObject' of null");
+      }).toThrow('Cannot read property \'gameObject\' of null');
     });
 
     it('component is undefined', () => {
       expect(() => {
         observerRemoved(undefined, TestComponent.componentName);
-      }).toThrow("Cannot read property 'gameObject' of undefined");
+      }).toThrow('Cannot read property \'gameObject\' of undefined');
     });
 
     it('componentName is empty', () => {

@@ -4527,6 +4527,7 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
+                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:
@@ -5171,38 +5172,23 @@
         RESOURCE_TYPE["AUDIO"] = "AUDIO";
         RESOURCE_TYPE["VIDEO"] = "VIDEO";
     })(exports.RESOURCE_TYPE || (exports.RESOURCE_TYPE = {}));
-    var TYPE = {
-        png: {
-            loadType: ResourceType.Image,
-            strategy: ImageLoadStrategy,
-        },
-        jpg: {
-            strategy: ImageLoadStrategy,
-            loadType: ResourceType.Image,
-        },
-        jpeg: {
-            strategy: ImageLoadStrategy,
-            loadType: ResourceType.Image,
-        },
-        webp: {
-            strategy: ImageLoadStrategy,
-            loadType: ResourceType.Image,
-        },
-        json: {
-            strategy: XhrLoadStrategy,
-            loadType: ResourceType.Json,
-            responseType: XhrResponseType.Json,
-        },
-        tex: {
-            loadType: ResourceType.Json,
-            responseType: XhrResponseType.Json,
-            strategy: XhrLoadStrategy
-        },
-        ske: {
-            loadType: ResourceType.Json,
-            responseType: XhrResponseType.Json,
-            strategy: XhrLoadStrategy
-        },
+    XhrLoadStrategy.setExtensionXhrType('json', XhrResponseType.Json);
+    XhrLoadStrategy.setExtensionXhrType('tex', XhrResponseType.Json);
+    XhrLoadStrategy.setExtensionXhrType('ske', XhrResponseType.Json);
+    XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer);
+    XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer);
+    XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer);
+    XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer);
+    var STRATEGY = {
+        png: ImageLoadStrategy,
+        jpg: ImageLoadStrategy,
+        jpeg: ImageLoadStrategy,
+        webp: ImageLoadStrategy,
+        json: XhrLoadStrategy,
+        tex: XhrLoadStrategy,
+        ske: XhrLoadStrategy,
+        audio: XhrLoadStrategy,
+        video: VideoLoadStrategy
     };
     /**
      * Resource manager
@@ -5390,8 +5376,7 @@
                                 name: res.name,
                                 resolves: resolves,
                             },
-                            strategy: TYPE[resourceType] && TYPE[resourceType].strategy,
-                            xhrType: _this.getXhrType(resourceType),
+                            strategy: STRATEGY[resourceType],
                         });
                     }
                 }
@@ -5460,12 +5445,12 @@
                     _this.progress.onStart();
                 });
             }
-            loader.onLoad.add(function (loader, resource) {
-                _this.onLoad({ preload: preload, loader: loader, resource: resource });
+            loader.onLoad.add(function (_, resource) {
+                _this.onLoad({ preload: preload, resource: resource });
             });
             // @ts-ignore
-            loader.onError.add(function (errMsg, loader, resource) {
-                _this.onError({ errMsg: errMsg, loader: loader, resource: resource, preload: preload });
+            loader.onError.add(function (errMsg, _, resource) {
+                _this.onError({ errMsg: errMsg, resource: resource, preload: preload });
             });
             loader.onComplete.once(function () {
                 loader.onLoad.detachAll();
@@ -5475,9 +5460,7 @@
             return loader;
         };
         Resource.prototype.onLoad = function (_a) {
-            var _b = _a.preload, preload = _b === void 0 ? false : _b; 
-            //@ts-ignore
-            _a.loader; var resource = _a.resource;
+            var _b = _a.preload, preload = _b === void 0 ? false : _b, resource = _a.resource;
             return __awaiter(this, void 0, void 0, function () {
                 var _c, key, name, resolves, data, res;
                 return __generator(this, function (_d) {
@@ -5490,9 +5473,7 @@
             });
         };
         Resource.prototype.onError = function (_a) {
-            var errMsg = _a.errMsg, _b = _a.preload, preload = _b === void 0 ? false : _b; 
-            // @ts-ignore
-            _a.loader; var resource = _a.resource;
+            var errMsg = _a.errMsg, _b = _a.preload, preload = _b === void 0 ? false : _b, resource = _a.resource;
             return __awaiter(this, void 0, void 0, function () {
                 var _c, name, resolves, param;
                 return __generator(this, function (_d) {
@@ -5511,11 +5492,6 @@
                     return [2 /*return*/];
                 });
             });
-        };
-        Resource.prototype.getXhrType = function (type) {
-            if (TYPE[type] && TYPE[type].loadType === ResourceType.Json) {
-                return TYPE[type].responseType;
-            }
         };
         return Resource;
     }(eventemitter3));

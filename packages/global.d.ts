@@ -1,6 +1,6 @@
-declare var DEV: boolean;
-declare var __DEV__: boolean;
-declare var __TEST__: boolean;
+declare const DEV: boolean;
+declare const __DEV__: boolean;
+declare const __TEST__: boolean;
 
 // for tests
 declare namespace jest {
@@ -9,4 +9,8 @@ declare namespace jest {
     toHaveBeenWarnedLast(): R;
     toHaveBeenWarnedTimes(n: number): R;
   }
+}
+
+declare namespace PIXI.miniprogram {
+  export const type = 'taobao miniprogram';
 }

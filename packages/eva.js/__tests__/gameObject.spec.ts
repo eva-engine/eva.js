@@ -113,13 +113,13 @@ describe('GameObject', () => {
     expect(child.scene).toBeUndefined();
   });
 
-  it("do nothing if child's parent not this", () => {
+  it('do nothing if child\'s parent not this', () => {
     const parent = new GameObject('parent');
     const parent2 = new GameObject('parent2');
     const child = new GameObject('child');
 
     child.transform.parent = parent2.transform;
-    child.scene = child.scene;
+    // child.scene = child.scene;
 
     parent.removeChild(child);
     expect(child.parent).toStrictEqual(parent2);
@@ -226,15 +226,15 @@ describe('GameObject', () => {
     const gameObj = new GameObject('gameObj');
     expect(() => {
       gameObj.removeComponent('Transform');
-    }).toThrow("Transform can't be removed");
+    }).toThrow('Transform can\'t be removed');
 
     expect(() => {
       gameObj.removeComponent(Transform.componentName);
-    }).toThrow("Transform can't be removed");
+    }).toThrow('Transform can\'t be removed');
 
     expect(() => {
       gameObj.removeComponent(gameObj.transform.name);
-    }).toThrow("Transform can't be removed");
+    }).toThrow('Transform can\'t be removed');
   });
 
   it('getComponent by componentName', () => {

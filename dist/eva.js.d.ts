@@ -449,7 +449,6 @@ declare class Resource extends EE {
     getLoader(preload?: boolean): Loader;
     private onLoad;
     private onError;
-    private getXhrType;
 }
 
 /** Resource manager single instance */
@@ -493,7 +492,7 @@ declare interface ResourceStruct extends ResourceBase {
         tex?: any;
         ske?: any;
         video?: HTMLVideoElement;
-        audio?: HTMLAudioElement;
+        audio?: ArrayBuffer;
         [propName: string]: any;
     };
     instance?: any;
