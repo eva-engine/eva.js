@@ -21,6 +21,6 @@
     "@types/pixi.js": "^4.8.9"
   },
   "buildOptions": {
-    "formats": ["cjs", "esm", "miniprogram"]
+    "formats": ["cjs", "esm"]
   }
 }

@@ -20,6 +20,6 @@
     "@eva/miniprogram-pixi": "^1.0.3-mini.3"
   },
   "buildOptions": {
-    "formats": ["cjs", "esm", "miniprogram"]
+    "formats": ["cjs", "esm"]
   }
 }

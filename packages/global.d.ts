@@ -21,6 +21,7 @@ declare namespace PIXI.miniprogram {
   export const HTMLMediaElement: any;
   export const HTMLVideoElement: any;
   export const HTMLImageElement: any;
+  export const Image: any;
   export const Node: any;
   export const XMLHttpRequestAlias: any;
   export const atob: any;
