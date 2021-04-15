@@ -1,6 +1,6 @@
 {
   "name": "@eva/miniprogram-adapter",
-  "version": "1.0.3-mini.5",
+  "version": "1.0.3-mini.6",
   "description": "@eva/miniprogram-adapter",
   "main": "index.js",
   "module": "dist/miniprogram-adapter.esm.js",
