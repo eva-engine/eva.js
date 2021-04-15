@@ -1,9 +1,13 @@
+import * as PIXI_2 from '@tbminiapp/pixi-miniprogram-engine';
 
 declare const atob_2: any;
 export { atob_2 as atob }
 
 declare const cancelAnimationFrame_2: any;
 export { cancelAnimationFrame_2 as cancelAnimationFrame }
+
+declare const _default: typeof PIXI_2.miniprogram;
+export default _default;
 
 declare const devicePixelRatio_2: any;
 export { devicePixelRatio_2 as devicePixelRatio }
@@ -47,13 +51,15 @@ export { HTMLElement_2 as HTMLElement }
 
 declare const HTMLImageElement_2: any;
 export { HTMLImageElement_2 as HTMLImageElement }
-export { HTMLImageElement_2 as Image }
 
 declare const HTMLMediaElement_2: any;
 export { HTMLMediaElement_2 as HTMLMediaElement }
 
 declare const HTMLVideoElement_2: any;
 export { HTMLVideoElement_2 as HTMLVideoElement }
+
+declare const Image_2: any;
+export { Image_2 as Image }
 
 declare const navigator_2: any;
 export { navigator_2 as navigator }

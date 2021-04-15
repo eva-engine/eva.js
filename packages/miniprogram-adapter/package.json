@@ -1,6 +1,6 @@
 {
   "name": "@eva/miniprogram-adapter",
-  "version": "1.0.3-mini.3",
+  "version": "1.0.3-mini.4",
   "description": "@eva/miniprogram-adapter",
   "main": "index.js",
   "module": "dist/miniprogram-adapter.esm.js",
@@ -17,9 +17,12 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/miniprogram-pixi": "^1.0.3-mini.3"
+    "@tbminiapp/pixi-miniprogram-engine": "^1.0.19"
   },
   "buildOptions": {
-    "formats": ["cjs", "esm"]
+    "formats": [
+      "cjs",
+      "esm"
+    ]
   }
 }

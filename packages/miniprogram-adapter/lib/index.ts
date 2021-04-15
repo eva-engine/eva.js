@@ -1,4 +1,4 @@
-import * as PIXI from '@eva/miniprogram-pixi';
+import * as PIXI from '@tbminiapp/pixi-miniprogram-engine';
 
 export const {
   globalAlias,
@@ -10,6 +10,7 @@ export const {
   HTMLMediaElement,
   HTMLVideoElement,
   HTMLImageElement,
+  Image,
   Node,
   XMLHttpRequestAlias,
   atob,
@@ -33,7 +34,5 @@ export const {
   screen,
   windowAlias
 } = PIXI.miniprogram;
-
-export { HTMLImageElement as Image }
 
 export default PIXI.miniprogram;
