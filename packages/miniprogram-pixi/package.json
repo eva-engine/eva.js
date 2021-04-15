@@ -17,13 +17,15 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@tbminiapp/pixi-miniprogram-engine": "^1.0.19",
-    "@types/pixi.js": "^4.8.9"
+    "@tbminiapp/pixi-miniprogram-engine": "^1.0.19"
   },
   "buildOptions": {
     "formats": [
       "cjs",
       "esm"
     ]
+  },
+  "devDependencies": {
+    "@types/pixi.js": "^4.8.9"
   }
 }

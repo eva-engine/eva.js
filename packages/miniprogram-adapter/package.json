@@ -22,7 +22,8 @@
   "buildOptions": {
     "formats": [
       "cjs",
-      "esm"
+      "esm",
+      "miniprogram"
     ]
   }
 }
