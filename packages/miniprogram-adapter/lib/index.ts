@@ -1,5 +1,4 @@
-// @ts-ignore
-import PIXI from '@eva/miniprogram-pixi';
+import { miniprogram } from '@eva/miniprogram-pixi';
 
 export const {
   globalAlias,
@@ -33,4 +32,6 @@ export const {
   requestAnimationFrame,
   screen,
   windowAlias
-} = PIXI.miniprogram;
+} = miniprogram;
+
+export { HTMLImageElement as Image }

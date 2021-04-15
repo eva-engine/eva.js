@@ -47,6 +47,7 @@ export { HTMLElement_2 as HTMLElement }
 
 declare const HTMLImageElement_2: any;
 export { HTMLImageElement_2 as HTMLImageElement }
+export { HTMLImageElement_2 as Image }
 
 declare const HTMLMediaElement_2: any;
 export { HTMLMediaElement_2 as HTMLMediaElement }

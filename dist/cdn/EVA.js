@@ -4527,6 +4527,7 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
+                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:

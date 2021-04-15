@@ -19,5 +19,8 @@
   "dependencies": {
     "@tbminiapp/pixi-miniprogram-engine": "^1.0.19",
     "@types/pixi.js": "^4.8.9"
+  },
+  "buildOptions": {
+    "formats": ["cjs", "esm", "miniprogram"]
   }
 }
