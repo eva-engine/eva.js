@@ -21,7 +21,11 @@ module.exports = {
   moduleNameMapper,
   transform: {
     '^.+\\.(ts|js)?$': 'ts-jest',
+    "node_modules/lodash-es/.+\\.(j|t)sx?$": "ts-jest"
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!lodash-es/.*)"
+  ],
   watchPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
