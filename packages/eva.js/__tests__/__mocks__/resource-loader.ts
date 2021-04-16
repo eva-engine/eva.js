@@ -43,16 +43,16 @@ export class Loader {
   }
 
   load() {
-    const onStartCallbacks = [...this.onStart.values()];
-    const onLoadCallbacks = [...this.onLoad.values()];
-    const onErrorCallbacks = [...this.onError.values()];
+    const onStartCallbacks = this.onStart.values();
+    const onLoadCallbacks = this.onLoad.values();
+    const onErrorCallbacks = this.onError.values();
 
     for (const fn of onStartCallbacks) {
       fn();
     }
 
-    const resourceEntity = [...this.resources.values()];
     this.loading = true;
+    const resourceEntity = Array.from(this.resources.values());
     resourceEntity.forEach(async res => {
       if (res.name.includes('mockError')) {
         onErrorCallbacks.forEach(fn => {
@@ -61,8 +61,7 @@ export class Loader {
         return;
       }
 
-      // 只处理image类型的eva资源
-      if (res.type === ResourceType.Image) {
+      if (res.metadata.key === 'image') {
         res.data = new Image();
       }
 
@@ -72,7 +71,7 @@ export class Loader {
     });
     this.loading = false;
 
-    const onCompleteCallbacks = [...this.onComplete.values()];
+    const onCompleteCallbacks = this.onComplete.values();
     for (const fn of onCompleteCallbacks) {
       fn();
     }
@@ -107,3 +106,15 @@ export enum XhrResponseType {
   Json = 'json',
   Text = 'text',
 }
+
+export class ImageLoadStrategy {}
+
+export class XhrLoadStrategy {
+  static sourceMap = {};
+
+  static setExtensionXhrType(resourceType: string, responseType: string) {
+    this.sourceMap[resourceType] = responseType;
+  }
+}
+
+export class VideoLoadStrategy {}

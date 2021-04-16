@@ -218,12 +218,12 @@ class Resource extends EE {
           loader.add({
             url: res.src[key].url,
             name: `${res.name}_${key}`,
+            strategy: STRATEGY[resourceType],
             metadata: {
               key,
               name: res.name,
               resolves,
             },
-            strategy: STRATEGY[resourceType],
           });
         }
       }
