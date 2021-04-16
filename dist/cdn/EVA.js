@@ -5371,12 +5371,12 @@
                         loader.add({
                             url: res.src[key].url,
                             name: res.name + "_" + key,
+                            strategy: STRATEGY[resourceType],
                             metadata: {
                                 key: key,
                                 name: res.name,
                                 resolves: resolves,
                             },
-                            strategy: STRATEGY[resourceType],
                         });
                     }
                 }
