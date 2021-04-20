@@ -1,19 +1,22 @@
 {
-  "name": "@eva/plugin-a11y",
+  "name": "@eva/plugin-sound",
   "version": "1.0.4",
-  "description": "@eva/plugin-a11y",
+  "description": "@eva/plugin-sound",
   "main": "index.js",
-  "module": "dist/plugin-a11y.esm.js",
-  "bundle": "EVA.plugin.a11y",
+  "module": "dist/plugin-sound.esm.js",
+  "bundle": "EVA.plugin.sound",
   "files": [
     "index.js",
     "dist"
   ],
-  "types": "dist/plugin-a11y.d.ts",
+  "types": "dist/plugin-sound.d.ts",
   "keywords": [
-    "eva.js"
+    "eva.js",
+    "sound",
+    "system",
+    "plugin"
   ],
-  "author": "fanmingfei <az8641683@163.com>",
+  "author": "",
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {

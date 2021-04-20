@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-lottie",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "@eva/plugin-renderer-lottie",
   "main": "index.js",
   "module": "dist/plugin-renderer-lottie.esm.js",
@@ -22,8 +22,8 @@
   "dependencies": {
     "@ali/lottie-core": "file:lib/lottie-core",
     "@ali/lottie-pixi": "file:lib/lottie-pixi",
-    "@eva/eva.js": "^1.0.3",
-    "@eva/plugin-renderer": "^1.0.3",
+    "@eva/eva.js": "^1.0.4",
+    "@eva/plugin-renderer": "^1.0.4",
     "ios-version": "^1.0.1",
     "pixi.js": "^4.8.7"
   }
