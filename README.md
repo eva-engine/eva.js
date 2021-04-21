@@ -11,7 +11,7 @@ Eva.js is a front-end game engine specifically for creating interactive game pro
 
 **Easy to Use**: Eva.js provides out-of-box game components for developers to use right away. Yes, it's simple and elegant!
 
-**High-performance**: Eva.js is powered by efficient runtime and rendering pipeline which makes it possible to unleash the full potential of your device.
+**High-performance**: Eva.js is powered by efficient runtime and rendering pipeline ([Pixi.JS](http://pixijs.io/)) which makes it possible to unleash the full potential of your device.
 
 **Scalability**: Thanks to the ECS(Entity-Component-System) structure, you can expand your needs by highly customizable APIs. The only limitation is your imagination!
 
