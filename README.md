@@ -1,4 +1,4 @@
-# Eva.js (Gamification Engine)
+# Eva.js (Interactive Game Engine)
 
 ![npm-version](https://img.shields.io/npm/v/@eva/eva.js)
 ![npm-size](https://img.shields.io/bundlephobia/minzip/@eva/eva.js)
@@ -6,18 +6,18 @@
 
 ## Introduction
 
-Eva.js is a front-end game engine for create project of gamification. 
+Eva.js is a front-end game engine specifically for creating interactive game projects.
 
 
-**Efficient**: Eva.js provides common and basic game component in the development of gamification projects, Eva makes it easy to develop project of gamification.
+**Easy to Use**: Eva.js provides out-of-box game components for developers to use right away. Yes, it's simple and elegant!
 
-**High-performace**: Eva.js provides efficient runtime and rendering capabilities, you can create complex game scenes.
+**High-performance**: Eva.js is powered by efficient runtime and rendering pipeline which makes it possible to unleash the full potential of your device.
 
-**Scalable**: Based on the ECS(Entity-Component-System) design pattern, you can freely expand functions of engine and build a more prosperous ecosystem.
+**Scalability**: Thanks to the ECS(Entity-Component-System) structure, you can expand your needs by highly customizable APIs. The only limitation is your imagination!
 
 ## Documentation
 
-Finding the Eva.js Documentation on [eva.js.org](https://eva.js.org), you can improve it by sending pull requests to [this repository](https://github.com/eva-engine/eva-engine.github.io).
+You can find the Eva.js Documentation on [eva.js.org](https://eva.js.org), we appreciate your devotion by sending pull requests to [this repository](https://github.com/eva-engine/eva-engine.github.io).
 
 Checking out the [Live example](https://eva.js.org/playground).
 
