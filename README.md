@@ -103,7 +103,7 @@ Please make sure to read the [Issue Reporting Checklist](.github/ISSUE_TEMPLATE.
 [release notes](https://eva.js.org/#/others/changelog) in documentation.
 
 ## Contribute
-[How to Contribute](./github/HOW_TO_CONTRIBUTE.md)
+[How to Contribute](.github/HOW_TO_CONTRIBUTE.md)
 
 ## License
 The Eva.js is released under the MIT license. See [LICENSE file](./LICENSE).
