@@ -9,7 +9,7 @@ The following is a set of guidelines for contributing to eva.js. Please spend se
 
 ## Issue Reporting
 
-<br />You can make use of the Github Issues for eva.js to:<br />
+<br />You can make use of the GitHub Issues for eva.js to:<br />
 
 1. Report a bug.
 1. Request a feature
