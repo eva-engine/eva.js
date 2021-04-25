@@ -26,7 +26,7 @@ const pkg = require(resolve(`package.json`));
 const packageOptions = pkg.buildOptions || {};
 
 const exampleDir = path.resolve(__dirname, 'examples');
-const evajsCDNDir = path.resolve(__dirname, 'dist/cdn');
+const evajsCDNDir = path.resolve(__dirname);
 
 const outputConfigs = {
   esm: {
@@ -183,10 +183,10 @@ function createUmdDevelopConfig(format) {
       rootDir: packageDir,
     }),
     copy({
-        targets: [{ src: outputConfigs[format].file, dest: resolve(`dist`)}],
-        hook: 'writeBundle',
-        copyOnce: true
-    })
+      targets: [{src: outputConfigs[format].file, dest: resolve(`dist`)}],
+      hook: 'writeBundle',
+      copyOnce: true,
+    }),
   ];
 
   if (process.env.ROLLUP_WATCH) {
@@ -248,9 +248,9 @@ function createMinifiedConfig(format) {
         compress: true,
       }),
       copy({
-          targets: [{ src: destFilename, dest: resolve(`dist`)}],
-          hook: 'writeBundle'
-      })
+        targets: [{src: destFilename, dest: resolve(`dist`)}],
+        hook: 'writeBundle',
+      }),
     ],
   );
 }
