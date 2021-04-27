@@ -22,21 +22,19 @@
       resource.addResource([
         {
           name: 'anim',
-          // @ts-ignore
           type: 'SPINE',
           src: {
             ske: {
               type: 'json',
-              url: 'https://pages.tmall.com/wow/eva/b5fdf74313d5ff2609ab82f6b6fd83e6.json',
+              url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/spine/b5fdf74313d5ff2609ab82f6b6fd83e6.json',
             },
-            // @ts-ignore
             atlas: {
               type: 'atlas',
-              url: 'https://pages.tmall.com/wow/eva/b8597f298a5d6fe47095d43ef03210d4.atlas',
+              url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/spine/b8597f298a5d6fe47095d43ef03210d4.atlas',
             },
             image: {
               type: 'png',
-              url: 'https://gw.alicdn.com/tfs/TB1YHC8Vxz1gK0jSZSgXXavwpXa-711-711.png',
+              url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/spine/TB1YHC8Vxz1gK0jSZSgXXavwpXa-711-711.png',
             },
           },
         },
@@ -55,7 +53,6 @@
         frameRate: 60,
       });
 
-      // 此处还在考虑如何设置默认场景的宽高
       game.scene.transform.size = {
         width: 750,
         height: 1000,
