@@ -24,7 +24,7 @@ files.forEach(shortName => {
   if (!isDirectory) return;
 
   const name = shortName.startsWith('eva-') ? `@eva/${shortName.replace('eva-', '')}` : `@eva/${shortName}`;
-  const pkgPath = path.join(packagesDir, shortName, `package.json`);
+  const pkgPath = path.join(packagesDir, shortName, 'package.json');
   const pkgExists = fs.existsSync(pkgPath);
   const pkg = require(pkgPath);
   if (pkgExists) {
@@ -41,23 +41,32 @@ files.forEach(shortName => {
       main: 'index.js',
       module: `dist/${shortName}.esm.js`,
       bundle: pkg.bundle || '',
-      files: [`index.js`, `dist`],
+      files: ['index.js', 'dist'],
       types: `dist/${shortName}.d.ts`,
       keywords: ['eva.js'],
       author: 'fanmingfei <az8641683@163.com>',
       license: 'MIT',
-      homepage: `https://eva.js.org`,
+      homepage: 'https://eva.js.org',
       dependencies: pkg.dependencies || {},
     };
     fs.writeFileSync(pkgPath, JSON.stringify(json, null, 2));
   }
 
-  const readmePath = path.join(packagesDir, shortName, `README.md`);
+  const readmePath = path.join(packagesDir, shortName, 'README.md');
   if (args.force || !fs.existsSync(readmePath)) {
-    fs.writeFileSync(readmePath, `# ${name}`);
+    fs.writeFileSync(
+      readmePath,
+      `
+# ${name}
+
+More Introduction
+- [EN](https://eva.js.org)
+- [中文](https://eva-engine.gitee.io)
+    `,
+    );
   }
 
-  const apiExtractorConfigPath = path.join(packagesDir, shortName, `api-extractor.json`);
+  const apiExtractorConfigPath = path.join(packagesDir, shortName, 'api-extractor.json');
   if (args.force || !fs.existsSync(apiExtractorConfigPath)) {
     fs.writeFileSync(
       apiExtractorConfigPath,

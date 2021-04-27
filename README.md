@@ -27,9 +27,16 @@ Checking out the [Live example](https://eva.js.org/playground).
 
 ## Usage
 
-### Install
+### With NPM
 ```sh
 npm i @eva/eva.js @eva/plugin-renderer @eva/plugin-renderer-img --save
+```
+
+### In Browser
+```html
+<script src="https://g.alicdn.com/eva/jscdn/1.0.4/EVA.min.js"></script>
+
+<script src="https://unpkg.com/@eva/eva.js@1.0.4/dist/EVA.min.js"></script>
 ```
 
 ### Example
