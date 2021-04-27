@@ -11,12 +11,9 @@
   ],
   "types": "dist/plugin-sound.d.ts",
   "keywords": [
-    "eva.js",
-    "sound",
-    "system",
-    "plugin"
+    "eva.js"
   ],
-  "author": "cucluoting cucluoting@gmail.com",
+  "author": "fanmingfei <az8641683@163.com>",
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {

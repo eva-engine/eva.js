@@ -4,9 +4,6 @@
   "description": "@eva/plugin-renderer-lottie",
   "main": "index.js",
   "module": "dist/plugin-renderer-lottie.esm.js",
-  "scripts": {
-    "postinstall": "npm i ./lib/lottie-pixi ./lib/lottie-core --save"
-  },
   "bundle": "EVA.plugin.renderer.lottie",
   "files": [
     "index.js",
