@@ -1,6 +1,6 @@
 {
   "name": "plugin-renderer-test",
-  "version": "1.0.4",
+  "version": "1.0.5-alpha.1",
   "private": true,
   "description": "test plugin",
   "keywords": [
