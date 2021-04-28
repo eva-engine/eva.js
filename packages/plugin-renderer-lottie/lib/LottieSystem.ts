@@ -9,11 +9,9 @@ import {
   RendererManager,
   ContainerManager,
 } from '@eva/plugin-renderer';
-import lottiePixi from '@ali/lottie-pixi';
+import { AnimationManager } from '@ali/lottie-pixi';
 import { imageHandle } from './utils';
 import Lottie from './Lottie'
-
-const { AnimationManager } = lottiePixi;
 
 @decorators.componentObserver({
   Lottie: []

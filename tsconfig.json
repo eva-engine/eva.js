@@ -11,7 +11,7 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "removeComments": false,
+    "removeComments": true,
     "noEmitHelpers": true,
     "importHelpers": true,
     "sourceMap": false,

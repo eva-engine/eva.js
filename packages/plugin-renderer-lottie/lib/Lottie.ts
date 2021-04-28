@@ -1,21 +1,21 @@
-import { 
-  Component, 
-  decorators 
+import {
+  Component,
+  decorators
 } from '@eva/eva.js';
-import { 
-  IExpandOpts, 
+import {
+  IExpandOpts,
   IOptions
 } from './types';
-import { 
-  Sprite, 
-  Text, 
+import {
+  Sprite,
+  Text,
   TextStyle,
   Graphics
 } from 'pixi.js';
 
-interface IExtendOptions extends IOptions {
+interface ExtendOptions extends IOptions {
   autoStart: boolean;
-} 
+}
 
 export default class Lottie extends Component {
   @decorators.IDEProp
@@ -24,7 +24,7 @@ export default class Lottie extends Component {
   static componentName: string = 'Lottie';
   public static application: any;
   public anim: any;
-  public options: IExtendOptions
+  public options: ExtendOptions
   public loadStatus: boolean = false;
   public firstPlay: () => void | null = null;
   public slotCache: { [key: string]: any };
@@ -49,8 +49,8 @@ export default class Lottie extends Component {
   }
 
   play(
-    params: Array<number> = [], 
-    expandOpts: IExpandOpts = { 
+    params: Array<number> = [],
+    expandOpts: IExpandOpts = {
       repeats: 0
     }
   ) {
@@ -68,13 +68,13 @@ export default class Lottie extends Component {
       value,
       style = {}
     }) => {
-      const { 
+      const {
         x,
-        y, 
-        anchor = { x: 0, y: 0 }, 
-        pivot = { x: 0, y: 0 }, 
-        width, 
-        height 
+        y,
+        anchor = { x: 0, y: 0 },
+        pivot = { x: 0, y: 0 },
+        width,
+        height
       } = style;
       if (type === 'IMAGE') {
         this.currentSlot[name] = Sprite.from(value);
@@ -87,7 +87,7 @@ export default class Lottie extends Component {
       if (height) this.currentSlot[name].height = height;
       this.currentSlot[name].anchor.set(anchor.x || 0, anchor.y || 0);
       this.currentSlot[name].pivot.set(
-        this.currentSlot[name].width * (pivot.x || 0), 
+        this.currentSlot[name].width * (pivot.x || 0),
         this.currentSlot[name].height * (pivot.y || 0)
       );
       if (this.prevSlot[name]) this.anim.unbindSlot(name, this.prevSlot[name]);

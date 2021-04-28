@@ -107,10 +107,6 @@
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-    function getDefaultExportFromCjs (x) {
-    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-    }
-
     function createCommonjsModule(fn) {
       var module = { exports: {} };
     	return fn(module, module.exports), module.exports;
@@ -126,26 +122,24 @@
     //# sourceMappingURL=index.js.map
     });
 
-    var lottiePixi = /*@__PURE__*/getDefaultExportFromCjs(build);
-
-    var _isFinite = Number.isFinite || function (value) {
+    var _isFinite_1_1_0_isFinite = Number.isFinite || function (value) {
     	return !(typeof value !== 'number' || value !== value || value === Infinity || value === -Infinity);
     };
 
     // https://github.com/paulmillr/es6-shim
     // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isinteger
 
-    var isInteger = Number.isInteger || function(val) {
+    var _isInteger_1_0_7_isInteger = Number.isInteger || function(val) {
       return typeof val === "number" &&
-        _isFinite(val) &&
+        _isFinite_1_1_0_isFinite(val) &&
         Math.floor(val) === val;
     };
 
     var isIntegerRegex = /^-?\d+$/;
 
-    var _parseInt = function parseIntStrict (integer) {
+    var _parseInt_1_0_3_parseInt = function parseIntStrict (integer) {
       if (typeof integer === 'number') {
-        return isInteger(integer) ? integer : undefined
+        return _isInteger_1_0_7_isInteger(integer) ? integer : undefined
       }
       if (typeof integer === 'string') {
         return isIntegerRegex.test(integer) ? parseInt(integer, 10) : undefined
@@ -154,13 +148,13 @@
 
     var REGEX = /OS (\d\d?_\d(_\d)?)/;
 
-    var iosVersion = function iOsVersion (agent) {
+    var _iosVersion_1_0_1_iosVersion = function iOsVersion (agent) {
       if (!agent) return null
 
       var matches = REGEX.exec(agent);
       if (!matches) return null
 
-      var parts = matches[1].split('_').map(_parseInt);
+      var parts = matches[1].split('_').map(_parseInt_1_0_3_parseInt);
 
       return {
         major: parts[0],
@@ -169,7 +163,7 @@
       }
     };
 
-    const { major } = iosVersion(window.navigator.userAgent) || {};
+    const { major } = _iosVersion_1_0_1_iosVersion(window.navigator.userAgent) || {};
 
     /**
      * dataURL 转成 blob
@@ -227,8 +221,7 @@
       return source;
     }
 
-    var AnimationManager = lottiePixi.AnimationManager;
-    var LottieSystem = /** @class */ (function (_super) {
+    var LottieSystem = (function (_super) {
         __extends(LottieSystem, _super);
         function LottieSystem() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -244,12 +237,6 @@
             ];
             return _this;
         }
-        /**
-         * System 初始化用，可以配置参数，游戏未开始
-         *
-         * System init, set params, game is not begain
-         * @param param init params
-         */
         LottieSystem.prototype.init = function () {
             this.renderSystem = this.game.systems.find(function (s) { return (s.application); });
             this.app = this.renderSystem.application;
@@ -265,7 +252,7 @@
                             this.remove(changed);
                         }
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -275,13 +262,13 @@
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
-                            this.manager = new AnimationManager(this.app);
+                            this.manager = new build.AnimationManager(this.app);
                             component = changed.component;
                             container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
                             if (!container)
-                                return [2 /*return*/];
+                                return [2];
                             _a = component.options, rn = _a.resource, otherOpts = __rest(_a, ["resource"]);
-                            return [4 /*yield*/, eva_js.resource.getResource(rn)];
+                            return [4, eva_js.resource.getResource(rn)];
                         case 1:
                             data = (_b.sent()).data;
                             json = __assign({}, (data.json || {}));
@@ -298,7 +285,7 @@
                             });
                             if (anim.isImagesLoaded)
                                 component.emit('success', {});
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });
@@ -320,7 +307,7 @@
         return LottieSystem;
     }(pluginRenderer.Renderer));
 
-    var Lottie = /** @class */ (function (_super) {
+    var Lottie = (function (_super) {
         __extends(Lottie, _super);
         function Lottie(options) {
             var _this = _super.call(this) || this;
