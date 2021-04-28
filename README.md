@@ -28,7 +28,7 @@ Checking out the [Live example](https://eva.js.org/playground).
 ## Usage
 
 ### With NPM
-```sh
+```bash
 npm i @eva/eva.js @eva/plugin-renderer @eva/plugin-renderer-img --save
 ```
 
