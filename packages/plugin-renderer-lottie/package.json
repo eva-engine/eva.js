@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-lottie",
-  "version": "1.0.4",
+  "version": "1.0.5-alpha.1",
   "description": "@eva/plugin-renderer-lottie",
   "main": "index.js",
   "module": "dist/plugin-renderer-lottie.esm.js",
