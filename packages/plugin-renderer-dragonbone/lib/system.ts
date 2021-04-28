@@ -5,6 +5,7 @@ import {
   ComponentChanged,
   RESOURCE_TYPE,
   OBSERVER_TYPE,
+  Component
 } from '@eva/eva.js';
 import {
   Renderer,
@@ -44,6 +45,7 @@ export default class DragonBone extends Renderer {
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
+  private isRemovedMap: Map<Component, boolean> = new Map();
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
@@ -72,7 +74,9 @@ export default class DragonBone extends Renderer {
   }
   async add(changed: ComponentChanged) {
     const component = changed.component as DragonBoneComponent;
+    this.isRemovedMap.delete(component);
     await resource.getResource(component.resource);
+    if (this.isRemovedMap.get(component)) return;
     const armature = new DragonBoneEngine({
       armatureName: component.armatureName,
     });
@@ -97,6 +101,10 @@ export default class DragonBone extends Renderer {
   }
   remove(changed: ComponentChanged) {
     const armature = this.armatures[changed.gameObject.id];
+    if (!armature) {
+      this.isRemovedMap.set(changed.component, true);
+      return;
+    }
     this.autoPlay[changed.gameObject.id] =
       armature.armature.animation.isPlaying;
     this.renderSystem.containerManager
