@@ -25,7 +25,7 @@ import { imageHandle } from './utils';
 import Lottie from './Lottie'
 
 
-function loadTexture(assets, options = {}) {
+function loadTexture(assets, options) {
   return new LoadTexture(assets, options);
 }
 
