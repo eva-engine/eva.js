@@ -76,7 +76,10 @@ export default class DragonBone extends Renderer {
     const component = changed.component as DragonBoneComponent;
     this.isRemovedMap.delete(component);
     await resource.getResource(component.resource);
-    if (this.isRemovedMap.get(component)) return;
+    if (this.isRemovedMap.get(component)) {
+      this.isRemovedMap.delete(component);
+      return
+    };
     const armature = new DragonBoneEngine({
       armatureName: component.armatureName,
     });
