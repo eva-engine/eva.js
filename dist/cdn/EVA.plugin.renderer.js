@@ -2107,7 +2107,7 @@
       return baseIsEqual(value, other);
     }
 
-    var RendererManager = /** @class */ (function () {
+    var RendererManager = (function () {
         function RendererManager(_a) {
             var game = _a.game, rendererSystem = _a.rendererSystem;
             this.renderers = [];
@@ -2233,7 +2233,7 @@
         return RendererManager;
     }());
 
-    var ContainerManager = /** @class */ (function () {
+    var ContainerManager = (function () {
         function ContainerManager() {
             this.containerMap = {};
         }
@@ -2613,7 +2613,7 @@
     }
     });
 
-    var Transform = /** @class */ (function (_super) {
+    var Transform = (function (_super) {
         __extends(Transform, _super);
         function Transform(_a) {
             var system = _a.system, containerManager = _a.containerManager;
@@ -2630,12 +2630,7 @@
             this.system = system;
             this.on('changeScene', function (_a) {
                 var scene = _a.scene, mode = _a.mode, application = _a.application;
-                // switch (mode) {
-                // case LOAD_SCENE_MODE.SINGLE:
                 _this.waitChangeScenes.push({ scene: scene, mode: mode, application: application });
-                // break;
-                // case LOAD_SCENE_MODE.MULTI_CANVAS:
-                // }
             });
         };
         Transform.prototype.update = function () {
@@ -2657,7 +2652,6 @@
             try {
                 for (var _e = __values(this.waitChangeScenes), _f = _e.next(); !_f.done; _f = _e.next()) {
                     var sceneInfo = _f.value;
-                    // set scene
                     var container = this.containerManager.getContainer(sceneInfo.scene.id);
                     if (container) {
                         sceneInfo.application.stage.removeChildren();
@@ -2732,7 +2726,7 @@
         RENDERER_TYPE[RENDERER_TYPE["WEBGL"] = 1] = "WEBGL";
         RENDERER_TYPE[RENDERER_TYPE["CANVAS"] = 2] = "CANVAS";
     })(exports.RENDERER_TYPE || (exports.RENDERER_TYPE = {}));
-    var Renderer$1 = /** @class */ (function (_super) {
+    var Renderer$1 = (function (_super) {
         __extends(Renderer, _super);
         function Renderer() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -2774,7 +2768,6 @@
         };
         Renderer.prototype.registerObserver = function (observerInfo) {
             var _a;
-            // @ts-ignore
             var thisObserverInfo = this.constructor.observerInfo;
             for (var key in observerInfo) {
                 if (!thisObserverInfo[key]) {
@@ -2875,11 +2868,10 @@
         return Renderer;
     }(eva_js.System));
 
-    var Renderer = /** @class */ (function (_super) {
+    var Renderer = (function (_super) {
         __extends(Renderer, _super);
         function Renderer() {
             var _this = _super.call(this) || this;
-            // @ts-ignore
             _this.observerInfo = _this.constructor.observerInfo;
             return _this;
         }

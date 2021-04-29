@@ -78,7 +78,7 @@
         }
     }
 
-    var Spine = /** @class */ (function (_super) {
+    var Spine = (function (_super) {
         __extends$1(Spine, _super);
         function Spine() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -9276,7 +9276,6 @@
     function cacheImage(data) {
         var oldImg = data.image;
         var newImg = data.image.cloneNode();
-        // newImg.src = oldImg.src;
         data.image = newImg;
         return {
             tex: pixi_js.Texture.from(oldImg),
@@ -9301,9 +9300,7 @@
         return cache.tex;
     }
     function releaseTexture(name) {
-        // 如果要取消上一个timeout，注意count--不要写timeout里面
         setTimeout(function () {
-            // 延迟销毁，避免快速重用
             var cache = texCache[name];
             if (cache) {
                 cache.count--;
@@ -9321,18 +9318,12 @@
     var dataMap = {};
     function createSpineData(name, imgName, data, scale) {
         var spineData = null;
-        var img = getTexture(imgName, data); // Texture.from(data.image);
-        // const img = Texture.from(imgName,data.image);
-        // @ts-ignore
-        new pixispine.core.TextureAtlas(data.atlas, 
-        // @ts-ignore
-        function (line, callback) {
+        var img = getTexture(imgName, data);
+        new pixispine.core.TextureAtlas(data.atlas, function (line, callback) {
             callback(img.baseTexture);
         }, function (spineAtlas) {
             if (spineAtlas) {
-                // @ts-ignore
                 var attachmentLoader = new pixispine.core.AtlasAttachmentLoader(spineAtlas);
-                // @ts-ignore
                 var spineJsonParser = new pixispine.core.SkeletonJson(attachmentLoader);
                 if (scale) {
                     spineJsonParser.scale = scale;
@@ -9349,10 +9340,6 @@
     });
     eva_js.resource.registerDestroy('SPINE', function (info) {
         if (info.instance) {
-            // if (info.instance.img) {
-            // 用true，baseTexture的缓存和webgl的绑定一起删除
-            // info.instance.img.destroy(true);
-            // }
             releaseTexture(info.name);
             info.instance = null;
         }
@@ -9362,7 +9349,7 @@
             var res, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, eva_js.resource.getResource(name)];
+                    case 0: return [4, eva_js.resource.getResource(name)];
                     case 1:
                         res = _a.sent();
                         data = dataMap[name];
@@ -9371,26 +9358,17 @@
                                 data = createSpineData(name, res.name, res.data, res.scale);
                             }
                             else if (!data) {
-                                return [2 /*return*/];
+                                return [2];
                             }
                         }
                         retainTexture(res.name, res.data);
                         data.ref++;
-                        return [2 /*return*/, data.spineData];
+                        return [2, data.spineData];
                 }
             });
         });
     }
     function releaseSpineData(name) {
-        // const res = await resource.getResource(name);
-        // if (!res) {
-        //   return;
-        // }
-        // if (!res.instance) {
-        //   console.log(`释放资源${name}失败`);
-        //   return;
-        // }
-        // releaseTexture(res.name as string);
         var data = dataMap[name];
         if (!data) {
             return;
@@ -9403,7 +9381,7 @@
     }
 
     var MaxRetryCount = 20;
-    var SpineSystem = /** @class */ (function (_super) {
+    var SpineSystem = (function (_super) {
         __extends$1(SpineSystem, _super);
         function SpineSystem() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -9415,9 +9393,7 @@
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
             this.game.canvas.addEventListener('webglcontextrestored', function () {
-                // 重建所有spine
                 var objs = _this.game.gameObjects;
-                // clearCache();
                 var toAdd = [];
                 for (var k in _this.armatures) {
                     var id = +k;
@@ -9468,7 +9444,7 @@
                             this.remove(changed);
                         }
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -9481,14 +9457,13 @@
                         case 0:
                             component = changed.component;
                             clearTimeout(component.addHandler);
-                            return [4 /*yield*/, getSpineData(component.resource)];
+                            return [4, getSpineData(component.resource)];
                         case 1:
                             spineData = _a.sent();
                             if (!spineData) {
                                 component.addHandler = setTimeout(function () {
                                     if (!component.destroied) {
                                         if (count === undefined) {
-                                            // 最大重试次数
                                             count = MaxRetryCount;
                                         }
                                         count--;
@@ -9500,13 +9475,12 @@
                                         }
                                     }
                                 }, 1000);
-                                return [2 /*return*/];
+                                return [2];
                             }
                             this.remove(changed);
                             container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
                             if (!container) {
-                                // console.warn('添加spine的container不存在');
-                                return [2 /*return*/];
+                                return [2];
                             }
                             armature = new pixispine.Spine(spineData);
                             this.armatures[changed.gameObject.id] = armature;
@@ -9526,31 +9500,25 @@
                                     console.log(e);
                                 }
                             }
-                            // @ts-ignore
                             component.emit('loaded', { resource: component.resource });
                             armature.state.addListener({
-                                // @ts-ignore
                                 start: function (track, event) {
                                     component.emit('start', { track: track, name: track.animation.name });
                                 },
-                                // @ts-ignore
                                 complete: function (track, event) {
                                     component.emit('complete', { track: track, name: track.animation.name });
                                 },
-                                // @ts-ignore
                                 interrupt: function (track, event) {
                                     component.emit('interrupt', { track: track, name: track.animation.name });
                                 },
-                                end: function (track, // @ts-ignore
-                                event) {
+                                end: function (track, event) {
                                     component.emit('end', { track: track, name: track.animation.name });
                                 },
                                 event: function (track, event) {
-                                    // @ts-ignore
                                     component.emit('event', track, event);
                                 },
                             });
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });

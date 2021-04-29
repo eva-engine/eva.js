@@ -83,7 +83,7 @@
         HIT_AREA_TYPE["Rect"] = "Rect";
         HIT_AREA_TYPE["RoundedRect"] = "RoundedRect";
     })(exports.HIT_AREA_TYPE || (exports.HIT_AREA_TYPE = {}));
-    var Event$1 = /** @class */ (function (_super) {
+    var Event$1 = (function (_super) {
         __extends(Event, _super);
         function Event() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -111,7 +111,7 @@
         RoundedRect: ['x', 'y', 'width', 'height', 'radius'],
         Polygon: ['paths'],
     };
-    var Event = /** @class */ (function (_super) {
+    var Event = (function (_super) {
         __extends(Event, _super);
         function Event() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -147,7 +147,6 @@
                 component.emit('tap', {
                     stopPropagation: function () { return e.stopPropagation(); },
                     data: {
-                        // @ts-ignore
                         pointerId: e.data.pointerId,
                         position: {
                             x: e.data.global.x,
@@ -161,7 +160,6 @@
                 component.emit('touchstart', {
                     stopPropagation: function () { return e.stopPropagation(); },
                     data: {
-                        // @ts-ignore
                         pointerId: e.data.pointerId,
                         position: {
                             x: e.data.global.x,
@@ -175,7 +173,6 @@
                 component.emit('touchmove', {
                     stopPropagation: function () { return e.stopPropagation(); },
                     data: {
-                        // @ts-ignore
                         pointerId: e.data.pointerId,
                         position: {
                             x: e.data.global.x,
@@ -189,7 +186,6 @@
                 component.emit('touchend', {
                     stopPropagation: function () { return e.stopPropagation(); },
                     data: {
-                        // @ts-ignore
                         pointerId: e.data.pointerId,
                         position: {
                             x: e.data.global.x,
@@ -203,7 +199,6 @@
                 component.emit('touchendoutside', {
                     stopPropagation: function () { return e.stopPropagation(); },
                     data: {
-                        // @ts-ignore
                         pointerId: e.data.pointerId,
                         position: {
                             x: e.data.global.x,
@@ -217,7 +212,6 @@
                 component.emit('touchcancel', {
                     stopPropagation: function () { return e.stopPropagation(); },
                     data: {
-                        // @ts-ignore
                         pointerId: e.data.pointerId,
                         position: {
                             x: e.data.global.x,

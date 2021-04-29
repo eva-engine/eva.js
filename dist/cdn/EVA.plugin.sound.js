@@ -90,11 +90,10 @@
         throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
-    var SoundSystem = /** @class */ (function (_super) {
+    var SoundSystem = (function (_super) {
         __extends(SoundSystem, _super);
         function SoundSystem(obj) {
             var _this = _super.call(this) || this;
-            /** 是否和游戏同步暂停和启动 */
             _this.autoPauseAndStart = true;
             _this.components = [];
             _this.pausedComponents = [];
@@ -139,23 +138,16 @@
             enumerable: false,
             configurable: true
         });
-        /**
-         * 恢复播放所有被暂停的音频
-         */
         SoundSystem.prototype.resumeAll = function () {
             var _this = this;
             var handleResume = function () {
                 _this.pausedComponents.forEach(function (component) {
                     component.play();
                 });
-                // 清理之前缓存的暂停列表
                 _this.pausedComponents = [];
             };
             this.ctx.resume().then(handleResume, handleResume);
         };
-        /**
-         * 暂停所有正在播放的音频
-         */
         SoundSystem.prototype.pauseAll = function () {
             var _this = this;
             this.components.forEach(function (component) {
@@ -166,24 +158,15 @@
             });
             this.ctx.suspend().then();
         };
-        /**
-         * 停止所有正在播放的音频
-         */
         SoundSystem.prototype.stopAll = function () {
             this.components.forEach(function (component) {
                 if (component.playing) {
                     component.stop();
                 }
             });
-            // 清理之前缓存的暂停列表
             this.pausedComponents = [];
             this.ctx.suspend().then();
         };
-        /**
-         * System 初始化用，可以配置参数，游戏未开始
-         *
-         * System init, set params, game is not begain
-         */
         SoundSystem.prototype.init = function () {
             this.setupAudioContext();
         };
@@ -204,32 +187,18 @@
                 finally { if (e_1) throw e_1.error; }
             }
         };
-        /**
-         * 游戏开始和游戏暂停后开始播放的时候调用。
-         *
-         * Called while the game to play when game pause.
-         */
         SoundSystem.prototype.onPlay = function () {
             if (!this.autoPauseAndStart) {
                 return;
             }
             this.resumeAll();
         };
-        /**
-         * 游戏暂停的时候调用。
-         *
-         * Called while the game paused.
-         */
         SoundSystem.prototype.onPause = function () {
             if (!this.autoPauseAndStart) {
                 return;
             }
             this.pauseAll();
         };
-        /**
-         * System 被销毁的时候调用。
-         * Called while the system be destroyed.
-         */
         SoundSystem.prototype.onDestroy = function () {
             this.components.forEach(function (component) {
                 component.onDestroy();
@@ -246,12 +215,12 @@
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     if (changed.componentName !== 'Sound') {
-                        return [2 /*return*/];
+                        return [2];
                     }
                     if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
                         this.add(changed);
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -309,13 +278,13 @@
                             _c.trys.push([1, 5, , 6]);
                             config = component.config;
                             component.state = 'loading';
-                            return [4 /*yield*/, eva_js.resource.getResource(config.resource)];
+                            return [4, eva_js.resource.getResource(config.resource)];
                         case 2:
                             audio = _c.sent();
-                            if (!!this.audioBufferCache[audio.name]) return [3 /*break*/, 4];
+                            if (!!this.audioBufferCache[audio.name]) return [3, 4];
                             _a = this.audioBufferCache;
                             _b = audio.name;
-                            return [4 /*yield*/, this.decodeAudioData(audio.data.audio, audio.name)];
+                            return [4, this.decodeAudioData(audio.data.audio, audio.name)];
                         case 3:
                             _a[_b] = _c.sent();
                             _c.label = 4;
@@ -325,15 +294,15 @@
                                 component.systemDestination = this.gainNode;
                                 component.onload(this.audioBufferCache[audio.name]);
                             }
-                            return [3 /*break*/, 6];
+                            return [3, 6];
                         case 5:
                             error_1 = _c.sent();
                             console.error(error_1);
                             if (this.onError) {
                                 this.onError(error_1);
                             }
-                            return [3 /*break*/, 6];
-                        case 6: return [2 /*return*/];
+                            return [3, 6];
+                        case 6: return [2];
                     }
                 });
             });
@@ -378,7 +347,7 @@
         return SoundSystem;
     }(eva_js.System));
 
-    var Sound = /** @class */ (function (_super) {
+    var Sound = (function (_super) {
         __extends(Sound, _super);
         function Sound() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -392,7 +361,6 @@
                 seek: 0,
             };
             _this.playTime = 0;
-            // @ts-ignore
             _this.startTime = 0;
             _this.duration = 0;
             _this.actionQueue = [];
@@ -462,7 +430,6 @@
                 if (_this.config.onEnd) {
                     _this.config.onEnd();
                 }
-                // 非交互事件播放完成需要销毁资源
                 if (_this.playing) {
                     _this.destroySource();
                 }
