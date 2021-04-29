@@ -27,41 +27,15 @@ export declare class ContainerManager {
 }
 
 export declare class Renderer extends System {
-    /**
-     * Renderer name
-     */
     name: string;
-    /**
-     * currentGame
-     */
     game: Game;
-    /**
-     * observer component props info
-     */
     static observerInfo: PureObserverInfo;
-    /**
-     * observer component props info
-     */
     observerInfo: PureObserverInfo;
-    /**
-     * containerManager
-     */
     containerManager: ContainerManager;
     rendererManager: RendererManager;
     constructor();
     init?(arg?: any): void;
-    /**
-     * 当监听的属性变化时候调用
-     *
-     * called while the observed component props change.
-     */
     componentChanged?(changed: ComponentChanged): void;
-    /**
-     * 每帧调用
-     *
-     * called by every loop
-     * @param gameObject gameObject
-     */
     rendererUpdate?(gameObject: GameObject): void;
     update(): void;
 }

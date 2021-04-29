@@ -78,7 +78,7 @@
         }
     }
 
-    var Img$1 = /** @class */ (function (_super) {
+    var Img$1 = (function (_super) {
         __extends(Img, _super);
         function Img() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -112,7 +112,7 @@
             instance.destroy(true);
         }
     });
-    var Img = /** @class */ (function (_super) {
+    var Img = (function (_super) {
         __extends(Img, _super);
         function Img() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -137,9 +137,9 @@
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if (!(changed.componentName === 'Img')) return [3 /*break*/, 4];
+                            if (!(changed.componentName === 'Img')) return [3, 4];
                             component = changed.component;
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3 /*break*/, 1];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3, 1];
                             sprite_1 = new rendererAdapter.Sprite(null);
                             eva_js.resource.getResource(component.resource).then(function (_a) {
                                 var instance = _a.instance;
@@ -152,17 +152,17 @@
                             this.containerManager
                                 .getContainer(changed.gameObject.id)
                                 .addChildAt(sprite_1.sprite, 0);
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 1:
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3 /*break*/, 3];
-                            return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3, 3];
+                            return [4, eva_js.resource.getResource(component.resource)];
                         case 2:
                             instance = (_a.sent()).instance;
                             if (!instance) {
                                 console.error("GameObject:" + changed.gameObject.name + "'s Img resource load error");
                             }
                             this.imgs[changed.gameObject.id].image = instance;
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 3:
                             if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                                 sprite = this.imgs[changed.gameObject.id];
@@ -172,7 +172,7 @@
                                 delete this.imgs[changed.gameObject.id];
                             }
                             _a.label = 4;
-                        case 4: return [2 /*return*/];
+                        case 4: return [2];
                     }
                 });
             });

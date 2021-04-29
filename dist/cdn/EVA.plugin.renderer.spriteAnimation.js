@@ -90,7 +90,7 @@
         throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
-    var SpriteAnimation$1 = /** @class */ (function (_super) {
+    var SpriteAnimation$1 = (function (_super) {
         __extends(SpriteAnimation, _super);
         function SpriteAnimation() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -216,7 +216,7 @@
             finally { if (e_2) throw e_2.error; }
         }
     });
-    var SpriteAnimation = /** @class */ (function (_super) {
+    var SpriteAnimation = (function (_super) {
         __extends(SpriteAnimation, _super);
         function SpriteAnimation() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -242,11 +242,11 @@
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if (!(changed.componentName === 'SpriteAnimation')) return [3 /*break*/, 7];
+                            if (!(changed.componentName === 'SpriteAnimation')) return [3, 7];
                             component = changed.component;
                             this.autoPlay[changed.gameObject.id] = component.autoPlay;
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3 /*break*/, 2];
-                            return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3, 2];
+                            return [4, eva_js.resource.getResource(component.resource)];
                         case 1:
                             frames_1 = (_a.sent()).instance;
                             if (!frames_1) {
@@ -257,14 +257,14 @@
                                 id: changed.gameObject.id,
                                 component: component,
                             });
-                            return [3 /*break*/, 7];
+                            return [3, 7];
                         case 2:
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3 /*break*/, 6];
-                            if (!(changed.prop && changed.prop.prop[0] === 'speed')) return [3 /*break*/, 3];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3, 6];
+                            if (!(changed.prop && changed.prop.prop[0] === 'speed')) return [3, 3];
                             this.animates[changed.gameObject.id].speed =
                                 1000 / 60 / component.speed;
-                            return [3 /*break*/, 5];
-                        case 3: return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            return [3, 5];
+                        case 3: return [4, eva_js.resource.getResource(component.resource)];
                         case 4:
                             frames_2 = (_a.sent()).instance;
                             if (!frames_2) {
@@ -276,13 +276,13 @@
                                 component: component,
                             });
                             _a.label = 5;
-                        case 5: return [3 /*break*/, 7];
+                        case 5: return [3, 7];
                         case 6:
                             if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                                 this.remove(changed.gameObject.id);
                             }
                             _a.label = 7;
-                        case 7: return [2 /*return*/];
+                        case 7: return [2];
                     }
                 });
             });

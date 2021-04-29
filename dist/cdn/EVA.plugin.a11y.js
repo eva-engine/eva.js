@@ -101,11 +101,6 @@
         throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
-    /**
-     * 生成唯一的标识符
-     * @param len 长度
-     * @param radix 基
-     */
     function uuid(len) {
         var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
         var uuid = [];
@@ -114,11 +109,6 @@
             uuid[i] = chars[0 | (Math.random() * radix)];
         return uuid.join('');
     }
-    /**
-     * 设置 dom 样式
-     * @param div 需要设置样式的dom元素
-     * @param style 样式属性
-     */
     var setStyle = function (element, style) {
         var width = style.width, height = style.height, position = style.position, _a = style.left, left = _a === void 0 ? 0 : _a, _b = style.top, top = _b === void 0 ? 0 : _b, zIndex = style.zIndex, pointerEvents = style.pointerEvents, background = style.background;
         element.style.width = width + "px";
@@ -142,21 +132,8 @@
         element.style.webkitTransformOrigin = 'left top';
     };
 
-    var A11y = /** @class */ (function (_super) {
+    var A11y = (function (_super) {
         __extends(A11y, _super);
-        /**
-         * 无障碍组件构造函数
-         * @param param interactive 默认为 false，如果游戏对象可交互，传入 true
-         * @example
-         * // 为游戏对象提供朗读能力
-         * new A11y({hint: '这是一个div'})
-         * // 游戏对象有事件，传入 event 对象
-         * new A11y({hint: '点击事件对象', event: event})
-         * // 无障碍属性
-         * new A11y({hint:'按钮', role: 'button', state: {aria-hidden="true"}})
-         * // 自定义属性
-         * new A11y({hint: '自定义属性', attr: {key: '1'}})
-         */
         function A11y(param) {
             var _this = _super.call(this) || this;
             Object.assign(_this, param);
@@ -210,25 +187,16 @@
         A11yActivate[A11yActivate["DISABLE"] = 1] = "DISABLE";
         A11yActivate[A11yActivate["CHECK"] = 2] = "CHECK";
     })(exports.A11yActivate || (exports.A11yActivate = {}));
-    /**
-     * 无障碍 DOM 的指针事件
-     */
     var PointerEvents;
     (function (PointerEvents) {
         PointerEvents["NONE"] = "none";
         PointerEvents["AUTO"] = "auto";
     })(PointerEvents || (PointerEvents = {}));
-    /**
-     * 无障碍 DOM 层的样式
-     */
     var MaskBackground;
     (function (MaskBackground) {
         MaskBackground["DEBUG"] = "rgba(255,0,0,0.5)";
         MaskBackground["NONE"] = "transparent";
     })(MaskBackground || (MaskBackground = {}));
-    /**
-     * 无障碍 DOM 的类型
-     */
     var ElementType;
     (function (ElementType) {
         ElementType["BUTTON"] = "button";
@@ -258,22 +226,8 @@
             });
         });
     };
-    var A11ySystem = /** @class */ (function (_super) {
+    var A11ySystem = (function (_super) {
         __extends(A11ySystem, _super);
-        /**
-         *
-         * @param opt
-         */
-        /**
-         * 无障碍插件初始化函数
-         * @param opt 无障碍插件选项
-         * @param opt.activate 是否开启无障碍能力，默认为自动根据系统读屏能力进行开启 AUTO | ENABLE | DISABLE
-         * @example
-         * // 开启调试，无障碍区域会显示红色透明背景
-         * new A11ySystem({debug: true})
-         * // 禁用无障碍
-         * new A11ySystem({activate: A11yActivate.DISABLE})
-         */
         function A11ySystem(opt) {
             var _this = _super.call(this, opt) || this;
             _this.cache = new Map();
@@ -327,37 +281,36 @@
                             this.delay = delay;
                             _d = activate;
                             switch (_d) {
-                                case exports.A11yActivate.CHECK: return [3 /*break*/, 1];
-                                case exports.A11yActivate.DISABLE: return [3 /*break*/, 3];
-                                case exports.A11yActivate.ENABLE: return [3 /*break*/, 4];
+                                case exports.A11yActivate.CHECK: return [3, 1];
+                                case exports.A11yActivate.DISABLE: return [3, 3];
+                                case exports.A11yActivate.ENABLE: return [3, 4];
                             }
-                            return [3 /*break*/, 5];
+                            return [3, 5];
                         case 1:
                             _e = this;
-                            return [4 /*yield*/, checkA11yOpen()];
+                            return [4, checkA11yOpen()];
                         case 2:
                             _e.activate = _f.sent();
-                            return [3 /*break*/, 5];
+                            return [3, 5];
                         case 3:
                             this.activate = false;
-                            return [3 /*break*/, 5];
+                            return [3, 5];
                         case 4:
                             this.activate = true;
-                            return [3 /*break*/, 5];
+                            return [3, 5];
                         case 5:
                             this.debug = opt.debug || false;
                             if (this.debug) {
                                 this.activate = true;
                             }
                             if (!this.activate)
-                                return [2 /*return*/];
+                                return [2];
                             div = document.createElement('div');
                             this.div = div;
-                            // 如果存在父容器，则渲染这个 div，子元素则会相对这个 div 进行定位，否则直接相对于 body 进行定位
                             if (this.game.canvas.parentNode) {
                                 this.game.canvas.parentNode.appendChild(this.div);
                             }
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });
@@ -376,13 +329,11 @@
             }
         };
         A11ySystem.prototype.getRenderRect = function () {
-            // @ts-ignore
             var params = (this.game.getSystem(pluginRenderer.RendererSystem) || { width: 300, height: 300 }).params;
             var renderHeight = params.height, renderWidth = params.width;
             return { renderWidth: renderWidth, renderHeight: renderHeight };
         };
         A11ySystem.prototype.getCanvasBoundingClientRect = function () {
-            // 渲染画布相对于视口的实际宽高以及位置，实际的像素
             var _a = this.game.canvas.getBoundingClientRect(), width = _a.width, height = _a.height, left = _a.left, top = _a.top;
             return { width: width, height: height, left: left, top: top };
         };
@@ -390,7 +341,6 @@
             var _this = this;
             var pageXOffset = window.pageXOffset, pageYOffset = window.pageYOffset;
             var _a = this.getCanvasBoundingClientRect(), width = _a.width, height = _a.height, left = _a.left, top = _a.top;
-            // 父容器位置
             var style = {
                 width: width,
                 height: height,
@@ -402,7 +352,6 @@
                 background: MaskBackground.NONE,
             };
             setStyle(this.div, style);
-            // 给父容器设置捕获事件，用于监听事件坐标
             this.div.addEventListener('click', function (e) {
                 var currentTarget = e.currentTarget;
                 var _a = currentTarget.getBoundingClientRect(), left = _a.left, top = _a.top;
@@ -411,9 +360,6 @@
                 _this.eventPosition = { x: x, y: y };
             }, true);
         };
-        /**
-         * 监听插件更新
-         */
         A11ySystem.prototype.update = function () {
             return __awaiter(this, void 0, void 0, function () {
                 var changes, changes_1, changes_1_1, changed;
@@ -421,7 +367,7 @@
                 return __generator(this, function (_b) {
                     changes = this.componentObserver.clear();
                     if (!this.activate) {
-                        return [2 /*return*/];
+                        return [2];
                     }
                     try {
                         for (changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
@@ -449,7 +395,7 @@
                         }
                         finally { if (e_1) throw e_1.error; }
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -462,10 +408,6 @@
             element && this.div.removeChild(element);
             this.cache.delete(a11yId);
         };
-        /**
-         * 监听组件被添加至游戏对象
-         * @param changed 改变的组件
-         */
         A11ySystem.prototype.add = function (changed) {
             var _this = this;
             if (!this.activate)
@@ -495,7 +437,6 @@
                 }
             }, delay || this.delay);
         };
-        // 监听 scene 改变
         A11ySystem.prototype.transformChange = function (changed) {
             var component = changed.component;
             var gameObject = changed.gameObject;
@@ -504,26 +445,16 @@
                 return;
             var a11yId = a11yComponent.a11yId;
             if (!component.inScene) {
-                // 监听 scene 删除游戏对象
                 var dom = this.div.querySelector("#" + a11yId);
                 dom && this.div.removeChild(dom);
-                // this.cache.delete(a11yId)
             }
             else {
-                // 监听 scene add
-                // this.div.appendChild(this.cache)
                 if (this.cache.has(a11yId)) {
                     var addDom = this.cache.get(a11yId);
                     addDom && this.div.appendChild(addDom);
                 }
             }
         };
-        /**
-         * 为无障碍组件设置监听事件
-         * @param element DOM 元素
-         * @param event 事件组件对象
-         * @param gameObject 游戏对象
-         */
         A11ySystem.prototype.setEvent = function (element, event, gameObject, id) {
             if (!event) {
                 return;
@@ -555,12 +486,6 @@
             var element = this.cache.get(a11yId);
             element && element.removeEventListener('click', func);
         };
-        /**
-         * 设置无障碍属性标签
-         * @param element DOM 元素
-         * @param hint 无障碍朗读文字
-         * @param interactive 是否可交互
-         */
         A11ySystem.prototype.setA11yAttr = function (element, component) {
             var e_2, _a, e_3, _b, e_4, _c;
             var hint = component.hint, _d = component.props, props = _d === void 0 ? {} : _d, _e = component.state, state = _e === void 0 ? {} : _e, role = component.role, id = component.a11yId;
@@ -568,7 +493,6 @@
             element.setAttribute('role', realRole);
             element.setAttribute('aria-label', hint);
             element.id = id;
-            // 这里兼容
             var ariaProps = Object.keys(props);
             try {
                 for (var ariaProps_1 = __values(ariaProps), ariaProps_1_1 = ariaProps_1.next(); !ariaProps_1_1.done; ariaProps_1_1 = ariaProps_1.next()) {
@@ -615,19 +539,8 @@
                 finally { if (e_4) throw e_4.error; }
             }
         };
-        /**
-         * 将无障碍元素设置到对应的位置
-         * @param element DOM 元素
-         * @param transform 位置属性
-         */
         A11ySystem.prototype.setPosition = function (element, transform) {
-            // 相对画布定位
-            // const { x: anchorX, y: anchorY } = transform.anchor
-            // 游戏对象的宽高
             var _a = transform.size, width = _a.width, height = _a.height;
-            // position
-            // const { x: positionX, y: positionY } = transform.position
-            // 设置无障碍 DOM 的样式，龙骨动画默认 2px
             var style = {
                 width: width === 0 ? 1 : width * this.ratioX,
                 height: height === 0 ? 1 : height * this.ratioY,
@@ -638,7 +551,6 @@
             };
             var transformProps = __assign({}, transform);
             setStyle(element, style);
-            // 调整 DOM 的位置
             setTransform(element, transformProps, this.ratioX, this.ratioY);
         };
         A11ySystem.prototype.onDestroy = function () {

@@ -52,6 +52,7 @@ export declare class DragonBoneSystem extends Renderer {
     renderSystem: RendererSystem;
     rendererManager: RendererManager;
     containerManager: ContainerManager;
+    private isRemovedMap;
     init(): void;
     componentChanged(changed: ComponentChanged): Promise<void>;
     add(changed: ComponentChanged): Promise<void>;
