@@ -4,6 +4,10 @@ import { ContainerManager } from '@eva/plugin-renderer';
 import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
 
+declare interface ExtendOptions extends IOptions {
+    autoStart: boolean;
+}
+
 declare interface IExpandOpts {
     repeats?: number;
     infinite?: boolean;
@@ -15,10 +19,6 @@ declare interface IExpandOpts {
             [key: string]: any;
         };
     }>;
-}
-
-declare interface IExtendOptions extends IOptions {
-    autoStart: boolean;
 }
 
 declare interface IOptions {
@@ -34,7 +34,7 @@ export declare class Lottie extends Component {
     static componentName: string;
     static application: any;
     anim: any;
-    options: IExtendOptions;
+    options: ExtendOptions;
     loadStatus: boolean;
     firstPlay: () => void | null;
     slotCache: {
@@ -60,12 +60,6 @@ export declare class LottieSystem extends Renderer {
     rendererManager: RendererManager;
     containerManager: ContainerManager;
     managerLife: string[];
-    /**
-     * System 初始化用，可以配置参数，游戏未开始
-     *
-     * System init, set params, game is not begain
-     * @param param init params
-     */
     init(): void;
     componentChanged(changed: ComponentChanged): Promise<void>;
     add(changed: ComponentChanged): Promise<void>;

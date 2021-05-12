@@ -123,7 +123,7 @@
         MASK_TYPE["Img"] = "Img";
         MASK_TYPE["Sprite"] = "Sprite";
     })(exports.MASK_TYPE || (exports.MASK_TYPE = {}));
-    var Mask$1 = /** @class */ (function (_super) {
+    var Mask$1 = (function (_super) {
         __extends(Mask, _super);
         function Mask() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -151,7 +151,7 @@
         return Mask;
     }(eva_js.Component));
 
-    var resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
+    var resourceKeySplit = '_s|r|c_';
     var propertyForGraphics = {
         Circle: ['x', 'y', 'radius'],
         Ellipse: ['x', 'y', 'width', 'height'],
@@ -176,7 +176,7 @@
         MASK_TYPE["Img"] = "Img";
         MASK_TYPE["Sprite"] = "Sprite";
     })(MASK_TYPE || (MASK_TYPE = {}));
-    var Mask = /** @class */ (function (_super) {
+    var Mask = (function (_super) {
         __extends(Mask, _super);
         function Mask() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -336,10 +336,10 @@
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 2, , 3]);
-                            return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            return [4, eva_js.resource.getResource(component.resource)];
                         case 1:
                             res = _a.sent();
-                            return [3 /*break*/, 3];
+                            return [3, 3];
                         case 2:
                             _a.sent();
                             throw new Error('mask resource load error');
@@ -356,7 +356,7 @@
                             sprite.sprite.height = component.style.height;
                             sprite.sprite.position.x = component.style.x;
                             sprite.sprite.position.y = component.style.y;
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });

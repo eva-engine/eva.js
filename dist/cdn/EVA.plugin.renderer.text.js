@@ -78,7 +78,7 @@
         }
     }
 
-    var Text$1 = /** @class */ (function (_super) {
+    var Text$1 = (function (_super) {
         __extends(Text, _super);
         function Text() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -112,7 +112,7 @@
         return Text;
     }(eva_js.Component));
 
-    var Text = /** @class */ (function (_super) {
+    var Text = (function (_super) {
         __extends(Text, _super);
         function Text() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -129,7 +129,7 @@
                 var component, text;
                 return __generator(this, function (_a) {
                     if (changed.componentName !== 'Text')
-                        return [2 /*return*/];
+                        return [2];
                     if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
                         component = changed.component;
                         text = new rendererAdapter.Text(component.text, component.style);
@@ -152,7 +152,7 @@
                         this.change(changed);
                         this.setSize(changed);
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };

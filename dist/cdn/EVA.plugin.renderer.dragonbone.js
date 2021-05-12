@@ -78,7 +78,7 @@
         }
     }
 
-    var DragonBone$2 = /** @class */ (function (_super) {
+    var DragonBone$2 = (function (_super) {
         __extends$1(DragonBone, _super);
         function DragonBone() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -19274,7 +19274,7 @@
 
     var dragonBones$1 = dragonBones;
 
-    var DragonBone$1 = /** @class */ (function () {
+    var DragonBone$1 = (function () {
         function DragonBone(_a) {
             var armatureName = _a.armatureName;
             this.factory = dragonBones$1.PixiFactory.factory;
@@ -19306,13 +19306,14 @@
         factory.parseDragonBonesData(data.ske);
         factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image));
     });
-    var DragonBone = /** @class */ (function (_super) {
+    var DragonBone = (function (_super) {
         __extends$1(DragonBone, _super);
         function DragonBone() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.name = 'DragonBone';
             _this.armatures = {};
             _this.autoPlay = {};
+            _this.isRemovedMap = new Map();
             return _this;
         }
         DragonBone.prototype.init = function () {
@@ -19339,7 +19340,7 @@
                             this.remove(changed);
                         }
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -19350,9 +19351,14 @@
                     switch (_a.label) {
                         case 0:
                             component = changed.component;
-                            return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            this.isRemovedMap.delete(component);
+                            return [4, eva_js.resource.getResource(component.resource)];
                         case 1:
                             _a.sent();
+                            if (this.isRemovedMap.get(component)) {
+                                this.isRemovedMap.delete(component);
+                                return [2];
+                            }
                             armature = new DragonBone$1({
                                 armatureName: component.armatureName,
                             });
@@ -19369,7 +19375,7 @@
                             for (key in events) {
                                 _loop_1(key);
                             }
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });
@@ -19384,6 +19390,10 @@
         };
         DragonBone.prototype.remove = function (changed) {
             var armature = this.armatures[changed.gameObject.id];
+            if (!armature) {
+                this.isRemovedMap.set(changed.component, true);
+                return;
+            }
             this.autoPlay[changed.gameObject.id] =
                 armature.armature.animation.isPlaying;
             this.renderSystem.containerManager

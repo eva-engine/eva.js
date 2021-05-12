@@ -78,7 +78,7 @@
         }
     }
 
-    var Graphics$1 = /** @class */ (function (_super) {
+    var Graphics$1 = (function (_super) {
         __extends(Graphics, _super);
         function Graphics() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -92,7 +92,7 @@
         return Graphics;
     }(eva_js.Component));
 
-    var Graphics = /** @class */ (function (_super) {
+    var Graphics = (function (_super) {
         __extends(Graphics, _super);
         function Graphics() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -116,7 +116,7 @@
                             .getContainer(changed.gameObject.id)
                             .removeChild(changed.component.graphics);
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };

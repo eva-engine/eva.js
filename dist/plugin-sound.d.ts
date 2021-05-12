@@ -48,7 +48,6 @@ export declare class SoundSystem extends System {
     static systemName: string;
     private ctx;
     private gainNode;
-    /** 是否和游戏同步暂停和启动 */
     private autoPauseAndStart;
     private onError;
     private components;
@@ -61,41 +60,13 @@ export declare class SoundSystem extends System {
     set volume(v: number);
     get audioLocked(): boolean;
     constructor(obj?: SoundSystemParams);
-    /**
-     * 恢复播放所有被暂停的音频
-     */
     resumeAll(): void;
-    /**
-     * 暂停所有正在播放的音频
-     */
     pauseAll(): void;
-    /**
-     * 停止所有正在播放的音频
-     */
     stopAll(): void;
-    /**
-     * System 初始化用，可以配置参数，游戏未开始
-     *
-     * System init, set params, game is not begain
-     */
     init(): void;
     update(): void;
-    /**
-     * 游戏开始和游戏暂停后开始播放的时候调用。
-     *
-     * Called while the game to play when game pause.
-     */
     onPlay(): void;
-    /**
-     * 游戏暂停的时候调用。
-     *
-     * Called while the game paused.
-     */
     onPause(): void;
-    /**
-     * System 被销毁的时候调用。
-     * Called while the system be destroyed.
-     */
     onDestroy(): void;
     componentChanged(changed: ComponentChanged): Promise<void>;
     private setupAudioContext;

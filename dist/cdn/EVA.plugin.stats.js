@@ -44,7 +44,7 @@
         return __assign.apply(this, arguments);
     };
 
-    var StatsComponent = /** @class */ (function (_super) {
+    var StatsComponent = (function (_super) {
         __extends(StatsComponent, _super);
         function StatsComponent() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -56,9 +56,6 @@
         return StatsComponent;
     }(eva_js.Component));
 
-    /**
-     * @author mrdoob / http://mrdoob.com/
-     */
     var Stats = function (style) {
         style = __assign({ width: 20, height: 12, x: 0, y: 0 }, style);
         var width = style.width, height = style.height, x = style.x, y = style.y;
@@ -75,7 +72,6 @@
         }
         function showPanel(id) {
             for (var i = 0; i < container.children.length; i++) {
-                // @ts-ignore
                 container.children[i].style.display = i === id ? 'block' : 'none';
             }
             mode = id;
@@ -84,7 +80,6 @@
         var fpsPanel = addPanel(Stats.Panel('FPS', '#0ff', '#002'));
         var msPanel = addPanel(Stats.Panel('MS', '#0f0', '#020'));
         var memPanel;
-        // @ts-ignore
         if (self.performance && self.performance.memory) {
             memPanel = addPanel(Stats.Panel('MB', '#f08', '#201'));
         }
@@ -106,7 +101,6 @@
                     prevTime = time;
                     frames = 0;
                     if (memPanel) {
-                        // @ts-ignore
                         var memory = performance.memory;
                         memPanel.update(memory.usedJSHeapSize / 1048576, memory.jsHeapSizeLimit / 1048576);
                     }
@@ -116,7 +110,6 @@
             update: function () {
                 beginTime = this.end();
             },
-            // Backwards Compatibility
             domElement: container,
             setMode: showPanel,
         };
@@ -160,7 +153,7 @@
         };
     };
 
-    var StatsSystem = /** @class */ (function (_super) {
+    var StatsSystem = (function (_super) {
         __extends(StatsSystem, _super);
         function StatsSystem() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -178,7 +171,7 @@
             this.component = this.game.scene.addComponent(new StatsComponent());
             this.stats = Stats(this.style);
             this.component.stats = this.stats;
-            this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+            this.stats.showPanel(0);
             document.body.appendChild(this.stats.dom);
         };
         StatsSystem.prototype.lateUpdate = function () {

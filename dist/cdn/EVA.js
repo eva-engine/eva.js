@@ -456,18 +456,6 @@
     }
     });
 
-    /**
-     * Get component name from component instance or Component class
-     * @param component - component instance or Component class
-     * @returns component' name
-     * @example
-     * ```typescript
-     * import { Transform } from 'eva.js'
-     *
-     * assert(getComponentName(Transform) === 'Transform')
-     * assert(getComponentName(new Transform()) === 'Transform')
-     * ```
-     */
     function getComponentName(component) {
         if (component instanceof Component) {
             return component.name;
@@ -476,20 +464,11 @@
             return component.componentName;
         }
     }
-    /**
-     * Component contain raw data apply to gameObject and how it interacts with the world
-     * @public
-     */
-    var Component = /** @class */ (function (_super) {
+    var Component = (function (_super) {
         __extends$1(Component, _super);
         function Component(params) {
             var _this = _super.call(this) || this;
-            /**
-             * Represents the status of the component, If component has started, the value is true
-             * @defaultValue false
-             */
             _this.started = false;
-            // @ts-ignore
             _this.name = _this.constructor.componentName;
             _this.__componentDefaultParams = params;
             return _this;
@@ -2518,7 +2497,6 @@
       return baseIsEqual(value, other);
     }
 
-    /** Observer event type */
     exports.OBSERVER_TYPE = void 0;
     (function (ObserverType) {
         ObserverType["ADD"] = "ADD";
@@ -2529,19 +2507,6 @@
     var systemInstance = {};
     var observerInfos = {};
     var componentProps = {};
-    /**
-     * Get the `ObjectCache` on `component` access by `keys`
-     * @example
-     * ```typescript
-     * expect(getObjectCache(testComponent, ['style', 'transform', 'scale'])).toMatchObject({
-     *   property: { scale: 1.1, rotation: 45 },
-     *   key: 'scale'
-     * })
-     * ```
-     * @param {Component} component
-     * @param {string[]} keys - access path to properties, such as ['style', 'transform', 'scale', 'x']
-     * @returns {ObservableItem}
-     */
     function getObjectCache(component, keys) {
         if (!objectCache[component.gameObject.id]) {
             objectCache[component.gameObject.id] = {};
@@ -2553,32 +2518,17 @@
         }
         var keyIndex = keys.length - 1;
         var property = component;
-        // FIXME: Bug is here, property[keys[i]] maybe undefined
         for (var i = 0; i < keyIndex; i++) {
             property = property[keys[i]];
         }
         cache[key] = { property: property, key: keys[keyIndex] };
         return cache[key];
     }
-    /**
-     * Remove property cache by component
-     * @remarks
-     * The component should added to a gameObject, otherwise there is no gameObject on component
-     * @param {Component} component - a component that has been added to gameObject
-     */
     function removeObjectCache(component) {
         if (component.gameObject) {
             delete objectCache[component.gameObject.id];
         }
     }
-    /**
-     * Add observe event to `componentObserver` on system
-     * @param {string} param0.systemName - system name
-     * @param {string} param0.componentName - compnent name
-     * @param {Component} param0.component - component instance
-     * @param {pureObserverProp} param0.prop - pure observer prop
-     * @param {ObserverType} param0.type - observer type
-     */
     function addObserver(_a) {
         var systemName = _a.systemName, componentName = _a.componentName, component = _a.component, prop = _a.prop, type = _a.type;
         systemInstance[systemName].componentObserver.add({
@@ -2609,14 +2559,6 @@
             }
         }
     }
-    /**
-     * Define property `key` for obj, make `key` observable
-     * @param {Object} param0.obj - object contains the 'key'
-     * @param {string} param0.key - the key will be observed
-     * @param {PureObserverProp} param0.prop
-     * @param {Component} param0.component
-     * @param {strng} param0.componentName
-     */
     function defineProperty(_a) {
         var e_1, _b;
         var obj = _a.obj, key = _a.key, prop = _a.prop, component = _a.component, componentName = _a.componentName;
@@ -2666,18 +2608,9 @@
             },
         });
     }
-    /**
-     * Return true if parameter is a component
-     * @param comp - any thing
-     * @returns {bool}
-     */
     function isComponent(comp) {
         return comp && comp.constructor && 'componentName' in comp.constructor;
     }
-    /**
-     * Collect observerInfo on system
-     * @param Systems - array of system or just a system
-     */
     function initObserver(Systems) {
         var e_2, _a, e_3, _b;
         var Ss = [];
@@ -2725,13 +2658,6 @@
             finally { if (e_2) throw e_2.error; }
         }
     }
-    /**
-     * Make component observerable
-     * @remarks
-     * Throw an error if component not added to a gameObject
-     * @param {Component} component
-     * @param {string} componentName - default value is `component.name`, it will be deprecated
-     */
     function observer(component, componentName) {
         var e_4, _a;
         if (componentName === void 0) { componentName = component.name; }
@@ -2765,11 +2691,6 @@
             finally { if (e_4) throw e_4.error; }
         }
     }
-    /**
-     * Push a `Add` event to componentObserver
-     * @param component
-     * @param componentName - default value is `component.name`, it will be deprecated
-     */
     function observerAdded(component, componentName) {
         if (componentName === void 0) { componentName = component.name; }
         for (var systemName in observerInfos) {
@@ -2784,11 +2705,6 @@
             }
         }
     }
-    /**
-     * Push a `Remove` event to componentObserver
-     * @param component
-     * @param componentName - default value is `component.name`, it will be deprecated
-     */
     function observerRemoved(component, componentName) {
         if (componentName === void 0) { componentName = component.name; }
         for (var systemName in observerInfos) {
@@ -2804,21 +2720,11 @@
         }
         removeObjectCache(component);
     }
-    /**
-     * Collect observerInfo from system
-     * @param system - system instance
-     * @param S - system constructor
-     */
     function setSystemObserver(system, S) {
         observerInfos[S.systemName] = S.observerInfo;
         systemInstance[S.systemName] = system;
     }
 
-    /**
-     * Collect property which react in Editor, such as EVA Design
-     * @param target - component instance
-     * @param propertyKey - property name
-     */
     function IDEProp(target, propertyKey) {
         if (!target.constructor.IDEProps) {
             target.constructor.IDEProps = [];
@@ -2826,16 +2732,13 @@
         target.constructor.IDEProps.push(propertyKey);
     }
 
-    /** Basic component for gameObject, See {@link TransformParams}  */
-    var Transform = /** @class */ (function (_super) {
+    var Transform = (function (_super) {
         __extends$1(Transform, _super);
         function Transform() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.name = 'Transform';
             _this._parent = null;
-            /** Whether this transform in a scene object */
             _this.inScene = false;
-            /** Child transform components */
             _this.children = [];
             _this.position = { x: 0, y: 0 };
             _this.size = { width: 0, height: 0 };
@@ -2846,10 +2749,6 @@
             _this.rotation = 0;
             return _this;
         }
-        /**
-         * Init component
-         * @param params - Transform init data
-         */
         Transform.prototype.init = function (params) {
             var e_1, _a;
             if (params === void 0) { params = {}; }
@@ -2870,9 +2769,6 @@
             this.rotation = params.rotation || this.rotation;
         };
         Object.defineProperty(Transform.prototype, "parent", {
-            /**
-             * Get parent of this component
-             */
             get: function () {
                 return this._parent;
             },
@@ -2887,13 +2783,6 @@
             enumerable: false,
             configurable: true
         });
-        /**
-         * Add Child Transform
-         * @remarks
-         * If `child` is already a child of this component, `child` will removed to the last of children list
-         * If `child` is already a child of other component, `child` will removed from its parent first
-         * @param child - child gameObject's transform component
-         */
         Transform.prototype.addChild = function (child) {
             if (child.parent === this) {
                 var index = this.children.findIndex(function (item) { return item === child; });
@@ -2905,10 +2794,6 @@
             child._parent = this;
             this.children.push(child);
         };
-        /**
-         * Remove child transform
-         * @param child - child gameObject's transform component
-         */
         Transform.prototype.removeChild = function (child) {
             var index = this.children.findIndex(function (item) { return item === child; });
             if (index > -1) {
@@ -2916,14 +2801,9 @@
                 child._parent = null;
             }
         };
-        /** Clear all child transform */
         Transform.prototype.clearChildren = function () {
             this.children.length = 0;
         };
-        /**
-         * component's name
-         * @readonly
-         */
         Transform.componentName = 'Transform';
         __decorate([
             IDEProp
@@ -2950,35 +2830,18 @@
     }(Component));
 
     var _id = 0;
-    /** Generate unique id for gameObject */
     function getId() {
         return ++_id;
     }
-    /**
-     * GameObject is a general purpose object. It consists of a unique id and components.
-     * @public
-     */
-    var GameObject = /** @class */ (function () {
-        /**
-         * Consruct a new gameObject
-         * @param name - the name of this gameObject
-         * @param obj - optional transform parameters for default Transform component
-         */
+    var GameObject = (function () {
         function GameObject(name, obj) {
-            /** A key-value map for components on this gameObject */
             this._componentCache = {};
-            /** Components apply to this gameObject */
             this.components = [];
             this._name = name;
             this.id = getId();
             this.addComponent(Transform, obj);
         }
         Object.defineProperty(GameObject.prototype, "transform", {
-            /**
-             * Get default transform component
-             * @returns transform component on this gameObject
-             * @readonly
-             */
             get: function () {
                 return this.getComponent(Transform.componentName);
             },
@@ -2986,11 +2849,6 @@
             configurable: true
         });
         Object.defineProperty(GameObject.prototype, "parent", {
-            /**
-             * Get parent gameObject
-             * @returns parent gameObject
-             * @readonly
-             */
             get: function () {
                 return (this.transform &&
                     this.transform.parent &&
@@ -3000,10 +2858,6 @@
             configurable: true
         });
         Object.defineProperty(GameObject.prototype, "name", {
-            /**
-             * Get the name of this gameObject
-             * @readonly
-             */
             get: function () {
                 return this._name;
             },
@@ -3011,11 +2865,6 @@
             configurable: true
         });
         Object.defineProperty(GameObject.prototype, "scene", {
-            /**
-             * Get the scene which this gameObject added on
-             * @returns scene
-             * @readonly
-             */
             get: function () {
                 return this._scene;
             },
@@ -3050,10 +2899,6 @@
             enumerable: false,
             configurable: true
         });
-        /**
-         * Add child gameObject
-         * @param gameObject - child gameobject
-         */
         GameObject.prototype.addChild = function (gameObject) {
             if (!gameObject || !gameObject.transform || gameObject === this)
                 return;
@@ -3066,10 +2911,6 @@
             gameObject.transform.parent = this.transform;
             gameObject.scene = this.scene;
         };
-        /**
-         * Remove child gameObject
-         * @param gameObject - child gameobject
-         */
         GameObject.prototype.removeChild = function (gameObject) {
             if (!(gameObject instanceof GameObject) ||
                 !gameObject.parent ||
@@ -3154,15 +2995,10 @@
                 return;
             }
         };
-        /**
-         * Remove this gameObject on its parent
-         * @returns return this gameObject
-         */
         GameObject.prototype.remove = function () {
             if (this.parent)
                 return this.parent.removeChild(this);
         };
-        /** Destory this gameObject */
         GameObject.prototype.destroy = function () {
             Array.from(this.transform.children).forEach(function (_a) {
                 var gameObject = _a.gameObject;
@@ -3178,29 +3014,10 @@
         return GameObject;
     }());
 
-    /**
-     * Management observe events
-     * @remarks
-     * See {@link System} for more details
-     * @public
-     */
-    var ComponentObserver = /** @class */ (function () {
+    var ComponentObserver = (function () {
         function ComponentObserver() {
-            /**
-             * Component property change events
-             * @defaultValue []
-             */
             this.events = [];
         }
-        /**
-         * Add event
-         * @remarks
-         * The same event will be placed last
-         * @param component - changed component
-         * @param prop - changed property on `component`
-         * @param type - change event type
-         * @param componentName - `component.name` this parameter will deprecated
-         */
         ComponentObserver.prototype.add = function (_a) {
             var component = _a.component, prop = _a.prop, type = _a.type, componentName = _a.componentName;
             if (type === exports.OBSERVER_TYPE.REMOVE) {
@@ -3222,22 +3039,16 @@
                 componentName: componentName,
             });
         };
-        /** Return change events */
         ComponentObserver.prototype.getChanged = function () {
             return this.events;
         };
         Object.defineProperty(ComponentObserver.prototype, "changed", {
-            /**
-             * Return change events
-             * @readonly
-             */
             get: function () {
                 return this.events;
             },
             enumerable: false,
             configurable: true
         });
-        /** Clear events */
         ComponentObserver.prototype.clear = function () {
             var events = this.events;
             this.events = [];
@@ -3246,20 +3057,13 @@
         return ComponentObserver;
     }());
 
-    /**
-     * Each System runs continuously and performs global actions on every Entity that possesses a Component of the same aspect as that System.
-     * @public
-     */
-    var System = /** @class */ (function () {
+    var System = (function () {
         function System(params) {
-            /** Represents the status of the component, if component has started, the value is true */
             this.started = false;
             this.componentObserver = new ComponentObserver();
             this.__systemDefaultParams = params;
-            // @ts-ignore
             this.name = this.constructor.systemName;
         }
-        /** Default destory method */
         System.prototype.destroy = function () {
             this.componentObserver = null;
             this.__systemDefaultParams = null;
@@ -3268,19 +3072,11 @@
         return System;
     }());
 
-    /** Default Ticker Options */
     var defaultOptions = {
         autoStart: true,
         frameRate: 60,
     };
-    /**
-     * Timeline tool
-     */
-    var Ticker = /** @class */ (function () {
-        /**
-         * @param autoStart - auto start game
-         * @param frameRate - game frame rate
-         */
+    var Ticker = (function () {
         function Ticker(options) {
             var _this = this;
             options = Object.assign({}, defaultOptions, options);
@@ -3304,7 +3100,6 @@
             }
             this.bindEvent();
         }
-        /** Main loop, all _tickers will called in this method */
         Ticker.prototype.update = function () {
             var e_1, _a;
             var time = Date.now();
@@ -3334,15 +3129,12 @@
                 this._lastTime = time;
             }
         };
-        /** Add ticker function */
         Ticker.prototype.add = function (fn) {
             this._tickers.add(fn);
         };
-        /** Remove ticker function */
         Ticker.prototype.remove = function (fn) {
             this._tickers.delete(fn);
         };
-        /** Start main loop */
         Ticker.prototype.start = function () {
             if (this._started) {
                 return;
@@ -3355,7 +3147,6 @@
             this._lastTime = Date.now();
             this._requestId = requestAnimationFrame(this._ticker);
         };
-        /** Pause main loop */
         Ticker.prototype.pause = function () {
             this._started = false;
             this._lastStopTime = Date.now();
@@ -3378,31 +3169,20 @@
         return Ticker;
     }());
 
-    /**
-     * Scene is a gameObject container
-     */
-    var Scene = /** @class */ (function (_super) {
+    var Scene = (function (_super) {
         __extends$1(Scene, _super);
         function Scene(name, obj) {
             var _this = _super.call(this, name, obj) || this;
             _this.gameObjects = [];
-            _this.scene = _this; // gameObject.scene = this
+            _this.scene = _this;
             return _this;
         }
-        /**
-         * Add gameObject
-         * @param gameObject - game object
-         */
         Scene.prototype.addGameObject = function (gameObject) {
             this.gameObjects.push(gameObject);
             if (gameObject.transform) {
                 gameObject.transform.inScene = true;
             }
         };
-        /**
-         * Remove gameObject
-         * @param gameObject - game object
-         */
         Scene.prototype.removeGameObject = function (gameObject) {
             var index = this.gameObjects.indexOf(gameObject);
             if (index === -1)
@@ -3412,9 +3192,6 @@
             }
             this.gameObjects.splice(index, 1);
         };
-        /**
-         * Destroy scene
-         */
         Scene.prototype.destroy = function () {
             this.scene = null;
             _super.prototype.destroy.call(this);
@@ -3439,11 +3216,9 @@
         }
         catch (e) {
             if (obj instanceof Component) {
-                // @ts-ignore
                 console.error(obj.constructor.componentName + " start error", e);
             }
             else {
-                // @ts-ignore
                 console.error(obj.constructor.systemName + " start error", e);
             }
         }
@@ -3604,20 +3379,15 @@
             finally { if (e_8) throw e_8.error; }
         }
     };
-    var Game = /** @class */ (function (_super) {
+    var Game = (function (_super) {
         __extends$1(Game, _super);
         function Game(_a) {
             var e_10, _b;
             var _c = _a === void 0 ? {} : _a, _d = _c.autoStart, autoStart = _d === void 0 ? true : _d, _e = _c.frameRate, frameRate = _e === void 0 ? 120 : _e, systems = _c.systems, _f = _c.needScene, needScene = _f === void 0 ? true : _f;
             var _this = _super.call(this) || this;
-            /**
-             * State of game
-             * @defaultValue false
-             */
             _this.playing = false;
             _this.started = false;
             _this.multiScenes = [];
-            /** Systems alled to this game */
             _this.systems = [];
             _this.ticker = new Ticker({
                 autoStart: false,
@@ -3648,9 +3418,6 @@
             return _this;
         }
         Object.defineProperty(Game.prototype, "scene", {
-            /**
-            * Get scene on this game
-            */
             get: function () {
                 return this._scene;
             },
@@ -3667,12 +3434,6 @@
             enumerable: false,
             configurable: true
         });
-        /**
-         * Add system
-         * @param S - system instance or system Class
-         * @typeParam T - system which extends base `System` class
-         * @typeparam U - type of system class
-         */
         Game.prototype.addSystem = function (S, obj) {
             var system;
             if (S instanceof Function) {
@@ -3700,16 +3461,11 @@
                 system.awake && system.awake();
             }
             catch (e) {
-                // @ts-ignore
                 console.error(system.constructor.systemName + " awake error", e);
             }
             this.systems.push(system);
             return system;
         };
-        /**
-         * Remove system from this game
-         * @param system - one of system instance / system Class or system name
-         */
         Game.prototype.removeSystem = function (system) {
             if (!system)
                 return;
@@ -3728,11 +3484,6 @@
                 this.systems.splice(index, 1);
             }
         };
-        /**
-         * Get system
-         * @param S - system class or system name
-         * @returns system instance
-         */
         Game.prototype.getSystem = function (S) {
             return this.systems.find(function (system) {
                 if (typeof S === 'string') {
@@ -3743,7 +3494,6 @@
                 }
             });
         };
-        /** Pause game */
         Game.prototype.pause = function () {
             if (this.playing === false) {
                 return;
@@ -3752,7 +3502,6 @@
             this.ticker.pause();
             this.triggerPause();
         };
-        /** Start game */
         Game.prototype.start = function () {
             if (this.playing === true) {
                 return;
@@ -3761,7 +3510,6 @@
             this.playing = true;
             this.started = true;
         };
-        /** Resume game */
         Game.prototype.resume = function () {
             if (this.playing === true) {
                 return;
@@ -3770,15 +3518,6 @@
             this.triggerResume();
             this.playing = true;
         };
-        /**
-         * add main render method to ticker
-         * @remarks
-         * the method added to ticker will called in each requestAnimationFrame,
-         * 1. call update method on all gameObject
-         * 2. call lastUpdate method on all gameObject
-         * 3. call update method on all system
-         * 4. call lastUpdate method on all system
-         */
         Game.prototype.initTicker = function () {
             var _this = this;
             this.ticker.add(function (e) {
@@ -3792,7 +3531,6 @@
                             system.update && system.update(e);
                         }
                         catch (e) {
-                            // @ts-ignore
                             console.error(system.constructor.systemName + " update error", e);
                         }
                     }
@@ -3811,7 +3549,6 @@
                             system.lateUpdate && system.lateUpdate(e);
                         }
                         catch (e) {
-                            // @ts-ignore
                             console.error(system.constructor.systemName + " lateUpdate error", e);
                         }
                     }
@@ -3825,7 +3562,6 @@
                 }
             });
         };
-        /** Call onResume method on all gameObject's, and then call onResume method on all system */
         Game.prototype.triggerResume = function () {
             var e_13, _a;
             gameObjectResume(this.gameObjects);
@@ -3836,7 +3572,6 @@
                         system.onResume && system.onResume();
                     }
                     catch (e) {
-                        // @ts-ignore
                         console.error(system.constructor.systemName + ", onResume error", e);
                     }
                 }
@@ -3849,7 +3584,6 @@
                 finally { if (e_13) throw e_13.error; }
             }
         };
-        /** Call onPause method on all gameObject */
         Game.prototype.triggerPause = function () {
             var e_14, _a;
             gameObjectPause(this.gameObjects);
@@ -3860,7 +3594,6 @@
                         system.onPause && system.onPause();
                     }
                     catch (e) {
-                        // @ts-ignore
                         console.error(system.constructor.systemName + ", onPause error", e);
                     }
                 }
@@ -3873,8 +3606,6 @@
                 finally { if (e_14) throw e_14.error; }
             }
         };
-        // TODO: call system destroy method
-        /** remove all system on this game */
         Game.prototype.destroySystems = function () {
             var e_15, _a;
             try {
@@ -3891,7 +3622,6 @@
                 finally { if (e_15) throw e_15.error; }
             }
         };
-        /** Destroy game instance */
         Game.prototype.destroy = function () {
             this.removeAllListeners();
             this.pause();
@@ -3920,10 +3650,6 @@
         return Game;
     }(eventemitter3));
 
-    /**
-     * Normailize system observer info
-     * @param obj - system observer info
-     */
     function componentObserver(observerInfo) {
         if (observerInfo === void 0) { observerInfo = {}; }
         return function (constructor) {
@@ -5116,7 +4842,7 @@
         return Loader;
     }());
 
-    var Progress = /** @class */ (function (_super) {
+    var Progress = (function (_super) {
         __extends$1(Progress, _super);
         function Progress(_a) {
             var resource = _a.resource, resourceTotal = _a.resourceTotal;
@@ -5152,7 +4878,6 @@
         return Progress;
     }(eventemitter3));
 
-    /** Load event */
     exports.LOAD_EVENT = void 0;
     (function (LOAD_EVENT) {
         LOAD_EVENT["START"] = "start";
@@ -5161,7 +4886,6 @@
         LOAD_EVENT["COMPLETE"] = "complete";
         LOAD_EVENT["ERROR"] = "error";
     })(exports.LOAD_EVENT || (exports.LOAD_EVENT = {}));
-    /** Resource type */
     exports.RESOURCE_TYPE = void 0;
     (function (RESOURCE_TYPE) {
         RESOURCE_TYPE["IMAGE"] = "IMAGE";
@@ -5190,24 +4914,14 @@
         audio: XhrLoadStrategy,
         video: VideoLoadStrategy
     };
-    /**
-     * Resource manager
-     * @public
-     */
-    var Resource = /** @class */ (function (_super) {
+    var Resource = (function (_super) {
         __extends$1(Resource, _super);
         function Resource(options) {
             var _this = _super.call(this) || this;
-            // TODO: specify timeout in config to overwrite it
-            /** load resource timeout */
             _this.timeout = 6000;
-            /** Resource cache  */
             _this.resourcesMap = {};
-            /** Collection of make resource instance function */
             _this.makeInstanceFunctions = {};
-            /** Collection of destroy resource instance function */
             _this.destroyInstanceFunctions = {};
-            /** Resource load promise */
             _this.promiseMap = {};
             _this.loaders = [];
             if (options && typeof options.timeout === 'number') {
@@ -5215,17 +4929,14 @@
             }
             return _this;
         }
-        /** Add resource configs and then preload */
         Resource.prototype.loadConfig = function (resources) {
             this.addResource(resources);
             this.preload();
         };
-        /** Add single resource config and then preload */
         Resource.prototype.loadSingle = function (resource) {
             this.addResource([resource]);
             return this.getResource(resource.name);
         };
-        /** Add resource configs */
         Resource.prototype.addResource = function (resources) {
             var e_1, _a;
             if (!resources || resources.length < 1) {
@@ -5251,7 +4962,6 @@
                 finally { if (e_1) throw e_1.error; }
             }
         };
-        /** Start preload */
         Resource.prototype.preload = function () {
             var names = Object.values(this.resourcesMap)
                 .filter(function (_a) {
@@ -5268,16 +4978,14 @@
             });
             this.loadResource({ names: names, preload: true });
         };
-        /** Get resource by name */
         Resource.prototype.getResource = function (name) {
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     this.loadResource({ names: [name] });
-                    return [2 /*return*/, this.promiseMap[name] || Promise.resolve({})];
+                    return [2, this.promiseMap[name] || Promise.resolve({})];
                 });
             });
         };
-        /** Make resource instance by resource type */
         Resource.prototype.instance = function (name) {
             return __awaiter(this, void 0, void 0, function () {
                 var res, _a;
@@ -5286,25 +4994,24 @@
                         case 0:
                             res = this.resourcesMap[name];
                             _a = this.makeInstanceFunctions[res.type];
-                            if (!_a) return [3 /*break*/, 2];
-                            return [4 /*yield*/, this.makeInstanceFunctions[res.type](res)];
+                            if (!_a) return [3, 2];
+                            return [4, this.makeInstanceFunctions[res.type](res)];
                         case 1:
                             _a = (_b.sent());
                             _b.label = 2;
-                        case 2: return [2 /*return*/, _a];
+                        case 2: return [2, _a];
                     }
                 });
             });
         };
-        /** destory this resource manager */
         Resource.prototype.destroy = function (name) {
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, this._destroy(name)];
+                        case 0: return [4, this._destroy(name)];
                         case 1:
                             _a.sent();
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });
@@ -5318,35 +5025,33 @@
                         case 0:
                             resource = this.resourcesMap[name];
                             if (!resource)
-                                return [2 /*return*/];
-                            if (!!loadError) return [3 /*break*/, 5];
+                                return [2];
+                            if (!!loadError) return [3, 5];
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 4, , 5]);
-                            if (!this.destroyInstanceFunctions[resource.type]) return [3 /*break*/, 3];
-                            return [4 /*yield*/, this.destroyInstanceFunctions[resource.type](resource)];
+                            if (!this.destroyInstanceFunctions[resource.type]) return [3, 3];
+                            return [4, this.destroyInstanceFunctions[resource.type](resource)];
                         case 2:
                             _a.sent();
                             _a.label = 3;
-                        case 3: return [3 /*break*/, 5];
+                        case 3: return [3, 5];
                         case 4:
                             e_2 = _a.sent();
                             console.warn("destroy resource " + resource.name + " error with '" + e_2.message + "'");
-                            return [3 /*break*/, 5];
+                            return [3, 5];
                         case 5:
                             delete this.promiseMap[name];
                             resource.complete = false;
                             resource.instance = undefined;
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });
         };
-        /** Add resource instance function */
         Resource.prototype.registerInstance = function (type, callback) {
             this.makeInstanceFunctions[type] = callback;
         };
-        /** Add resource destroy function */
         Resource.prototype.registerDestroy = function (type, callback) {
             this.destroyInstanceFunctions[type] = callback;
         };
@@ -5396,12 +5101,12 @@
                                 resource: this.resourcesMap[name],
                                 success: true,
                             };
-                            if (!this.checkAllLoaded(name)) return [3 /*break*/, 4];
+                            if (!this.checkAllLoaded(name)) return [3, 4];
                             _b.label = 1;
                         case 1:
                             _b.trys.push([1, 3, , 4]);
                             _a = res;
-                            return [4 /*yield*/, this.instance(name)];
+                            return [4, this.instance(name)];
                         case 2:
                             _a.instance = _b.sent();
                             res.complete = true;
@@ -5409,7 +5114,7 @@
                                 this.progress.onProgress(param);
                             }
                             resolve(res);
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 3:
                             err_1 = _b.sent();
                             res.complete = false;
@@ -5419,8 +5124,8 @@
                                 this.progress.onProgress(param);
                             }
                             resolve({});
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
+                            return [3, 4];
+                        case 4: return [2];
                     }
                 });
             });
@@ -5448,7 +5153,6 @@
             loader.onLoad.add(function (_, resource) {
                 _this.onLoad({ preload: preload, resource: resource });
             });
-            // @ts-ignore
             loader.onError.add(function (errMsg, _, resource) {
                 _this.onError({ errMsg: errMsg, resource: resource, preload: preload });
             });
@@ -5468,7 +5172,7 @@
                     res = this.resourcesMap[name];
                     res.data[key] = data;
                     this.doComplete(name, resolves[name], preload);
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -5489,16 +5193,14 @@
                         };
                         this.progress.onProgress(param);
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
         return Resource;
     }(eventemitter3));
-    /** Resource manager single instance */
     var resource = new Resource();
 
-    /** Decorators util */
     var decorators = {
         IDEProp: IDEProp,
         componentObserver: componentObserver,

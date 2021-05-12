@@ -75,7 +75,7 @@
         return ar;
     }
 
-    var EvaXComponent = /** @class */ (function (_super) {
+    var EvaXComponent = (function (_super) {
         __extends(EvaXComponent, _super);
         function EvaXComponent(gameObject) {
             var _this = _super.call(this, gameObject) || this;
@@ -2765,7 +2765,7 @@
         }
     }
 
-    var EvaXSystem = /** @class */ (function (_super) {
+    var EvaXSystem = (function (_super) {
         __extends(EvaXSystem, _super);
         function EvaXSystem() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -2817,9 +2817,6 @@
                         case eva_js.OBSERVER_TYPE.ADD:
                             this.add(changed);
                             break;
-                        // case OBSERVER_TYPE.CHANGE:
-                        //   this.change(changed)
-                        //   break;
                         case eva_js.OBSERVER_TYPE.REMOVE:
                             this.remove(changed);
                             break;

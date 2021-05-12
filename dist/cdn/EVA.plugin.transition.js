@@ -1070,7 +1070,7 @@
         'bounce-in-out': Easing.Bounce.InOut,
         none: function (p) { return ~~p; },
     };
-    var Animation = /** @class */ (function () {
+    var Animation = (function () {
         function Animation(timelines) {
             this.tweens = [];
             this.timelines = [];
@@ -1120,7 +1120,6 @@
         Animation.prototype.getObjectCache = function (component, name) {
             var key = "" + component.gameObject.id + component.name;
             if (!this.objectCache[key]) {
-                // @ts-ignore
                 this.objectCache[key] = {};
             }
             if (this.objectCache[key][name]) {
@@ -1185,7 +1184,7 @@
         return Animation;
     }());
 
-    var Transition = /** @class */ (function (_super) {
+    var Transition = (function (_super) {
         __extends(Transition, _super);
         function Transition() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -1241,7 +1240,7 @@
         return Transition;
     }(eva_js.Component));
 
-    var TransitionSystem = /** @class */ (function (_super) {
+    var TransitionSystem = (function (_super) {
         __extends(TransitionSystem, _super);
         function TransitionSystem() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -1251,7 +1250,6 @@
         TransitionSystem.prototype.update = function () {
             exports$1.update();
         };
-        // remove all active tweens
         TransitionSystem.prototype.onDestroy = function () {
             exports$1.removeAll();
         };

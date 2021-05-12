@@ -78,7 +78,7 @@
         }
     }
 
-    var NinePatch$1 = /** @class */ (function (_super) {
+    var NinePatch$1 = (function (_super) {
         __extends(NinePatch, _super);
         function NinePatch() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -120,8 +120,8 @@
         return NinePatch;
     }(eva_js.Component));
 
-    var resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
-    var NinePatch = /** @class */ (function (_super) {
+    var resourceKeySplit = '_s|r|c_';
+    var NinePatch = (function (_super) {
         __extends(NinePatch, _super);
         function NinePatch() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -155,7 +155,7 @@
                             this.add(changed);
                         }
                     }
-                    return [2 /*return*/];
+                    return [2];
                 });
             });
         };
@@ -166,7 +166,7 @@
                     switch (_b.label) {
                         case 0:
                             component = changed.component;
-                            return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            return [4, eva_js.resource.getResource(component.resource)];
                         case 1:
                             _a = _b.sent(), type = _a.type, data = _a.data;
                             if (!data) {
@@ -184,9 +184,8 @@
                             component.ninePatch = np;
                             this.containerManager
                                 .getContainer(changed.gameObject.id)
-                                // @ts-ignore
                                 .addChildAt(np, 0);
-                            return [2 /*return*/];
+                            return [2];
                     }
                 });
             });
