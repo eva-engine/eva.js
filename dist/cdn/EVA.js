@@ -3065,9 +3065,10 @@
             this.name = this.constructor.systemName;
         }
         System.prototype.destroy = function () {
+            var _a;
             this.componentObserver = null;
             this.__systemDefaultParams = null;
-            this.onDestroy();
+            (_a = this.onDestroy) === null || _a === void 0 ? void 0 : _a.call(this);
         };
         return System;
     }());
@@ -3609,7 +3610,7 @@
         Game.prototype.destroySystems = function () {
             var e_15, _a;
             try {
-                for (var _b = __values(this.systems), _c = _b.next(); !_c.done; _c = _b.next()) {
+                for (var _b = __values(__spread(this.systems)), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var system = _c.value;
                     this.removeSystem(system);
                 }
@@ -3621,6 +3622,7 @@
                 }
                 finally { if (e_15) throw e_15.error; }
             }
+            this.systems = [];
         };
         Game.prototype.destroy = function () {
             this.removeAllListeners();
@@ -4253,7 +4255,6 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
-                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:
