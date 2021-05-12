@@ -1,7 +1,7 @@
 import {mocked} from 'ts-jest/utils';
-import {Game, Scene, GameObject} from '../lib';
+import {Game, Scene, GameObject, System} from '../lib';
 import Ticker from '../lib/game/Ticker';
-import {TestSystem, TestComponent} from '@eva/plugin-renderer-test';
+import {TestSystem, Test2System, TestComponent} from '@eva/plugin-renderer-test';
 
 const MockTicker = mocked(Ticker, true);
 const mockTickerAdd = jest.fn();
@@ -46,9 +46,9 @@ describe('Game', () => {
     expect(mockTickerStart).toHaveBeenCalledTimes(1);
   });
 
-  it('make game with custon props', () => {
+  it('make game with custom props', () => {
     const game = new Game({
-      systems: [new TestSystem()],
+      systems: [new TestSystem(), new Test2System()],
       needScene: false,
       autoStart: false,
     });
@@ -59,17 +59,23 @@ describe('Game', () => {
 
   it('add system instance', () => {
     const game = new Game();
-    const system = new TestSystem();
-    game.addSystem(system);
-    expect(game.systems).toContain(system);
-    expect(game.systems.length).toBe(1);
+    const system1 = new TestSystem();
+    const system2 = new Test2System();
+    game.addSystem(system1);
+    game.addSystem(system2);
+    expect(game.systems).toContain(system1);
+    expect(game.systems).toContain(system2);
+    expect(game.systems.length).toBe(2);
   });
 
   it('add system constructor', () => {
     const game = new Game();
     game.addSystem(TestSystem);
-    expect(game.systems.length).toBe(1);
+    game.addSystem(Test2System);
+    expect(game.systems.length).toBe(2);
     expect(game.systems[0]).toBeInstanceOf(TestSystem);
+    expect(game.systems[1]).toBeInstanceOf(Test2System);
+
   });
 
   it('add system twice', () => {
@@ -91,6 +97,10 @@ describe('Game', () => {
     expect(game.systems.length).toBe(1);
     game.removeSystem(TestSystem.systemName);
     expect(game.systems.length).toBe(0);
+    game.addSystem(Test2System);
+    expect(game.systems.length).toBe(1);
+    game.removeSystem(Test2System.systemName);
+    expect(game.systems.length).toBe(0);
   });
 
   it('remove system successfully by constructor', () => {
@@ -99,15 +109,24 @@ describe('Game', () => {
     expect(game.systems.length).toBe(1);
     game.removeSystem(TestSystem);
     expect(game.systems.length).toBe(0);
+    game.addSystem(Test2System);
+    expect(game.systems.length).toBe(1);
+    game.removeSystem(Test2System);
+    expect(game.systems.length).toBe(0);
   });
 
   it('remove system successfully by system instance', () => {
     const game = new Game();
-    const testSys = new TestSystem();
+    let testSys: System = new TestSystem();
     game.addSystem(testSys);
     expect(game.systems.length).toBe(1);
     game.removeSystem(testSys);
     expect(game.systems.length).toBe(0);
+    testSys = new Test2System();
+    game.addSystem(testSys);
+    expect(game.systems.length).toBe(1);
+    game.removeSystem(testSys);
+    expect(game.systems.length).toBe(0);  
   });
 
   it('when throug in anything else', () => {
@@ -135,6 +154,8 @@ describe('Game', () => {
 
   it('pause', () => {
     const game = new Game();
+    game.addSystem(TestSystem);
+    game.addSystem(Test2System);
     game.pause();
     expect(mockTickerPause).toBeCalled();
     expect(game.playing).toBeFalsy();
@@ -149,6 +170,8 @@ describe('Game', () => {
 
   it('start', () => {
     const game = new Game({autoStart: false});
+    game.addSystem(TestSystem);
+    game.addSystem(Test2System);
     game.start();
     expect(mockTickerStart).toBeCalled();
     expect(game.playing).toBeTruthy();
@@ -163,6 +186,8 @@ describe('Game', () => {
 
   it('resume', () => {
     const game = new Game({autoStart: false});
+    game.addSystem(TestSystem);
+    game.addSystem(Test2System);
     game.resume();
     expect(mockTickerStart).toBeCalled();
     expect(game.playing).toBeTruthy();
@@ -182,7 +207,7 @@ describe('Game', () => {
    */
   it('trigger Start', () => {
     const game = new Game({
-      systems: [new TestSystem()],
+      systems: [new TestSystem(), new Test2System()],
     });
 
     // add gameobject and compnents
@@ -195,7 +220,7 @@ describe('Game', () => {
 
   it('tritter Pause', () => {
     const game = new Game({
-      systems: [new TestSystem()],
+      systems: [new TestSystem(), new Test2System()],
     });
 
     // add gameobject and compnents
@@ -207,7 +232,7 @@ describe('Game', () => {
   });
 
   it('trigger pause without scene', () => {
-    const game = new Game({needScene: false, systems: [new TestSystem()]});
+    const game = new Game({needScene: false, systems: [new TestSystem(), new Test2System()]});
     game.triggerPause();
   });
 
@@ -240,7 +265,8 @@ describe('Game', () => {
   it('destory System', () => {
     const game = new Game();
     game.addSystem(TestSystem);
-    expect(game.systems.length).toBe(1);
+    game.addSystem(Test2System);
+    expect(game.systems.length).toBe(2);
 
     game.destroySystems();
     expect(game.systems.length).toBe(0);
@@ -248,8 +274,12 @@ describe('Game', () => {
 
   it('destory', () => {
     const game = new Game();
-    game.destroy();
+    game.addSystem(TestSystem);
+    game.addSystem(Test2System);
+    expect(game.systems.length).toBe(2);
 
+    game.destroy();
+    expect(game.systems.length).toBe(0);
     expect(mockTickerPause).toBeCalled();
     expect(game.ticker).toBeNull();
     expect(game.scene).toBeNull();
