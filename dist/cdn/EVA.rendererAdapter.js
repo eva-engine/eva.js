@@ -33,7 +33,7 @@
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    var Application = /** @class */ (function (_super) {
+    var Application = (function (_super) {
         __extends(Application, _super);
         function Application(params) {
             var _this = this;
@@ -44,7 +44,7 @@
         return Application;
     }(pixi_js.Application));
 
-    var Container = /** @class */ (function (_super) {
+    var Container = (function (_super) {
         __extends(Container, _super);
         function Container() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -52,7 +52,7 @@
         return Container;
     }(pixi_js.Container));
 
-    var Graphics = /** @class */ (function (_super) {
+    var Graphics = (function (_super) {
         __extends(Graphics, _super);
         function Graphics() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -60,7 +60,7 @@
         return Graphics;
     }(pixi_js.Graphics));
 
-    var NinePatch = /** @class */ (function (_super) {
+    var NinePatch = (function (_super) {
         __extends(NinePatch, _super);
         function NinePatch(img, leftWidth, topHeight, rightWidth, bottomHeight) {
             var _this = this;
@@ -77,7 +77,7 @@
         return NinePatch;
     }(pixi_js.mesh.NineSlicePlane));
 
-    var Sprite = /** @class */ (function () {
+    var Sprite = (function () {
         function Sprite(image) {
             this._image = null;
             this._image = image;
@@ -116,7 +116,7 @@
         return Sprite;
     }());
 
-    var SpriteAnimation = /** @class */ (function () {
+    var SpriteAnimation = (function () {
         function SpriteAnimation(_a) {
             var frames = _a.frames;
             this.animatedSprite = new pixi_js.extras.AnimatedSprite(frames);
@@ -140,7 +140,7 @@
         return SpriteAnimation;
     }());
 
-    var Text = /** @class */ (function (_super) {
+    var Text = (function (_super) {
         __extends(Text, _super);
         function Text(text, style) {
             return _super.call(this, text, style) || this;
@@ -149,7 +149,7 @@
     }(pixi_js.Text));
 
     var PIXITilingSprite = pixi_js.extras.TilingSprite;
-    var TilingSprite = /** @class */ (function () {
+    var TilingSprite = (function () {
         function TilingSprite(image) {
             this._image = null;
             this._image = image;

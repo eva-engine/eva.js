@@ -10889,7 +10889,7 @@
         PhysicsType["RECTANGLE"] = "rectangle";
         PhysicsType["CIRCLE"] = "circle";
     })(exports.PhysicsType || (exports.PhysicsType = {}));
-    var Physics = /** @class */ (function (_super) {
+    var Physics = (function (_super) {
         __extends(Physics, _super);
         function Physics(params) {
             return _super.call(this, params) || this;
@@ -10915,7 +10915,7 @@
         return Physics;
     }(eva_js.Component));
 
-    var BodiesFactory = /** @class */ (function () {
+    var BodiesFactory = (function () {
         function BodiesFactory() {
             this.Bodies = Matter.Bodies;
         }
@@ -10949,7 +10949,7 @@
         return BodiesFactory;
     }());
 
-    var PhysicsEngine = /** @class */ (function () {
+    var PhysicsEngine = (function () {
         function PhysicsEngine(game, options) {
             this.enabled = false;
             this.Engine = Matter.Engine;
@@ -11057,40 +11057,19 @@
         return PhysicsEngine;
     }());
 
-    var PhysicsSystem = /** @class */ (function (_super) {
+    var PhysicsSystem = (function (_super) {
         __extends(PhysicsSystem, _super);
         function PhysicsSystem() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        /**
-         * System 初始化用，可以配置参数，游戏未开始
-         *
-         * System init, set params, game is not begain
-         * @param param init params
-         */
         PhysicsSystem.prototype.init = function (param) {
             this.engine = new PhysicsEngine(this.game, param);
             this.game.canvas.setAttribute('data-pixel-ratio', param.resolution || '1');
         };
-        /**
-         * System 被安装的时候，如果游戏还没有开始，那么会在游戏开始的时候调用。用于前置操作，初始化数据等。
-         *
-         * Called while the System installed, if game is not begain, it will be called while begain. use to pre operation, init data.
-         */
         PhysicsSystem.prototype.awake = function () { };
-        /**
-         * System 被安装后，所有的 awake 执行完后
-         *
-         * Called while the System installed, after all of systems' awake been called
-         */
         PhysicsSystem.prototype.start = function () {
             this.engine.start();
         };
-        /**
-         * 每一次游戏循环调用，可以做一些游戏操作，控制改变一些组件属性。
-         *
-         * Called by every loop, can do some operation, change some property or other component property.
-         */
         PhysicsSystem.prototype.update = function () {
             var e_1, _a;
             var changes = this.componentObserver.clear();
@@ -11125,34 +11104,15 @@
                 }
             }
         };
-        /**
-         * 和 update?() 类似，在所有System和组件的 update?() 执行以后调用。
-         *
-         * Like update, called all of gameobject update.
-         */
         PhysicsSystem.prototype.lateUpdate = function () { };
-        /**
-         * 游戏开始和游戏暂停后开始播放的时候调用。
-         *
-         * Called while the game to play when game pause.
-         */
         PhysicsSystem.prototype.onResume = function () {
             if (!this.engine.enabled) {
                 this.engine.awake();
             }
         };
-        /**
-         * 游戏暂停的时候调用。
-         *
-         * Called while the game paused.
-         */
         PhysicsSystem.prototype.onPause = function () {
             this.engine.stop();
         };
-        /**
-         * System 被销毁的时候调用。
-         * Called while the system be destroyed.
-         */
         PhysicsSystem.prototype.onDestroy = function () { };
         PhysicsSystem.systemName = 'PhysicsSystem';
         PhysicsSystem = __decorate([

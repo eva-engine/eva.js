@@ -63,7 +63,7 @@
         return ar;
     }
 
-    var Render$1 = /** @class */ (function (_super) {
+    var Render$1 = (function (_super) {
         __extends(Render, _super);
         function Render() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -93,7 +93,7 @@
         return Render;
     }(eva_js.Component));
 
-    var Render = /** @class */ (function (_super) {
+    var Render = (function (_super) {
         __extends(Render, _super);
         function Render() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

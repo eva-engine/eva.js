@@ -90,7 +90,7 @@
         throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
-    var Sprite$1 = /** @class */ (function (_super) {
+    var Sprite$1 = (function (_super) {
         __extends(Sprite, _super);
         function Sprite() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -114,7 +114,7 @@
         return Sprite;
     }(eva_js.Component));
 
-    var resourceKeySplit = '_s|r|c_'; // Notice: This key be used in ninepatch system.
+    var resourceKeySplit = '_s|r|c_';
     eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.SPRITE, function (_a) {
         var name = _a.name, data = _a.data;
         return new Promise(function (r) {
@@ -164,7 +164,7 @@
             instance[key].destroy(true);
         }
     });
-    var Sprite = /** @class */ (function (_super) {
+    var Sprite = (function (_super) {
         __extends(Sprite, _super);
         function Sprite() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -190,9 +190,9 @@
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if (!(changed.componentName === 'Sprite')) return [3 /*break*/, 4];
+                            if (!(changed.componentName === 'Sprite')) return [3, 4];
                             component_1 = changed.component;
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3 /*break*/, 1];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3, 1];
                             sprite_1 = new rendererAdapter.Sprite(null);
                             eva_js.resource.getResource(component_1.resource).then(function (_a) {
                                 var instance = _a.instance;
@@ -203,7 +203,7 @@
                                         }
                                         sprite_1.image =
                                             instance[component_1.resource + resourceKeySplit + component_1.spriteName];
-                                        return [2 /*return*/];
+                                        return [2];
                                     });
                                 });
                             });
@@ -211,10 +211,10 @@
                             this.containerManager
                                 .getContainer(changed.gameObject.id)
                                 .addChildAt(sprite_1.sprite, 0);
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 1:
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3 /*break*/, 3];
-                            return [4 /*yield*/, eva_js.resource.getResource(component_1.resource)];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3, 3];
+                            return [4, eva_js.resource.getResource(component_1.resource)];
                         case 2:
                             instance = (_a.sent()).instance;
                             if (!instance) {
@@ -222,7 +222,7 @@
                             }
                             this.sprites[changed.gameObject.id].image =
                                 instance[component_1.resource + resourceKeySplit + component_1.spriteName];
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 3:
                             if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                                 sprite = this.sprites[changed.gameObject.id];
@@ -232,7 +232,7 @@
                                 delete this.sprites[changed.gameObject.id];
                             }
                             _a.label = 4;
-                        case 4: return [2 /*return*/];
+                        case 4: return [2];
                     }
                 });
             });

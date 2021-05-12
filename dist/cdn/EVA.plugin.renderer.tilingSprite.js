@@ -78,7 +78,7 @@
         }
     }
 
-    var TilingSprite$1 = /** @class */ (function (_super) {
+    var TilingSprite$1 = (function (_super) {
         __extends(TilingSprite, _super);
         function TilingSprite() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -113,7 +113,7 @@
         return TilingSprite;
     }(eva_js.Component));
 
-    var TilingSprite = /** @class */ (function (_super) {
+    var TilingSprite = (function (_super) {
         __extends(TilingSprite, _super);
         function TilingSprite() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -139,9 +139,9 @@
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if (!(changed.componentName === 'TilingSprite')) return [3 /*break*/, 6];
+                            if (!(changed.componentName === 'TilingSprite')) return [3, 6];
                             component = changed.component;
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3 /*break*/, 1];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3, 1];
                             sprite_1 = new rendererAdapter.TilingSprite(null);
                             eva_js.resource.getResource(component.resource).then(function (_a) {
                                 var data = _a.data;
@@ -155,22 +155,22 @@
                                 .getContainer(changed.gameObject.id)
                                 .addChildAt(sprite_1.tilingSprite, 0);
                             this.setProp(changed.gameObject.id, component);
-                            return [3 /*break*/, 6];
+                            return [3, 6];
                         case 1:
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3 /*break*/, 5];
-                            if (!(changed.prop.prop[0] === 'resource')) return [3 /*break*/, 3];
-                            return [4 /*yield*/, eva_js.resource.getResource(component.resource)];
+                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3, 5];
+                            if (!(changed.prop.prop[0] === 'resource')) return [3, 3];
+                            return [4, eva_js.resource.getResource(component.resource)];
                         case 2:
                             data = (_a.sent()).data;
                             if (!data) {
                                 throw new Error("GameObject:" + changed.gameObject.name + "'s TilingSprite resource load error");
                             }
                             this.imgs[changed.gameObject.id].image = data.image;
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 3:
                             this.setProp(changed.gameObject.id, component);
                             _a.label = 4;
-                        case 4: return [3 /*break*/, 6];
+                        case 4: return [3, 6];
                         case 5:
                             if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                                 sprite = this.imgs[changed.gameObject.id];
@@ -180,7 +180,7 @@
                                 delete this.imgs[changed.gameObject.id];
                             }
                             _a.label = 6;
-                        case 6: return [2 /*return*/];
+                        case 6: return [2];
                     }
                 });
             });

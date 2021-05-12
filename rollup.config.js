@@ -25,8 +25,9 @@ const entryFile = resolve('lib/index.ts');
 const pkg = require(resolve(`package.json`));
 const packageOptions = pkg.buildOptions || {};
 
+const rootDir = path.resolve(__dirname);
 const exampleDir = path.resolve(__dirname, 'examples');
-const evajsCDNDir = path.resolve(__dirname);
+const evajsCDNDir = path.resolve(__dirname, 'dist/cdn');
 
 const outputConfigs = {
   esm: {
@@ -194,7 +195,7 @@ function createUmdDevelopConfig(format) {
       ...[
         serve({
           open: true,
-          contentBase: [exampleDir, evajsCDNDir],
+          contentBase: [exampleDir, rootDir],
           host: 'localhost',
           port: 8080,
         }),
@@ -217,7 +218,6 @@ function createCjsProductionConfig(format) {
       terser({
         toplevel: true,
         mangle: true,
-        output: {comments: false},
         compress: true,
       }),
     ],
@@ -250,6 +250,7 @@ function createMinifiedConfig(format) {
       copy({
         targets: [{src: destFilename, dest: resolve(`dist`)}],
         hook: 'writeBundle',
+        copyOnce: true,
       }),
     ],
   );
