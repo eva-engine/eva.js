@@ -362,9 +362,11 @@ class Game extends EventEmitter {
   // TODO: call system destroy method
   /** remove all system on this game */
   destroySystems() {
-    for (const system of this.systems) {
+    for (const system of [...this.systems]) {
       this.removeSystem(system);
     }
+
+    this.systems = [];
   }
 
   /** Destroy game instance */

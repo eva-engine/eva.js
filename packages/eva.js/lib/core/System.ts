@@ -113,7 +113,7 @@ class System {
   destroy() {
     this.componentObserver = null;
     this.__systemDefaultParams = null;
-    this.onDestroy();
+    this.onDestroy?.();
   }
 }
 
