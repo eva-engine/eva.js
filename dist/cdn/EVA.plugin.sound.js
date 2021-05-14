@@ -417,7 +417,8 @@
             }
             var when = this.systemContext.currentTime;
             var offset = this.config.seek;
-            this.sourceNode.start(0, offset);
+            var duration = this.config.duration;
+            this.sourceNode.start(0, offset, duration);
             this.startTime = when;
             this.playTime = when - offset;
             this.paused = false;
