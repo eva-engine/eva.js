@@ -7,6 +7,7 @@ export interface SoundParams {
   volume?: number;
   loop?: boolean;
   seek?: number;
+  duration?: number;
   onEnd?: () => void;
 }
 
@@ -98,8 +99,9 @@ class Sound extends Component {
     }
     const when = this.systemContext.currentTime;
     const offset = this.config.seek;
+    const duration = this.config.duration;
 
-    this.sourceNode.start(0, offset);
+    this.sourceNode.start(0, offset, duration);
 
     this.startTime = when;
     this.playTime = when - offset;

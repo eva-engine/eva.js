@@ -41,6 +41,7 @@ declare interface SoundParams {
     volume?: number;
     loop?: boolean;
     seek?: number;
+    duration?: number;
     onEnd?: () => void;
 }
 
