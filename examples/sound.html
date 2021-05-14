@@ -79,9 +79,8 @@
       const bgSoundObj = new GameObject('sound');
       const bgSound = bgSoundObj.addComponent(new Sound({resource: 'bgSound', loop: true, autoplay: true, volume: 0.5}));
 
-      const playerA = new GameObject('playerA');
-      //   const audioSampleA = playerA.addComponent();
-      const playerAComp = new Sound({resource: 'successSound', autoplay: true, seek: 1.3, duration: 0.4});
+      //   const playerA = new GameObject('playerA');
+      //   const audioSampleA = playerA.addComponent(new Sound({resource: 'successSound', autoplay: true, seek: 1.3, duration: 2}));
 
       const successSoundObj = new GameObject('succedSound');
       const successSound = successSoundObj.addComponent(new Sound({resource: 'successSound'}));
