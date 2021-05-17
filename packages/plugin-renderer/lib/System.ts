@@ -100,11 +100,11 @@ export default class Renderer extends System {
       params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
 
-    if (params.canScroll !== undefined) {
-      params.canScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+    if (params.enableScroll !== undefined) {
+      params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
 
-    if (params.preventScroll === undefined && params.canScroll === undefined) {
+    if (params.preventScroll === undefined && params.enableScroll === undefined) {
       enableScroll(app.renderer);
     }
     return app;
