@@ -97,6 +97,7 @@ export default class Renderer extends System {
      * PreventScroll is legacy, because it has bug.
      */
     if (params.preventScroll !== undefined) {
+      console.warn('PreventScroll property will deprecate at next major version!');
       params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
 
