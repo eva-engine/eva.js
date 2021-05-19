@@ -97,7 +97,7 @@ export default class Renderer extends System {
      * PreventScroll is legacy, because it has bug.
      */
     if (params.preventScroll !== undefined) {
-      console.warn('PreventScroll property will deprecate at next major version!');
+      console.warn('PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game');
       params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
 
