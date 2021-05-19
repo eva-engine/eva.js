@@ -2726,6 +2726,14 @@
         RENDERER_TYPE[RENDERER_TYPE["WEBGL"] = 1] = "WEBGL";
         RENDERER_TYPE[RENDERER_TYPE["CANVAS"] = 2] = "CANVAS";
     })(exports.RENDERER_TYPE || (exports.RENDERER_TYPE = {}));
+    var disableScroll = function (renderer) {
+        renderer.plugins.interaction.autoPreventDefault = true;
+        renderer.view.style.touchAction = 'none';
+    };
+    var enableScroll = function (renderer) {
+        renderer.plugins.interaction.autoPreventDefault = false;
+        renderer.view.style.touchAction = 'auto';
+    };
     var Renderer$1 = (function (_super) {
         __extends(Renderer, _super);
         function Renderer() {
@@ -2790,9 +2798,15 @@
             pixi_js.ticker.shared.autoStart = false;
             pixi_js.ticker.shared.stop();
             var app = new rendererAdapter.Application(__assign({ sharedTicker: true }, params));
-            if (params.preventScroll !== false) {
-                app.renderer.plugins.interaction.autoPreventDefault = false;
-                app.renderer.view.style.touchAction = 'auto';
+            if (params.preventScroll !== undefined) {
+                console.warn('PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game');
+                params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+            }
+            if (params.enableScroll !== undefined) {
+                params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+            }
+            if (params.preventScroll === undefined && params.enableScroll === undefined) {
+                enableScroll(app.renderer);
             }
             return app;
         };
