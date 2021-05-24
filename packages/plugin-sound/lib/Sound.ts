@@ -87,11 +87,11 @@ class Sound extends Component {
     }
   }
 
-  play() {
+  play(uncover?: boolean) {
     if (this.state !== 'loaded') {
       this.actionQueue.push(this.play.bind(this));
     }
-    this.destroySource();
+    if (!uncover)this.destroySource(); // not cover last play
     this.createSource();
 
     if (!this.sourceNode) {
