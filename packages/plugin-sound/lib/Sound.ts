@@ -87,11 +87,13 @@ class Sound extends Component {
     }
   }
 
-  play(uncover?: boolean) {
+  play({overlap=true}) {
     if (this.state !== 'loaded') {
       this.actionQueue.push(this.play.bind(this));
     }
-    if (!uncover)this.destroySource(); // not cover last play
+    if (overlap){
+      this.destroySource(); // not cover last play
+    }
     this.createSource();
 
     if (!this.sourceNode) {
