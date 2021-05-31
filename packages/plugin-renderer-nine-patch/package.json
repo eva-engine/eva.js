@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-nine-patch.esm.js",
   "bundle": "EVA.plugin.renderer.ninePatch",
+  "unpkg": "dist/EVA.plugin.renderer.ninePatch.min.js",
   "files": [
     "index.js",
     "dist"

@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-mask.esm.js",
   "bundle": "EVA.plugin.renderer.mask",
+  "unpkg": "dist/EVA.plugin.renderer.mask.min.js",
   "files": [
     "index.js",
     "dist"

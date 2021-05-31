@@ -41,6 +41,7 @@ files.forEach(shortName => {
       main: 'index.js',
       module: `dist/${shortName}.esm.js`,
       bundle: pkg.bundle || '',
+      unpkg: pkg.bundle && `dist/${pkg.bundle}.min.js`,
       files: ['index.js', 'dist'],
       types: `dist/${shortName}.d.ts`,
       keywords: ['eva.js'],

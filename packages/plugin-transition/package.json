@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-transition.esm.js",
   "bundle": "EVA.plugin.transition",
+  "unpkg": "dist/EVA.plugin.transition.min.js",
   "files": [
     "index.js",
     "dist"

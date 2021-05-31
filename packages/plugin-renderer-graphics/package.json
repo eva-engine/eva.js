@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-graphics.esm.js",
   "bundle": "EVA.plugin.renderer.graphics",
+  "unpkg": "dist/EVA.plugin.renderer.graphics.min.js",
   "files": [
     "index.js",
     "dist"

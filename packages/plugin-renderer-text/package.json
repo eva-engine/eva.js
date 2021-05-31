@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-text.esm.js",
   "bundle": "EVA.plugin.renderer.text",
+  "unpkg": "dist/EVA.plugin.renderer.text.min.js",
   "files": [
     "index.js",
     "dist"

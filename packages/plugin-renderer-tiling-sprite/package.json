@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-tiling-sprite.esm.js",
   "bundle": "EVA.plugin.renderer.tilingSprite",
+  "unpkg": "dist/EVA.plugin.renderer.tilingSprite.min.js",
   "files": [
     "index.js",
     "dist"

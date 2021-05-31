@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-stats.esm.js",
   "bundle": "EVA.plugin.stats",
+  "unpkg": "dist/EVA.plugin.stats.min.js",
   "files": [
     "index.js",
     "dist"

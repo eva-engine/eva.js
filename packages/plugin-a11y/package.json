@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-a11y.esm.js",
   "bundle": "EVA.plugin.a11y",
+  "unpkg": "dist/EVA.plugin.a11y.min.js",
   "files": [
     "index.js",
     "dist"

@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-spine.esm.js",
   "bundle": "EVA.plugin.renderer.spine",
+  "unpkg": "dist/EVA.plugin.renderer.spine.min.js",
   "files": [
     "index.js",
     "dist"

@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/miniprogram-adapter.esm.js",
   "bundle": "",
+  "unpkg": "",
   "files": [
     "index.js",
     "dist"
