@@ -11,6 +11,16 @@ export enum RENDERER_TYPE {
   CANVAS = 2,
 }
 
+const disableScroll = renderer => {
+  renderer.plugins.interaction.autoPreventDefault = true;
+  renderer.view.style.touchAction = 'none';
+};
+
+const enableScroll = renderer => {
+  renderer.plugins.interaction.autoPreventDefault = false;
+  renderer.view.style.touchAction = 'auto';
+};
+
 @decorators.componentObserver({
   Transform: ['_parent'],
 })
@@ -82,9 +92,21 @@ export default class Renderer extends System {
     ticker.shared.autoStart = false;
     ticker.shared.stop();
     const app = new Application({sharedTicker: true, ...params});
-    if (params.preventScroll !== false) {
-      app.renderer.plugins.interaction.autoPreventDefault = false;
-      app.renderer.view.style.touchAction = 'auto';
+    /**
+     * Fix https://github.com/eva-engine/eva.js/issues/30
+     * PreventScroll is legacy, because it has bug.
+     */
+    if (params.preventScroll !== undefined) {
+      console.warn('PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game');
+      params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+    }
+
+    if (params.enableScroll !== undefined) {
+      params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+    }
+
+    if (params.preventScroll === undefined && params.enableScroll === undefined) {
+      enableScroll(app.renderer);
     }
     return app;
   }
