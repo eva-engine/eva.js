@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-sprite-animation.esm.js",
   "bundle": "EVA.plugin.renderer.spriteAnimation",
+  "unpkg": "dist/EVA.plugin.renderer.spriteAnimation.min.js",
   "files": [
     "index.js",
     "dist"

@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-dragonbone.esm.js",
   "bundle": "EVA.plugin.renderer.dragonbone",
+  "unpkg": "dist/EVA.plugin.renderer.dragonbone.min.js",
   "files": [
     "index.js",
     "dist"

@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-renderer-lottie.esm.js",
   "bundle": "EVA.plugin.renderer.lottie",
+  "unpkg": "dist/EVA.plugin.renderer.lottie.min.js",
   "files": [
     "index.js",
     "dist"

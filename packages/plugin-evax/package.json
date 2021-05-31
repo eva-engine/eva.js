@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-evax.esm.js",
   "bundle": "EVA.plugin.EVAX",
+  "unpkg": "dist/EVA.plugin.EVAX.min.js",
   "files": [
     "index.js",
     "dist"

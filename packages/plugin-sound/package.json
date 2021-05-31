@@ -5,6 +5,7 @@
   "main": "index.js",
   "module": "dist/plugin-sound.esm.js",
   "bundle": "EVA.plugin.sound",
+  "unpkg": "dist/EVA.plugin.sound.min.js",
   "files": [
     "index.js",
     "dist"
