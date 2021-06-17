@@ -61,7 +61,17 @@
         }),
       );
 
-      frame.play();
+      frame.play(4);
+      frame.on('onComplete', () =>{
+        console.log('onComplete')
+      })
+      frame.on('onLoop', () =>{
+        console.log('onLoop')
+      })
+      frame.on('onFrameChange', () =>{
+        console.log('onFrameChange')
+      })
+
 
       game.scene.addChild(cut);
     </script>

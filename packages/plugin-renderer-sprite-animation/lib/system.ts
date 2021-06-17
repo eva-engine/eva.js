@@ -130,6 +130,16 @@ export default class SpriteAnimation extends Renderer {
       .getContainer(id)
       .addChildAt(animate.animatedSprite, 0);
 
+    animate.animatedSprite.onComplete = () =>{
+      component.emit('onComplete')
+    }
+    animate.animatedSprite.onFrameChange = () =>{
+      component.emit('onFrameChange')
+    }
+    animate.animatedSprite.onLoop = () =>{
+      component.emit('onLoop')
+    }
+
     component.animate = this.animates[id];
     this.animates[id].speed = 1000 / 60 / component.speed;
     if (this.autoPlay[id]) {
