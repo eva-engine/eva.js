@@ -79,14 +79,16 @@ class Ticker {
     if (this.autoStart) {
       this.start();
     }
-    this.bindEvent();
   }
 
   /** Main loop, all _tickers will called in this method */
   update() {
     const time = Date.now();
     if (time - this._lastTime >= this._frameDuration) {
-      const deltaTime = time - this._lastTime;
+      const durationTime = time - this._lastTime;
+      const frameTime = time - (durationTime % this._frameDuration);
+      const deltaTime = frameTime - this._lastTime;
+      this._lastTime = frameTime;
       const e: UpdateParams = {
         deltaTime,
         frameCount: ++this._frameCount,
@@ -98,7 +100,6 @@ class Ticker {
           func(e);
         }
       }
-      this._lastTime = time;
     }
   }
 
@@ -146,7 +147,6 @@ class Ticker {
       this.pause();
     }
   }
-  bindEvent() { }
 }
 
 export default Ticker;
