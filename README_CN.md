@@ -1,4 +1,4 @@
-# Eva.js (Interactive Game Engine)
+# Eva.js (互动游戏引擎)
 
 ![npm-version](https://img.shields.io/npm/v/@eva/eva.js)
 ![npm-size](https://img.shields.io/bundlephobia/minzip/@eva/eva.js)
