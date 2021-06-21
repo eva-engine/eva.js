@@ -142,7 +142,11 @@ export default class A11ySystem extends System {
     this.delay = delay;
     switch (activate) {
       case A11yActivate.CHECK:
-        this.activate = await checkA11yOpen();
+        try {
+          this.activate = await checkA11yOpen();
+        } catch (error) {
+          this.activate = false;
+        }
         break;
       case A11yActivate.DISABLE:
         this.activate = false;
