@@ -11,6 +11,12 @@ export default class SpriteAnimation {
   stop() {
     this.animatedSprite.stop();
   }
+  gotoAndPlay(frameNumber) {
+    this.animatedSprite.gotoAndPlay(frameNumber);
+  }
+  gotoAndStop(frameNumber) {
+    this.animatedSprite.gotoAndStop(frameNumber);
+  }
   set speed(val) {
     this.animatedSprite.animationSpeed = val;
   }

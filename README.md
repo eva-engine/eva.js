@@ -4,6 +4,8 @@
 ![npm-size](https://img.shields.io/bundlephobia/minzip/@eva/eva.js)
 ![npm-download](https://img.shields.io/npm/dm/@eva/eva.js)
 
+English ｜ [Chinese](./README_CN.md)
+
 ## Introduction
 
 Eva.js is a front-end game engine specifically for creating interactive game projects.
