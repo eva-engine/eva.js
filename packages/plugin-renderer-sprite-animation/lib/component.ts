@@ -19,20 +19,25 @@ export default class SpriteAnimation extends Component {
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
   }
-  play(times = this.times) {
+  play(times = Infinity) {
+    if (times === 0) return
     this.times = times;
     if (!this.animate) {
       this.waitPlay = true;
     } else {
       this.animate.play();
       let count = 0;
-      this.on('onLoop', () => {
+      const onLoop = () => {
         console.log(count);
         if (++count >= times) {
           this.animate.stop();
           this.emit('onComplete')
         }
-      });
+      }
+      this.on('onLoop', onLoop);
+      this.on('onComplete', () => {
+        this.off('onLoop', onLoop)
+      })
     }
   }
   stop() {
@@ -46,7 +51,7 @@ export default class SpriteAnimation extends Component {
     this._animate = val;
     if (this.waitPlay) {
       this.waitPlay = false;
-      this.play();
+      this.play(this.times);
     }
     if (this.waitStop) {
       this.waitStop = false;
