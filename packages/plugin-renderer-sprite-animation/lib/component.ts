@@ -16,28 +16,26 @@ export default class SpriteAnimation extends Component {
   private waitPlay: boolean = false;
   private waitStop: boolean = false;
   private times: number = Infinity;
+  private count: number = 0;
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
+    this.on('onLoop', () => {
+      if (++this.count >= this.times) {
+        this.animate.stop();
+        this.emit('onComplete');
+      }
+    });
   }
   play(times = Infinity) {
-    if (times === 0) return
+    if (times === 0) {
+      return;
+    }
     this.times = times;
     if (!this.animate) {
       this.waitPlay = true;
     } else {
       this.animate.play();
-      let count = 0;
-      const onLoop = () => {
-        console.log(count);
-        if (++count >= times) {
-          this.animate.stop();
-          this.emit('onComplete')
-        }
-      }
-      this.on('onLoop', onLoop);
-      this.on('onComplete', () => {
-        this.off('onLoop', onLoop)
-      })
+      this.count = 0;
     }
   }
   stop() {
@@ -62,9 +60,9 @@ export default class SpriteAnimation extends Component {
     return this._animate;
   }
   gotoAndPlay(frameNumber) {
-    this.animate.gotoAndPlay(frameNumber)
+    this.animate.gotoAndPlay(frameNumber);
   }
   gotoAndStop(frameNumber) {
-    this.animate.gotoAndStop(frameNumber)
+    this.animate.gotoAndStop(frameNumber);
   }
 }
