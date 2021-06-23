@@ -131,13 +131,13 @@ export default class SpriteAnimation extends Renderer {
       .addChildAt(animate.animatedSprite, 0);
 
     animate.animatedSprite.onComplete = () =>{
-      component.emit('onComplete')
+      component.emit('complete')
     }
     animate.animatedSprite.onFrameChange = () =>{
-      component.emit('onFrameChange')
+      component.emit('frameChange')
     }
     animate.animatedSprite.onLoop = () =>{
-      component.emit('onLoop')
+      component.emit('loop')
     }
 
     component.animate = this.animates[id];
