@@ -316,7 +316,6 @@ declare class Ticker {
     pause(): void;
     active(): void;
     background(): void;
-    bindEvent(): void;
 }
 
 declare interface TickerOptions {

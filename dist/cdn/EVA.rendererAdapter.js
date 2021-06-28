@@ -127,6 +127,12 @@
         SpriteAnimation.prototype.stop = function () {
             this.animatedSprite.stop();
         };
+        SpriteAnimation.prototype.gotoAndPlay = function (frameNumber) {
+            this.animatedSprite.gotoAndPlay(frameNumber);
+        };
+        SpriteAnimation.prototype.gotoAndStop = function (frameNumber) {
+            this.animatedSprite.gotoAndStop(frameNumber);
+        };
         Object.defineProperty(SpriteAnimation.prototype, "speed", {
             get: function () {
                 return this.animatedSprite.animationSpeed;
