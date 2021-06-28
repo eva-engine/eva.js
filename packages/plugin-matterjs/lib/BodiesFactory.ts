@@ -1,6 +1,6 @@
 import Matter from './matter';
-import {PhysicsType} from './Physics';
-import {GameObject} from '@eva/eva.js';
+import { PhysicsType } from './Physics';
+import { GameObject } from '@eva/eva.js';
 declare interface BodyOptions {
   chamfer?: number; // 斜切角
   angle?: number; // 旋转角
@@ -32,7 +32,7 @@ export default class BodiesFactory {
   }
   public create(component) {
     let body = null;
-    const {gameObject, bodyParams} = component;
+    const { gameObject, bodyParams } = component;
     const coordinate = this.getCoordinate(gameObject);
     const x = bodyParams.position ? bodyParams.position.x : coordinate.x;
     const y = bodyParams.position ? bodyParams.position.y : coordinate.y;
@@ -40,11 +40,14 @@ export default class BodiesFactory {
       case PhysicsType.RECTANGLE: {
         const width = gameObject.transform.size.width * gameObject.transform.scale.x;
         const height = gameObject.transform.size.height * gameObject.transform.scale.y;
-        body = this.Bodies.rectangle(x, y, width, height,bodyParams.bodyOptions);
+        body = this.Bodies.rectangle(x, y, width, height, bodyParams.bodyOptions);
         break;
       }
       case PhysicsType.CIRCLE: {
         body = this.Bodies.circle(x, y, bodyParams.radius, bodyParams.bodyOptions);
+      }
+      case PhysicsType.POLYGON: {
+        body = this.Bodies.polygon(x, y, bodyParams.sides, bodyParams.radius, bodyParams.bodyOptions);
       }
     }
     return body;
