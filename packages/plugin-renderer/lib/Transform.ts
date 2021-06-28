@@ -48,7 +48,7 @@ export default class Transform extends EventEmitter {
     }
     this.waitRemoveIds = [];
 
-    for (let sceneInfo of this.waitChangeScenes) {
+    for (const sceneInfo of this.waitChangeScenes) {
       // set scene
       const container = this.containerManager.getContainer(sceneInfo.scene.id);
       if (container) {
