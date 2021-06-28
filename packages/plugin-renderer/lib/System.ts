@@ -111,9 +111,9 @@ export default class Renderer extends System {
     return app;
   }
 
-  update(e) {
+  update() {
     const changes = this.componentObserver.clear();
-    for (let changed of changes) {
+    for (const changed of changes) {
       this.transform.componentChanged(changed);
     }
 
@@ -124,15 +124,14 @@ export default class Renderer extends System {
       });
       this.rendererManager.update(gameObject);
     }
-
-    this.application.ticker.update(e.time);
   }
-  lateUpdate() {
+  lateUpdate(e) {
     this.transform.update();
+    this.application.ticker.update(e.time);
   }
   onDestroy() {
     this.application.destroy();
-    for (let app of this.multiApps) {
+    for (const app of this.multiApps) {
       app && app.destroy();
     }
     this.transform.destroy();
