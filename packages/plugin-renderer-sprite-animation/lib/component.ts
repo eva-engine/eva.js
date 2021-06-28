@@ -19,10 +19,10 @@ export default class SpriteAnimation extends Component {
   private count: number = 0;
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
-    this.on('onLoop', () => {
+    this.on('loop', () => {
       if (++this.count >= this.times) {
         this.animate.stop();
-        this.emit('onComplete');
+        this.emit('complete');
       }
     });
   }
