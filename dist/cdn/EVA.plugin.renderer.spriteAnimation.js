@@ -99,17 +99,32 @@
             _this.speed = 100;
             _this.waitPlay = false;
             _this.waitStop = false;
+            _this.times = Infinity;
+            _this.count = 0;
             return _this;
         }
         SpriteAnimation.prototype.init = function (obj) {
+            var _this = this;
             obj && Object.assign(this, obj);
+            this.on('loop', function () {
+                if (++_this.count >= _this.times) {
+                    _this.animate.stop();
+                    _this.emit('complete');
+                }
+            });
         };
-        SpriteAnimation.prototype.play = function () {
+        SpriteAnimation.prototype.play = function (times) {
+            if (times === void 0) { times = Infinity; }
+            if (times === 0) {
+                return;
+            }
+            this.times = times;
             if (!this.animate) {
                 this.waitPlay = true;
             }
             else {
                 this.animate.play();
+                this.count = 0;
             }
         };
         SpriteAnimation.prototype.stop = function () {
@@ -128,7 +143,7 @@
                 this._animate = val;
                 if (this.waitPlay) {
                     this.waitPlay = false;
-                    this.play();
+                    this.play(this.times);
                 }
                 if (this.waitStop) {
                     this.waitStop = false;
@@ -138,6 +153,12 @@
             enumerable: false,
             configurable: true
         });
+        SpriteAnimation.prototype.gotoAndPlay = function (frameNumber) {
+            this.animate.gotoAndPlay(frameNumber);
+        };
+        SpriteAnimation.prototype.gotoAndStop = function (frameNumber) {
+            this.animate.gotoAndStop(frameNumber);
+        };
         SpriteAnimation.componentName = 'SpriteAnimation';
         __decorate([
             eva_js.decorators.IDEProp
@@ -294,6 +315,15 @@
             this.containerManager
                 .getContainer(id)
                 .addChildAt(animate.animatedSprite, 0);
+            animate.animatedSprite.onComplete = function () {
+                component.emit('complete');
+            };
+            animate.animatedSprite.onFrameChange = function () {
+                component.emit('frameChange');
+            };
+            animate.animatedSprite.onLoop = function () {
+                component.emit('loop');
+            };
             component.animate = this.animates[id];
             this.animates[id].speed = 1000 / 60 / component.speed;
             if (this.autoPlay[id]) {

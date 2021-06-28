@@ -3099,13 +3099,15 @@
             if (this.autoStart) {
                 this.start();
             }
-            this.bindEvent();
         }
         Ticker.prototype.update = function () {
             var e_1, _a;
             var time = Date.now();
             if (time - this._lastTime >= this._frameDuration) {
-                var deltaTime = time - this._lastTime;
+                var durationTime = time - this._lastTime;
+                var frameTime = time - (durationTime % this._frameDuration);
+                var deltaTime = frameTime - this._lastTime;
+                this._lastTime = frameTime;
                 var e = {
                     deltaTime: deltaTime,
                     frameCount: ++this._frameCount,
@@ -3127,7 +3129,6 @@
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
-                this._lastTime = time;
             }
         };
         Ticker.prototype.add = function (fn) {
@@ -3166,7 +3167,6 @@
                 this.pause();
             }
         };
-        Ticker.prototype.bindEvent = function () { };
         return Ticker;
     }());
 
@@ -4255,6 +4255,7 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
+                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:

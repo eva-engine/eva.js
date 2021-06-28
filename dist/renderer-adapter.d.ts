@@ -39,6 +39,8 @@ export declare class SpriteAnimation {
     });
     play(): void;
     stop(): void;
+    gotoAndPlay(frameNumber: any): void;
+    gotoAndStop(frameNumber: any): void;
     set speed(val: number);
     get speed(): number;
 }

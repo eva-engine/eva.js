@@ -2810,7 +2810,7 @@
             }
             return app;
         };
-        Renderer.prototype.update = function (e) {
+        Renderer.prototype.update = function () {
             var e_1, _a, e_2, _b;
             var changes = this.componentObserver.clear();
             try {
@@ -2843,10 +2843,10 @@
                 }
                 finally { if (e_2) throw e_2.error; }
             }
-            this.application.ticker.update(e.time);
         };
-        Renderer.prototype.lateUpdate = function () {
+        Renderer.prototype.lateUpdate = function (e) {
             this.transform.update();
+            this.application.ticker.update(e.time);
         };
         Renderer.prototype.onDestroy = function () {
             var e_3, _a;

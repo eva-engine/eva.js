@@ -74,8 +74,8 @@ export declare class RendererSystem extends System {
         params: any;
     }): Application;
     createApplication(params: any): Application;
-    update(e: any): void;
-    lateUpdate(): void;
+    update(): void;
+    lateUpdate(e: any): void;
     onDestroy(): void;
 }
 

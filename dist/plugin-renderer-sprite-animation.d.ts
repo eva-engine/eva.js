@@ -15,11 +15,15 @@ export declare class SpriteAnimation extends Component {
     _animate: SpriteAnimation_2;
     private waitPlay;
     private waitStop;
+    private times;
+    private count;
     init(obj?: SpriteAnimationParams): void;
-    play(): void;
+    play(times?: number): void;
     stop(): void;
     set animate(val: SpriteAnimation_2);
     get animate(): SpriteAnimation_2;
+    gotoAndPlay(frameNumber: any): void;
+    gotoAndStop(frameNumber: any): void;
 }
 
 export declare interface SpriteAnimationParams {
