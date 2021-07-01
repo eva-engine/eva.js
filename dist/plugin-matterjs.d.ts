@@ -28,7 +28,8 @@ export declare class PhysicsSystem extends System {
 
 export declare enum PhysicsType {
     RECTANGLE = "rectangle",
-    CIRCLE = "circle"
+    CIRCLE = "circle",
+    POLYGON = "polygon"
 }
 
 export { }

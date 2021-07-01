@@ -10888,6 +10888,7 @@
     (function (PhysicsType) {
         PhysicsType["RECTANGLE"] = "rectangle";
         PhysicsType["CIRCLE"] = "circle";
+        PhysicsType["POLYGON"] = "polygon";
     })(exports.PhysicsType || (exports.PhysicsType = {}));
     var Physics = (function (_super) {
         __extends(Physics, _super);
@@ -10934,6 +10935,9 @@
                 }
                 case exports.PhysicsType.CIRCLE: {
                     body = this.Bodies.circle(x, y, bodyParams.radius, bodyParams.bodyOptions);
+                }
+                case exports.PhysicsType.POLYGON: {
+                    body = this.Bodies.polygon(x, y, bodyParams.sides, bodyParams.radius, bodyParams.bodyOptions);
                 }
             }
             return body;
