@@ -1,8 +1,9 @@
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import Matter from './matter';
 export enum PhysicsType {
   RECTANGLE = 'rectangle',
   CIRCLE = 'circle',
+  POLYGON = 'polygon'
 }
 
 
@@ -15,7 +16,7 @@ export class Physics extends Component {
     super(params);
   }
 
-  init(params:any) {
+  init(params: any) {
     this.bodyParams = params;
   }
 
