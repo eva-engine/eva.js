@@ -10935,9 +10935,11 @@
                 }
                 case exports.PhysicsType.CIRCLE: {
                     body = this.Bodies.circle(x, y, bodyParams.radius, bodyParams.bodyOptions);
+                    break;
                 }
                 case exports.PhysicsType.POLYGON: {
                     body = this.Bodies.polygon(x, y, bodyParams.sides, bodyParams.radius, bodyParams.bodyOptions);
+                    break;
                 }
             }
             return body;
