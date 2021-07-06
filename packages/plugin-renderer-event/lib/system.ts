@@ -28,7 +28,7 @@ export default class Event extends Renderer {
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
-  init({moveWhenInside = false} = {moveWhenInside: false}) {
+  init({moveWhenInside = false} = {}) {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
     this.renderSystem.application.renderer.plugins.interaction.moveWhenInside = moveWhenInside;
