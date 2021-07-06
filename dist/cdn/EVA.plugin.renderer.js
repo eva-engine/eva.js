@@ -1,3 +1,5 @@
+
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@eva/eva.js'), require('@eva/renderer-adapter'), require('pixi.js')) :
     typeof define === 'function' && define.amd ? define(['exports', '@eva/eva.js', '@eva/renderer-adapter', 'pixi.js'], factory) :
@@ -2884,12 +2886,12 @@
 
     var Renderer = (function (_super) {
         __extends(Renderer, _super);
-        function Renderer() {
-            var _this = _super.call(this) || this;
+        function Renderer(params) {
+            var _this = _super.call(this, params) || this;
             _this.observerInfo = _this.constructor.observerInfo;
             return _this;
         }
-        Renderer.prototype.update = function () {
+        Renderer.prototype.update = function (e) {
             var e_1, _a;
             var changes = this.componentObserver.clear();
             try {
