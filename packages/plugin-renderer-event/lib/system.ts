@@ -33,8 +33,8 @@ export default class Event extends Renderer {
     this.renderSystem.rendererManager.register(this);
     try {
       this.renderSystem.application.renderer.plugins.interaction.moveWhenInside = moveWhenInside;
-    } catch(e) {
-      console.error('Setting moveWhenInside error.', e)
+    } catch (e) {
+      console.error('Setting moveWhenInside error.', e);
     }
   }
   componentChanged(changed: ComponentChanged) {
