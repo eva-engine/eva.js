@@ -31,9 +31,9 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({name, data}) => {
       newFrames[newKey] = frames[key];
     }
     for (const key in animations) {
-      let spriteList = [];
+      const spriteList = [];
       if (animations[key] && animations[key].length >= 0) {
-        for (let spriteName of animations[key]) {
+        for (const spriteName of animations[key]) {
           const newSpriteName = name + resourceKeySplit + spriteName;
           spriteList.push(newSpriteName);
         }
@@ -45,7 +45,7 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({name, data}) => {
     spriteSheet.parse(() => {
       const {textures} = spriteSheet;
       const spriteFrames = [];
-      for (let key in textures) {
+      for (const key in textures) {
         spriteFrames.push(textures[key]);
       }
       r(spriteFrames);
@@ -54,7 +54,7 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({name, data}) => {
 });
 resource.registerDestroy(RESOURCE_TYPE.SPRITE_ANIMATION, ({instance}) => {
   if (!instance) return;
-  for (let texture of instance) {
+  for (const texture of instance) {
     texture.destroy(true);
   }
 });
@@ -131,13 +131,13 @@ export default class SpriteAnimation extends Renderer {
       .addChildAt(animate.animatedSprite, 0);
 
     animate.animatedSprite.onComplete = () =>{
-      component.emit('onComplete')
+      component.emit('complete')
     }
     animate.animatedSprite.onFrameChange = () =>{
-      component.emit('onFrameChange')
+      component.emit('frameChange')
     }
     animate.animatedSprite.onLoop = () =>{
-      component.emit('onLoop')
+      component.emit('loop')
     }
 
     component.animate = this.animates[id];

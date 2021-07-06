@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@eva/eva.js')) :
     typeof define === 'function' && define.amd ? define(['exports', '@eva/eva.js'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.EVA = global.EVA || {}, global.EVA.plugin = global.EVA.plugin || {}, global.EVA.plugin.renderer = global.EVA.plugin.renderer || {}, global.EVA.plugin.renderer.matterjs = {}), global.EVA));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.EVA = global.EVA || {}, global.EVA.plugin = global.EVA.plugin || {}, global.EVA.plugin.matterjs = {}), global.EVA));
 }(this, (function (exports, eva_js) { 'use strict';
 
     /*! *****************************************************************************
@@ -10888,7 +10888,6 @@
     (function (PhysicsType) {
         PhysicsType["RECTANGLE"] = "rectangle";
         PhysicsType["CIRCLE"] = "circle";
-        PhysicsType["POLYGON"] = "polygon";
     })(exports.PhysicsType || (exports.PhysicsType = {}));
     var Physics = (function (_super) {
         __extends(Physics, _super);
@@ -10935,9 +10934,6 @@
                 }
                 case exports.PhysicsType.CIRCLE: {
                     body = this.Bodies.circle(x, y, bodyParams.radius, bodyParams.bodyOptions);
-                }
-                case exports.PhysicsType.POLYGON: {
-                    body = this.Bodies.polygon(x, y, bodyParams.sides, bodyParams.radius, bodyParams.bodyOptions);
                 }
             }
             return body;

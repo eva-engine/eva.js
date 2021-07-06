@@ -282,23 +282,29 @@
                             _d = activate;
                             switch (_d) {
                                 case exports.A11yActivate.CHECK: return [3, 1];
-                                case exports.A11yActivate.DISABLE: return [3, 3];
-                                case exports.A11yActivate.ENABLE: return [3, 4];
+                                case exports.A11yActivate.DISABLE: return [3, 5];
+                                case exports.A11yActivate.ENABLE: return [3, 6];
                             }
-                            return [3, 5];
+                            return [3, 7];
                         case 1:
+                            _f.trys.push([1, 3, , 4]);
                             _e = this;
                             return [4, checkA11yOpen()];
                         case 2:
                             _e.activate = _f.sent();
-                            return [3, 5];
+                            return [3, 4];
                         case 3:
+                            _f.sent();
                             this.activate = false;
-                            return [3, 5];
-                        case 4:
-                            this.activate = true;
-                            return [3, 5];
+                            return [3, 4];
+                        case 4: return [3, 7];
                         case 5:
+                            this.activate = false;
+                            return [3, 7];
+                        case 6:
+                            this.activate = true;
+                            return [3, 7];
+                        case 7:
                             this.debug = opt.debug || false;
                             if (this.debug) {
                                 this.activate = true;

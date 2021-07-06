@@ -1,10 +1,10 @@
 {
   "name": "@eva/plugin-matterjs",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "@eva/plugin-matterjs",
   "main": "index.js",
   "module": "dist/plugin-matterjs.esm.js",
-  "bundle": "EVA.plugin.matterjs",
+  "bundle": "EVA.plugin.renderer.matterjs",
   "unpkg": "dist/EVA.plugin.renderer.matterjs.min.js",
   "files": [
     "index.js",
@@ -18,6 +18,6 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "^1.0.7"
+    "@eva/eva.js": "^1.0.8"
   }
 }
