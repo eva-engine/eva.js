@@ -154,10 +154,11 @@ class Sound extends Component {
     this.buffer = buffer;
     this.duration = this.buffer.duration;
     this.actionQueue.forEach((action) => action());
-    this.actionQueue = [];
+    this.actionQueue.length = 0;
   }
 
   onDestroy() {
+    this.actionQueue.length = 0;
     this.destroySource();
   }
 
@@ -190,13 +191,12 @@ class Sound extends Component {
   }
 
   private destroySource() {
-    if (!this.sourceNode) {
-      return;
-    }
+    if (!this.sourceNode) return;
     this.sourceNode.removeEventListener('ended', this.endedListener);
     this.sourceNode.stop();
     this.sourceNode.disconnect();
     this.sourceNode = null;
+
     this.startTime = 0;
     this.playTime = 0;
     this.playing = false;
