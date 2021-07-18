@@ -23,7 +23,7 @@ class Ticker {
   frameRate: number;
 
   /** Global Timeline **/
-  timeline: Timeline;
+  private timeline: Timeline;
 
   /** Time between two frame */
   private _frameDuration: number;
@@ -66,8 +66,6 @@ class Ticker {
     this._tickers = new Set();
     this._requestId = null;
 
-    // this._activeWithPause = false;
-
     this._ticker = () => {
       if (this._started) {
         this._requestId = requestAnimationFrame(this._ticker);
@@ -84,8 +82,8 @@ class Ticker {
   update() {
     const currentTime = this.timeline.currentTime;
     const globalTime = this.timeline.globalTime;
-    const durationTime = currentTime - this._lastFrameTime;
 
+    const durationTime = currentTime - this._lastFrameTime;
     if (durationTime >= this._frameDuration) {
       const frameTime = currentTime - (durationTime % this._frameDuration);
       const deltaTime = frameTime - this._lastFrameTime;
@@ -96,8 +94,7 @@ class Ticker {
         time: globalTime,
         currentTime: currentTime,
         frameCount: ++this._frameCount,
-        fps: Math.round(1000 / deltaTime),
-        timeline: this.timeline
+        fps: Math.round(1000 / deltaTime)
       };
 
       for (const func of this._tickers) {
@@ -131,21 +128,6 @@ class Ticker {
     this._started = false;
     this.timeline.playbackRate = 0;
   }
-
-  // active() {
-  //   if (!this._activeWithPause) {
-  //     this.start();
-  //   }
-  //   this._activeWithPause = false;
-  // }
-
-  // background() {
-  //   if (!this._started) {
-  //     this._activeWithPause = true;
-  //   } else {
-  //     this.pause();
-  //   }
-  // }
 }
 
 export default Ticker;

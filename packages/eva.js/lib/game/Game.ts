@@ -4,7 +4,6 @@ import System, { SystemType } from '../core/System';
 import Component from '../core/Component';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
-import Timeline from 'sprite-timeline';
 
 /** eva plugin struct */
 export interface PluginStruct {
@@ -40,6 +39,8 @@ interface LoadSceneParams {
 const triggerStart = (obj: System | Component) => {
   if (!(obj instanceof System) && !(obj instanceof Component)) return;
   if (obj.started) return;
+  obj.started = true;
+
   try {
     obj.start && obj.start();
   } catch (e) {
@@ -51,7 +52,6 @@ const triggerStart = (obj: System | Component) => {
       console.error(`${obj.constructor.systemName} start error`, e);
     }
   }
-  obj.started = true;
 };
 
 const getAllGameObjects = game => {
@@ -109,6 +109,7 @@ const gameObjectResume = gameObjects => {
     }
   }
 };
+
 const gameObjectPause = gameObjects => {
   for (const gameObject of gameObjects) {
     for (const component of gameObject.components) {
@@ -141,11 +142,6 @@ class Game extends EventEmitter {
    */
   ticker: Ticker;
 
-  /**
-   * Global timeline 
-   */
-  timeline: Timeline;
-
   /** Systems alled to this game */
   systems: System[] = [];
 
@@ -158,7 +154,6 @@ class Game extends EventEmitter {
     super();
 
     this.ticker = new Ticker({ autoStart: false, frameRate });
-    this.timeline = this.ticker.timeline;
     this.initTicker();
 
     if (systems && systems.length) {
