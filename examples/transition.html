@@ -144,7 +144,11 @@
 
       animation.play('move', 1);
       animation.on('finish', name => {
-        name === 'move' && animation.play('idle', 5);
+        if (name === 'move') {
+          animation.play('idle', 5);
+        } else if (name === 'idle') {
+          console.log('transition finished');
+        }
       });
 
       game.scene.addChild(image);

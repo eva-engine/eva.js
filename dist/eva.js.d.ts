@@ -1,6 +1,8 @@
 import EE from 'eventemitter3';
 import EventEmitter from 'eventemitter3';
 import { Loader } from 'resource-loader';
+import Timeline from 'sprite-timeline/src/index';
+import { default as Timeline_2 } from 'sprite-timeline';
 
 export declare class Component extends EventEmitter {
     static componentName: string;
@@ -57,8 +59,9 @@ export declare class Game extends EventEmitter {
     started: boolean;
     multiScenes: Scene[];
     ticker: Ticker;
+    timeline: Timeline_2;
     systems: System[];
-    constructor({ autoStart, frameRate, systems, needScene, }?: GameParams);
+    constructor({ systems, frameRate, autoStart, needScene, }?: GameParams);
     get scene(): Scene;
     set scene(scene: Scene);
     get gameObjects(): any[];
@@ -298,29 +301,25 @@ declare type SystemType = typeof System;
 declare class Ticker {
     autoStart: boolean;
     frameRate: number;
+    timeline: Timeline;
     private _frameDuration;
     private _tickers;
-    private _blockTime;
     _requestId: number;
-    private _lastTime;
+    private _lastFrameTime;
     private _frameCount;
-    private _activeWithPause;
     private _ticker;
     private _started;
-    private _lastStopTime;
     constructor(options?: TickerOptions);
     update(): void;
     add(fn: any): void;
     remove(fn: any): void;
     start(): void;
     pause(): void;
-    active(): void;
-    background(): void;
 }
 
 declare interface TickerOptions {
-    autoStart: boolean;
-    frameRate: number;
+    autoStart?: boolean;
+    frameRate?: number;
 }
 
 export declare class Transform extends Component {
@@ -368,6 +367,7 @@ export declare interface UpdateParams {
     deltaTime: number;
     frameCount: number;
     time: number;
+    currentTime: number;
     fps: number;
 }
 

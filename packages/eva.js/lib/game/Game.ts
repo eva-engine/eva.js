@@ -4,6 +4,7 @@ import System, { SystemType } from '../core/System';
 import Component from '../core/Component';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
+import Timeline from 'sprite-timeline';
 
 /** eva plugin struct */
 export interface PluginStruct {
@@ -136,24 +137,28 @@ class Game extends EventEmitter {
   multiScenes: Scene[] = [];
 
   /**
-   * Timeline for game
+   * Ticker
    */
   ticker: Ticker;
+
+  /**
+   * Global timeline 
+   */
+  timeline: Timeline;
 
   /** Systems alled to this game */
   systems: System[] = [];
 
   constructor({
-    autoStart = true,
-    frameRate = 120,
     systems,
+    frameRate = 60,
+    autoStart = true,
     needScene = true,
   }: GameParams = {}) {
     super();
-    this.ticker = new Ticker({
-      autoStart: false,
-      frameRate,
-    });
+
+    this.ticker = new Ticker({ autoStart: false, frameRate });
+    this.timeline = this.ticker.timeline;
     this.initTicker();
 
     if (systems && systems.length) {
@@ -161,6 +166,7 @@ class Game extends EventEmitter {
         this.addSystem(system);
       }
     }
+
     if (needScene) {
       this.loadScene(new Scene('scene'));
     }
@@ -272,9 +278,7 @@ class Game extends EventEmitter {
 
   /** Pause game */
   pause() {
-    if (this.playing === false) {
-      return;
-    }
+    if (!this.playing) return;
     this.playing = false;
     this.ticker.pause();
     this.triggerPause();
@@ -282,22 +286,18 @@ class Game extends EventEmitter {
 
   /** Start game */
   start() {
-    if (this.playing === true) {
-      return;
-    }
-    this.ticker.start();
+    if (this.playing) return;
     this.playing = true;
     this.started = true;
+    this.ticker.start();
   }
 
   /** Resume game */
   resume() {
-    if (this.playing === true) {
-      return;
-    }
+    if (this.playing) return;
+    this.playing = true;
     this.ticker.start();
     this.triggerResume();
-    this.playing = true;
   }
 
   /**
@@ -365,8 +365,7 @@ class Game extends EventEmitter {
     for (const system of [...this.systems]) {
       this.removeSystem(system);
     }
-
-    this.systems = [];
+    this.systems.length = 0;
   }
 
   /** Destroy game instance */
