@@ -1,8 +1,6 @@
 import EE from 'eventemitter3';
 import EventEmitter from 'eventemitter3';
 import { Loader } from 'resource-loader';
-import Timeline from 'sprite-timeline/src/index';
-import { default as Timeline_2 } from 'sprite-timeline';
 
 export declare class Component extends EventEmitter {
     static componentName: string;
@@ -59,7 +57,6 @@ export declare class Game extends EventEmitter {
     started: boolean;
     multiScenes: Scene[];
     ticker: Ticker;
-    timeline: Timeline_2;
     systems: System[];
     constructor({ systems, frameRate, autoStart, needScene, }?: GameParams);
     get scene(): Scene;
@@ -301,7 +298,7 @@ declare type SystemType = typeof System;
 declare class Ticker {
     autoStart: boolean;
     frameRate: number;
-    timeline: Timeline;
+    private timeline;
     private _frameDuration;
     private _tickers;
     _requestId: number;
