@@ -97,6 +97,7 @@ class Ticker {
         currentTime: currentTime,
         frameCount: ++this._frameCount,
         fps: Math.round(1000 / deltaTime),
+        timeline: this.timeline
       };
 
       for (const func of this._tickers) {

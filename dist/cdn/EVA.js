@@ -1,3 +1,5 @@
+
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -5,18 +7,18 @@
 }(this, (function (exports) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation.
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
 
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
 
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
     ***************************************************************************** */
     /* global Reflect, Promise */
 
@@ -41,11 +43,10 @@
     }
 
     function __awaiter(thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
             function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
@@ -79,15 +80,14 @@
     }
 
     function __values(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
         if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
+        return {
             next: function () {
                 if (o && i >= o.length) o = void 0;
                 return { value: o && o[i++], done: !o };
             }
         };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
     function __read(o, n) {
@@ -706,12 +706,8 @@
       return this.__data__.has(key);
     }
 
-    var global$1 = (typeof global !== "undefined" ? global :
-                typeof self !== "undefined" ? self :
-                typeof window !== "undefined" ? window : {});
-
     /** Detect free variable `global` from Node.js. */
-    var freeGlobal = typeof global$1 == 'object' && global$1 && global$1.Object === Object && global$1;
+    var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
     /** Detect free variable `self`. */
     var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -984,7 +980,7 @@
     }
 
     /* Built-in method references that are verified to be native. */
-    var Map = getNative(root, 'Map');
+    var Map$1 = getNative(root, 'Map');
 
     /* Built-in method references that are verified to be native. */
     var nativeCreate = getNative(Object, 'create');
@@ -1120,7 +1116,7 @@
       this.size = 0;
       this.__data__ = {
         'hash': new Hash,
-        'map': new (Map || ListCache),
+        'map': new (Map$1 || ListCache),
         'string': new Hash
       };
     }
@@ -1256,7 +1252,7 @@
       var data = this.__data__;
       if (data instanceof ListCache) {
         var pairs = data.__data__;
-        if (!Map || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
+        if (!Map$1 || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
           pairs.push([key, value]);
           this.size = ++data.size;
           return this;
@@ -2328,7 +2324,7 @@
 
     /** Used to detect maps, sets, and weakmaps. */
     var dataViewCtorString = toSource(DataView),
-        mapCtorString = toSource(Map),
+        mapCtorString = toSource(Map$1),
         promiseCtorString = toSource(Promise$1),
         setCtorString = toSource(Set$1),
         weakMapCtorString = toSource(WeakMap);
@@ -2344,7 +2340,7 @@
 
     // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
     if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
-        (Map && getTag(new Map) != mapTag) ||
+        (Map$1 && getTag(new Map$1) != mapTag) ||
         (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
         (Set$1 && getTag(new Set$1) != setTag) ||
         (WeakMap && getTag(new WeakMap) != weakMapTag)) {
@@ -3073,23 +3069,383 @@
         return System;
     }());
 
+    function createNowTime(syncLocker = true) {
+      let nowtime = null;
+      if(Date.now) {
+        nowtime = Date.now;
+      } else {
+        nowtime = () => (new Date()).getTime();
+      }
+
+      return nowtime;
+    }
+
+    /*
+      delay = 100 -> delay = {delay: 100}
+      delay = {entropy: 100} -> delay = {delay: 100, isEntropy: true}
+     */
+    function formatDelay(delay) {
+      if(typeof delay === 'number') {
+        delay = {delay};
+      } else if('entropy' in delay) {
+        delay = {delay: delay.entropy, isEntropy: true};
+      }
+      return delay;
+    }
+
+    const _nowtime = createNowTime();
+
+    const defaultOptions$1 = {
+      originTime: 0,
+      playbackRate: 1.0,
+    };
+
+    const _timeMark = Symbol('timeMark'),
+      _playbackRate = Symbol('playbackRate'),
+      _timers = Symbol('timers'),
+      _originTime = Symbol('originTime'),
+      _setTimer = Symbol('setTimer'),
+      _parent = Symbol('parent');
+
+    class Timeline {
+      constructor(options, parent) {
+        if(options instanceof Timeline) {
+          parent = options;
+          options = {};
+        }
+
+        options = Object.assign({}, defaultOptions$1, options);
+
+        if(parent) {
+          this[_parent] = parent;
+        }
+
+        const nowtime = options.nowtime || _nowtime;
+        if(!parent) {
+          const createTime = nowtime();
+          Object.defineProperty(this, 'globalTime', {
+            get() {
+              return nowtime() - createTime;
+            },
+          });
+        } else {
+          Object.defineProperty(this, 'globalTime', {
+            get() {
+              return parent.currentTime;
+            },
+          });
+        }
+
+        // timeMark records the reference points on timeline
+        // Each time we change the playbackRate or currentTime or entropy
+        // A new timeMark will be generated
+        // timeMark sorted by entropy
+        // If you reset entropy, all the timeMarks behind the new entropy
+        // should be dropped
+        this[_timeMark] = [{
+          globalTime: this.globalTime,
+          localTime: -options.originTime,
+          entropy: -options.originTime,
+          playbackRate: options.playbackRate,
+          globalEntropy: 0,
+        }];
+
+        if(this[_parent]) {
+          this[_timeMark][0].globalEntropy = this[_parent].entropy;
+        }
+
+        this[_originTime] = options.originTime;
+        this[_playbackRate] = options.playbackRate;
+        this[_timers] = new Map();
+      }
+
+      get parent() {
+        return this[_parent];
+      }
+
+      get lastTimeMark() {
+        return this[_timeMark][this[_timeMark].length - 1];
+      }
+
+      markTime({time = this.currentTime, entropy = this.entropy, playbackRate = this.playbackRate} = {}) {
+        const timeMark = {
+          globalTime: this.globalTime,
+          localTime: time,
+          entropy,
+          playbackRate,
+          globalEntropy: this.globalEntropy,
+        };
+        this[_timeMark].push(timeMark);
+      }
+
+      get currentTime() {
+        const {localTime, globalTime} = this.lastTimeMark;
+        return localTime + (this.globalTime - globalTime) * this.playbackRate;
+      }
+
+      set currentTime(time) {
+        const from = this.currentTime,
+          to = time,
+          timers = this[_timers];
+
+        this.markTime({time})
+        ;[...timers].forEach(([id, timer]) => {
+          if(!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
+          const {isEntropy, delay, heading} = timer.time,
+            {handler, startTime} = timer;
+
+          if(!isEntropy) {
+            const endTime = startTime + delay;
+            if(delay === 0
+              || heading !== false && (to - from) * delay <= 0
+              || from <= endTime && endTime <= to
+              || from >= endTime && endTime >= to) {
+              handler();
+              this.clearTimeout(id);
+            }
+          } else if(delay === 0) {
+            handler();
+            this.clearTimeout(id);
+          }
+        });
+        this.updateTimers();
+      }
+
+      // Both currentTime and entropy should be influenced by playbackRate.
+      // If current playbackRate is negative, the currentTime should go backwards
+      // while the entropy remain to go forwards.
+      // Both of the initial values is set to -originTime
+      get entropy() {
+        const {entropy, globalEntropy} = this.lastTimeMark;
+        return entropy + Math.abs((this.globalEntropy - globalEntropy) * this.playbackRate);
+      }
+
+      get globalEntropy() {
+        return this[_parent] ? this[_parent].entropy : this.globalTime;
+      }
+
+      // get globalTime() {
+      //   if(this[_parent]) {
+      //     return this[_parent].currentTime;
+      //   }
+
+      //   return nowtime();
+      // }
+
+      // change entropy will NOT cause currentTime changing but may influence the pass
+      // and the future of the timeline. (It may change the result of seek***Time)
+      // While entropy is set, all the marks behind will be droped
+      set entropy(entropy) {
+        if(this.entropy > entropy) {
+          const idx = this.seekTimeMark(entropy);
+          this[_timeMark].length = idx + 1;
+        }
+        this.markTime({entropy});
+        this.updateTimers();
+      }
+
+      fork(options) {
+        return new Timeline(options, this);
+      }
+
+      seekGlobalTime(seekEntropy) {
+        const idx = this.seekTimeMark(seekEntropy),
+          timeMark = this[_timeMark][idx];
+
+        const {entropy, playbackRate, globalTime} = timeMark;
+
+        return globalTime + (seekEntropy - entropy) / Math.abs(playbackRate);
+      }
+
+      seekLocalTime(seekEntropy) {
+        const idx = this.seekTimeMark(seekEntropy),
+          timeMark = this[_timeMark][idx];
+
+        const {localTime, entropy, playbackRate} = timeMark;
+
+        if(playbackRate > 0) {
+          return localTime + (seekEntropy - entropy);
+        }
+        return localTime - (seekEntropy - entropy);
+      }
+
+      seekTimeMark(entropy) {
+        const timeMark = this[_timeMark];
+
+        let l = 0,
+          r = timeMark.length - 1;
+
+        if(entropy <= timeMark[l].entropy) {
+          return l;
+        }
+        if(entropy >= timeMark[r].entropy) {
+          return r;
+        }
+
+        let m = Math.floor((l + r) / 2); // binary search
+
+        while(m > l && m < r) {
+          if(entropy === timeMark[m].entropy) {
+            return m;
+          } if(entropy < timeMark[m].entropy) {
+            r = m;
+          } else if(entropy > timeMark[m].entropy) {
+            l = m;
+          }
+          m = Math.floor((l + r) / 2);
+        }
+
+        return l;
+      }
+
+      get playbackRate() {
+        return this[_playbackRate];
+      }
+
+      set playbackRate(rate) {
+        if(rate !== this.playbackRate) {
+          this.markTime({playbackRate: rate});
+          this[_playbackRate] = rate;
+          this.updateTimers();
+        }
+      }
+
+      get paused() {
+        if(this.playbackRate === 0) return true;
+        let parent = this.parent;
+        while(parent) {
+          if(parent.playbackRate === 0) return true;
+          parent = parent.parent;
+        }
+        return false;
+      }
+
+      updateTimers() {
+        const timers = [...this[_timers]];
+        timers.forEach(([id, timer]) => {
+          this[_setTimer](timer.handler, timer.time, id);
+        });
+      }
+
+      clearTimeout(id) {
+        const timer = this[_timers].get(id);
+
+        if(timer && timer.timerID != null) {
+          if(this[_parent]) {
+            this[_parent].clearTimeout(timer.timerID);
+          } else {
+            clearTimeout(timer.timerID);
+          }
+        }
+        this[_timers].delete(id);
+      }
+
+      clearInterval(id) {
+        return this.clearTimeout(id);
+      }
+
+      clear() {
+        // clear all running timers
+        const timers = this[_timers]
+        ;[...timers.keys()].forEach((id) => {
+          this.clearTimeout(id);
+        });
+      }
+
+      /*
+        setTimeout(func, {delay: 100, isEntropy: true})
+        setTimeout(func, {entropy: 100})
+        setTimeout(func, 100})
+       */
+      setTimeout(handler, time = {delay: 0}) {
+        return this[_setTimer](handler, time);
+      }
+
+      setInterval(handler, time = {delay: 0}) {
+        const that = this;
+        const id = this[_setTimer](function step() {
+          // reset timer before handler cause we may clearTimeout in handler()
+          that[_setTimer](step, time, id);
+          handler();
+        }, time);
+
+        return id;
+      }
+
+      [_setTimer](handler, time, id = Symbol('timerID')) {
+        time = formatDelay(time);
+
+        const timer = this[_timers].get(id);
+        let delay,
+          timerID = null,
+          startTime,
+          startEntropy;
+
+        if(timer) {
+          this.clearTimeout(id);
+          if(time.isEntropy) {
+            delay = (time.delay - (this.entropy - timer.startEntropy)) / Math.abs(this.playbackRate);
+          } else {
+            delay = (time.delay - (this.currentTime - timer.startTime)) / this.playbackRate;
+          }
+          startTime = timer.startTime;
+          startEntropy = timer.startEntropy;
+        } else {
+          delay = time.delay / (time.isEntropy ? Math.abs(this.playbackRate) : this.playbackRate);
+          startTime = this.currentTime;
+          startEntropy = this.entropy;
+        }
+
+        const parent = this[_parent],
+          globalTimeout = parent ? parent.setTimeout.bind(parent) : setTimeout;
+
+        const heading = time.heading;
+        // console.log(heading, parent, delay)
+        if(!parent && heading === false && delay < 0) {
+          delay = Infinity;
+        }
+
+        // if playbackRate is zero, delay will be infinity.
+        // For wxapp bugs, cannot use Number.isFinite yet.
+        if(isFinite(delay) || parent) { // eslint-disable-line no-restricted-globals
+          delay = Math.ceil(delay);
+          if(globalTimeout !== setTimeout) {
+            delay = {delay, heading};
+          }
+          timerID = globalTimeout(() => {
+            this[_timers].delete(id);
+            handler();
+          }, delay);
+        }
+
+        this[_timers].set(id, {
+          timerID,
+          handler,
+          time,
+          startTime,
+          startEntropy,
+        });
+
+        return id;
+      }
+    }
+
     var defaultOptions = {
         autoStart: true,
-        frameRate: 60,
+        frameRate: 60
     };
     var Ticker = (function () {
         function Ticker(options) {
             var _this = this;
             options = Object.assign({}, defaultOptions, options);
+            this._frameCount = 0;
             this._frameDuration = 1000 / options.frameRate;
             this.autoStart = options.autoStart;
             this.frameRate = options.frameRate;
+            this.timeline = new Timeline({ originTime: 0, playbackRate: 1.0 });
+            this._lastFrameTime = this.timeline.currentTime;
             this._tickers = new Set();
             this._requestId = null;
-            this._blockTime = 0;
-            this._lastTime = Date.now();
-            this._frameCount = 0;
-            this._activeWithPause = false;
             this._ticker = function () {
                 if (_this._started) {
                     _this._requestId = requestAnimationFrame(_this._ticker);
@@ -3102,23 +3458,25 @@
         }
         Ticker.prototype.update = function () {
             var e_1, _a;
-            var time = Date.now();
-            if (time - this._lastTime >= this._frameDuration) {
-                var durationTime = time - this._lastTime;
-                var frameTime = time - (durationTime % this._frameDuration);
-                var deltaTime = frameTime - this._lastTime;
-                this._lastTime = frameTime;
-                var e = {
+            var currentTime = this.timeline.currentTime;
+            var globalTime = this.timeline.globalTime;
+            var durationTime = currentTime - this._lastFrameTime;
+            if (durationTime >= this._frameDuration) {
+                var frameTime = currentTime - (durationTime % this._frameDuration);
+                var deltaTime = frameTime - this._lastFrameTime;
+                this._lastFrameTime = frameTime;
+                var options = {
                     deltaTime: deltaTime,
+                    time: globalTime,
+                    currentTime: currentTime,
                     frameCount: ++this._frameCount,
-                    time: time - this._blockTime,
                     fps: Math.round(1000 / deltaTime),
                 };
                 try {
                     for (var _b = __values(this._tickers), _c = _b.next(); !_c.done; _c = _b.next()) {
                         var func = _c.value;
                         if (typeof func === 'function') {
-                            func(e);
+                            func(options);
                         }
                     }
                 }
@@ -3138,34 +3496,15 @@
             this._tickers.delete(fn);
         };
         Ticker.prototype.start = function () {
-            if (this._started) {
+            if (this._started)
                 return;
-            }
-            if (this._lastStopTime > 0) {
-                this._blockTime = this._blockTime + Date.now() - this._lastStopTime;
-                this._lastStopTime = 0;
-            }
             this._started = true;
-            this._lastTime = Date.now();
+            this.timeline.playbackRate = 1.0;
             this._requestId = requestAnimationFrame(this._ticker);
         };
         Ticker.prototype.pause = function () {
             this._started = false;
-            this._lastStopTime = Date.now();
-        };
-        Ticker.prototype.active = function () {
-            if (!this._activeWithPause) {
-                this.start();
-            }
-            this._activeWithPause = false;
-        };
-        Ticker.prototype.background = function () {
-            if (!this._started) {
-                this._activeWithPause = true;
-            }
-            else {
-                this.pause();
-            }
+            this.timeline.playbackRate = 0;
         };
         return Ticker;
     }());
@@ -3384,16 +3723,14 @@
         __extends$1(Game, _super);
         function Game(_a) {
             var e_10, _b;
-            var _c = _a === void 0 ? {} : _a, _d = _c.autoStart, autoStart = _d === void 0 ? true : _d, _e = _c.frameRate, frameRate = _e === void 0 ? 120 : _e, systems = _c.systems, _f = _c.needScene, needScene = _f === void 0 ? true : _f;
+            var _c = _a === void 0 ? {} : _a, systems = _c.systems, _d = _c.frameRate, frameRate = _d === void 0 ? 60 : _d, _e = _c.autoStart, autoStart = _e === void 0 ? true : _e, _f = _c.needScene, needScene = _f === void 0 ? true : _f;
             var _this = _super.call(this) || this;
             _this.playing = false;
             _this.started = false;
             _this.multiScenes = [];
             _this.systems = [];
-            _this.ticker = new Ticker({
-                autoStart: false,
-                frameRate: frameRate,
-            });
+            _this.ticker = new Ticker({ autoStart: false, frameRate: frameRate });
+            _this.timeline = _this.ticker.timeline;
             _this.initTicker();
             if (systems && systems.length) {
                 try {
@@ -3496,28 +3833,25 @@
             });
         };
         Game.prototype.pause = function () {
-            if (this.playing === false) {
+            if (!this.playing)
                 return;
-            }
             this.playing = false;
             this.ticker.pause();
             this.triggerPause();
         };
         Game.prototype.start = function () {
-            if (this.playing === true) {
+            if (this.playing)
                 return;
-            }
-            this.ticker.start();
             this.playing = true;
             this.started = true;
+            this.ticker.start();
         };
         Game.prototype.resume = function () {
-            if (this.playing === true) {
+            if (this.playing)
                 return;
-            }
+            this.playing = true;
             this.ticker.start();
             this.triggerResume();
-            this.playing = true;
         };
         Game.prototype.initTicker = function () {
             var _this = this;
@@ -3622,7 +3956,7 @@
                 }
                 finally { if (e_15) throw e_15.error; }
             }
-            this.systems = [];
+            this.systems.length = 0;
         };
         Game.prototype.destroy = function () {
             this.removeAllListeners();

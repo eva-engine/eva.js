@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import GameObject from './GameObject';
+import Timeline from 'sprite-timeline/src/index';
 
 /** frame info pass to `Component.update` method */
 export interface UpdateParams {
@@ -17,6 +18,9 @@ export interface UpdateParams {
 
   /** fps at current frame */
   fps: number;
+
+  /** game timeline **/
+  timeline: Timeline;
 }
 
 /** type of Component is function */
