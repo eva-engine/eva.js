@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-evax",
-  "version": "1.0.11-alpha.2",
+  "version": "1.0.11",
   "description": "@eva/plugin-evax",
   "main": "index.js",
   "module": "dist/plugin-evax.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "^1.0.11-alpha.2",
+    "@eva/eva.js": "^1.0.11",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21"
   }
