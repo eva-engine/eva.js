@@ -1,5 +1,4 @@
-import isEqual from 'lodash-es/isEqual';
-import isObject from 'lodash-es/isObject';
+import { isEqual, isObject } from 'lodash-es';
 import Component from './Component';
 import System from './System';
 import { ObserverEvent } from './ComponentObserver';

@@ -1,4 +1,4 @@
-import isEqual from 'lodash-es/isEqual';
+import { isEqual } from 'lodash-es';
 import GameObject from './GameObject';
 import Component from './Component';
 import { PureObserverProp, ObserverType } from './observer';

@@ -12,6 +12,9 @@ export interface UpdateParams {
   /** current timestamp */
   time: number;
 
+  /** current timestamp */
+  currentTime: number;
+
   /** fps at current frame */
   fps: number;
 }

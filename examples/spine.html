@@ -73,7 +73,7 @@
       spine.on('complete', e => {
         console.log('动画播放结束', e.name);
       });
-      spine.play('idle');
+      spine.play('idle', 5);
       game.scene.addChild(gameObject);
     </script>
   </body>

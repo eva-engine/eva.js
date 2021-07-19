@@ -39,6 +39,8 @@ interface LoadSceneParams {
 const triggerStart = (obj: System | Component) => {
   if (!(obj instanceof System) && !(obj instanceof Component)) return;
   if (obj.started) return;
+  obj.started = true;
+
   try {
     obj.start && obj.start();
   } catch (e) {
@@ -50,7 +52,6 @@ const triggerStart = (obj: System | Component) => {
       console.error(`${obj.constructor.systemName} start error`, e);
     }
   }
-  obj.started = true;
 };
 
 const getAllGameObjects = game => {
@@ -108,6 +109,7 @@ const gameObjectResume = gameObjects => {
     }
   }
 };
+
 const gameObjectPause = gameObjects => {
   for (const gameObject of gameObjects) {
     for (const component of gameObject.components) {
@@ -136,7 +138,7 @@ class Game extends EventEmitter {
   multiScenes: Scene[] = [];
 
   /**
-   * Timeline for game
+   * Ticker
    */
   ticker: Ticker;
 
@@ -144,16 +146,14 @@ class Game extends EventEmitter {
   systems: System[] = [];
 
   constructor({
-    autoStart = true,
-    frameRate = 120,
     systems,
+    frameRate = 60,
+    autoStart = true,
     needScene = true,
   }: GameParams = {}) {
     super();
-    this.ticker = new Ticker({
-      autoStart: false,
-      frameRate,
-    });
+
+    this.ticker = new Ticker({ autoStart: false, frameRate });
     this.initTicker();
 
     if (systems && systems.length) {
@@ -161,6 +161,7 @@ class Game extends EventEmitter {
         this.addSystem(system);
       }
     }
+
     if (needScene) {
       this.loadScene(new Scene('scene'));
     }
@@ -272,9 +273,7 @@ class Game extends EventEmitter {
 
   /** Pause game */
   pause() {
-    if (this.playing === false) {
-      return;
-    }
+    if (!this.playing) return;
     this.playing = false;
     this.ticker.pause();
     this.triggerPause();
@@ -282,22 +281,18 @@ class Game extends EventEmitter {
 
   /** Start game */
   start() {
-    if (this.playing === true) {
-      return;
-    }
-    this.ticker.start();
+    if (this.playing) return;
     this.playing = true;
     this.started = true;
+    this.ticker.start();
   }
 
   /** Resume game */
   resume() {
-    if (this.playing === true) {
-      return;
-    }
+    if (this.playing) return;
+    this.playing = true;
     this.ticker.start();
     this.triggerResume();
-    this.playing = true;
   }
 
   /**
@@ -365,8 +360,7 @@ class Game extends EventEmitter {
     for (const system of [...this.systems]) {
       this.removeSystem(system);
     }
-
-    this.systems = [];
+    this.systems.length = 0;
   }
 
   /** Destroy game instance */

@@ -1,16 +1,12 @@
 import path from 'path';
-import commonjs from '@rollup/plugin-commonjs';
-import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
 import {terser} from 'rollup-plugin-terser';
-import miniProgramPlugin from './rollup.miniprogram.plugin';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import copy from 'rollup-plugin-copy';
+import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
   throw new Error('TARGET package must be specified via --environment flag.');
@@ -120,6 +116,15 @@ function createConfig(format, output, plugins = []) {
   });
   hasTypesChecked = true;
 
+  const nodePlugins =
+    format !== 'cjs' && format !== 'esm'
+      ? [
+          require('@rollup/plugin-commonjs')({sourceMap: false}),
+          require('rollup-plugin-polyfill-node')(),
+          require('@rollup/plugin-node-resolve').nodeResolve(),
+        ]
+      : [];
+
   return {
     input: entryFile,
     output: {
@@ -140,16 +145,14 @@ function createConfig(format, output, plugins = []) {
       '@eva/miniprogram-adapter',
     ],
     plugins: [
-      ...plugins,
-      globals(),
-      builtins(),
       json({preferConst: true}),
-      commonjs(),
       tsPlugin,
       replace({
-        __DEV__: process.env.NODE_ENV === 'development',
         __TEST__: false,
+        __DEV__: process.env.NODE_ENV === 'development',
       }),
+      ...nodePlugins,
+      ...plugins,
     ],
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
@@ -169,6 +172,23 @@ function createCjsDevelopConfig(format) {
   });
 }
 
+function createCjsProductionConfig(format) {
+  return createConfig(
+    format,
+    {
+      file: resolve(`dist/${name}.${format}.prod.js`),
+      format: outputConfigs[format].format,
+    },
+    [
+      terser({
+        toplevel: true,
+        mangle: true,
+        compress: true,
+      }),
+    ],
+  );
+}
+
 function createEsmDevelopConfig(format) {
   return createConfig(format, {
     file: outputConfigs[format].file,
@@ -178,11 +198,6 @@ function createEsmDevelopConfig(format) {
 
 function createUmdDevelopConfig(format) {
   let plugins = [
-    nodeResolve({
-      browser: true,
-      mainFields: ['jsnext', 'esnext', 'module', 'main'],
-      rootDir: packageDir,
-    }),
     copy({
       targets: [{src: outputConfigs[format].file, dest: resolve(`dist`)}],
       hook: 'writeBundle',
@@ -207,23 +222,6 @@ function createUmdDevelopConfig(format) {
   return createConfig(format, outputConfigs[format], plugins);
 }
 
-function createCjsProductionConfig(format) {
-  return createConfig(
-    format,
-    {
-      file: resolve(`dist/${name}.${format}.prod.js`),
-      format: outputConfigs[format].format,
-    },
-    [
-      terser({
-        toplevel: true,
-        mangle: true,
-        compress: true,
-      }),
-    ],
-  );
-}
-
 function createMinifiedConfig(format) {
   const {file, name} = outputConfigs[format];
   const destFilename = file.replace('dist/cdn', 'dist/cdn/min').replace(/\.js$/, '.min.js');
@@ -235,12 +233,6 @@ function createMinifiedConfig(format) {
       file: destFilename,
     },
     [
-      nodeResolve({
-        browser: true,
-        mainFields: ['jsnext', 'esnext', 'module', 'main'],
-        rootDir: packageDir,
-        preferBuiltins: true,
-      }),
       terser({
         toplevel: true,
         mangle: true,

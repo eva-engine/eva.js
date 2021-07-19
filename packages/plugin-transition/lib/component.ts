@@ -1,5 +1,6 @@
 import Animation from './animation';
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
+import { Group } from '@tweenjs/tween.js';
 
 interface AnimationStruct {
   name: string;
@@ -10,22 +11,26 @@ interface AnimationStruct {
     tween?: string;
   }[];
 }
-interface GroupStruct {
-  [propName: string]: AnimationStruct[];
-}
 
 export default class Transition extends Component {
   static componentName: string = 'Transition';
-  private animations: {[propName: string]: Animation} = {};
-  group: GroupStruct = {};
-  init({group}: {group: any} = {group: {}}) {
+
+  private animations: Record<string, Animation> = {};
+
+  tweenGroup: Group;
+  group: Record<string, AnimationStruct[]> = {};
+
+  init({ group } = { group: {} }) {
     this.group = group;
+    this.tweenGroup = new Group();
   }
+
   awake() {
     for (const name in this.group) {
       this.newAnimation(name);
     }
   }
+
   play(name: string, iteration: number) {
     if (!name) {
       name = Object.keys(this.group)[0];
@@ -37,11 +42,7 @@ export default class Transition extends Component {
       this.animations[name].play(iteration);
     }
   }
-  newAnimation(name) {
-    const animation = new Animation(this.group[name]);
-    animation.on('finish', () => this.emit('finish', name));
-    this.animations[name] = animation;
-  }
+
   stop(name) {
     if (!name) {
       for (const key in this.animations) {
@@ -51,12 +52,37 @@ export default class Transition extends Component {
       this.animations[name].stop();
     }
   }
+
+  onPause() {
+    for (const key in this.animations) {
+      this.animations[key].pause();
+    }
+  }
+
+  onResume() {
+    for (const key in this.animations) {
+      this.animations[key].resume();
+    }
+  }
+
   onDestroy() {
     for (const key in this.animations) {
       this.animations[key].destroy();
     }
+    this.tweenGroup.removeAll();
+    this.tweenGroup = null;
     this.group = null;
     this.animations = null;
     this.removeAllListeners();
+  }
+
+  update() {
+    this.tweenGroup.update();
+  }
+
+  newAnimation(name) {
+    const animation = new Animation(this.group[name], this.tweenGroup);
+    animation.on('finish', () => this.emit('finish', name));
+    this.animations[name] = animation;
   }
 }
