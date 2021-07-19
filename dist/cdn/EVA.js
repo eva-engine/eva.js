@@ -1,3 +1,5 @@
+
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -3099,13 +3101,15 @@
             if (this.autoStart) {
                 this.start();
             }
-            this.bindEvent();
         }
         Ticker.prototype.update = function () {
             var e_1, _a;
             var time = Date.now();
             if (time - this._lastTime >= this._frameDuration) {
-                var deltaTime = time - this._lastTime;
+                var durationTime = time - this._lastTime;
+                var frameTime = time - (durationTime % this._frameDuration);
+                var deltaTime = frameTime - this._lastTime;
+                this._lastTime = frameTime;
                 var e = {
                     deltaTime: deltaTime,
                     frameCount: ++this._frameCount,
@@ -3127,7 +3131,6 @@
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
-                this._lastTime = time;
             }
         };
         Ticker.prototype.add = function (fn) {
@@ -3166,7 +3169,6 @@
                 this.pause();
             }
         };
-        Ticker.prototype.bindEvent = function () { };
         return Ticker;
     }());
 
