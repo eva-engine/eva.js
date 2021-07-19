@@ -3107,19 +3107,19 @@
 
     class Timeline {
       constructor(options, parent) {
-        if(options instanceof Timeline) {
+        if (options instanceof Timeline) {
           parent = options;
           options = {};
         }
 
         options = Object.assign({}, defaultOptions$1, options);
 
-        if(parent) {
+        if (parent) {
           this[_parent] = parent;
         }
 
         const nowtime = options.nowtime || _nowtime;
-        if(!parent) {
+        if (!parent) {
           const createTime = nowtime();
           Object.defineProperty(this, 'globalTime', {
             get() {
@@ -3140,15 +3140,17 @@
         // timeMark sorted by entropy
         // If you reset entropy, all the timeMarks behind the new entropy
         // should be dropped
-        this[_timeMark] = [{
-          globalTime: this.globalTime,
-          localTime: -options.originTime,
-          entropy: -options.originTime,
-          playbackRate: options.playbackRate,
-          globalEntropy: 0,
-        }];
+        this[_timeMark] = [
+          {
+            globalTime: this.globalTime,
+            localTime: -options.originTime,
+            entropy: -options.originTime,
+            playbackRate: options.playbackRate,
+            globalEntropy: 0,
+          },
+        ];
 
-        if(this[_parent]) {
+        if (this[_parent]) {
           this[_timeMark][0].globalEntropy = this[_parent].entropy;
         }
 
@@ -3186,22 +3188,24 @@
           to = time,
           timers = this[_timers];
 
-        this.markTime({time})
-        ;[...timers].forEach(([id, timer]) => {
-          if(!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
+        this.markTime({time});
+        [...timers].forEach(([id, timer]) => {
+          if (!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
           const {isEntropy, delay, heading} = timer.time,
             {handler, startTime} = timer;
 
-          if(!isEntropy) {
+          if (!isEntropy) {
             const endTime = startTime + delay;
-            if(delay === 0
-              || heading !== false && (to - from) * delay <= 0
-              || from <= endTime && endTime <= to
-              || from >= endTime && endTime >= to) {
+            if (
+              delay === 0 ||
+              (heading !== false && (to - from) * delay <= 0) ||
+              (from <= endTime && endTime <= to) ||
+              (from >= endTime && endTime >= to)
+            ) {
               handler();
               this.clearTimeout(id);
             }
-          } else if(delay === 0) {
+          } else if (delay === 0) {
             handler();
             this.clearTimeout(id);
           }
@@ -3233,8 +3237,9 @@
       // change entropy will NOT cause currentTime changing but may influence the pass
       // and the future of the timeline. (It may change the result of seek***Time)
       // While entropy is set, all the marks behind will be droped
+      // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
       set entropy(entropy) {
-        if(this.entropy > entropy) {
+        if (this.entropy > entropy) {
           const idx = this.seekTimeMark(entropy);
           this[_timeMark].length = idx + 1;
         }
@@ -3261,7 +3266,7 @@
 
         const {localTime, entropy, playbackRate} = timeMark;
 
-        if(playbackRate > 0) {
+        if (playbackRate > 0) {
           return localTime + (seekEntropy - entropy);
         }
         return localTime - (seekEntropy - entropy);
@@ -3273,21 +3278,22 @@
         let l = 0,
           r = timeMark.length - 1;
 
-        if(entropy <= timeMark[l].entropy) {
+        if (entropy <= timeMark[l].entropy) {
           return l;
         }
-        if(entropy >= timeMark[r].entropy) {
+        if (entropy >= timeMark[r].entropy) {
           return r;
         }
 
         let m = Math.floor((l + r) / 2); // binary search
 
-        while(m > l && m < r) {
-          if(entropy === timeMark[m].entropy) {
+        while (m > l && m < r) {
+          if (entropy === timeMark[m].entropy) {
             return m;
-          } if(entropy < timeMark[m].entropy) {
+          }
+          if (entropy < timeMark[m].entropy) {
             r = m;
-          } else if(entropy > timeMark[m].entropy) {
+          } else if (entropy > timeMark[m].entropy) {
             l = m;
           }
           m = Math.floor((l + r) / 2);
@@ -3301,7 +3307,7 @@
       }
 
       set playbackRate(rate) {
-        if(rate !== this.playbackRate) {
+        if (rate !== this.playbackRate) {
           this.markTime({playbackRate: rate});
           this[_playbackRate] = rate;
           this.updateTimers();
@@ -3309,17 +3315,17 @@
       }
 
       get paused() {
-        if(this.playbackRate === 0) return true;
+        if (this.playbackRate === 0) return true;
         let parent = this.parent;
-        while(parent) {
-          if(parent.playbackRate === 0) return true;
+        while (parent) {
+          if (parent.playbackRate === 0) return true;
           parent = parent.parent;
         }
         return false;
       }
 
       updateTimers() {
-        const timers = [...this[_timers]];
+        const timers = Array.from(this[_timers].entries());
         timers.forEach(([id, timer]) => {
           this[_setTimer](timer.handler, timer.time, id);
         });
@@ -3328,8 +3334,8 @@
       clearTimeout(id) {
         const timer = this[_timers].get(id);
 
-        if(timer && timer.timerID != null) {
-          if(this[_parent]) {
+        if (timer && timer.timerID != null) {
+          if (this[_parent]) {
             this[_parent].clearTimeout(timer.timerID);
           } else {
             clearTimeout(timer.timerID);
@@ -3344,8 +3350,8 @@
 
       clear() {
         // clear all running timers
-        const timers = this[_timers]
-        ;[...timers.keys()].forEach((id) => {
+        const timers = this[_timers];
+        [...timers.keys()].forEach(id => {
           this.clearTimeout(id);
         });
       }
@@ -3379,9 +3385,9 @@
           startTime,
           startEntropy;
 
-        if(timer) {
+        if (timer) {
           this.clearTimeout(id);
-          if(time.isEntropy) {
+          if (time.isEntropy) {
             delay = (time.delay - (this.entropy - timer.startEntropy)) / Math.abs(this.playbackRate);
           } else {
             delay = (time.delay - (this.currentTime - timer.startTime)) / this.playbackRate;
@@ -3399,15 +3405,16 @@
 
         const heading = time.heading;
         // console.log(heading, parent, delay)
-        if(!parent && heading === false && delay < 0) {
+        if (!parent && heading === false && delay < 0) {
           delay = Infinity;
         }
 
         // if playbackRate is zero, delay will be infinity.
         // For wxapp bugs, cannot use Number.isFinite yet.
-        if(isFinite(delay) || parent) { // eslint-disable-line no-restricted-globals
+        if (isFinite(delay) || parent) {
+          // eslint-disable-line no-restricted-globals
           delay = Math.ceil(delay);
-          if(globalTimeout !== setTimeout) {
+          if (globalTimeout !== setTimeout) {
             delay = {delay, heading};
           }
           timerID = globalTimeout(() => {
@@ -3457,7 +3464,6 @@
         Ticker.prototype.update = function () {
             var e_1, _a;
             var currentTime = this.timeline.currentTime;
-            var globalTime = this.timeline.globalTime;
             var durationTime = currentTime - this._lastFrameTime;
             if (durationTime >= this._frameDuration) {
                 var frameTime = currentTime - (durationTime % this._frameDuration);
@@ -3465,7 +3471,7 @@
                 this._lastFrameTime = frameTime;
                 var options = {
                     deltaTime: deltaTime,
-                    time: globalTime,
+                    time: currentTime,
                     currentTime: currentTime,
                     frameCount: ++this._frameCount,
                     fps: Math.round(1000 / deltaTime)
