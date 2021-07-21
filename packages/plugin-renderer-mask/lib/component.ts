@@ -24,7 +24,7 @@ export interface MaskParams {
   spriteName?: string;
 }
 
-export default class Mask extends Component {
+export default class Mask extends Component<MaskParams> {
   static componentName: string = 'Mask';
   @decorators.IDEProp type: MaskParams['type'];
   @decorators.IDEProp style?: MaskParams['style'] = {};

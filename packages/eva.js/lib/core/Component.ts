@@ -48,7 +48,7 @@ export function getComponentName<T extends Component, U extends ComponentType>(
  * Component contain raw data apply to gameObject and how it interacts with the world
  * @public
  */
-class Component extends EventEmitter {
+class Component<T = any> extends EventEmitter {
   /** Name of this component */
   static componentName: string;
 
@@ -70,9 +70,9 @@ class Component extends EventEmitter {
   gameObject: GameObject;
 
   /** Default paramaters for this component */
-  __componentDefaultParams: string;
+  __componentDefaultParams: T;
 
-  constructor(params?: any) {
+  constructor(params?: T) {
     super();
     // @ts-ignore
     this.name = this.constructor.componentName;
@@ -84,7 +84,7 @@ class Component extends EventEmitter {
    * @param params - optional initial parameters
    * @override
    */
-  init?(params?: any): void;
+  init?(params?: T): void;
 
   /**
    * Called when component is added to a gameObject

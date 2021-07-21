@@ -11,8 +11,10 @@ interface AnimationStruct {
     tween?: string;
   }[];
 }
-
-export default class Transition extends Component {
+interface TransitionParams {
+  group: Record<string, AnimationStruct[]>
+}
+export default class Transition extends Component<TransitionParams> {
   static componentName: string = 'Transition';
 
   private animations: Record<string, Animation> = {};

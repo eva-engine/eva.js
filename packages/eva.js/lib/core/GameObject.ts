@@ -8,7 +8,11 @@ let _id = 0;
 function getId() {
   return ++_id;
 }
+type ComponentCtor<T extends Component<unknown>> = (new (...args: any[]) => T) &
+  Omit<typeof Component, 'prototype'>;
 
+
+// type ComponentCtor<T extends Component> = new () => T
 /**
  * GameObject is a general purpose object. It consists of a unique id and components.
  * @public
@@ -46,7 +50,7 @@ class GameObject {
    * @readonly
    */
   get transform(): Transform {
-    return this.getComponent<Transform>(Transform.componentName);
+    return this.getComponent(Transform);
   }
 
   /**
@@ -138,7 +142,7 @@ class GameObject {
    * @param C - component instance or Component class
    */
   addComponent<T extends Component>(C: T): T;
-  addComponent<T extends ComponentType>(C: T, obj?: any): InstanceType<T>;
+  addComponent<T extends Component>(C: ComponentCtor<T>, obj?: any): T;
   addComponent<T extends Component, U extends ComponentType>(
     C: T | U,
     obj?: any,
@@ -221,12 +225,11 @@ class GameObject {
    * @param c - one of the compnoentName, component instance, component Class
    * @returns
    */
+  getComponent<T extends Component>(c: ComponentCtor<T>): T;
   getComponent<T extends Component>(c: string): T;
-  getComponent<T extends Component>(c: T): T;
-  getComponent<T extends ComponentType>(c: T): InstanceType<T>;
-  getComponent<T extends Component, U extends ComponentType>(
-    c: T | U,
-  ): T | InstanceType<U> {
+  getComponent<T extends Component>(
+    c: string | ComponentCtor<T>,
+  ): T {
     let componentName: string;
     if (typeof c === 'string') {
       componentName = c;
