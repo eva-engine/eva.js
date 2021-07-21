@@ -1,4 +1,5 @@
-import {Tween, Easing} from '@tweenjs/tween.js';
+import { Tween, Easing } from '@tweenjs/tween.js';
+import type { Group } from '@tweenjs/tween.js';
 
 interface CacheItem {
   property: Record<string, any>;
@@ -23,39 +24,32 @@ export default class Animation {
   private timelines = [];
   private finishCount = 0;
   private callbacks = new Map();
+  readonly tweenGroup: Group;
 
   stoped: boolean;
+  objectCache: Record<string, Cache> = {};
   currIteration: number = 0;
   iteration: number;
   checkFinishFunc: Function;
-  objectCache: Record<string, Cache> = {};
 
-  constructor(timelines) {
+  constructor(timelines, tweenGroup: Group) {
     this.timelines = timelines;
+    this.tweenGroup = tweenGroup;
   }
-  play(iteration = 1) {
-    this.stoped = false;
-    this.start();
-    this.currIteration = 0;
-    this.iteration = iteration;
-  }
-  start() {
-    this.finishCount = 0;
-    this.tweens.length = 0;
-    this.init();
-    this.tweens.forEach(tween => tween.start());
-  }
+
   on(eventName, callback) {
     if (!this.callbacks[eventName]) {
       this.callbacks.set(eventName, []);
     }
     this.callbacks.get(eventName).push(callback);
   }
+
   emit(eventName) {
     const callbacks = this.callbacks.get(eventName);
     if (!callbacks || !callbacks.length) return;
     callbacks.forEach(fn => fn());
   }
+
   checkFinish() {
     if (++this.finishCount == this.tweens.length) {
       if (++this.currIteration == this.iteration) {
@@ -66,10 +60,10 @@ export default class Animation {
       }
     }
   }
+
   getObjectCache(component, name): CacheItem {
     const key = `${component.gameObject.id}${component.name}`;
     if (!this.objectCache[key]) {
-      // @ts-ignore
       this.objectCache[key] = {};
     }
     if (this.objectCache[key][name]) {
@@ -81,13 +75,15 @@ export default class Animation {
     for (let i = 0; i < keyIndex; i++) {
       property = property[keys[i]];
     }
-    this.objectCache[key][name] = {property, key: keys[keyIndex]};
+    this.objectCache[key][name] = { property, key: keys[keyIndex] };
     return this.objectCache[key][name];
   }
-  doAnim({component, name, value}) {
-    const {property, key} = this.getObjectCache(component, name);
+
+  doAnim({ component, name, value }) {
+    const { property, key } = this.getObjectCache(component, name);
     property[key] = value;
   }
+
   init() {
     this.checkFinishFunc = this.checkFinish.bind(this);
 
@@ -97,33 +93,57 @@ export default class Animation {
         const frame = timeline.values[j];
         const nextFrame = timeline.values[j + 1];
 
-        const tween = new Tween({value: frame.value});
-        tween.to({value: nextFrame.value});
-        tween.duration(nextFrame.time - frame.time);
-        tween.easing(easingMap[frame.tween]);
-        tween.onUpdate(props => {
-          this.doAnim({
-            component: timeline.component,
-            name: timeline.name,
-            value: props.value,
+        const tween = new Tween({ value: frame.value }, this.tweenGroup)
+          .to({ value: nextFrame.value })
+          .duration(nextFrame.time - frame.time)
+          .easing(easingMap[frame.tween])
+          .onUpdate(props => {
+            this.doAnim({
+              component: timeline.component,
+              name: timeline.name,
+              value: props.value,
+            });
           });
-        });
 
         if (j === 0) {
           this.tweens[i] = tween;
         } else {
           lastTween.chain(tween);
         }
+
         lastTween = tween;
       }
-
       lastTween && lastTween.onComplete(() => this.checkFinishFunc());
     });
   }
+
+  play(iteration = 1) {
+    this.stoped = false;
+    this.start();
+    this.currIteration = 0;
+    this.iteration = iteration;
+  }
+
+  start() {
+    this.finishCount = 0;
+    this.tweens.length = 0;
+    this.init();
+    this.tweens.forEach((tween: Tween<any>) => tween.start());
+  }
+
+  pause() {
+    this.tweens.forEach((tween: Tween<any>) => tween.pause());
+  }
+
+  resume() {
+    this.tweens.forEach((tween: Tween<any>) => tween.resume());
+  }
+
   stop() {
     this.stoped = true;
-    this.tweens.forEach(tween => tween.stop());
+    this.tweens.forEach((tween: Tween<any>) => tween.stop());
   }
+
   destroy() {
     this.stop();
     this.tweens = null;

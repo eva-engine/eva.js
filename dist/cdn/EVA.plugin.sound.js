@@ -466,9 +466,10 @@
             this.buffer = buffer;
             this.duration = this.buffer.duration;
             this.actionQueue.forEach(function (action) { return action(); });
-            this.actionQueue = [];
+            this.actionQueue.length = 0;
         };
         Sound.prototype.onDestroy = function () {
+            this.actionQueue.length = 0;
             this.destroySource();
         };
         Sound.prototype.resetConfig = function () {
@@ -495,9 +496,8 @@
             this.sourceNode.connect(this.gainNode);
         };
         Sound.prototype.destroySource = function () {
-            if (!this.sourceNode) {
+            if (!this.sourceNode)
                 return;
-            }
             this.sourceNode.removeEventListener('ended', this.endedListener);
             this.sourceNode.stop();
             this.sourceNode.disconnect();

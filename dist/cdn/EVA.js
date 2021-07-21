@@ -5,18 +5,18 @@
 }(this, (function (exports) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation.
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
 
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
 
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
     ***************************************************************************** */
     /* global Reflect, Promise */
 
@@ -41,11 +41,10 @@
     }
 
     function __awaiter(thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
             function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
@@ -79,15 +78,14 @@
     }
 
     function __values(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
         if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
+        return {
             next: function () {
                 if (o && i >= o.length) o = void 0;
                 return { value: o && o[i++], done: !o };
             }
         };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
     function __read(o, n) {
@@ -476,242 +474,8 @@
         return Component;
     }(eventemitter3));
 
-    /**
-     * Removes all key-value entries from the list cache.
-     *
-     * @private
-     * @name clear
-     * @memberOf ListCache
-     */
-    function listCacheClear() {
-      this.__data__ = [];
-      this.size = 0;
-    }
-
-    /**
-     * Performs a
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
-     * comparison between two values to determine if they are equivalent.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to compare.
-     * @param {*} other The other value to compare.
-     * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
-     * @example
-     *
-     * var object = { 'a': 1 };
-     * var other = { 'a': 1 };
-     *
-     * _.eq(object, object);
-     * // => true
-     *
-     * _.eq(object, other);
-     * // => false
-     *
-     * _.eq('a', 'a');
-     * // => true
-     *
-     * _.eq('a', Object('a'));
-     * // => false
-     *
-     * _.eq(NaN, NaN);
-     * // => true
-     */
-    function eq(value, other) {
-      return value === other || (value !== value && other !== other);
-    }
-
-    /**
-     * Gets the index at which the `key` is found in `array` of key-value pairs.
-     *
-     * @private
-     * @param {Array} array The array to inspect.
-     * @param {*} key The key to search for.
-     * @returns {number} Returns the index of the matched value, else `-1`.
-     */
-    function assocIndexOf(array, key) {
-      var length = array.length;
-      while (length--) {
-        if (eq(array[length][0], key)) {
-          return length;
-        }
-      }
-      return -1;
-    }
-
-    /** Used for built-in method references. */
-    var arrayProto = Array.prototype;
-
-    /** Built-in value references. */
-    var splice = arrayProto.splice;
-
-    /**
-     * Removes `key` and its value from the list cache.
-     *
-     * @private
-     * @name delete
-     * @memberOf ListCache
-     * @param {string} key The key of the value to remove.
-     * @returns {boolean} Returns `true` if the entry was removed, else `false`.
-     */
-    function listCacheDelete(key) {
-      var data = this.__data__,
-          index = assocIndexOf(data, key);
-
-      if (index < 0) {
-        return false;
-      }
-      var lastIndex = data.length - 1;
-      if (index == lastIndex) {
-        data.pop();
-      } else {
-        splice.call(data, index, 1);
-      }
-      --this.size;
-      return true;
-    }
-
-    /**
-     * Gets the list cache value for `key`.
-     *
-     * @private
-     * @name get
-     * @memberOf ListCache
-     * @param {string} key The key of the value to get.
-     * @returns {*} Returns the entry value.
-     */
-    function listCacheGet(key) {
-      var data = this.__data__,
-          index = assocIndexOf(data, key);
-
-      return index < 0 ? undefined : data[index][1];
-    }
-
-    /**
-     * Checks if a list cache value for `key` exists.
-     *
-     * @private
-     * @name has
-     * @memberOf ListCache
-     * @param {string} key The key of the entry to check.
-     * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
-     */
-    function listCacheHas(key) {
-      return assocIndexOf(this.__data__, key) > -1;
-    }
-
-    /**
-     * Sets the list cache `key` to `value`.
-     *
-     * @private
-     * @name set
-     * @memberOf ListCache
-     * @param {string} key The key of the value to set.
-     * @param {*} value The value to set.
-     * @returns {Object} Returns the list cache instance.
-     */
-    function listCacheSet(key, value) {
-      var data = this.__data__,
-          index = assocIndexOf(data, key);
-
-      if (index < 0) {
-        ++this.size;
-        data.push([key, value]);
-      } else {
-        data[index][1] = value;
-      }
-      return this;
-    }
-
-    /**
-     * Creates an list cache object.
-     *
-     * @private
-     * @constructor
-     * @param {Array} [entries] The key-value pairs to cache.
-     */
-    function ListCache(entries) {
-      var index = -1,
-          length = entries == null ? 0 : entries.length;
-
-      this.clear();
-      while (++index < length) {
-        var entry = entries[index];
-        this.set(entry[0], entry[1]);
-      }
-    }
-
-    // Add methods to `ListCache`.
-    ListCache.prototype.clear = listCacheClear;
-    ListCache.prototype['delete'] = listCacheDelete;
-    ListCache.prototype.get = listCacheGet;
-    ListCache.prototype.has = listCacheHas;
-    ListCache.prototype.set = listCacheSet;
-
-    /**
-     * Removes all key-value entries from the stack.
-     *
-     * @private
-     * @name clear
-     * @memberOf Stack
-     */
-    function stackClear() {
-      this.__data__ = new ListCache;
-      this.size = 0;
-    }
-
-    /**
-     * Removes `key` and its value from the stack.
-     *
-     * @private
-     * @name delete
-     * @memberOf Stack
-     * @param {string} key The key of the value to remove.
-     * @returns {boolean} Returns `true` if the entry was removed, else `false`.
-     */
-    function stackDelete(key) {
-      var data = this.__data__,
-          result = data['delete'](key);
-
-      this.size = data.size;
-      return result;
-    }
-
-    /**
-     * Gets the stack value for `key`.
-     *
-     * @private
-     * @name get
-     * @memberOf Stack
-     * @param {string} key The key of the value to get.
-     * @returns {*} Returns the entry value.
-     */
-    function stackGet(key) {
-      return this.__data__.get(key);
-    }
-
-    /**
-     * Checks if a stack value for `key` exists.
-     *
-     * @private
-     * @name has
-     * @memberOf Stack
-     * @param {string} key The key of the entry to check.
-     * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
-     */
-    function stackHas(key) {
-      return this.__data__.has(key);
-    }
-
-    var global$1 = (typeof global !== "undefined" ? global :
-                typeof self !== "undefined" ? self :
-                typeof window !== "undefined" ? window : {});
-
     /** Detect free variable `global` from Node.js. */
-    var freeGlobal = typeof global$1 == 'object' && global$1 && global$1.Object === Object && global$1;
+    var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
     /** Detect free variable `self`. */
     var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -808,6 +572,59 @@
         ? getRawTag(value)
         : objectToString(value);
     }
+
+    /**
+     * Checks if `value` is object-like. A value is object-like if it's not `null`
+     * and has a `typeof` result of "object".
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+     * @example
+     *
+     * _.isObjectLike({});
+     * // => true
+     *
+     * _.isObjectLike([1, 2, 3]);
+     * // => true
+     *
+     * _.isObjectLike(_.noop);
+     * // => false
+     *
+     * _.isObjectLike(null);
+     * // => false
+     */
+    function isObjectLike(value) {
+      return value != null && typeof value == 'object';
+    }
+
+    /**
+     * Checks if `value` is classified as an `Array` object.
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+     * @example
+     *
+     * _.isArray([1, 2, 3]);
+     * // => true
+     *
+     * _.isArray(document.body.children);
+     * // => false
+     *
+     * _.isArray('abc');
+     * // => false
+     *
+     * _.isArray(_.noop);
+     * // => false
+     */
+    var isArray = Array.isArray;
 
     /**
      * Checks if `value` is the
@@ -984,7 +801,496 @@
     }
 
     /* Built-in method references that are verified to be native. */
-    var Map = getNative(root, 'Map');
+    var WeakMap = getNative(root, 'WeakMap');
+
+    /** Used as references for various `Number` constants. */
+    var MAX_SAFE_INTEGER$1 = 9007199254740991;
+
+    /** Used to detect unsigned integer values. */
+    var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+    /**
+     * Checks if `value` is a valid array-like index.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+     * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+     */
+    function isIndex(value, length) {
+      var type = typeof value;
+      length = length == null ? MAX_SAFE_INTEGER$1 : length;
+
+      return !!length &&
+        (type == 'number' ||
+          (type != 'symbol' && reIsUint.test(value))) &&
+            (value > -1 && value % 1 == 0 && value < length);
+    }
+
+    /**
+     * Performs a
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+     * comparison between two values to determine if they are equivalent.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to compare.
+     * @param {*} other The other value to compare.
+     * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+     * @example
+     *
+     * var object = { 'a': 1 };
+     * var other = { 'a': 1 };
+     *
+     * _.eq(object, object);
+     * // => true
+     *
+     * _.eq(object, other);
+     * // => false
+     *
+     * _.eq('a', 'a');
+     * // => true
+     *
+     * _.eq('a', Object('a'));
+     * // => false
+     *
+     * _.eq(NaN, NaN);
+     * // => true
+     */
+    function eq(value, other) {
+      return value === other || (value !== value && other !== other);
+    }
+
+    /** Used as references for various `Number` constants. */
+    var MAX_SAFE_INTEGER = 9007199254740991;
+
+    /**
+     * Checks if `value` is a valid array-like length.
+     *
+     * **Note:** This method is loosely based on
+     * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+     * @example
+     *
+     * _.isLength(3);
+     * // => true
+     *
+     * _.isLength(Number.MIN_VALUE);
+     * // => false
+     *
+     * _.isLength(Infinity);
+     * // => false
+     *
+     * _.isLength('3');
+     * // => false
+     */
+    function isLength(value) {
+      return typeof value == 'number' &&
+        value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+    }
+
+    /**
+     * Checks if `value` is array-like. A value is considered array-like if it's
+     * not a function and has a `value.length` that's an integer greater than or
+     * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+     * @example
+     *
+     * _.isArrayLike([1, 2, 3]);
+     * // => true
+     *
+     * _.isArrayLike(document.body.children);
+     * // => true
+     *
+     * _.isArrayLike('abc');
+     * // => true
+     *
+     * _.isArrayLike(_.noop);
+     * // => false
+     */
+    function isArrayLike(value) {
+      return value != null && isLength(value.length) && !isFunction(value);
+    }
+
+    /** Used for built-in method references. */
+    var objectProto$8 = Object.prototype;
+
+    /**
+     * Checks if `value` is likely a prototype object.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+     */
+    function isPrototype(value) {
+      var Ctor = value && value.constructor,
+          proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$8;
+
+      return value === proto;
+    }
+
+    /**
+     * The base implementation of `_.times` without support for iteratee shorthands
+     * or max array length checks.
+     *
+     * @private
+     * @param {number} n The number of times to invoke `iteratee`.
+     * @param {Function} iteratee The function invoked per iteration.
+     * @returns {Array} Returns the array of results.
+     */
+    function baseTimes(n, iteratee) {
+      var index = -1,
+          result = Array(n);
+
+      while (++index < n) {
+        result[index] = iteratee(index);
+      }
+      return result;
+    }
+
+    /** `Object#toString` result references. */
+    var argsTag$2 = '[object Arguments]';
+
+    /**
+     * The base implementation of `_.isArguments`.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+     */
+    function baseIsArguments(value) {
+      return isObjectLike(value) && baseGetTag(value) == argsTag$2;
+    }
+
+    /** Used for built-in method references. */
+    var objectProto$7 = Object.prototype;
+
+    /** Used to check objects for own properties. */
+    var hasOwnProperty$6 = objectProto$7.hasOwnProperty;
+
+    /** Built-in value references. */
+    var propertyIsEnumerable$1 = objectProto$7.propertyIsEnumerable;
+
+    /**
+     * Checks if `value` is likely an `arguments` object.
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+     *  else `false`.
+     * @example
+     *
+     * _.isArguments(function() { return arguments; }());
+     * // => true
+     *
+     * _.isArguments([1, 2, 3]);
+     * // => false
+     */
+    var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsArguments : function(value) {
+      return isObjectLike(value) && hasOwnProperty$6.call(value, 'callee') &&
+        !propertyIsEnumerable$1.call(value, 'callee');
+    };
+
+    /**
+     * This method returns `false`.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {boolean} Returns `false`.
+     * @example
+     *
+     * _.times(2, _.stubFalse);
+     * // => [false, false]
+     */
+    function stubFalse() {
+      return false;
+    }
+
+    /** Detect free variable `exports`. */
+    var freeExports$1 = typeof exports == 'object' && exports && !exports.nodeType && exports;
+
+    /** Detect free variable `module`. */
+    var freeModule$1 = freeExports$1 && typeof module == 'object' && module && !module.nodeType && module;
+
+    /** Detect the popular CommonJS extension `module.exports`. */
+    var moduleExports$1 = freeModule$1 && freeModule$1.exports === freeExports$1;
+
+    /** Built-in value references. */
+    var Buffer = moduleExports$1 ? root.Buffer : undefined;
+
+    /* Built-in method references for those with the same name as other `lodash` methods. */
+    var nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined;
+
+    /**
+     * Checks if `value` is a buffer.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.3.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
+     * @example
+     *
+     * _.isBuffer(new Buffer(2));
+     * // => true
+     *
+     * _.isBuffer(new Uint8Array(2));
+     * // => false
+     */
+    var isBuffer = nativeIsBuffer || stubFalse;
+
+    /** `Object#toString` result references. */
+    var argsTag$1 = '[object Arguments]',
+        arrayTag$1 = '[object Array]',
+        boolTag$1 = '[object Boolean]',
+        dateTag$1 = '[object Date]',
+        errorTag$1 = '[object Error]',
+        funcTag = '[object Function]',
+        mapTag$2 = '[object Map]',
+        numberTag$1 = '[object Number]',
+        objectTag$2 = '[object Object]',
+        regexpTag$1 = '[object RegExp]',
+        setTag$2 = '[object Set]',
+        stringTag$1 = '[object String]',
+        weakMapTag$1 = '[object WeakMap]';
+
+    var arrayBufferTag$1 = '[object ArrayBuffer]',
+        dataViewTag$2 = '[object DataView]',
+        float32Tag = '[object Float32Array]',
+        float64Tag = '[object Float64Array]',
+        int8Tag = '[object Int8Array]',
+        int16Tag = '[object Int16Array]',
+        int32Tag = '[object Int32Array]',
+        uint8Tag = '[object Uint8Array]',
+        uint8ClampedTag = '[object Uint8ClampedArray]',
+        uint16Tag = '[object Uint16Array]',
+        uint32Tag = '[object Uint32Array]';
+
+    /** Used to identify `toStringTag` values of typed arrays. */
+    var typedArrayTags = {};
+    typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
+    typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
+    typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
+    typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
+    typedArrayTags[uint32Tag] = true;
+    typedArrayTags[argsTag$1] = typedArrayTags[arrayTag$1] =
+    typedArrayTags[arrayBufferTag$1] = typedArrayTags[boolTag$1] =
+    typedArrayTags[dataViewTag$2] = typedArrayTags[dateTag$1] =
+    typedArrayTags[errorTag$1] = typedArrayTags[funcTag] =
+    typedArrayTags[mapTag$2] = typedArrayTags[numberTag$1] =
+    typedArrayTags[objectTag$2] = typedArrayTags[regexpTag$1] =
+    typedArrayTags[setTag$2] = typedArrayTags[stringTag$1] =
+    typedArrayTags[weakMapTag$1] = false;
+
+    /**
+     * The base implementation of `_.isTypedArray` without Node.js optimizations.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
+     */
+    function baseIsTypedArray(value) {
+      return isObjectLike(value) &&
+        isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
+    }
+
+    /**
+     * The base implementation of `_.unary` without support for storing metadata.
+     *
+     * @private
+     * @param {Function} func The function to cap arguments for.
+     * @returns {Function} Returns the new capped function.
+     */
+    function baseUnary(func) {
+      return function(value) {
+        return func(value);
+      };
+    }
+
+    /** Detect free variable `exports`. */
+    var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
+
+    /** Detect free variable `module`. */
+    var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
+
+    /** Detect the popular CommonJS extension `module.exports`. */
+    var moduleExports = freeModule && freeModule.exports === freeExports;
+
+    /** Detect free variable `process` from Node.js. */
+    var freeProcess = moduleExports && freeGlobal.process;
+
+    /** Used to access faster Node.js helpers. */
+    var nodeUtil = (function() {
+      try {
+        // Use `util.types` for Node.js 10+.
+        var types = freeModule && freeModule.require && freeModule.require('util').types;
+
+        if (types) {
+          return types;
+        }
+
+        // Legacy `process.binding('util')` for Node.js < 10.
+        return freeProcess && freeProcess.binding && freeProcess.binding('util');
+      } catch (e) {}
+    }());
+
+    /* Node.js helper references. */
+    var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
+
+    /**
+     * Checks if `value` is classified as a typed array.
+     *
+     * @static
+     * @memberOf _
+     * @since 3.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
+     * @example
+     *
+     * _.isTypedArray(new Uint8Array);
+     * // => true
+     *
+     * _.isTypedArray([]);
+     * // => false
+     */
+    var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
+
+    /** Used for built-in method references. */
+    var objectProto$6 = Object.prototype;
+
+    /** Used to check objects for own properties. */
+    var hasOwnProperty$5 = objectProto$6.hasOwnProperty;
+
+    /**
+     * Creates an array of the enumerable property names of the array-like `value`.
+     *
+     * @private
+     * @param {*} value The value to query.
+     * @param {boolean} inherited Specify returning inherited property names.
+     * @returns {Array} Returns the array of property names.
+     */
+    function arrayLikeKeys(value, inherited) {
+      var isArr = isArray(value),
+          isArg = !isArr && isArguments(value),
+          isBuff = !isArr && !isArg && isBuffer(value),
+          isType = !isArr && !isArg && !isBuff && isTypedArray(value),
+          skipIndexes = isArr || isArg || isBuff || isType,
+          result = skipIndexes ? baseTimes(value.length, String) : [],
+          length = result.length;
+
+      for (var key in value) {
+        if ((inherited || hasOwnProperty$5.call(value, key)) &&
+            !(skipIndexes && (
+               // Safari 9 has enumerable `arguments.length` in strict mode.
+               key == 'length' ||
+               // Node.js 0.10 has enumerable non-index properties on buffers.
+               (isBuff && (key == 'offset' || key == 'parent')) ||
+               // PhantomJS 2 has enumerable non-index properties on typed arrays.
+               (isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset')) ||
+               // Skip index properties.
+               isIndex(key, length)
+            ))) {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+
+    /**
+     * Creates a unary function that invokes `func` with its argument transformed.
+     *
+     * @private
+     * @param {Function} func The function to wrap.
+     * @param {Function} transform The argument transform.
+     * @returns {Function} Returns the new function.
+     */
+    function overArg(func, transform) {
+      return function(arg) {
+        return func(transform(arg));
+      };
+    }
+
+    /* Built-in method references for those with the same name as other `lodash` methods. */
+    var nativeKeys = overArg(Object.keys, Object);
+
+    /** Used for built-in method references. */
+    var objectProto$5 = Object.prototype;
+
+    /** Used to check objects for own properties. */
+    var hasOwnProperty$4 = objectProto$5.hasOwnProperty;
+
+    /**
+     * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @returns {Array} Returns the array of property names.
+     */
+    function baseKeys(object) {
+      if (!isPrototype(object)) {
+        return nativeKeys(object);
+      }
+      var result = [];
+      for (var key in Object(object)) {
+        if (hasOwnProperty$4.call(object, key) && key != 'constructor') {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+
+    /**
+     * Creates an array of the own enumerable property names of `object`.
+     *
+     * **Note:** Non-object values are coerced to objects. See the
+     * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+     * for more details.
+     *
+     * @static
+     * @since 0.1.0
+     * @memberOf _
+     * @category Object
+     * @param {Object} object The object to query.
+     * @returns {Array} Returns the array of property names.
+     * @example
+     *
+     * function Foo() {
+     *   this.a = 1;
+     *   this.b = 2;
+     * }
+     *
+     * Foo.prototype.c = 3;
+     *
+     * _.keys(new Foo);
+     * // => ['a', 'b'] (iteration order is not guaranteed)
+     *
+     * _.keys('hi');
+     * // => ['0', '1']
+     */
+    function keys(object) {
+      return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+    }
 
     /* Built-in method references that are verified to be native. */
     var nativeCreate = getNative(Object, 'create');
@@ -1021,10 +1327,10 @@
     var HASH_UNDEFINED$2 = '__lodash_hash_undefined__';
 
     /** Used for built-in method references. */
-    var objectProto$8 = Object.prototype;
+    var objectProto$4 = Object.prototype;
 
     /** Used to check objects for own properties. */
-    var hasOwnProperty$6 = objectProto$8.hasOwnProperty;
+    var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
 
     /**
      * Gets the hash value for `key`.
@@ -1041,14 +1347,14 @@
         var result = data[key];
         return result === HASH_UNDEFINED$2 ? undefined : result;
       }
-      return hasOwnProperty$6.call(data, key) ? data[key] : undefined;
+      return hasOwnProperty$3.call(data, key) ? data[key] : undefined;
     }
 
     /** Used for built-in method references. */
-    var objectProto$7 = Object.prototype;
+    var objectProto$3 = Object.prototype;
 
     /** Used to check objects for own properties. */
-    var hasOwnProperty$5 = objectProto$7.hasOwnProperty;
+    var hasOwnProperty$2 = objectProto$3.hasOwnProperty;
 
     /**
      * Checks if a hash value for `key` exists.
@@ -1061,7 +1367,7 @@
      */
     function hashHas(key) {
       var data = this.__data__;
-      return nativeCreate ? (data[key] !== undefined) : hasOwnProperty$5.call(data, key);
+      return nativeCreate ? (data[key] !== undefined) : hasOwnProperty$2.call(data, key);
     }
 
     /** Used to stand-in for `undefined` hash values. */
@@ -1110,6 +1416,148 @@
     Hash.prototype.set = hashSet;
 
     /**
+     * Removes all key-value entries from the list cache.
+     *
+     * @private
+     * @name clear
+     * @memberOf ListCache
+     */
+    function listCacheClear() {
+      this.__data__ = [];
+      this.size = 0;
+    }
+
+    /**
+     * Gets the index at which the `key` is found in `array` of key-value pairs.
+     *
+     * @private
+     * @param {Array} array The array to inspect.
+     * @param {*} key The key to search for.
+     * @returns {number} Returns the index of the matched value, else `-1`.
+     */
+    function assocIndexOf(array, key) {
+      var length = array.length;
+      while (length--) {
+        if (eq(array[length][0], key)) {
+          return length;
+        }
+      }
+      return -1;
+    }
+
+    /** Used for built-in method references. */
+    var arrayProto = Array.prototype;
+
+    /** Built-in value references. */
+    var splice = arrayProto.splice;
+
+    /**
+     * Removes `key` and its value from the list cache.
+     *
+     * @private
+     * @name delete
+     * @memberOf ListCache
+     * @param {string} key The key of the value to remove.
+     * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+     */
+    function listCacheDelete(key) {
+      var data = this.__data__,
+          index = assocIndexOf(data, key);
+
+      if (index < 0) {
+        return false;
+      }
+      var lastIndex = data.length - 1;
+      if (index == lastIndex) {
+        data.pop();
+      } else {
+        splice.call(data, index, 1);
+      }
+      --this.size;
+      return true;
+    }
+
+    /**
+     * Gets the list cache value for `key`.
+     *
+     * @private
+     * @name get
+     * @memberOf ListCache
+     * @param {string} key The key of the value to get.
+     * @returns {*} Returns the entry value.
+     */
+    function listCacheGet(key) {
+      var data = this.__data__,
+          index = assocIndexOf(data, key);
+
+      return index < 0 ? undefined : data[index][1];
+    }
+
+    /**
+     * Checks if a list cache value for `key` exists.
+     *
+     * @private
+     * @name has
+     * @memberOf ListCache
+     * @param {string} key The key of the entry to check.
+     * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+     */
+    function listCacheHas(key) {
+      return assocIndexOf(this.__data__, key) > -1;
+    }
+
+    /**
+     * Sets the list cache `key` to `value`.
+     *
+     * @private
+     * @name set
+     * @memberOf ListCache
+     * @param {string} key The key of the value to set.
+     * @param {*} value The value to set.
+     * @returns {Object} Returns the list cache instance.
+     */
+    function listCacheSet(key, value) {
+      var data = this.__data__,
+          index = assocIndexOf(data, key);
+
+      if (index < 0) {
+        ++this.size;
+        data.push([key, value]);
+      } else {
+        data[index][1] = value;
+      }
+      return this;
+    }
+
+    /**
+     * Creates an list cache object.
+     *
+     * @private
+     * @constructor
+     * @param {Array} [entries] The key-value pairs to cache.
+     */
+    function ListCache(entries) {
+      var index = -1,
+          length = entries == null ? 0 : entries.length;
+
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+
+    // Add methods to `ListCache`.
+    ListCache.prototype.clear = listCacheClear;
+    ListCache.prototype['delete'] = listCacheDelete;
+    ListCache.prototype.get = listCacheGet;
+    ListCache.prototype.has = listCacheHas;
+    ListCache.prototype.set = listCacheSet;
+
+    /* Built-in method references that are verified to be native. */
+    var Map$1 = getNative(root, 'Map');
+
+    /**
      * Removes all key-value entries from the map.
      *
      * @private
@@ -1120,7 +1568,7 @@
       this.size = 0;
       this.__data__ = {
         'hash': new Hash,
-        'map': new (Map || ListCache),
+        'map': new (Map$1 || ListCache),
         'string': new Hash
       };
     }
@@ -1239,6 +1687,80 @@
     MapCache.prototype.has = mapCacheHas;
     MapCache.prototype.set = mapCacheSet;
 
+    /**
+     * Appends the elements of `values` to `array`.
+     *
+     * @private
+     * @param {Array} array The array to modify.
+     * @param {Array} values The values to append.
+     * @returns {Array} Returns `array`.
+     */
+    function arrayPush(array, values) {
+      var index = -1,
+          length = values.length,
+          offset = array.length;
+
+      while (++index < length) {
+        array[offset + index] = values[index];
+      }
+      return array;
+    }
+
+    /**
+     * Removes all key-value entries from the stack.
+     *
+     * @private
+     * @name clear
+     * @memberOf Stack
+     */
+    function stackClear() {
+      this.__data__ = new ListCache;
+      this.size = 0;
+    }
+
+    /**
+     * Removes `key` and its value from the stack.
+     *
+     * @private
+     * @name delete
+     * @memberOf Stack
+     * @param {string} key The key of the value to remove.
+     * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+     */
+    function stackDelete(key) {
+      var data = this.__data__,
+          result = data['delete'](key);
+
+      this.size = data.size;
+      return result;
+    }
+
+    /**
+     * Gets the stack value for `key`.
+     *
+     * @private
+     * @name get
+     * @memberOf Stack
+     * @param {string} key The key of the value to get.
+     * @returns {*} Returns the entry value.
+     */
+    function stackGet(key) {
+      return this.__data__.get(key);
+    }
+
+    /**
+     * Checks if a stack value for `key` exists.
+     *
+     * @private
+     * @name has
+     * @memberOf Stack
+     * @param {string} key The key of the entry to check.
+     * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+     */
+    function stackHas(key) {
+      return this.__data__.has(key);
+    }
+
     /** Used as the size to enable large array optimizations. */
     var LARGE_ARRAY_SIZE = 200;
 
@@ -1256,7 +1778,7 @@
       var data = this.__data__;
       if (data instanceof ListCache) {
         var pairs = data.__data__;
-        if (!Map || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
+        if (!Map$1 || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
           pairs.push([key, value]);
           this.size = ++data.size;
           return this;
@@ -1286,6 +1808,168 @@
     Stack.prototype.get = stackGet;
     Stack.prototype.has = stackHas;
     Stack.prototype.set = stackSet;
+
+    /**
+     * A specialized version of `_.filter` for arrays without support for
+     * iteratee shorthands.
+     *
+     * @private
+     * @param {Array} [array] The array to iterate over.
+     * @param {Function} predicate The function invoked per iteration.
+     * @returns {Array} Returns the new filtered array.
+     */
+    function arrayFilter(array, predicate) {
+      var index = -1,
+          length = array == null ? 0 : array.length,
+          resIndex = 0,
+          result = [];
+
+      while (++index < length) {
+        var value = array[index];
+        if (predicate(value, index, array)) {
+          result[resIndex++] = value;
+        }
+      }
+      return result;
+    }
+
+    /**
+     * This method returns a new empty array.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {Array} Returns the new empty array.
+     * @example
+     *
+     * var arrays = _.times(2, _.stubArray);
+     *
+     * console.log(arrays);
+     * // => [[], []]
+     *
+     * console.log(arrays[0] === arrays[1]);
+     * // => false
+     */
+    function stubArray() {
+      return [];
+    }
+
+    /** Used for built-in method references. */
+    var objectProto$2 = Object.prototype;
+
+    /** Built-in value references. */
+    var propertyIsEnumerable = objectProto$2.propertyIsEnumerable;
+
+    /* Built-in method references for those with the same name as other `lodash` methods. */
+    var nativeGetSymbols = Object.getOwnPropertySymbols;
+
+    /**
+     * Creates an array of the own enumerable symbols of `object`.
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @returns {Array} Returns the array of symbols.
+     */
+    var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
+      if (object == null) {
+        return [];
+      }
+      object = Object(object);
+      return arrayFilter(nativeGetSymbols(object), function(symbol) {
+        return propertyIsEnumerable.call(object, symbol);
+      });
+    };
+
+    /**
+     * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
+     * `keysFunc` and `symbolsFunc` to get the enumerable property names and
+     * symbols of `object`.
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @param {Function} keysFunc The function to get the keys of `object`.
+     * @param {Function} symbolsFunc The function to get the symbols of `object`.
+     * @returns {Array} Returns the array of property names and symbols.
+     */
+    function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+      var result = keysFunc(object);
+      return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
+    }
+
+    /**
+     * Creates an array of own enumerable property names and symbols of `object`.
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @returns {Array} Returns the array of property names and symbols.
+     */
+    function getAllKeys(object) {
+      return baseGetAllKeys(object, keys, getSymbols);
+    }
+
+    /* Built-in method references that are verified to be native. */
+    var DataView = getNative(root, 'DataView');
+
+    /* Built-in method references that are verified to be native. */
+    var Promise$1 = getNative(root, 'Promise');
+
+    /* Built-in method references that are verified to be native. */
+    var Set$1 = getNative(root, 'Set');
+
+    /** `Object#toString` result references. */
+    var mapTag$1 = '[object Map]',
+        objectTag$1 = '[object Object]',
+        promiseTag = '[object Promise]',
+        setTag$1 = '[object Set]',
+        weakMapTag = '[object WeakMap]';
+
+    var dataViewTag$1 = '[object DataView]';
+
+    /** Used to detect maps, sets, and weakmaps. */
+    var dataViewCtorString = toSource(DataView),
+        mapCtorString = toSource(Map$1),
+        promiseCtorString = toSource(Promise$1),
+        setCtorString = toSource(Set$1),
+        weakMapCtorString = toSource(WeakMap);
+
+    /**
+     * Gets the `toStringTag` of `value`.
+     *
+     * @private
+     * @param {*} value The value to query.
+     * @returns {string} Returns the `toStringTag`.
+     */
+    var getTag = baseGetTag;
+
+    // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
+    if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
+        (Map$1 && getTag(new Map$1) != mapTag$1) ||
+        (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
+        (Set$1 && getTag(new Set$1) != setTag$1) ||
+        (WeakMap && getTag(new WeakMap) != weakMapTag)) {
+      getTag = function(value) {
+        var result = baseGetTag(value),
+            Ctor = result == objectTag$1 ? value.constructor : undefined,
+            ctorString = Ctor ? toSource(Ctor) : '';
+
+        if (ctorString) {
+          switch (ctorString) {
+            case dataViewCtorString: return dataViewTag$1;
+            case mapCtorString: return mapTag$1;
+            case promiseCtorString: return promiseTag;
+            case setCtorString: return setTag$1;
+            case weakMapCtorString: return weakMapTag;
+          }
+        }
+        return result;
+      };
+    }
+
+    var getTag$1 = getTag;
+
+    /** Built-in value references. */
+    var Uint8Array = root.Uint8Array;
 
     /** Used to stand-in for `undefined` hash values. */
     var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -1453,9 +2137,6 @@
       return result;
     }
 
-    /** Built-in value references. */
-    var Uint8Array = root.Uint8Array;
-
     /**
      * Converts `map` to its key-value pairs.
      *
@@ -1495,18 +2176,18 @@
         COMPARE_UNORDERED_FLAG = 2;
 
     /** `Object#toString` result references. */
-    var boolTag$1 = '[object Boolean]',
-        dateTag$1 = '[object Date]',
-        errorTag$1 = '[object Error]',
-        mapTag$2 = '[object Map]',
-        numberTag$1 = '[object Number]',
-        regexpTag$1 = '[object RegExp]',
-        setTag$2 = '[object Set]',
-        stringTag$1 = '[object String]',
+    var boolTag = '[object Boolean]',
+        dateTag = '[object Date]',
+        errorTag = '[object Error]',
+        mapTag = '[object Map]',
+        numberTag = '[object Number]',
+        regexpTag = '[object RegExp]',
+        setTag = '[object Set]',
+        stringTag = '[object String]',
         symbolTag = '[object Symbol]';
 
-    var arrayBufferTag$1 = '[object ArrayBuffer]',
-        dataViewTag$2 = '[object DataView]';
+    var arrayBufferTag = '[object ArrayBuffer]',
+        dataViewTag = '[object DataView]';
 
     /** Used to convert symbols to primitives and strings. */
     var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
@@ -1531,7 +2212,7 @@
      */
     function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
       switch (tag) {
-        case dataViewTag$2:
+        case dataViewTag:
           if ((object.byteLength != other.byteLength) ||
               (object.byteOffset != other.byteOffset)) {
             return false;
@@ -1539,34 +2220,34 @@
           object = object.buffer;
           other = other.buffer;
 
-        case arrayBufferTag$1:
+        case arrayBufferTag:
           if ((object.byteLength != other.byteLength) ||
               !equalFunc(new Uint8Array(object), new Uint8Array(other))) {
             return false;
           }
           return true;
 
-        case boolTag$1:
-        case dateTag$1:
-        case numberTag$1:
+        case boolTag:
+        case dateTag:
+        case numberTag:
           // Coerce booleans to `1` or `0` and dates to milliseconds.
           // Invalid dates are coerced to `NaN`.
           return eq(+object, +other);
 
-        case errorTag$1:
+        case errorTag:
           return object.name == other.name && object.message == other.message;
 
-        case regexpTag$1:
-        case stringTag$1:
+        case regexpTag:
+        case stringTag:
           // Coerce regexes to strings and treat strings, primitives and objects,
           // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
           // for more details.
           return object == (other + '');
 
-        case mapTag$2:
+        case mapTag:
           var convert = mapToArray;
 
-        case setTag$2:
+        case setTag:
           var isPartial = bitmask & COMPARE_PARTIAL_FLAG$2;
           convert || (convert = setToArray);
 
@@ -1592,630 +2273,6 @@
           }
       }
       return false;
-    }
-
-    /**
-     * Appends the elements of `values` to `array`.
-     *
-     * @private
-     * @param {Array} array The array to modify.
-     * @param {Array} values The values to append.
-     * @returns {Array} Returns `array`.
-     */
-    function arrayPush(array, values) {
-      var index = -1,
-          length = values.length,
-          offset = array.length;
-
-      while (++index < length) {
-        array[offset + index] = values[index];
-      }
-      return array;
-    }
-
-    /**
-     * Checks if `value` is classified as an `Array` object.
-     *
-     * @static
-     * @memberOf _
-     * @since 0.1.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is an array, else `false`.
-     * @example
-     *
-     * _.isArray([1, 2, 3]);
-     * // => true
-     *
-     * _.isArray(document.body.children);
-     * // => false
-     *
-     * _.isArray('abc');
-     * // => false
-     *
-     * _.isArray(_.noop);
-     * // => false
-     */
-    var isArray = Array.isArray;
-
-    /**
-     * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
-     * `keysFunc` and `symbolsFunc` to get the enumerable property names and
-     * symbols of `object`.
-     *
-     * @private
-     * @param {Object} object The object to query.
-     * @param {Function} keysFunc The function to get the keys of `object`.
-     * @param {Function} symbolsFunc The function to get the symbols of `object`.
-     * @returns {Array} Returns the array of property names and symbols.
-     */
-    function baseGetAllKeys(object, keysFunc, symbolsFunc) {
-      var result = keysFunc(object);
-      return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
-    }
-
-    /**
-     * A specialized version of `_.filter` for arrays without support for
-     * iteratee shorthands.
-     *
-     * @private
-     * @param {Array} [array] The array to iterate over.
-     * @param {Function} predicate The function invoked per iteration.
-     * @returns {Array} Returns the new filtered array.
-     */
-    function arrayFilter(array, predicate) {
-      var index = -1,
-          length = array == null ? 0 : array.length,
-          resIndex = 0,
-          result = [];
-
-      while (++index < length) {
-        var value = array[index];
-        if (predicate(value, index, array)) {
-          result[resIndex++] = value;
-        }
-      }
-      return result;
-    }
-
-    /**
-     * This method returns a new empty array.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.13.0
-     * @category Util
-     * @returns {Array} Returns the new empty array.
-     * @example
-     *
-     * var arrays = _.times(2, _.stubArray);
-     *
-     * console.log(arrays);
-     * // => [[], []]
-     *
-     * console.log(arrays[0] === arrays[1]);
-     * // => false
-     */
-    function stubArray() {
-      return [];
-    }
-
-    /** Used for built-in method references. */
-    var objectProto$6 = Object.prototype;
-
-    /** Built-in value references. */
-    var propertyIsEnumerable$1 = objectProto$6.propertyIsEnumerable;
-
-    /* Built-in method references for those with the same name as other `lodash` methods. */
-    var nativeGetSymbols = Object.getOwnPropertySymbols;
-
-    /**
-     * Creates an array of the own enumerable symbols of `object`.
-     *
-     * @private
-     * @param {Object} object The object to query.
-     * @returns {Array} Returns the array of symbols.
-     */
-    var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
-      if (object == null) {
-        return [];
-      }
-      object = Object(object);
-      return arrayFilter(nativeGetSymbols(object), function(symbol) {
-        return propertyIsEnumerable$1.call(object, symbol);
-      });
-    };
-
-    /**
-     * The base implementation of `_.times` without support for iteratee shorthands
-     * or max array length checks.
-     *
-     * @private
-     * @param {number} n The number of times to invoke `iteratee`.
-     * @param {Function} iteratee The function invoked per iteration.
-     * @returns {Array} Returns the array of results.
-     */
-    function baseTimes(n, iteratee) {
-      var index = -1,
-          result = Array(n);
-
-      while (++index < n) {
-        result[index] = iteratee(index);
-      }
-      return result;
-    }
-
-    /**
-     * Checks if `value` is object-like. A value is object-like if it's not `null`
-     * and has a `typeof` result of "object".
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-     * @example
-     *
-     * _.isObjectLike({});
-     * // => true
-     *
-     * _.isObjectLike([1, 2, 3]);
-     * // => true
-     *
-     * _.isObjectLike(_.noop);
-     * // => false
-     *
-     * _.isObjectLike(null);
-     * // => false
-     */
-    function isObjectLike(value) {
-      return value != null && typeof value == 'object';
-    }
-
-    /** `Object#toString` result references. */
-    var argsTag$2 = '[object Arguments]';
-
-    /**
-     * The base implementation of `_.isArguments`.
-     *
-     * @private
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is an `arguments` object,
-     */
-    function baseIsArguments(value) {
-      return isObjectLike(value) && baseGetTag(value) == argsTag$2;
-    }
-
-    /** Used for built-in method references. */
-    var objectProto$5 = Object.prototype;
-
-    /** Used to check objects for own properties. */
-    var hasOwnProperty$4 = objectProto$5.hasOwnProperty;
-
-    /** Built-in value references. */
-    var propertyIsEnumerable = objectProto$5.propertyIsEnumerable;
-
-    /**
-     * Checks if `value` is likely an `arguments` object.
-     *
-     * @static
-     * @memberOf _
-     * @since 0.1.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is an `arguments` object,
-     *  else `false`.
-     * @example
-     *
-     * _.isArguments(function() { return arguments; }());
-     * // => true
-     *
-     * _.isArguments([1, 2, 3]);
-     * // => false
-     */
-    var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsArguments : function(value) {
-      return isObjectLike(value) && hasOwnProperty$4.call(value, 'callee') &&
-        !propertyIsEnumerable.call(value, 'callee');
-    };
-
-    /**
-     * This method returns `false`.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.13.0
-     * @category Util
-     * @returns {boolean} Returns `false`.
-     * @example
-     *
-     * _.times(2, _.stubFalse);
-     * // => [false, false]
-     */
-    function stubFalse() {
-      return false;
-    }
-
-    /** Detect free variable `exports`. */
-    var freeExports$1 = typeof exports == 'object' && exports && !exports.nodeType && exports;
-
-    /** Detect free variable `module`. */
-    var freeModule$1 = freeExports$1 && typeof module == 'object' && module && !module.nodeType && module;
-
-    /** Detect the popular CommonJS extension `module.exports`. */
-    var moduleExports$1 = freeModule$1 && freeModule$1.exports === freeExports$1;
-
-    /** Built-in value references. */
-    var Buffer = moduleExports$1 ? root.Buffer : undefined;
-
-    /* Built-in method references for those with the same name as other `lodash` methods. */
-    var nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined;
-
-    /**
-     * Checks if `value` is a buffer.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.3.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
-     * @example
-     *
-     * _.isBuffer(new Buffer(2));
-     * // => true
-     *
-     * _.isBuffer(new Uint8Array(2));
-     * // => false
-     */
-    var isBuffer = nativeIsBuffer || stubFalse;
-
-    /** Used as references for various `Number` constants. */
-    var MAX_SAFE_INTEGER$1 = 9007199254740991;
-
-    /** Used to detect unsigned integer values. */
-    var reIsUint = /^(?:0|[1-9]\d*)$/;
-
-    /**
-     * Checks if `value` is a valid array-like index.
-     *
-     * @private
-     * @param {*} value The value to check.
-     * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
-     * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
-     */
-    function isIndex(value, length) {
-      var type = typeof value;
-      length = length == null ? MAX_SAFE_INTEGER$1 : length;
-
-      return !!length &&
-        (type == 'number' ||
-          (type != 'symbol' && reIsUint.test(value))) &&
-            (value > -1 && value % 1 == 0 && value < length);
-    }
-
-    /** Used as references for various `Number` constants. */
-    var MAX_SAFE_INTEGER = 9007199254740991;
-
-    /**
-     * Checks if `value` is a valid array-like length.
-     *
-     * **Note:** This method is loosely based on
-     * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
-     * @example
-     *
-     * _.isLength(3);
-     * // => true
-     *
-     * _.isLength(Number.MIN_VALUE);
-     * // => false
-     *
-     * _.isLength(Infinity);
-     * // => false
-     *
-     * _.isLength('3');
-     * // => false
-     */
-    function isLength(value) {
-      return typeof value == 'number' &&
-        value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-    }
-
-    /** `Object#toString` result references. */
-    var argsTag$1 = '[object Arguments]',
-        arrayTag$1 = '[object Array]',
-        boolTag = '[object Boolean]',
-        dateTag = '[object Date]',
-        errorTag = '[object Error]',
-        funcTag = '[object Function]',
-        mapTag$1 = '[object Map]',
-        numberTag = '[object Number]',
-        objectTag$2 = '[object Object]',
-        regexpTag = '[object RegExp]',
-        setTag$1 = '[object Set]',
-        stringTag = '[object String]',
-        weakMapTag$1 = '[object WeakMap]';
-
-    var arrayBufferTag = '[object ArrayBuffer]',
-        dataViewTag$1 = '[object DataView]',
-        float32Tag = '[object Float32Array]',
-        float64Tag = '[object Float64Array]',
-        int8Tag = '[object Int8Array]',
-        int16Tag = '[object Int16Array]',
-        int32Tag = '[object Int32Array]',
-        uint8Tag = '[object Uint8Array]',
-        uint8ClampedTag = '[object Uint8ClampedArray]',
-        uint16Tag = '[object Uint16Array]',
-        uint32Tag = '[object Uint32Array]';
-
-    /** Used to identify `toStringTag` values of typed arrays. */
-    var typedArrayTags = {};
-    typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
-    typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
-    typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
-    typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
-    typedArrayTags[uint32Tag] = true;
-    typedArrayTags[argsTag$1] = typedArrayTags[arrayTag$1] =
-    typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
-    typedArrayTags[dataViewTag$1] = typedArrayTags[dateTag] =
-    typedArrayTags[errorTag] = typedArrayTags[funcTag] =
-    typedArrayTags[mapTag$1] = typedArrayTags[numberTag] =
-    typedArrayTags[objectTag$2] = typedArrayTags[regexpTag] =
-    typedArrayTags[setTag$1] = typedArrayTags[stringTag] =
-    typedArrayTags[weakMapTag$1] = false;
-
-    /**
-     * The base implementation of `_.isTypedArray` without Node.js optimizations.
-     *
-     * @private
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
-     */
-    function baseIsTypedArray(value) {
-      return isObjectLike(value) &&
-        isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
-    }
-
-    /**
-     * The base implementation of `_.unary` without support for storing metadata.
-     *
-     * @private
-     * @param {Function} func The function to cap arguments for.
-     * @returns {Function} Returns the new capped function.
-     */
-    function baseUnary(func) {
-      return function(value) {
-        return func(value);
-      };
-    }
-
-    /** Detect free variable `exports`. */
-    var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
-
-    /** Detect free variable `module`. */
-    var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
-
-    /** Detect the popular CommonJS extension `module.exports`. */
-    var moduleExports = freeModule && freeModule.exports === freeExports;
-
-    /** Detect free variable `process` from Node.js. */
-    var freeProcess = moduleExports && freeGlobal.process;
-
-    /** Used to access faster Node.js helpers. */
-    var nodeUtil = (function() {
-      try {
-        // Use `util.types` for Node.js 10+.
-        var types = freeModule && freeModule.require && freeModule.require('util').types;
-
-        if (types) {
-          return types;
-        }
-
-        // Legacy `process.binding('util')` for Node.js < 10.
-        return freeProcess && freeProcess.binding && freeProcess.binding('util');
-      } catch (e) {}
-    }());
-
-    /* Node.js helper references. */
-    var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
-
-    /**
-     * Checks if `value` is classified as a typed array.
-     *
-     * @static
-     * @memberOf _
-     * @since 3.0.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
-     * @example
-     *
-     * _.isTypedArray(new Uint8Array);
-     * // => true
-     *
-     * _.isTypedArray([]);
-     * // => false
-     */
-    var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
-
-    /** Used for built-in method references. */
-    var objectProto$4 = Object.prototype;
-
-    /** Used to check objects for own properties. */
-    var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
-
-    /**
-     * Creates an array of the enumerable property names of the array-like `value`.
-     *
-     * @private
-     * @param {*} value The value to query.
-     * @param {boolean} inherited Specify returning inherited property names.
-     * @returns {Array} Returns the array of property names.
-     */
-    function arrayLikeKeys(value, inherited) {
-      var isArr = isArray(value),
-          isArg = !isArr && isArguments(value),
-          isBuff = !isArr && !isArg && isBuffer(value),
-          isType = !isArr && !isArg && !isBuff && isTypedArray(value),
-          skipIndexes = isArr || isArg || isBuff || isType,
-          result = skipIndexes ? baseTimes(value.length, String) : [],
-          length = result.length;
-
-      for (var key in value) {
-        if ((inherited || hasOwnProperty$3.call(value, key)) &&
-            !(skipIndexes && (
-               // Safari 9 has enumerable `arguments.length` in strict mode.
-               key == 'length' ||
-               // Node.js 0.10 has enumerable non-index properties on buffers.
-               (isBuff && (key == 'offset' || key == 'parent')) ||
-               // PhantomJS 2 has enumerable non-index properties on typed arrays.
-               (isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset')) ||
-               // Skip index properties.
-               isIndex(key, length)
-            ))) {
-          result.push(key);
-        }
-      }
-      return result;
-    }
-
-    /** Used for built-in method references. */
-    var objectProto$3 = Object.prototype;
-
-    /**
-     * Checks if `value` is likely a prototype object.
-     *
-     * @private
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
-     */
-    function isPrototype(value) {
-      var Ctor = value && value.constructor,
-          proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$3;
-
-      return value === proto;
-    }
-
-    /**
-     * Creates a unary function that invokes `func` with its argument transformed.
-     *
-     * @private
-     * @param {Function} func The function to wrap.
-     * @param {Function} transform The argument transform.
-     * @returns {Function} Returns the new function.
-     */
-    function overArg(func, transform) {
-      return function(arg) {
-        return func(transform(arg));
-      };
-    }
-
-    /* Built-in method references for those with the same name as other `lodash` methods. */
-    var nativeKeys = overArg(Object.keys, Object);
-
-    /** Used for built-in method references. */
-    var objectProto$2 = Object.prototype;
-
-    /** Used to check objects for own properties. */
-    var hasOwnProperty$2 = objectProto$2.hasOwnProperty;
-
-    /**
-     * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
-     *
-     * @private
-     * @param {Object} object The object to query.
-     * @returns {Array} Returns the array of property names.
-     */
-    function baseKeys(object) {
-      if (!isPrototype(object)) {
-        return nativeKeys(object);
-      }
-      var result = [];
-      for (var key in Object(object)) {
-        if (hasOwnProperty$2.call(object, key) && key != 'constructor') {
-          result.push(key);
-        }
-      }
-      return result;
-    }
-
-    /**
-     * Checks if `value` is array-like. A value is considered array-like if it's
-     * not a function and has a `value.length` that's an integer greater than or
-     * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
-     * @example
-     *
-     * _.isArrayLike([1, 2, 3]);
-     * // => true
-     *
-     * _.isArrayLike(document.body.children);
-     * // => true
-     *
-     * _.isArrayLike('abc');
-     * // => true
-     *
-     * _.isArrayLike(_.noop);
-     * // => false
-     */
-    function isArrayLike(value) {
-      return value != null && isLength(value.length) && !isFunction(value);
-    }
-
-    /**
-     * Creates an array of the own enumerable property names of `object`.
-     *
-     * **Note:** Non-object values are coerced to objects. See the
-     * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
-     * for more details.
-     *
-     * @static
-     * @since 0.1.0
-     * @memberOf _
-     * @category Object
-     * @param {Object} object The object to query.
-     * @returns {Array} Returns the array of property names.
-     * @example
-     *
-     * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
-     *
-     * Foo.prototype.c = 3;
-     *
-     * _.keys(new Foo);
-     * // => ['a', 'b'] (iteration order is not guaranteed)
-     *
-     * _.keys('hi');
-     * // => ['0', '1']
-     */
-    function keys(object) {
-      return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
-    }
-
-    /**
-     * Creates an array of own enumerable property names and symbols of `object`.
-     *
-     * @private
-     * @param {Object} object The object to query.
-     * @returns {Array} Returns the array of property names and symbols.
-     */
-    function getAllKeys(object) {
-      return baseGetAllKeys(object, keys, getSymbols);
     }
 
     /** Used to compose bitmasks for value comparisons. */
@@ -2304,69 +2361,6 @@
       stack['delete'](other);
       return result;
     }
-
-    /* Built-in method references that are verified to be native. */
-    var DataView = getNative(root, 'DataView');
-
-    /* Built-in method references that are verified to be native. */
-    var Promise$1 = getNative(root, 'Promise');
-
-    /* Built-in method references that are verified to be native. */
-    var Set$1 = getNative(root, 'Set');
-
-    /* Built-in method references that are verified to be native. */
-    var WeakMap = getNative(root, 'WeakMap');
-
-    /** `Object#toString` result references. */
-    var mapTag = '[object Map]',
-        objectTag$1 = '[object Object]',
-        promiseTag = '[object Promise]',
-        setTag = '[object Set]',
-        weakMapTag = '[object WeakMap]';
-
-    var dataViewTag = '[object DataView]';
-
-    /** Used to detect maps, sets, and weakmaps. */
-    var dataViewCtorString = toSource(DataView),
-        mapCtorString = toSource(Map),
-        promiseCtorString = toSource(Promise$1),
-        setCtorString = toSource(Set$1),
-        weakMapCtorString = toSource(WeakMap);
-
-    /**
-     * Gets the `toStringTag` of `value`.
-     *
-     * @private
-     * @param {*} value The value to query.
-     * @returns {string} Returns the `toStringTag`.
-     */
-    var getTag = baseGetTag;
-
-    // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-    if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
-        (Map && getTag(new Map) != mapTag) ||
-        (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
-        (Set$1 && getTag(new Set$1) != setTag) ||
-        (WeakMap && getTag(new WeakMap) != weakMapTag)) {
-      getTag = function(value) {
-        var result = baseGetTag(value),
-            Ctor = result == objectTag$1 ? value.constructor : undefined,
-            ctorString = Ctor ? toSource(Ctor) : '';
-
-        if (ctorString) {
-          switch (ctorString) {
-            case dataViewCtorString: return dataViewTag;
-            case mapCtorString: return mapTag;
-            case promiseCtorString: return promiseTag;
-            case setCtorString: return setTag;
-            case weakMapCtorString: return weakMapTag;
-          }
-        }
-        return result;
-      };
-    }
-
-    var getTag$1 = getTag;
 
     /** Used to compose bitmasks for value comparisons. */
     var COMPARE_PARTIAL_FLAG = 1;
@@ -3073,23 +3067,390 @@
         return System;
     }());
 
+    function createNowTime(syncLocker = true) {
+      let nowtime = null;
+      if(Date.now) {
+        nowtime = Date.now;
+      } else {
+        nowtime = () => (new Date()).getTime();
+      }
+
+      return nowtime;
+    }
+
+    /*
+      delay = 100 -> delay = {delay: 100}
+      delay = {entropy: 100} -> delay = {delay: 100, isEntropy: true}
+     */
+    function formatDelay(delay) {
+      if(typeof delay === 'number') {
+        delay = {delay};
+      } else if('entropy' in delay) {
+        delay = {delay: delay.entropy, isEntropy: true};
+      }
+      return delay;
+    }
+
+    const _nowtime = createNowTime();
+
+    const defaultOptions$1 = {
+      originTime: 0,
+      playbackRate: 1.0,
+    };
+
+    const _timeMark = Symbol('timeMark'),
+      _playbackRate = Symbol('playbackRate'),
+      _timers = Symbol('timers'),
+      _originTime = Symbol('originTime'),
+      _setTimer = Symbol('setTimer'),
+      _parent = Symbol('parent');
+
+    class Timeline {
+      constructor(options, parent) {
+        if (options instanceof Timeline) {
+          parent = options;
+          options = {};
+        }
+
+        options = Object.assign({}, defaultOptions$1, options);
+
+        if (parent) {
+          this[_parent] = parent;
+        }
+
+        const nowtime = options.nowtime || _nowtime;
+        if (!parent) {
+          const createTime = nowtime();
+          Object.defineProperty(this, 'globalTime', {
+            get() {
+              return nowtime() - createTime;
+            },
+          });
+        } else {
+          Object.defineProperty(this, 'globalTime', {
+            get() {
+              return parent.currentTime;
+            },
+          });
+        }
+
+        // timeMark records the reference points on timeline
+        // Each time we change the playbackRate or currentTime or entropy
+        // A new timeMark will be generated
+        // timeMark sorted by entropy
+        // If you reset entropy, all the timeMarks behind the new entropy
+        // should be dropped
+        this[_timeMark] = [
+          {
+            globalTime: this.globalTime,
+            localTime: -options.originTime,
+            entropy: -options.originTime,
+            playbackRate: options.playbackRate,
+            globalEntropy: 0,
+          },
+        ];
+
+        if (this[_parent]) {
+          this[_timeMark][0].globalEntropy = this[_parent].entropy;
+        }
+
+        this[_originTime] = options.originTime;
+        this[_playbackRate] = options.playbackRate;
+        this[_timers] = new Map();
+      }
+
+      get parent() {
+        return this[_parent];
+      }
+
+      get lastTimeMark() {
+        return this[_timeMark][this[_timeMark].length - 1];
+      }
+
+      markTime({time = this.currentTime, entropy = this.entropy, playbackRate = this.playbackRate} = {}) {
+        const timeMark = {
+          globalTime: this.globalTime,
+          localTime: time,
+          entropy,
+          playbackRate,
+          globalEntropy: this.globalEntropy,
+        };
+        this[_timeMark].push(timeMark);
+      }
+
+      get currentTime() {
+        const {localTime, globalTime} = this.lastTimeMark;
+        return localTime + (this.globalTime - globalTime) * this.playbackRate;
+      }
+
+      set currentTime(time) {
+        const from = this.currentTime,
+          to = time,
+          timers = this[_timers];
+
+        this.markTime({time});
+        [...timers].forEach(([id, timer]) => {
+          if (!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
+          const {isEntropy, delay, heading} = timer.time,
+            {handler, startTime} = timer;
+
+          if (!isEntropy) {
+            const endTime = startTime + delay;
+            if (
+              delay === 0 ||
+              (heading !== false && (to - from) * delay <= 0) ||
+              (from <= endTime && endTime <= to) ||
+              (from >= endTime && endTime >= to)
+            ) {
+              handler();
+              this.clearTimeout(id);
+            }
+          } else if (delay === 0) {
+            handler();
+            this.clearTimeout(id);
+          }
+        });
+        this.updateTimers();
+      }
+
+      // Both currentTime and entropy should be influenced by playbackRate.
+      // If current playbackRate is negative, the currentTime should go backwards
+      // while the entropy remain to go forwards.
+      // Both of the initial values is set to -originTime
+      get entropy() {
+        const {entropy, globalEntropy} = this.lastTimeMark;
+        return entropy + Math.abs((this.globalEntropy - globalEntropy) * this.playbackRate);
+      }
+
+      get globalEntropy() {
+        return this[_parent] ? this[_parent].entropy : this.globalTime;
+      }
+
+      // get globalTime() {
+      //   if(this[_parent]) {
+      //     return this[_parent].currentTime;
+      //   }
+
+      //   return nowtime();
+      // }
+
+      // change entropy will NOT cause currentTime changing but may influence the pass
+      // and the future of the timeline. (It may change the result of seek***Time)
+      // While entropy is set, all the marks behind will be droped
+      // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+      set entropy(entropy) {
+        if (this.entropy > entropy) {
+          const idx = this.seekTimeMark(entropy);
+          this[_timeMark].length = idx + 1;
+        }
+        this.markTime({entropy});
+        this.updateTimers();
+      }
+
+      fork(options) {
+        return new Timeline(options, this);
+      }
+
+      seekGlobalTime(seekEntropy) {
+        const idx = this.seekTimeMark(seekEntropy),
+          timeMark = this[_timeMark][idx];
+
+        const {entropy, playbackRate, globalTime} = timeMark;
+
+        return globalTime + (seekEntropy - entropy) / Math.abs(playbackRate);
+      }
+
+      seekLocalTime(seekEntropy) {
+        const idx = this.seekTimeMark(seekEntropy),
+          timeMark = this[_timeMark][idx];
+
+        const {localTime, entropy, playbackRate} = timeMark;
+
+        if (playbackRate > 0) {
+          return localTime + (seekEntropy - entropy);
+        }
+        return localTime - (seekEntropy - entropy);
+      }
+
+      seekTimeMark(entropy) {
+        const timeMark = this[_timeMark];
+
+        let l = 0,
+          r = timeMark.length - 1;
+
+        if (entropy <= timeMark[l].entropy) {
+          return l;
+        }
+        if (entropy >= timeMark[r].entropy) {
+          return r;
+        }
+
+        let m = Math.floor((l + r) / 2); // binary search
+
+        while (m > l && m < r) {
+          if (entropy === timeMark[m].entropy) {
+            return m;
+          }
+          if (entropy < timeMark[m].entropy) {
+            r = m;
+          } else if (entropy > timeMark[m].entropy) {
+            l = m;
+          }
+          m = Math.floor((l + r) / 2);
+        }
+
+        return l;
+      }
+
+      get playbackRate() {
+        return this[_playbackRate];
+      }
+
+      set playbackRate(rate) {
+        if (rate !== this.playbackRate) {
+          this.markTime({playbackRate: rate});
+          this[_playbackRate] = rate;
+          this.updateTimers();
+        }
+      }
+
+      get paused() {
+        if (this.playbackRate === 0) return true;
+        let parent = this.parent;
+        while (parent) {
+          if (parent.playbackRate === 0) return true;
+          parent = parent.parent;
+        }
+        return false;
+      }
+
+      updateTimers() {
+        const timers = Array.from(this[_timers].entries());
+        timers.forEach(([id, timer]) => {
+          this[_setTimer](timer.handler, timer.time, id);
+        });
+      }
+
+      clearTimeout(id) {
+        const timer = this[_timers].get(id);
+
+        if (timer && timer.timerID != null) {
+          if (this[_parent]) {
+            this[_parent].clearTimeout(timer.timerID);
+          } else {
+            clearTimeout(timer.timerID);
+          }
+        }
+        this[_timers].delete(id);
+      }
+
+      clearInterval(id) {
+        return this.clearTimeout(id);
+      }
+
+      clear() {
+        // clear all running timers
+        const timers = this[_timers];
+        [...timers.keys()].forEach(id => {
+          this.clearTimeout(id);
+        });
+      }
+
+      /*
+        setTimeout(func, {delay: 100, isEntropy: true})
+        setTimeout(func, {entropy: 100})
+        setTimeout(func, 100})
+       */
+      setTimeout(handler, time = {delay: 0}) {
+        return this[_setTimer](handler, time);
+      }
+
+      setInterval(handler, time = {delay: 0}) {
+        const that = this;
+        const id = this[_setTimer](function step() {
+          // reset timer before handler cause we may clearTimeout in handler()
+          that[_setTimer](step, time, id);
+          handler();
+        }, time);
+
+        return id;
+      }
+
+      [_setTimer](handler, time, id = Symbol('timerID')) {
+        time = formatDelay(time);
+
+        const timer = this[_timers].get(id);
+        let delay,
+          timerID = null,
+          startTime,
+          startEntropy;
+
+        if (timer) {
+          this.clearTimeout(id);
+          if (time.isEntropy) {
+            delay = (time.delay - (this.entropy - timer.startEntropy)) / Math.abs(this.playbackRate);
+          } else {
+            delay = (time.delay - (this.currentTime - timer.startTime)) / this.playbackRate;
+          }
+          startTime = timer.startTime;
+          startEntropy = timer.startEntropy;
+        } else {
+          delay = time.delay / (time.isEntropy ? Math.abs(this.playbackRate) : this.playbackRate);
+          startTime = this.currentTime;
+          startEntropy = this.entropy;
+        }
+
+        const parent = this[_parent],
+          globalTimeout = parent ? parent.setTimeout.bind(parent) : setTimeout;
+
+        const heading = time.heading;
+        // console.log(heading, parent, delay)
+        if (!parent && heading === false && delay < 0) {
+          delay = Infinity;
+        }
+
+        // if playbackRate is zero, delay will be infinity.
+        // For wxapp bugs, cannot use Number.isFinite yet.
+        if (isFinite(delay) || parent) {
+          // eslint-disable-line no-restricted-globals
+          delay = Math.ceil(delay);
+          if (globalTimeout !== setTimeout) {
+            delay = {delay, heading};
+          }
+          timerID = globalTimeout(() => {
+            this[_timers].delete(id);
+            handler();
+          }, delay);
+        }
+
+        this[_timers].set(id, {
+          timerID,
+          handler,
+          time,
+          startTime,
+          startEntropy,
+        });
+
+        return id;
+      }
+    }
+
     var defaultOptions = {
         autoStart: true,
-        frameRate: 60,
+        frameRate: 60
     };
     var Ticker = (function () {
         function Ticker(options) {
             var _this = this;
             options = Object.assign({}, defaultOptions, options);
+            this._frameCount = 0;
             this._frameDuration = 1000 / options.frameRate;
             this.autoStart = options.autoStart;
             this.frameRate = options.frameRate;
+            this.timeline = new Timeline({ originTime: 0, playbackRate: 1.0 });
+            this._lastFrameTime = this.timeline.currentTime;
             this._tickers = new Set();
             this._requestId = null;
-            this._blockTime = 0;
-            this._lastTime = Date.now();
-            this._frameCount = 0;
-            this._activeWithPause = false;
             this._ticker = function () {
                 if (_this._started) {
                     _this._requestId = requestAnimationFrame(_this._ticker);
@@ -3102,23 +3463,24 @@
         }
         Ticker.prototype.update = function () {
             var e_1, _a;
-            var time = Date.now();
-            if (time - this._lastTime >= this._frameDuration) {
-                var durationTime = time - this._lastTime;
-                var frameTime = time - (durationTime % this._frameDuration);
-                var deltaTime = frameTime - this._lastTime;
-                this._lastTime = frameTime;
-                var e = {
+            var currentTime = this.timeline.currentTime;
+            var durationTime = currentTime - this._lastFrameTime;
+            if (durationTime >= this._frameDuration) {
+                var frameTime = currentTime - (durationTime % this._frameDuration);
+                var deltaTime = frameTime - this._lastFrameTime;
+                this._lastFrameTime = frameTime;
+                var options = {
                     deltaTime: deltaTime,
+                    time: currentTime,
+                    currentTime: currentTime,
                     frameCount: ++this._frameCount,
-                    time: time - this._blockTime,
-                    fps: Math.round(1000 / deltaTime),
+                    fps: Math.round(1000 / deltaTime)
                 };
                 try {
                     for (var _b = __values(this._tickers), _c = _b.next(); !_c.done; _c = _b.next()) {
                         var func = _c.value;
                         if (typeof func === 'function') {
-                            func(e);
+                            func(options);
                         }
                     }
                 }
@@ -3138,34 +3500,15 @@
             this._tickers.delete(fn);
         };
         Ticker.prototype.start = function () {
-            if (this._started) {
+            if (this._started)
                 return;
-            }
-            if (this._lastStopTime > 0) {
-                this._blockTime = this._blockTime + Date.now() - this._lastStopTime;
-                this._lastStopTime = 0;
-            }
             this._started = true;
-            this._lastTime = Date.now();
+            this.timeline.playbackRate = 1.0;
             this._requestId = requestAnimationFrame(this._ticker);
         };
         Ticker.prototype.pause = function () {
             this._started = false;
-            this._lastStopTime = Date.now();
-        };
-        Ticker.prototype.active = function () {
-            if (!this._activeWithPause) {
-                this.start();
-            }
-            this._activeWithPause = false;
-        };
-        Ticker.prototype.background = function () {
-            if (!this._started) {
-                this._activeWithPause = true;
-            }
-            else {
-                this.pause();
-            }
+            this.timeline.playbackRate = 0;
         };
         return Ticker;
     }());
@@ -3212,6 +3555,7 @@
             return;
         if (obj.started)
             return;
+        obj.started = true;
         try {
             obj.start && obj.start();
         }
@@ -3223,7 +3567,6 @@
                 console.error(obj.constructor.systemName + " start error", e);
             }
         }
-        obj.started = true;
     };
     var getAllGameObjects = function (game) {
         var e_1, _a;
@@ -3384,16 +3727,13 @@
         __extends$1(Game, _super);
         function Game(_a) {
             var e_10, _b;
-            var _c = _a === void 0 ? {} : _a, _d = _c.autoStart, autoStart = _d === void 0 ? true : _d, _e = _c.frameRate, frameRate = _e === void 0 ? 120 : _e, systems = _c.systems, _f = _c.needScene, needScene = _f === void 0 ? true : _f;
+            var _c = _a === void 0 ? {} : _a, systems = _c.systems, _d = _c.frameRate, frameRate = _d === void 0 ? 60 : _d, _e = _c.autoStart, autoStart = _e === void 0 ? true : _e, _f = _c.needScene, needScene = _f === void 0 ? true : _f;
             var _this = _super.call(this) || this;
             _this.playing = false;
             _this.started = false;
             _this.multiScenes = [];
             _this.systems = [];
-            _this.ticker = new Ticker({
-                autoStart: false,
-                frameRate: frameRate,
-            });
+            _this.ticker = new Ticker({ autoStart: false, frameRate: frameRate });
             _this.initTicker();
             if (systems && systems.length) {
                 try {
@@ -3496,28 +3836,25 @@
             });
         };
         Game.prototype.pause = function () {
-            if (this.playing === false) {
+            if (!this.playing)
                 return;
-            }
             this.playing = false;
             this.ticker.pause();
             this.triggerPause();
         };
         Game.prototype.start = function () {
-            if (this.playing === true) {
+            if (this.playing)
                 return;
-            }
-            this.ticker.start();
             this.playing = true;
             this.started = true;
+            this.ticker.start();
         };
         Game.prototype.resume = function () {
-            if (this.playing === true) {
+            if (this.playing)
                 return;
-            }
+            this.playing = true;
             this.ticker.start();
             this.triggerResume();
-            this.playing = true;
         };
         Game.prototype.initTicker = function () {
             var _this = this;
@@ -3622,7 +3959,7 @@
                 }
                 finally { if (e_15) throw e_15.error; }
             }
-            this.systems = [];
+            this.systems.length = 0;
         };
         Game.prototype.destroy = function () {
             this.removeAllListeners();
