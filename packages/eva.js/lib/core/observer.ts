@@ -1,7 +1,7 @@
 import { isEqual, isObject } from 'lodash-es';
 import Component from './Component';
 import System from './System';
-import { ObserverEvent } from './ComponentObserver';
+import type { ObserverEvent } from './ComponentObserver';
 
 /** Observer event type */
 export enum ObserverType {
