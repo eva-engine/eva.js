@@ -46,7 +46,8 @@ export interface TextParams {
 export default class Text extends Component {
   static componentName: string = 'Text';
   @type('string') text: string = '';
-  @decorators.IDEProp style: TextParams['style'] = {};
+  // @decorators.IDEProp 复杂编辑后续添加
+  style: TextParams['style'] = {};
   init(obj?: TextParams) {
     const style = new TextStyle({
       fontSize: 20,
