@@ -1,5 +1,5 @@
-import iOSVersion from 'ios-version';
-
+// import iOSVersion from 'ios-version';
+const iOSVersion = require('ios-version')
 const { major } = iOSVersion(window.navigator.userAgent) || {};
 
 /**

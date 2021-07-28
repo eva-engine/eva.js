@@ -1,4 +1,4 @@
-import { IDEProp } from '../decorators/ide';
+import {type} from '@eva/inspector-decorator';
 import Component from './Component';
 
 /**
@@ -75,13 +75,13 @@ class Transform extends Component {
     this.rotation = params.rotation || this.rotation;
   }
 
-  @IDEProp position: Vector2 = { x: 0, y: 0 };
-  @IDEProp size: Size2 = { width: 0, height: 0 };
-  @IDEProp origin: Vector2 = { x: 0, y: 0 };
-  @IDEProp anchor: Vector2 = { x: 0, y: 0 };
-  @IDEProp scale: Vector2 = { x: 1, y: 1 };
-  @IDEProp skew: Vector2 = { x: 0, y: 0 };
-  @IDEProp rotation: number = 0;
+  @type('vector2') position: Vector2 = {x: 0, y: 0};
+  @type('size') size: Size2 = {width: 0, height: 0};
+  @type('vector2') origin: Vector2 = {x: 0, y: 0};
+  @type('vector2') anchor: Vector2 = {x: 0, y: 0};
+  @type('vector2') scale: Vector2 = {x: 1, y: 1};
+  @type('vector2') skew: Vector2 = {x: 0, y: 0};
+  @type('number') rotation: number = 0;
 
   set parent(val: Transform) {
     if (val) {

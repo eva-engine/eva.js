@@ -1,5 +1,6 @@
 import {TextStyle} from 'pixi.js';
 import {Component, decorators} from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
 export interface TextParams {
   text: string;
@@ -44,7 +45,7 @@ export interface TextParams {
 
 export default class Text extends Component {
   static componentName: string = 'Text';
-  @decorators.IDEProp text: string = '';
+  @type('string') text: string = '';
   @decorators.IDEProp style: TextParams['style'] = {};
   init(obj?: TextParams) {
     const style = new TextStyle({

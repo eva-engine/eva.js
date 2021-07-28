@@ -1,4 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
+import {Component} from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 import {SpriteAnimation as SpriteAnimationEngine} from '@eva/renderer-adapter';
 
 export interface SpriteAnimationParams {
@@ -9,9 +10,9 @@ export interface SpriteAnimationParams {
 
 export default class SpriteAnimation extends Component {
   static componentName: string = 'SpriteAnimation';
-  @decorators.IDEProp resource: string = '';
-  @decorators.IDEProp autoPlay: boolean = true;
-  @decorators.IDEProp speed: number = 100;
+  @type('string') resource: string = '';
+  @type('boolean') autoPlay: boolean = true;
+  @type('number') speed: number = 100;
   _animate: SpriteAnimationEngine;
   private waitPlay: boolean = false;
   private waitStop: boolean = false;

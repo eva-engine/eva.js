@@ -1,4 +1,5 @@
 import {Component, decorators} from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
 export enum MASK_TYPE {
   Circle = 'Circle',
@@ -28,8 +29,8 @@ export default class Mask extends Component {
   static componentName: string = 'Mask';
   @decorators.IDEProp type: MaskParams['type'];
   @decorators.IDEProp style?: MaskParams['style'] = {};
-  @decorators.IDEProp resource?: string = '';
-  @decorators.IDEProp spriteName?: string = '';
+  @type('string') resource?: string = '';
+  @type('string') spriteName?: string = '';
 
   init(obj?: MaskParams) {
     Object.assign(this, obj);

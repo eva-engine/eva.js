@@ -1,4 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
+import {Component } from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
 export interface NinePatchParams {
   resource: string;
@@ -12,13 +13,13 @@ export interface NinePatchParams {
 export default class NinePatch extends Component {
   static componentName: string = 'NinePatch';
   ninePatch: any;
-  @decorators.IDEProp resource: string = '';
-  @decorators.IDEProp spriteName: string = '';
+  @type('string') resource: string = '';
+  @type('string') spriteName: string = '';
 
-  @decorators.IDEProp leftWidth: number = 0;
-  @decorators.IDEProp topHeight: number = 0;
-  @decorators.IDEProp rightWidth: number = 0;
-  @decorators.IDEProp bottomHeight: number = 0;
+  @type('number') leftWidth: number = 0;
+  @type('number') topHeight: number = 0;
+  @type('number') rightWidth: number = 0;
+  @type('number') bottomHeight: number = 0;
   init(obj?: NinePatchParams) {
     this.resource = obj.resource;
     this.spriteName = obj.spriteName;
