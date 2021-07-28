@@ -15,7 +15,8 @@
     "test-cov": "jest --coverage",
     "ci": "lerna bootstrap && npm run cov",
     "cov": "jest --json > node_modules/.tap.json",
-    "api": "api-documenter markdown -i temp -o docs/api"
+    "api": "api-documenter markdown -i temp -o docs/api",
+    "vite": "npx vite ./vite-test -c ./vite.config.ts"
   },
   "keywords": [
     "game",
@@ -31,7 +32,7 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.5.4",
     "@microsoft/api-extractor": "^7.11.2",
-    "@rollup/plugin-alias": "^3.1.1",
+    "@rollup/plugin-alias": "^3.1.4",
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.2",
@@ -79,7 +80,8 @@
     "tslib": "^1.9.3",
     "typedoc": "^0.15.0",
     "typescript": "^3.6.4",
-    "zlib": "^1.0.5"
+    "zlib": "^1.0.5",
+    "vite":"2.4.3"
   },
   "engines": {
     "node": ">=14.14.0"

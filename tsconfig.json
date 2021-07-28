@@ -19,6 +19,7 @@
     "noImplicitReturns": false,
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
     "lib": [
       "esnext",
       "dom"
@@ -43,5 +44,5 @@
     "packages/global.d.ts",
     "packages/*/lib",
     "packages/*/__tests__"
-  ]
+  ],
 }
