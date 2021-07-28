@@ -152,7 +152,9 @@ class Game extends EventEmitter {
     needScene = true,
   }: GameParams = {}) {
     super();
-
+    if(window.__EVA_INSPECTOR_ENV__){
+      window.__EVA_GAME_INSTANCE__ = this;
+    }
     this.ticker = new Ticker({ autoStart: false, frameRate });
     this.initTicker();
 
