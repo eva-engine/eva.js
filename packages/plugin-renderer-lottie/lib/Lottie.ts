@@ -1,6 +1,5 @@
 import {
   Component,
-  decorators
 } from '@eva/eva.js';
 import {
   IExpandOpts,
@@ -18,7 +17,7 @@ interface ExtendOptions extends IOptions {
 }
 
 export default class Lottie extends Component {
-  @decorators.IDEProp
+  // @decorators.IDEProp 复杂编辑后续添加
   slot: { [key: string]: string }
 
   static componentName: string = 'Lottie';
