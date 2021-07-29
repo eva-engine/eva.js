@@ -30,13 +30,14 @@ const events = {
 };
 
 const factory = dragonBones.PixiFactory.factory;
-resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data }) => {
-  factory.parseDragonBonesData(data.ske, 'aaa');
-  factory.parseTextureAtlasData(data.tex, Texture.from(data.image), 'aaa');
+
+resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data, name }) => {
+  factory.parseDragonBonesData(data.ske, name);
+  factory.parseTextureAtlasData(data.tex, Texture.from(data.image), name);
 });
-resource.registerDestroy(RESOURCE_TYPE.DRAGONBONE, () => {
-  factory.removeDragonBonesData('aaa');
-  factory.removeTextureAtlasData('aaa');
+resource.registerDestroy(RESOURCE_TYPE.DRAGONBONE, ({ name }) => {
+  factory.removeDragonBonesData(name);
+  factory.removeTextureAtlasData(name);
 })
 
 @decorators.componentObserver({

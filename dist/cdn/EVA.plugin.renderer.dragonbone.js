@@ -19301,13 +19301,14 @@
     };
     var factory = dragonBones$1.PixiFactory.factory;
     eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.DRAGONBONE, function (_a) {
-        var data = _a.data;
-        factory.parseDragonBonesData(data.ske, 'aaa');
-        factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image), 'aaa');
+        var data = _a.data, name = _a.name;
+        factory.parseDragonBonesData(data.ske, name);
+        factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image), name);
     });
-    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.DRAGONBONE, function () {
-        factory.removeDragonBonesData('aaa');
-        factory.removeTextureAtlasData('aaa');
+    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.DRAGONBONE, function (_a) {
+        var name = _a.name;
+        factory.removeDragonBonesData(name);
+        factory.removeTextureAtlasData(name);
     });
     var DragonBone = (function (_super) {
         __extends$1(DragonBone, _super);
