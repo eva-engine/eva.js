@@ -19302,8 +19302,12 @@
     var factory = dragonBones$1.PixiFactory.factory;
     eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.DRAGONBONE, function (_a) {
         var data = _a.data;
-        factory.parseDragonBonesData(data.ske);
-        factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image));
+        factory.parseDragonBonesData(data.ske, 'aaa');
+        factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image), 'aaa');
+    });
+    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.DRAGONBONE, function () {
+        factory.removeDragonBonesData('aaa');
+        factory.removeTextureAtlasData('aaa');
     });
     var DragonBone = (function (_super) {
         __extends$1(DragonBone, _super);
@@ -19399,7 +19403,7 @@
                 .getContainer(changed.gameObject.id)
                 .removeChild(armature.armature);
             armature.armature.removeAllListeners();
-            armature.armature.destroy();
+            armature.armature.destroy(true);
             var component = changed.component;
             component.armature = null;
             delete this.armatures[changed.gameObject.id];

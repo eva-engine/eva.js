@@ -2240,6 +2240,8 @@
             return this.containerMap[name];
         };
         ContainerManager.prototype.removeContainer = function (name) {
+            var _a;
+            (_a = this.containerMap[name]) === null || _a === void 0 ? void 0 : _a.destroy(true);
             delete this.containerMap[name];
         };
         ContainerManager.prototype.updateTransform = function (_a) {
@@ -2697,6 +2699,7 @@
             }
             else {
                 var container = this.containerManager.getContainer(changed.gameObject.id);
+                delete transform.worldTransform;
                 container.parent && container.parent.removeChild(container);
             }
         };

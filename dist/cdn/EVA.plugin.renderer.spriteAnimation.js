@@ -5,18 +5,18 @@
 }(this, (function (exports, eva_js, pluginRenderer, rendererAdapter, pixi_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation.
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
 
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
 
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
     ***************************************************************************** */
     /* global Reflect, Promise */
 
@@ -41,11 +41,10 @@
     }
 
     function __awaiter(thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
             function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
@@ -79,15 +78,14 @@
     }
 
     function __values(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
         if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
+        return {
             next: function () {
                 if (o && i >= o.length) o = void 0;
                 return { value: o && o[i++], done: !o };
             }
         };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
     var SpriteAnimation$1 = (function (_super) {
@@ -339,7 +337,7 @@
             var animate = this.animates[id];
             this.autoPlay[id] = animate.animatedSprite.playing;
             this.containerManager.getContainer(id).removeChild(animate.animatedSprite);
-            animate.animatedSprite.destroy();
+            animate.animatedSprite.destroy(true);
             delete this.animates[id];
             if (!isChange) {
                 delete this.autoPlay[id];

@@ -1,6 +1,6 @@
 {
   "name": "@eva/eva.js",
-  "version": "1.0.11",
+  "version": "1.0.12-fix.0",
   "description": "@eva/eva.js",
   "main": "index.js",
   "module": "dist/eva.js.esm.js",
