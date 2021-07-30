@@ -9,6 +9,31 @@
     body{
       margin: 0;
     }
+    div.link{
+      position: relative;
+      display:inline-block;
+      margin: 0.15em 4em;
+      text-decoration: underline;
+      color:blueviolet;
+      font-size: 16px;
+    }
+    div.link:hover{
+      color: #0055cc;
+      cursor: pointer;
+    }
+    div.link::before{
+      position: absolute;
+      display: block;
+      left: -1em;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      content: '';
+      width: 0.4em;
+      height: 0.4em;
+      background-color: #000;
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body>

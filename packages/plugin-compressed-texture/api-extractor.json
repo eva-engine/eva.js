@@ -1,7 +1,0 @@
-{
-  "extends": "../../api-extractor.json",
-  "mainEntryPointFilePath": "./dist/packages/plugin-compressed-texture/lib/index.d.ts",
-  "dtsRollup": {
-    "publicTrimmedFilePath": "./dist/plugin-compressed-texture.d.ts"
-  }
-}

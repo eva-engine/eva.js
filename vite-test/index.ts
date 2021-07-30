@@ -1,9 +1,9 @@
-type ExampleModule = {
+type ExampleModule = () => Promise<{
   name: string,
   init: (canvas: HTMLCanvasElement) => void
-}
+}>
 //@ts-ignore
-const modules: { [key: string]: ExampleModule } = import.meta.globEager('./ts/*.ts');
+const modules: { [key: string]: ExampleModule } = import.meta.glob('./ts/*.ts');
 const moduleEntries = Object.entries(modules);
 declare const canvas: HTMLCanvasElement;
 const path = location.hash.replace('#', '');
@@ -19,16 +19,21 @@ window.onhashchange = e => {
   location.reload();
 }
 if (modules[path]) {
-  document.title = modules[path].name;
-  modules[path].init(canvas);
+  (async () => {
+    const module = await modules[path]();
+    document.title = module.name;
+    module.init(canvas);
+  })()
 } else {
   canvas.remove();
-  moduleEntries.forEach(([url, { name = url }]) => {
-    let btn = document.createElement('button');
-    btn.innerText = name;
+  Object.keys(modules).forEach(url => {
+    let btn = document.createElement('div');
+    btn.className = 'link';
+    btn.innerText = url.split('/').pop().split('.ts')[0];
     btn.onclick = () => {
       location.hash = url;
     };
     document.body.appendChild(btn);
+    document.body.appendChild(document.createElement('br'));
   });
 }

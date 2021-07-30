@@ -1,3 +1,5 @@
+
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -2837,7 +2839,7 @@
         }
         Object.defineProperty(GameObject.prototype, "transform", {
             get: function () {
-                return this.getComponent(Transform.componentName);
+                return this.getComponent(Transform);
             },
             enumerable: false,
             configurable: true
@@ -4592,7 +4594,6 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
-                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:
@@ -5251,13 +5252,14 @@
         tex: XhrLoadStrategy,
         ske: XhrLoadStrategy,
         audio: XhrLoadStrategy,
-        video: VideoLoadStrategy
+        video: VideoLoadStrategy,
     };
     var Resource = (function (_super) {
         __extends$1(Resource, _super);
         function Resource(options) {
             var _this = _super.call(this) || this;
             _this.timeout = 6000;
+            _this.preProcessResourceHandlers = [];
             _this.resourcesMap = {};
             _this.makeInstanceFunctions = {};
             _this.destroyInstanceFunctions = {};
@@ -5277,7 +5279,7 @@
             return this.getResource(resource.name);
         };
         Resource.prototype.addResource = function (resources) {
-            var e_1, _a;
+            var e_1, _a, e_2, _b;
             if (!resources || resources.length < 1) {
                 console.warn('no resources');
                 return;
@@ -5288,6 +5290,19 @@
                     if (this.resourcesMap[res.name]) {
                         console.warn(res.name + ' was already added');
                         continue;
+                    }
+                    try {
+                        for (var _c = (e_2 = void 0, __values(this.preProcessResourceHandlers)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                            var handler = _d.value;
+                            handler(res);
+                        }
+                    }
+                    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                    finally {
+                        try {
+                            if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+                        }
+                        finally { if (e_2) throw e_2.error; }
                     }
                     this.resourcesMap[res.name] = res;
                     this.resourcesMap[res.name].data = {};
@@ -5300,6 +5315,12 @@
                 }
                 finally { if (e_1) throw e_1.error; }
             }
+        };
+        Resource.prototype.addPreProcessResourceHandler = function (handler) {
+            this.preProcessResourceHandlers.push(handler);
+        };
+        Resource.prototype.removePreProcessResourceHandler = function (handler) {
+            this.preProcessResourceHandlers.splice(this.preProcessResourceHandlers.indexOf(handler), 1);
         };
         Resource.prototype.preload = function () {
             var names = Object.values(this.resourcesMap)
@@ -5358,7 +5379,7 @@
         Resource.prototype._destroy = function (name, loadError) {
             if (loadError === void 0) { loadError = false; }
             return __awaiter(this, void 0, void 0, function () {
-                var resource, e_2;
+                var resource, e_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -5376,8 +5397,8 @@
                             _a.label = 3;
                         case 3: return [3, 5];
                         case 4:
-                            e_2 = _a.sent();
-                            console.warn("destroy resource " + resource.name + " error with '" + e_2.message + "'");
+                            e_3 = _a.sent();
+                            console.warn("destroy resource " + resource.name + " error with '" + e_3.message + "'");
                             return [3, 5];
                         case 5:
                             delete this.promiseMap[name];
@@ -5549,6 +5570,7 @@
     exports.Game = Game;
     exports.GameObject = GameObject;
     exports.IDEProp = IDEProp;
+    exports.STRATEGY = STRATEGY;
     exports.Scene = Scene;
     exports.System = System;
     exports.Transform = Transform;

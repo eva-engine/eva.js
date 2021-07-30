@@ -1,14 +1,11 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
+import { INTERNAL_FORMATS, RendererSystem } from "../../packages/plugin-renderer/lib";
 import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
-import "../../packages/plugin-compressed-texture/lib"
-import { INTERNAL_FORMATS } from "../../packages/plugin-compressed-texture/lib/const";
-import activeCompressedTextureAbilityOnGame from "../../packages/plugin-compressed-texture/lib";
-import { DragonBoneSystem, DragonBone } from "../../packages/plugin-renderer-dragonbone/lib";
+import { useCompressedTexture } from "../../packages/plugin-renderer/lib";
 
 export const name = 'compressed-textures';
 export async function init(canvas: HTMLCanvasElement) {
-  new DragonBoneSystem();
+  useCompressedTexture(resource);
   resource.addResource([
     {
       name: 'imageName',
@@ -32,12 +29,9 @@ export async function init(canvas: HTMLCanvasElement) {
           },]
         },
       },
-      preload: true,
+      preload: false,
     },
   ]);
-  const res = await resource.getResource('imageName');
-  console.log('load finish ', res);
-  console.log('load target ', res.data.image);
   const game = new Game({
     systems: [
       //@ts-ignore
@@ -45,13 +39,16 @@ export async function init(canvas: HTMLCanvasElement) {
         canvas,
         width: window.innerWidth,
         height: window.innerHeight,
-        backgroundColor: '0xff0000'
+        backgroundColor: '0xff0000',
+        useCompressedTexture: true
       }),
       //@ts-ignore
       new ImgSystem(),
     ],
   });
-  activeCompressedTextureAbilityOnGame(game);
+  const res = await resource.getResource('imageName');
+  console.log('load finish ', res);
+  console.log('load target ', res.data.image);
 
   const image = new GameObject('image', {
     size: { width: window.innerWidth, height: window.innerWidth },
