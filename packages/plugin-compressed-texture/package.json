@@ -1,0 +1,26 @@
+{
+  "name": "plugin-compressed-texture",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "aspsnd <2546697613@qq.com>",
+  "homepage": "https://github.com/eva-engine/eva.js#readme",
+  "license": "ISC",
+  "main": "lib/plugin-compressed-texture.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eva-engine/eva.js.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/eva-engine/eva.js/issues"
+  }
+}

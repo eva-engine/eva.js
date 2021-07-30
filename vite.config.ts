@@ -7,8 +7,9 @@ export default defineConfig({
     port: 8083,
     host: '0.0.0.0',
   },
-  publicDir:'/vite-test/public/',
+  publicDir:'./public/',
   base: './',
+  root:'./vite-test',
   resolve: {
     alias: [
       {
