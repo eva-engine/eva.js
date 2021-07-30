@@ -33,7 +33,7 @@ jobs:
           cache: 'npm'
 
       - name: Lerna Bootstrap
-        run: npx lerna bootstrap
+        run: npx lerna bootstrap --no-ci
 
       - name: Jest Annotations & Coverage
         uses: mattallty/jest-github-action@v1.0.3
