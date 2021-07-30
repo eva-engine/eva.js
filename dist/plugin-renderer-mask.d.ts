@@ -1,4 +1,5 @@
 /// <reference types="pixi.js" />
+
 import { Component } from '@eva/eva.js';
 import { ComponentChanged } from '@eva/eva.js';
 import { ContainerManager } from '@eva/plugin-renderer';
