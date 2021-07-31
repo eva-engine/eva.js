@@ -18,14 +18,14 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['html', 'json', 'lcov'],
   collectCoverageFrom: ['packages/eva.js/lib/**/*.ts', '!packages/eva.js/lib/loader/resource-loader'],
-  moduleNameMapper,
+  moduleNameMapper: {
+    ...moduleNameMapper,
+    '^sprite-timline/src/index$': 'node_modules/sprite-timeline/src/index.js',
+  },
   transform: {
     '^.+\\.(ts|js)?$': 'ts-jest',
-    "node_modules/lodash-es/.+\\.(j|t)sx?$": "ts-jest"
   },
-  transformIgnorePatterns: [
-    "node_modules/(?!lodash-es/.*)"
-  ],
+  transformIgnorePatterns: [],
   watchPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',

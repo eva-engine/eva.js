@@ -5,18 +5,18 @@
 }(this, (function (exports, eva_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation.
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
 
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
 
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
     ***************************************************************************** */
     /* global Reflect, Promise */
 
@@ -41,20 +41,15 @@
     }
 
     function __values(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
         if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
+        return {
             next: function () {
                 if (o && i >= o.length) o = void 0;
                 return { value: o && o[i++], done: !o };
             }
         };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
-
-    var global$1 = (typeof global !== "undefined" ? global :
-                typeof self !== "undefined" ? self :
-                typeof window !== "undefined" ? window : {});
 
     /*!
        基于matter-js 修改， API保留了matter-js的api:   http://brm.io/matter-js
@@ -7008,7 +7003,7 @@
                * @return {body}
                */
               Bodies.fromVertices = function (x, y, vertexSets, options, flagInternal, removeCollinear, minimumArea) {
-                var globals = typeof global$1 !== 'undefined' ? global$1 : window,
+                var globals = typeof global !== 'undefined' ? global : window,
                   decomp,
                   body,
                   parts,
@@ -10888,6 +10883,7 @@
     (function (PhysicsType) {
         PhysicsType["RECTANGLE"] = "rectangle";
         PhysicsType["CIRCLE"] = "circle";
+        PhysicsType["POLYGON"] = "polygon";
     })(exports.PhysicsType || (exports.PhysicsType = {}));
     var Physics = (function (_super) {
         __extends(Physics, _super);
@@ -10934,6 +10930,11 @@
                 }
                 case exports.PhysicsType.CIRCLE: {
                     body = this.Bodies.circle(x, y, bodyParams.radius, bodyParams.bodyOptions);
+                    break;
+                }
+                case exports.PhysicsType.POLYGON: {
+                    body = this.Bodies.polygon(x, y, bodyParams.sides, bodyParams.radius, bodyParams.bodyOptions);
+                    break;
                 }
             }
             return body;
