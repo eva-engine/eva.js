@@ -1,9 +1,10 @@
-import {System, decorators, Game, LOAD_SCENE_MODE} from '@eva/eva.js';
-import {Application} from '@eva/renderer-adapter';
+import { System, decorators, Game, LOAD_SCENE_MODE } from '@eva/eva.js';
+import { Application } from '@eva/renderer-adapter';
 import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
-import {ticker} from 'pixi.js';
+import { ticker } from 'pixi.js';
+import { activeCompressedTextureAbilityOnRenderer } from './compressedTexture';
 
 export enum RENDERER_TYPE {
   UNKNOWN = 0,
@@ -48,14 +49,14 @@ export default class Renderer extends System {
       containerManager: this.containerManager,
     });
 
-    this.game.on('sceneChanged', ({scene, mode, params}) => {
+    this.game.on('sceneChanged', ({ scene, mode, params }) => {
       let application;
       switch (mode) {
         case LOAD_SCENE_MODE.SINGLE:
           application = this.application;
           break;
         case LOAD_SCENE_MODE.MULTI_CANVAS:
-          application = this.createMultiApplication({params});
+          application = this.createMultiApplication({ params });
           break;
       }
       scene.canvas = application.view;
@@ -65,6 +66,9 @@ export default class Renderer extends System {
         application,
       });
     });
+    if (params.useCompressedTexture !== false) {
+      activeCompressedTextureAbilityOnRenderer(this.application);
+    }
   }
 
   registerObserver(observerInfo) {
@@ -78,7 +82,7 @@ export default class Renderer extends System {
     }
   }
 
-  createMultiApplication({params}) {
+  createMultiApplication({ params }) {
     const app = this.createApplication(params);
     this.multiApps.push(app);
     return app;
@@ -91,7 +95,7 @@ export default class Renderer extends System {
     }
     ticker.shared.autoStart = false;
     ticker.shared.stop();
-    const app = new Application({sharedTicker: true, ...params});
+    const app = new Application({ sharedTicker: true, ...params });
     /**
      * Fix https://github.com/eva-engine/eva.js/issues/30
      * PreventScroll is legacy, because it has bug.
