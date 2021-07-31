@@ -81,6 +81,7 @@ export default class Img extends Renderer {
         this.containerManager
           .getContainer(changed.gameObject.id)
           .removeChild(sprite.sprite);
+          sprite.sprite.destroy(true)
         delete this.imgs[changed.gameObject.id];
       }
     }
