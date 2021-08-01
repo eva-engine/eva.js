@@ -1,6 +1,6 @@
-import { RendererSystem } from "../../packages/plugin-renderer/lib"
-import { Game, GameObject, RESOURCE_TYPE, resource } from "../../packages/eva.js/lib"
-import { Sprite, SpriteSystem } from "../../packages/plugin-renderer-sprite/lib";
+import { RendererSystem } from "@eva/plugin-renderer"
+import { Game, GameObject, RESOURCE_TYPE, resource } from "@eva/eva.js"
+import { Sprite, SpriteSystem } from "@eva/plugin-renderer-sprite";
 
 
 export const name = 'sprite';

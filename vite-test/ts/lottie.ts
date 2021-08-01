@@ -1,13 +1,12 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
 export const name = 'lottie';
-import { Lottie, LottieSystem } from "../../packages/plugin-renderer-lottie/lib";
+import { Lottie, LottieSystem } from "@eva/plugin-renderer-lottie";
 export async function init(canvas) {
 
   resource.addResource([
     {
       name: 'Halo',
-      // @ts-ignore
       type: 'LOTTIE',
       src: {
         json: {
@@ -18,7 +17,6 @@ export async function init(canvas) {
     },
     {
       name: 'Red',
-      // @ts-ignore
       type: 'LOTTIE',
       src: {
         json: {

@@ -1,6 +1,6 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { NinePatchSystem, NinePatch } from "../../packages/plugin-renderer-nine-patch/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { NinePatchSystem, NinePatch } from "@eva/plugin-renderer-nine-patch";
 
 export const name = 'ninePatch';
 export async function init(canvas) {

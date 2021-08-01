@@ -1,11 +1,14 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Graphics, GraphicsSystem } from "../../packages/plugin-renderer-graphics/lib";
-import { PhysicsSystem, Physics, PhysicsType } from "../../packages/plugin-matterjs/lib";
-import { Text, TextSystem } from "../../packages/plugin-renderer-text/lib";
-import { ImgSystem, Img } from "../../packages/plugin-renderer-img/lib";
-import { EventSystem, Event } from "../../packages/plugin-renderer-event/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Graphics, GraphicsSystem } from "@eva/plugin-renderer-graphics";
+import { PhysicsSystem, Physics, PhysicsType } from "@eva/plugin-matterjs";
+import { Text, TextSystem } from "@eva/plugin-renderer-text";
+import { ImgSystem, Img } from "@eva/plugin-renderer-img";
+import { EventSystem, Event } from "@eva/plugin-renderer-event";
 
+declare const window: Window & {
+  game: Game
+}
 export const name = 'matter';
 export async function init(canvas) {
 
@@ -73,8 +76,8 @@ export async function init(canvas) {
     restitution: 0.4,
     density: 0.002,
   };
-  createGame(document.getElementById('game-node'));
-  function createGame(canvasNode) {
+  createGame();
+  function createGame() {
     resource.addResource([
       {
         name: 'yingtao',
@@ -218,7 +221,6 @@ export async function init(canvas) {
         new EventSystem(),
       ],
     });
-    // @ts-ignore
     window.game = game;
     // 构建背景
     // 构建背景
@@ -242,7 +244,6 @@ export async function init(canvas) {
     graphics.beginFill(0xfee79d, 1);
     graphics.drawRect(0, 0, background.transform.size.width, background.transform.size.height);
     graphics.endFill();
-    // @ts-ignore
     window.game.scene.addChild(background);
 
     gradePanel = new GameObject('grade', {
@@ -292,13 +293,10 @@ export async function init(canvas) {
     backEvt.on('tap', () => {
       // xsand.goBack();
     });
-    // @ts-ignore
     window.game.scene.addChild(backPanel);
-    // @ts-ignore
     window.game.scene.addChild(gradePanel);
     // 创建水果
     currentFruit = randomFruit('yingtao');
-    // @ts-ignore
     window.game.scene.addChild(currentFruit);
     const evt = background.addComponent(new Event());
     let touched = false;
@@ -375,7 +373,6 @@ export async function init(canvas) {
     const randomIndex = Math.floor(Math.random() * canUseType.length);
     currentType = canUseType[randomIndex];
     currentFruit = randomFruit(currentType);
-    // @ts-ignore
     window.game.scene.addChild(currentFruit);
   }
   function randomFruit(type) {
@@ -383,13 +380,10 @@ export async function init(canvas) {
   }
   function buildWall() {
     const bottomWall = createGameObjectAddGraphicsRect(375, gameHeight - 10, 750, 20, 0xff0000);
-    // @ts-ignore
     window.game.scene.addChild(bottomWall);
     const leftWall = createGameObjectAddGraphicsRect(0, gameHeight / 2, 10, gameHeight, 0xff0000);
-    // @ts-ignore
     window.game.scene.addChild(leftWall);
     const rightWall = createGameObjectAddGraphicsRect(750, gameHeight / 2, 10, gameHeight, 0xff0000);
-    // @ts-ignore
     window.game.scene.addChild(rightWall);
   }
   function createGameObjectAddGraphicsRect(x, y, width, height, color) {

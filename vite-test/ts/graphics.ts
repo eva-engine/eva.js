@@ -1,19 +1,17 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { GraphicsSystem, Graphics } from "../../packages/plugin-renderer-graphics/lib";
+import { Game, GameObject } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { GraphicsSystem, Graphics } from "@eva/plugin-renderer-graphics";
 
 export const name = 'graphics';
 export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new GraphicsSystem(),
     ],
   });

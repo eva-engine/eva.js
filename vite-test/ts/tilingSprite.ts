@@ -1,6 +1,6 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { TilingSprite,TilingSpriteSystem } from "../../packages/plugin-renderer-tiling-sprite/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { TilingSprite,TilingSpriteSystem } from "@eva/plugin-renderer-tiling-sprite";
 
 export const name = 'tilingSprite';
 export async function init(canvas) {
@@ -21,7 +21,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),

@@ -1,8 +1,8 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Event, EventSystem, HIT_AREA_TYPE } from "../../packages/plugin-renderer-event/lib";
-import { Text, TextSystem } from "../../packages/plugin-renderer-text/lib";
-import { Sound, SoundSystem } from "../../packages/plugin-sound/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Event, EventSystem } from "@eva/plugin-renderer-event";
+import { Text, TextSystem } from "@eva/plugin-renderer-text";
+import { Sound, SoundSystem } from "@eva/plugin-sound";
 
 export const name = 'sound';
 export async function init(canvas) {

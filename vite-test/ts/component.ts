@@ -1,16 +1,17 @@
-import { Game, GameObject, resource, RESOURCE_TYPE, Component,System } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE, Component, System } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 export const name = 'component';
 export async function init(canvas) {
 
-  class Move extends Component {
+  class Move extends Component<{ speed: { x: number, y: number } }> {
     static componentName = 'Move';
     speed = {
       // 移动速度
       x: 100,
       y: 200,
     };
+    oldSpeed: { x: number, y: number }
     init(obj) {
       Object.assign(this, obj);
       console.log('component init');
@@ -84,7 +85,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
@@ -101,7 +102,7 @@ export async function init(canvas) {
         y: 0,
       },
     });
-    const img = image.addComponent(
+    image.addComponent(
       new Img({
         resource: 'heart',
       }),
@@ -109,7 +110,7 @@ export async function init(canvas) {
 
     game.scene.addChild(image);
 
-    const move = image.addComponent(
+    image.addComponent(
       new Move({
         speed: {
           x: 250,
@@ -127,7 +128,7 @@ export async function init(canvas) {
         y: 300,
       },
     });
-    const img = image.addComponent(
+    image.addComponent(
       new Img({
         resource: 'heart',
       }),
@@ -135,7 +136,7 @@ export async function init(canvas) {
 
     game.scene.addChild(image);
 
-    const move = image.addComponent(
+    image.addComponent(
       new Move({
         speed: {
           x: 250,

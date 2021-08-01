@@ -1,7 +1,7 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
-import { Transition, TransitionSystem } from "../../packages/plugin-transition/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
+import { Transition, TransitionSystem } from "@eva/plugin-transition";
 
 export const name = 'transition';
 export async function init(canvas) {
