@@ -1,6 +1,6 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { SpriteAnimationSystem, SpriteAnimation } from "../../packages/plugin-renderer-sprite-animation/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { SpriteAnimationSystem, SpriteAnimation } from "@eva/plugin-renderer-sprite-animation";
 
 export const name = 'spriteAnimation';
 export async function init(canvas) {
@@ -26,7 +26,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
@@ -44,6 +44,7 @@ export async function init(canvas) {
     new SpriteAnimation({
       resource: 'fruit',
       speed: 100,
+      autoPlay:true,
     }),
   );
 

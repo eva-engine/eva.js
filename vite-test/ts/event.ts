@@ -1,7 +1,7 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
-import { Event, EventSystem, HIT_AREA_TYPE } from "../../packages/plugin-renderer-event/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
+import { Event, EventSystem, HIT_AREA_TYPE } from "@eva/plugin-renderer-event";
 export const name = 'event';
 export async function init(canvas) {
 
@@ -21,15 +21,15 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
+      
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
+      
       new EventSystem(),
-      //@ts-ignore
+      
       new ImgSystem(),
     ],
   });
@@ -44,14 +44,14 @@ export async function init(canvas) {
     anchor: { x: 0.5, y: 0.5 },
   });
   const img = image.addComponent(
-    //@ts-ignore
+    
     new Img({
       resource: 'heart',
     }),
   );
 
   const evt = image.addComponent(
-    //@ts-ignore
+    
     new Event({
       // 使用这个属性设置交互事件可以触发的区域，骨骼动画有所变差，可以临时在当前游戏对象下添加一个同类型同属性的Graphic查看具体点击位置。
       hitArea: {

@@ -1,4 +1,4 @@
-import { LOAD_EVENT, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib"
+import { LOAD_EVENT, resource, RESOURCE_TYPE } from "@eva/eva.js"
 
 export const name = 'loader';
 export async function init(canvas) {

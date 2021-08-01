@@ -1,11 +1,11 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
-import { Text, TextSystem } from "../../packages/plugin-renderer-text/lib";
-import { EventSystem, Event,HIT_AREA_TYPE } from "../../packages/plugin-renderer-event/lib";
-import { A11y, A11ySystem, A11yActivate } from "../../packages/plugin-a11y/lib";
-import { Sprite,SpriteSystem } from "../../packages/plugin-renderer-sprite/lib";
-import { SpineSystem,Spine } from "../../packages/plugin-renderer-spine/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
+import { Text, TextSystem } from "@eva/plugin-renderer-text";
+import { EventSystem, Event, HIT_AREA_TYPE } from "@eva/plugin-renderer-event";
+import { A11y, A11ySystem, A11yActivate } from "@eva/plugin-a11y";
+import { Sprite, SpriteSystem } from "@eva/plugin-renderer-sprite";
+import { SpineSystem, Spine } from "@eva/plugin-renderer-spine";
 
 export const name = 'a11y';
 export async function init(canvas) {

@@ -1,6 +1,6 @@
-import { Game, GameObject, resource, RESOURCE_TYPE,Scene,LOAD_SCENE_MODE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE,Scene,LOAD_SCENE_MODE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 
 export const name = 'multi-canavs';
 export async function init(canvas) {

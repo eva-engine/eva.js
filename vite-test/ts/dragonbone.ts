@@ -1,7 +1,6 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
-import { DragonBone, DragonBoneSystem } from "../../packages/plugin-renderer-dragonbone/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { DragonBone, DragonBoneSystem } from "@eva/plugin-renderer-dragonbone";
 export const name = 'dragonbone';
 export async function init(canvas) {
 
@@ -30,13 +29,11 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new DragonBoneSystem(),
     ],
   });
@@ -56,14 +53,14 @@ export async function init(canvas) {
   });
 
   const db = dragonBone.addComponent(
-    //@ts-ignore
     new DragonBone({
       resource: 'dragonbone',
       armatureName: 'armatureName',
+      autoPlay: true,
+      animationName: 'newAnimation'
     }),
   );
 
-  //@ts-ignore
   db.play('newAnimation', 5);
   game.scene.addChild(dragonBone);
 

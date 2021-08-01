@@ -1,8 +1,8 @@
-import { Game, GameObject, resource, RESOURCE_TYPE, Component, System } from "../../packages/eva.js/lib";
-import { RendererSystem } from "../../packages/plugin-renderer/lib";
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
-import "../../packages/plugin-renderer-sprite/lib";
-import { Mask, MaskSystem, MASK_TYPE } from "../../packages/plugin-renderer-mask/lib";
+import { Game, GameObject, resource, RESOURCE_TYPE} from "@eva/eva.js";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
+import "@eva/plugin-renderer-sprite";
+import { Mask, MaskSystem, MASK_TYPE } from "@eva/plugin-renderer-mask";
 export const name = 'mask';
 export async function init(canavs) {
 

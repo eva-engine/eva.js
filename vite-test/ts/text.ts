@@ -1,14 +1,14 @@
-import { RendererSystem } from "../../packages/plugin-renderer/lib"
-import { Game, GameObject } from "../../packages/eva.js/lib"
-import { Text, TextSystem } from "../../packages/plugin-renderer-text/lib"
+import { RendererSystem } from "@eva/plugin-renderer"
+import { Game, GameObject } from "@eva/eva.js"
+import { Text, TextSystem } from "@eva/plugin-renderer-text"
 export const name = 'text'
-export async function init() {
+export async function init(canvas) {
 
   const game = new Game({
     systems: [
       //@ts-ignore
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),

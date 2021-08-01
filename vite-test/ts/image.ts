@@ -1,6 +1,6 @@
-import { RendererSystem } from "../../packages/plugin-renderer/lib"
-import { Game, GameObject, RESOURCE_TYPE, resource } from "../../packages/eva.js/lib"
-import { Img, ImgSystem } from "../../packages/plugin-renderer-img/lib";
+import { RendererSystem } from "@eva/plugin-renderer";
+import { Game, GameObject, RESOURCE_TYPE, resource } from "@eva/eva.js"
+import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 export const name = 'image';
 export async function init(canvas) {
   resource.addResource([
@@ -19,13 +19,11 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new ImgSystem(),
     ],
   });
@@ -44,7 +42,6 @@ export async function init(canvas) {
   });
 
   image.addComponent(
-    //@ts-ignore
     new Img({
       resource: 'imageName',
     }),
