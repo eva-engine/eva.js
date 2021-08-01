@@ -208,6 +208,7 @@ class Resource extends EE {
       }
     }
     delete this.promiseMap[name];
+    resource.data = {}
     resource.complete = false;
     resource.instance = undefined;
   }

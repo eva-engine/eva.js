@@ -214,6 +214,7 @@ class GameObject {
 
     const component = this.components.splice(index, 1)[0] as T;
     delete this._componentCache[componentName];
+    delete component.__componentDefaultParams;
     component.onDestroy && component.onDestroy();
     observerRemoved(component, componentName);
     component.gameObject = undefined;
