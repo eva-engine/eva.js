@@ -4,7 +4,7 @@ import {
   RendererManager,
   ContainerManager,
 } from '@eva/plugin-renderer';
-import {decorators, ComponentChanged, OBSERVER_TYPE} from '@eva/eva.js';
+import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
 import GraphicsComponent from './component';
 
 @decorators.componentObserver({
@@ -30,6 +30,7 @@ export default class Graphics extends Renderer {
       this.containerManager
         .getContainer(changed.gameObject.id)
         .removeChild((changed.component as GraphicsComponent).graphics);
+      (changed.component as GraphicsComponent).graphics.destroy(true)
     }
   }
 }

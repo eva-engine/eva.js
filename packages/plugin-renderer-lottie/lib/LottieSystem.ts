@@ -118,6 +118,7 @@ export default class LottieSystem extends Renderer {
     );
     if (container) {
       container.removeChild(component.anim.group);
+      component.anim.group.destory(true)
     }
     component.anim = null;
   }
