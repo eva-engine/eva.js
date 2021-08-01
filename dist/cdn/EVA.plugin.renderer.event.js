@@ -1,3 +1,5 @@
+
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@eva/eva.js'), require('@eva/plugin-renderer'), require('pixi.js')) :
     typeof define === 'function' && define.amd ? define(['exports', '@eva/eva.js', '@eva/plugin-renderer', 'pixi.js'], factory) :
@@ -117,9 +119,16 @@
             _this.name = 'Event';
             return _this;
         }
-        Event.prototype.init = function () {
+        Event.prototype.init = function (_a) {
+            var _b = (_a === void 0 ? {} : _a).moveWhenInside, moveWhenInside = _b === void 0 ? false : _b;
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
+            try {
+                this.renderSystem.application.renderer.plugins.interaction.moveWhenInside = moveWhenInside;
+            }
+            catch (e) {
+                console.error('Setting moveWhenInside error.', e);
+            }
         };
         Event.prototype.componentChanged = function (changed) {
             switch (changed.type) {
