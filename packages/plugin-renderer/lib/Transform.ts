@@ -99,6 +99,7 @@ export default class Transform extends EventEmitter {
       const container = this.containerManager.getContainer(
         changed.gameObject.id,
       );
+      delete transform.worldTransform
       container.parent && container.parent.removeChild(container);
     }
   }
