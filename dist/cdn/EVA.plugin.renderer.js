@@ -2884,12 +2884,12 @@
 
     var Renderer = (function (_super) {
         __extends(Renderer, _super);
-        function Renderer() {
-            var _this = _super.call(this) || this;
+        function Renderer(params) {
+            var _this = _super.call(this, params) || this;
             _this.observerInfo = _this.constructor.observerInfo;
             return _this;
         }
-        Renderer.prototype.update = function () {
+        Renderer.prototype.update = function (e) {
             var e_1, _a;
             var changes = this.componentObserver.clear();
             try {
