@@ -1,6 +1,6 @@
 import Scene from '../game/Scene';
 import Transform, { TransformParams } from './Transform';
-import Component, { ComponentConstructor, ComponentParams, ComponentType, getComponentName } from './Component';
+import Component, { ComponentConstructor, ComponentParams, getComponentName } from './Component';
 import { observer, observerAdded, observerRemoved } from './observer';
 
 let _id = 0;
@@ -182,12 +182,12 @@ class GameObject {
    * @param c - one of the compnoentName, component instance, component Class
    * @returns
    */
-  removeComponent<T extends Component>(c: string): T;
-  removeComponent<T extends Component>(c: T): T;
-  removeComponent<T extends ComponentType>(c: T): InstanceType<T>;
-  removeComponent<T extends Component, U extends ComponentType>(
-    c: T | U,
-  ): T | InstanceType<U> {
+  removeComponent<T extends Component<ComponentParams>>(c: string): T;
+  removeComponent<T extends Component<ComponentParams>>(c: T): T;
+  removeComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
+  removeComponent<T extends Component<ComponentParams>>(
+    c: string | T | ComponentConstructor<T>,
+  ): T {
     let componentName: string;
     if (typeof c === 'string') {
       componentName = c;

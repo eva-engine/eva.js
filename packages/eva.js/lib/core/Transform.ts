@@ -42,6 +42,7 @@ export interface TransformParams extends ComponentParams {
   origin?: Vector2;
   anchor?: Vector2;
   scale?: Vector2;
+  skew?: Vector2;
   rotation?: number;
 }
 
