@@ -5,33 +5,19 @@
 }(this, (function (exports, eva_js, pluginRenderer, pixi_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends$1(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -41,63 +27,34 @@
     }
 
     function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
             function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
 
-    function __generator(thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    class Spine extends eva_js.Component {
+        constructor() {
+            super(...arguments);
+            this.resource = '';
+            this.animationName = '';
+            this.autoPlay = true;
         }
-    }
-
-    var Spine = (function (_super) {
-        __extends$1(Spine, _super);
-        function Spine() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.resource = '';
-            _this.animationName = '';
-            _this.autoPlay = true;
-            return _this;
-        }
-        Spine.prototype.init = function (obj) {
+        init(obj) {
             if (!obj)
                 return;
             Object.assign(this, obj);
             if (this.autoPlay) {
                 this.play(this.animationName);
             }
-        };
-        Spine.prototype.onDestroy = function () {
+        }
+        onDestroy() {
             this.destroied = true;
-        };
-        Spine.prototype.play = function (name, loop, track) {
+        }
+        play(name, loop, track) {
             try {
                 if (name)
                     this.animationName = name;
@@ -113,8 +70,8 @@
             catch (e) {
                 console.log(e);
             }
-        };
-        Spine.prototype.stop = function (track) {
+        }
+        stop(track) {
             if (!this.armature) {
                 return;
             }
@@ -122,8 +79,8 @@
                 track = 0;
             }
             this.armature.state.setEmptyAnimation(track, 0);
-        };
-        Spine.prototype.addAnimation = function (name, delay, loop, track) {
+        }
+        addAnimation(name, delay, loop, track) {
             try {
                 if (!this.armature) {
                 }
@@ -137,15 +94,14 @@
             catch (e) {
                 console.log(e);
             }
-        };
-        Spine.prototype.setMix = function (from, to, duration) {
+        }
+        setMix(from, to, duration) {
             if (!this.armature) ;
             else {
                 this.armature.stateData.setMix(from, to, duration);
             }
-        };
-        Spine.prototype.getAnim = function (track) {
-            if (track === void 0) { track = 0; }
+        }
+        getAnim(track = 0) {
             try {
                 if (!this.armature) {
                 }
@@ -156,37 +112,36 @@
             catch (e) {
                 console.log(e);
             }
-        };
-        Spine.prototype.setDefaultMix = function (duration) {
+        }
+        setDefaultMix(duration) {
             if (!this.armature) ;
             else {
                 this.armature.stateData.defaultMix = duration;
             }
-        };
-        Spine.prototype.setAttachment = function (slotName, attachmentName) {
+        }
+        setAttachment(slotName, attachmentName) {
             if (!this.armature) {
                 return;
             }
             this.armature.skeleton.setAttachment(slotName, attachmentName);
-        };
-        Spine.prototype.getBone = function (boneName) {
+        }
+        getBone(boneName) {
             if (!this.armature) {
                 return;
             }
             return this.armature.skeleton.findBone(boneName);
-        };
-        Spine.componentName = 'Spine';
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Spine.prototype, "resource", void 0);
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Spine.prototype, "animationName", void 0);
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Spine.prototype, "autoPlay", void 0);
-        return Spine;
-    }(eva_js.Component));
+        }
+    }
+    Spine.componentName = 'Spine';
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Spine.prototype, "resource", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Spine.prototype, "animationName", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Spine.prototype, "autoPlay", void 0);
 
     const VERSION = '4.8.9';
     const loader = pixi_js.loaders.shared;
@@ -9271,10 +9226,10 @@
 
     var pixispine = pixi_spine;
 
-    var texCache = {};
+    let texCache = {};
     function cacheImage(data) {
-        var oldImg = data.image;
-        var newImg = data.image.cloneNode();
+        const oldImg = data.image;
+        const newImg = data.image.cloneNode();
         data.image = newImg;
         return {
             tex: pixi_js.Texture.from(oldImg),
@@ -9282,7 +9237,7 @@
         };
     }
     function retainTexture(name, data) {
-        var cache = texCache[name];
+        let cache = texCache[name];
         if (!cache) {
             cache = cacheImage(data);
             texCache[name] = cache;
@@ -9291,7 +9246,7 @@
         return cache.tex;
     }
     function getTexture(name, data) {
-        var cache = texCache[name];
+        let cache = texCache[name];
         if (!cache) {
             cache = cacheImage(data);
             texCache[name] = cache;
@@ -9299,8 +9254,8 @@
         return cache.tex;
     }
     function releaseTexture(name) {
-        setTimeout(function () {
-            var cache = texCache[name];
+        setTimeout(() => {
+            const cache = texCache[name];
             if (cache) {
                 cache.count--;
                 if (cache.count <= 0) {
@@ -9314,61 +9269,54 @@
         }, 100);
     }
 
-    var dataMap = {};
+    let dataMap = {};
     function createSpineData(name, imgName, data, scale) {
-        var spineData = null;
-        var img = getTexture(imgName, data);
-        new pixispine.core.TextureAtlas(data.atlas, function (line, callback) {
+        let spineData = null;
+        const img = getTexture(imgName, data);
+        new pixispine.core.TextureAtlas(data.atlas, (line, callback) => {
             callback(img.baseTexture);
-        }, function (spineAtlas) {
+        }, spineAtlas => {
             if (spineAtlas) {
-                var attachmentLoader = new pixispine.core.AtlasAttachmentLoader(spineAtlas);
-                var spineJsonParser = new pixispine.core.SkeletonJson(attachmentLoader);
+                const attachmentLoader = new pixispine.core.AtlasAttachmentLoader(spineAtlas);
+                const spineJsonParser = new pixispine.core.SkeletonJson(attachmentLoader);
                 if (scale) {
                     spineJsonParser.scale = scale;
                 }
                 spineData = spineJsonParser.readSkeletonData(data.ske);
             }
         });
-        var obj = { spineData: spineData, ref: 0, imgName: imgName };
+        const obj = { spineData, ref: 0, imgName: imgName };
         dataMap[name] = obj;
         return obj;
     }
-    eva_js.resource.registerInstance('SPINE', function (info) {
+    eva_js.resource.registerInstance('SPINE', info => {
         return createSpineData(info.name, info.name, info.data, info.scale);
     });
-    eva_js.resource.registerDestroy('SPINE', function (info) {
+    eva_js.resource.registerDestroy('SPINE', info => {
         if (info.instance) {
             releaseTexture(info.name);
             info.instance = null;
         }
     });
     function getSpineData(name) {
-        return __awaiter(this, void 0, void 0, function () {
-            var res, data;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4, eva_js.resource.getResource(name)];
-                    case 1:
-                        res = _a.sent();
-                        data = dataMap[name];
-                        if (!data) {
-                            if (res.complete) {
-                                data = createSpineData(name, res.name, res.data, res.scale);
-                            }
-                            else if (!data) {
-                                return [2];
-                            }
-                        }
-                        retainTexture(res.name, res.data);
-                        data.ref++;
-                        return [2, data.spineData];
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield eva_js.resource.getResource(name);
+            let data = dataMap[name];
+            if (!data) {
+                if (res.complete) {
+                    data = createSpineData(name, res.name, res.data, res.scale);
                 }
-            });
+                else if (!data) {
+                    return;
+                }
+            }
+            retainTexture(res.name, res.data);
+            data.ref++;
+            return data.spineData;
         });
     }
     function releaseSpineData(name) {
-        var data = dataMap[name];
+        const data = dataMap[name];
         if (!data) {
             return;
         }
@@ -9379,29 +9327,26 @@
         }
     }
 
-    var MaxRetryCount = 20;
-    var SpineSystem = (function (_super) {
-        __extends$1(SpineSystem, _super);
-        function SpineSystem() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.armatures = {};
-            return _this;
+    const MaxRetryCount = 20;
+    let SpineSystem = class SpineSystem extends pluginRenderer.Renderer {
+        constructor() {
+            super(...arguments);
+            this.armatures = {};
         }
-        SpineSystem.prototype.init = function () {
-            var _this = this;
+        init() {
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
-            this.game.canvas.addEventListener('webglcontextrestored', function () {
-                var objs = _this.game.gameObjects;
-                var toAdd = [];
-                for (var k in _this.armatures) {
-                    var id = +k;
-                    for (var i = 0; i < objs.length; ++i) {
-                        var obj = objs[i];
+            this.game.canvas.addEventListener('webglcontextrestored', () => {
+                const objs = this.game.gameObjects;
+                let toAdd = [];
+                for (let k in this.armatures) {
+                    const id = +k;
+                    for (let i = 0; i < objs.length; ++i) {
+                        let obj = objs[i];
                         if (obj.id === id) {
-                            var sp = obj.getComponent(Spine);
+                            let sp = obj.getComponent(Spine);
                             if (sp) {
-                                _this.remove({
+                                this.remove({
                                     type: eva_js.OBSERVER_TYPE.REMOVE,
                                     gameObject: obj,
                                     component: sp,
@@ -9418,119 +9363,106 @@
                         }
                     }
                 }
-                setTimeout(function () {
-                    toAdd.forEach(function (obj) {
-                        _this.add(obj);
+                setTimeout(() => {
+                    toAdd.forEach(obj => {
+                        this.add(obj);
                     });
                 }, 1000);
             }, false);
-        };
-        SpineSystem.prototype.componentChanged = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    if (changed.componentName === 'Spine') {
-                        if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
-                            this.add(changed);
-                        }
-                        else if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) {
-                            switch (changed.prop.prop[0]) {
-                                case 'resource':
-                                    this.change(changed);
-                                    break;
-                            }
-                        }
-                        else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                            this.remove(changed);
+        }
+        componentChanged(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (changed.componentName === 'Spine') {
+                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                        this.add(changed);
+                    }
+                    else if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) {
+                        switch (changed.prop.prop[0]) {
+                            case 'resource':
+                                this.change(changed);
+                                break;
                         }
                     }
-                    return [2];
-                });
-            });
-        };
-        SpineSystem.prototype.add = function (changed, count) {
-            return __awaiter(this, void 0, void 0, function () {
-                var component, spineData, container, armature, tran;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            component = changed.component;
-                            clearTimeout(component.addHandler);
-                            return [4, getSpineData(component.resource)];
-                        case 1:
-                            spineData = _a.sent();
-                            if (!spineData) {
-                                component.addHandler = setTimeout(function () {
-                                    if (!component.destroied) {
-                                        if (count === undefined) {
-                                            count = MaxRetryCount;
-                                        }
-                                        count--;
-                                        if (count > 0) {
-                                            _this.add(changed, count);
-                                        }
-                                        else {
-                                            console.log('retry exceed max times', component.resource);
-                                        }
-                                    }
-                                }, 1000);
-                                return [2];
-                            }
-                            this.remove(changed);
-                            container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
-                            if (!container) {
-                                return [2];
-                            }
-                            armature = new pixispine.Spine(spineData);
-                            this.armatures[changed.gameObject.id] = armature;
-                            if (changed.gameObject && changed.gameObject.transform) {
-                                tran = changed.gameObject.transform;
-                                armature.x = tran.size.width * tran.origin.x;
-                                armature.y = tran.size.height * tran.origin.y;
-                            }
-                            container.addChildAt(armature, 0);
-                            component.usingResource = component.resource;
-                            component.armature = armature;
-                            if (component.autoPlay) {
-                                try {
-                                    armature.state.setAnimation(0, component.animationName, true);
-                                }
-                                catch (e) {
-                                    console.log(e);
-                                }
-                            }
-                            component.emit('loaded', { resource: component.resource });
-                            armature.state.addListener({
-                                start: function (track, event) {
-                                    component.emit('start', { track: track, name: track.animation.name });
-                                },
-                                complete: function (track, event) {
-                                    component.emit('complete', { track: track, name: track.animation.name });
-                                },
-                                interrupt: function (track, event) {
-                                    component.emit('interrupt', { track: track, name: track.animation.name });
-                                },
-                                end: function (track, event) {
-                                    component.emit('end', { track: track, name: track.animation.name });
-                                },
-                                event: function (track, event) {
-                                    component.emit('event', track, event);
-                                },
-                            });
-                            return [2];
+                    else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                        this.remove(changed);
                     }
+                }
+            });
+        }
+        add(changed, count) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const component = changed.component;
+                clearTimeout(component.addHandler);
+                const spineData = yield getSpineData(component.resource);
+                if (!spineData) {
+                    component.addHandler = setTimeout(() => {
+                        if (!component.destroied) {
+                            if (count === undefined) {
+                                count = MaxRetryCount;
+                            }
+                            count--;
+                            if (count > 0) {
+                                this.add(changed, count);
+                            }
+                            else {
+                                console.log('retry exceed max times', component.resource);
+                            }
+                        }
+                    }, 1000);
+                    return;
+                }
+                this.remove(changed);
+                const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
+                if (!container) {
+                    return;
+                }
+                const armature = new pixispine.Spine(spineData);
+                this.armatures[changed.gameObject.id] = armature;
+                if (changed.gameObject && changed.gameObject.transform) {
+                    const tran = changed.gameObject.transform;
+                    armature.x = tran.size.width * tran.origin.x;
+                    armature.y = tran.size.height * tran.origin.y;
+                }
+                container.addChildAt(armature, 0);
+                component.usingResource = component.resource;
+                component.armature = armature;
+                if (component.autoPlay) {
+                    try {
+                        armature.state.setAnimation(0, component.animationName, true);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
+                component.emit('loaded', { resource: component.resource });
+                armature.state.addListener({
+                    start: (track, event) => {
+                        component.emit('start', { track, name: track.animation.name });
+                    },
+                    complete: (track, event) => {
+                        component.emit('complete', { track, name: track.animation.name });
+                    },
+                    interrupt: (track, event) => {
+                        component.emit('interrupt', { track, name: track.animation.name });
+                    },
+                    end: (track, event) => {
+                        component.emit('end', { track, name: track.animation.name });
+                    },
+                    event: (track, event) => {
+                        component.emit('event', track, event);
+                    },
                 });
             });
-        };
-        SpineSystem.prototype.change = function (changed) {
+        }
+        change(changed) {
             this.remove(changed);
             this.add(changed);
-        };
-        SpineSystem.prototype.remove = function (changed) {
-            var component = changed.component;
+        }
+        remove(changed) {
+            const component = changed.component;
             clearTimeout(component.addHandler);
-            var armature = this.armatures[changed.gameObject.id];
-            var container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
+            const armature = this.armatures[changed.gameObject.id];
+            const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
             if (container && armature) {
                 container.removeChild(armature);
             }
@@ -9543,18 +9475,18 @@
             component.armature = null;
             delete this.armatures[changed.gameObject.id];
             if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) ;
-        };
-        SpineSystem.systemName = 'SpineSystem';
-        SpineSystem = __decorate([
-            eva_js.decorators.componentObserver({
-                Spine: ['resource'],
-            })
-        ], SpineSystem);
-        return SpineSystem;
-    }(pluginRenderer.Renderer));
+        }
+    };
+    SpineSystem.systemName = 'SpineSystem';
+    SpineSystem = __decorate([
+        eva_js.decorators.componentObserver({
+            Spine: ['resource'],
+        })
+    ], SpineSystem);
+    var SpineSystem$1 = SpineSystem;
 
     exports.Spine = Spine;
-    exports.SpineSystem = SpineSystem;
+    exports.SpineSystem = SpineSystem$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

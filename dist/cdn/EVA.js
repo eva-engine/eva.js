@@ -2999,7 +2999,7 @@
 	      timers = this[_timers];
 
 	    this.markTime({time});
-	    [...timers].forEach(([id, timer]) => {
+	    Array.from(Object.entries(timers)).forEach(([id, timer]) => {
 	      if (!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
 	      const {isEntropy, delay, heading} = timer.time,
 	        {handler, startTime} = timer;
@@ -3161,7 +3161,7 @@
 	  clear() {
 	    // clear all running timers
 	    const timers = this[_timers];
-	    [...timers.keys()].forEach(id => {
+	    Array.from(Object.keys(timers)).forEach(id => {
 	      this.clearTimeout(id);
 	    });
 	  }
