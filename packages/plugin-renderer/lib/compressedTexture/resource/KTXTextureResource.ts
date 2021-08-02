@@ -114,7 +114,6 @@ export class KTXTextureResource extends CompressedTextureResource {
     // file contents must be endian-converted!
     // TODO: Endianness conversion
     // const platformLittleEndian = new Uint8Array((new Uint32Array([ENDIANNESS])).buffer)[0] === 0x01;
-    console.log(glInternalFormat);
     if (pixelHeight === 0 || pixelDepth !== 1) {
       throw new Error('Only 2D textures are supported');
     }
@@ -210,7 +209,6 @@ export class KTXTextureResource extends CompressedTextureResource {
     }
     // Now just support one element!;
     this.levelBuffers = imageBuffers[0];
-
   }
 }
 function validateKTX(dataView: DataView): boolean {

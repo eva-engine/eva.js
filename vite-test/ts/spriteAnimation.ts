@@ -1,5 +1,5 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
+import { INTERNAL_FORMATS, RendererSystem } from "@eva/plugin-renderer";
 import { SpriteAnimationSystem, SpriteAnimation } from "@eva/plugin-renderer-sprite-animation";
 
 export const name = 'spriteAnimation';
@@ -13,6 +13,13 @@ export async function init(canvas) {
         image: {
           type: 'png',
           url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png',
+          texture:[
+            {
+              type:'s3tc',
+              url:'./yanhua.s3tc.ktx',
+              internalFormat:INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT
+            }
+          ]
         },
         json: {
           type: 'json',
@@ -22,6 +29,7 @@ export async function init(canvas) {
       preload: false,
     },
   ]);
+  console.log(await resource.getResource('fruit'))
 
   const game = new Game({
     systems: [

@@ -27,9 +27,6 @@ export class CompressedTextureResource {
       offset += levelBuffer.byteLength;
     }
 
-    // gl.enable(gl.BLEND);
-    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
     // We can't use gl.generateMipmaps with COMPRESSED textures, so only use
     // mipmapped filtering if the COMPRESSED texture data contained mip levels.
     if (levels > 1) {
