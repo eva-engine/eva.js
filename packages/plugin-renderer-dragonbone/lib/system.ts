@@ -1,4 +1,4 @@
-import {Texture, ticker} from 'pixi.js';
+import { Texture, ticker } from 'pixi.js';
 import {
   decorators,
   resource,
@@ -28,11 +28,17 @@ const events = {
   FRAME_EVENT: 'frameEvent',
   SOUND_EVENT: 'soundEvent',
 };
+
 const factory = dragonBones.PixiFactory.factory;
-resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({data}) => {
-  factory.parseDragonBonesData(data.ske);
-  factory.parseTextureAtlasData(data.tex, Texture.from(data.image));
+
+resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data, name }) => {
+  factory.parseDragonBonesData(data.ske, name);
+  factory.parseTextureAtlasData(data.tex, Texture.from(data.image), name);
 });
+resource.registerDestroy(RESOURCE_TYPE.DRAGONBONE, ({ name }) => {
+  factory.removeDragonBonesData(name);
+  factory.removeTextureAtlasData(name);
+})
 
 @decorators.componentObserver({
   DragonBone: ['armatureName'],
@@ -40,8 +46,8 @@ resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({data}) => {
 export default class DragonBone extends Renderer {
   static systemName: string = 'DragonBone';
   name: string = 'DragonBone';
-  armatures: {[propName: number]: DragonBoneEngine} = {};
-  autoPlay: {[propName: number]: boolean} = {};
+  armatures: { [propName: number]: DragonBoneEngine } = {};
+  autoPlay: { [propName: number]: boolean } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
@@ -114,7 +120,7 @@ export default class DragonBone extends Renderer {
       .getContainer(changed.gameObject.id)
       .removeChild(armature.armature);
     armature.armature.removeAllListeners();
-    armature.armature.destroy();
+    armature.armature.destroy(true);
     const component = changed.component as DragonBoneComponent;
     component.armature = null;
     delete this.armatures[changed.gameObject.id];
