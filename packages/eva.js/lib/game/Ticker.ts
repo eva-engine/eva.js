@@ -1,5 +1,5 @@
 import { UpdateParams } from '../core/Component';
-import Timeline from 'sprite-timeline';
+import Timeline from '../sprite-timeline/index';
 
 interface TickerOptions {
   autoStart?: boolean;

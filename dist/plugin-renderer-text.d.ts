@@ -6,7 +6,7 @@ import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Text as Text_3 } from '@eva/renderer-adapter';
 
-declare class Text_2 extends Component {
+declare class Text_2 extends Component<TextParams> {
     static componentName: string;
     text: string;
     style: TextParams['style'];

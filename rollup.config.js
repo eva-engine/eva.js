@@ -6,9 +6,6 @@ import {terser} from 'rollup-plugin-terser';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import copy from 'rollup-plugin-copy';
-import commonjs from '@rollup/plugin-commonjs';
-import {nodeResolve} from '@rollup/plugin-node-resolve';
-import nodePolyfill from 'rollup-plugin-polyfill-node';
 import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
@@ -100,7 +97,10 @@ function createConfig(format, output, plugins = []) {
     process.exit(1);
   }
 
+  output.exports = 'auto';
   output.sourcemap = !!process.env.SOURCE_MAP;
+  output.externalLiveBindings = false;
+
   const shouldEmitDeclaration = process.env.TYPES != null && !hasTypesChecked;
 
   const tsPlugin = typescript({
@@ -119,7 +119,22 @@ function createConfig(format, output, plugins = []) {
   });
   hasTypesChecked = true;
 
-  const nodePlugins = format === 'umd' ? [nodePolyfill(), nodeResolve()] : [];
+  let nodePlugins = [];
+  if (format === 'umd') {
+    nodePlugins = [
+      require('@rollup/plugin-node-resolve').nodeResolve(),
+      require('rollup-plugin-polyfill-node')(),
+      require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
+    ];
+  }
+
+  let external = [];
+  if (format === 'esm' || format === 'cjs') {
+    external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
+  } else {
+    const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => dep.startsWith('@eva'));
+    external = ['pixi.js', ...evaDependencies];
+  }
 
   return {
     input: entryFile,
@@ -132,23 +147,15 @@ function createConfig(format, output, plugins = []) {
         '@eva/renderer-adapter': 'EVA.rendererAdapter',
       },
     },
-    external: [
-      'pixi.js',
-      '@eva/eva.js',
-      '@eva/plugin-renderer',
-      '@eva/renderer-adapter',
-      '@eva/miniprogram-pixi',
-      '@eva/miniprogram-adapter',
-    ],
+    external,
     plugins: [
       json({preferConst: true}),
-      tsPlugin,
       replace({
         __TEST__: false,
         __DEV__: process.env.NODE_ENV === 'development',
       }),
-      commonjs({sourceMap: false}),
       ...nodePlugins,
+      tsPlugin,
       ...plugins,
     ],
     onwarn: (msg, warn) => {

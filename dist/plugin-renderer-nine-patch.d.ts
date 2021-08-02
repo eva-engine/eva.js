@@ -6,7 +6,7 @@ import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 
-export declare class NinePatch extends Component {
+export declare class NinePatch extends Component<NinePatchParams> {
     static componentName: string;
     ninePatch: any;
     resource: string;

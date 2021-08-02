@@ -4,7 +4,6 @@ import {
   PureObserverInfo,
   ComponentChanged,
   System,
-  UpdateParams,
 } from '@eva/eva.js';
 import ContainerManager from './manager/ContainerManager';
 import RendererManager from './manager/RendererManager';
@@ -50,7 +49,7 @@ export default class Renderer extends System {
    * @param gameObject gameObject
    */
   rendererUpdate?(gameObject: GameObject): void;
-  update(e: UpdateParams) {
+  update() {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
       this.componentChanged(changed);
