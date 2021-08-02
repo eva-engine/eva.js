@@ -1555,7 +1555,7 @@
     ListCache.prototype.set = listCacheSet;
 
     /* Built-in method references that are verified to be native. */
-    var Map$1 = getNative(root, 'Map');
+    var Map = getNative(root, 'Map');
 
     /**
      * Removes all key-value entries from the map.
@@ -1568,7 +1568,7 @@
       this.size = 0;
       this.__data__ = {
         'hash': new Hash,
-        'map': new (Map$1 || ListCache),
+        'map': new (Map || ListCache),
         'string': new Hash
       };
     }
@@ -1778,7 +1778,7 @@
       var data = this.__data__;
       if (data instanceof ListCache) {
         var pairs = data.__data__;
-        if (!Map$1 || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
+        if (!Map || (pairs.length < LARGE_ARRAY_SIZE - 1)) {
           pairs.push([key, value]);
           this.size = ++data.size;
           return this;
@@ -1928,7 +1928,7 @@
 
     /** Used to detect maps, sets, and weakmaps. */
     var dataViewCtorString = toSource(DataView),
-        mapCtorString = toSource(Map$1),
+        mapCtorString = toSource(Map),
         promiseCtorString = toSource(Promise$1),
         setCtorString = toSource(Set$1),
         weakMapCtorString = toSource(WeakMap);
@@ -1944,7 +1944,7 @@
 
     // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
     if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
-        (Map$1 && getTag(new Map$1) != mapTag$1) ||
+        (Map && getTag(new Map) != mapTag$1) ||
         (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
         (Set$1 && getTag(new Set$1) != setTag$1) ||
         (WeakMap && getTag(new WeakMap) != weakMapTag)) {
@@ -2553,7 +2553,7 @@
             }
         }
     }
-    function defineProperty(_a) {
+    function defineProperty$2(_a) {
         var e_1, _b;
         var obj = _a.obj, key = _a.key, prop = _a.prop, component = _a.component, componentName = _a.componentName;
         if (obj === undefined) {
@@ -2572,7 +2572,7 @@
             try {
                 for (var _c = __values(Object.keys(obj[key])), _d = _c.next(); !_d.done; _d = _c.next()) {
                     var childKey = _d.value;
-                    defineProperty({
+                    defineProperty$2({
                         obj: obj[key],
                         key: childKey,
                         prop: prop,
@@ -2668,7 +2668,7 @@
             for (var _b = __values(componentProps[componentName]), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var item = _c.value;
                 var _d = getObjectCache(component, item.prop), property = _d.property, key = _d.key;
-                defineProperty({
+                defineProperty$2({
                     obj: property,
                     key: key,
                     prop: item,
@@ -2837,7 +2837,7 @@
         }
         Object.defineProperty(GameObject.prototype, "transform", {
             get: function () {
-                return this.getComponent(Transform.componentName);
+                return this.getComponent(Transform);
             },
             enumerable: false,
             configurable: true
@@ -3067,12 +3067,268 @@
         return System;
     }());
 
-    function createNowTime(syncLocker = true) {
-      let nowtime = null;
-      if(Date.now) {
+    var _iterators = {};
+
+    var toString = {}.toString;
+
+    var _cof = function (it) {
+      return toString.call(it).slice(8, -1);
+    };
+
+    var _library = true;
+
+    var _global = createCommonjsModule(function (module) {
+    // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+    var global = module.exports = typeof window != 'undefined' && window.Math == Math
+      ? window : typeof self != 'undefined' && self.Math == Math ? self
+      // eslint-disable-next-line no-new-func
+      : Function('return this')();
+    if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+    });
+
+    var _core = createCommonjsModule(function (module) {
+    var core = module.exports = { version: '2.6.12' };
+    if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+    });
+
+    var _isObject = function (it) {
+      return typeof it === 'object' ? it !== null : typeof it === 'function';
+    };
+
+    var _anObject = function (it) {
+      if (!_isObject(it)) throw TypeError(it + ' is not an object!');
+      return it;
+    };
+
+    var _shared = createCommonjsModule(function (module) {
+    var SHARED = '__core-js_shared__';
+    var store = _global[SHARED] || (_global[SHARED] = {});
+
+    (module.exports = function (key, value) {
+      return store[key] || (store[key] = value !== undefined ? value : {});
+    })('versions', []).push({
+      version: _core.version,
+      mode: _library ? 'pure' : 'global',
+      copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
+    });
+    });
+
+    var id = 0;
+    var px = Math.random();
+    var _uid = function (key) {
+      return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+    };
+
+    var _wks = createCommonjsModule(function (module) {
+    var store = _shared('wks');
+
+    var Symbol = _global.Symbol;
+    var USE_SYMBOL = typeof Symbol == 'function';
+
+    var $exports = module.exports = function (name) {
+      return store[name] || (store[name] =
+        USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : _uid)('Symbol.' + name));
+    };
+
+    $exports.store = store;
+    });
+
+    // getting tag from 19.1.3.6 Object.prototype.toString()
+
+    var TAG = _wks('toStringTag');
+    // ES3 wrong here
+    var ARG = _cof(function () { return arguments; }()) == 'Arguments';
+
+    // fallback for IE11 Script Access Denied error
+    var tryGet = function (it, key) {
+      try {
+        return it[key];
+      } catch (e) { /* empty */ }
+    };
+
+    var _classof = function (it) {
+      var O, T, B;
+      return it === undefined ? 'Undefined' : it === null ? 'Null'
+        // @@toStringTag case
+        : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
+        // builtinTag case
+        : ARG ? _cof(O)
+        // ES3 arguments fallback
+        : (B = _cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+    };
+
+    var ITERATOR$1 = _wks('iterator');
+
+    var core_isIterable = _core.isIterable = function (it) {
+      var O = Object(it);
+      return O[ITERATOR$1] !== undefined
+        || '@@iterator' in O
+        // eslint-disable-next-line no-prototype-builtins
+        || _iterators.hasOwnProperty(_classof(O));
+    };
+
+    var isIterable$1 = core_isIterable;
+
+    var isIterable = { "default": isIterable$1, __esModule: true };
+
+    var ITERATOR = _wks('iterator');
+
+    var core_getIteratorMethod = _core.getIteratorMethod = function (it) {
+      if (it != undefined) return it[ITERATOR]
+        || it['@@iterator']
+        || _iterators[_classof(it)];
+    };
+
+    var core_getIterator = _core.getIterator = function (it) {
+      var iterFn = core_getIteratorMethod(it);
+      if (typeof iterFn != 'function') throw TypeError(it + ' is not iterable!');
+      return _anObject(iterFn.call(it));
+    };
+
+    var getIterator$1 = core_getIterator;
+
+    var getIterator = { "default": getIterator$1, __esModule: true };
+
+    var _isIterable3 = _interopRequireDefault$3(isIterable);
+
+
+
+    var _getIterator3 = _interopRequireDefault$3(getIterator);
+
+    function _interopRequireDefault$3(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+    var _default$4 = function () {
+      function sliceIterator(arr, i) {
+        var _arr = [];
+        var _n = true;
+        var _d = false;
+        var _e = undefined;
+
+        try {
+          for (var _i = (0, _getIterator3.default)(arr), _s; !(_n = (_s = _i.next()).done); _n = true) {
+            _arr.push(_s.value);
+
+            if (i && _arr.length === i) break;
+          }
+        } catch (err) {
+          _d = true;
+          _e = err;
+        } finally {
+          try {
+            if (!_n && _i["return"]) _i["return"]();
+          } finally {
+            if (_d) throw _e;
+          }
+        }
+
+        return _arr;
+      }
+
+      return function (arr, i) {
+        if (Array.isArray(arr)) {
+          return arr;
+        } else if ((0, _isIterable3.default)(Object(arr))) {
+          return sliceIterator(arr, i);
+        } else {
+          throw new TypeError("Invalid attempt to destructure non-iterable instance");
+        }
+      };
+    }();
+
+    var slicedToArray = /*#__PURE__*/Object.defineProperty({
+    	default: _default$4
+    }, '__esModule', {value: true});
+
+    var from$1 = _core.Array.from;
+
+    var from = { "default": from$1, __esModule: true };
+
+    var _from2 = _interopRequireDefault$2(from);
+
+    function _interopRequireDefault$2(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+    var _default$3 = function (arr) {
+      if (Array.isArray(arr)) {
+        for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+          arr2[i] = arr[i];
+        }
+
+        return arr2;
+      } else {
+        return (0, _from2.default)(arr);
+      }
+    };
+
+    var toConsumableArray = /*#__PURE__*/Object.defineProperty({
+    	default: _default$3
+    }, '__esModule', {value: true});
+
+    var map$1 = _core.Map;
+
+    var map = { "default": map$1, __esModule: true };
+
+    var assign$1 = _core.Object.assign;
+
+    var assign = { "default": assign$1, __esModule: true };
+
+    var _default$2 = function (instance, Constructor) {
+      if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+      }
+    };
+
+    var classCallCheck = /*#__PURE__*/Object.defineProperty({
+    	default: _default$2
+    }, '__esModule', {value: true});
+
+    var $Object = _core.Object;
+    var defineProperty$1 = function defineProperty(it, key, desc) {
+      return $Object.defineProperty(it, key, desc);
+    };
+
+    var defineProperty = { "default": defineProperty$1, __esModule: true };
+
+    var _defineProperty2 = _interopRequireDefault$1(defineProperty);
+
+    function _interopRequireDefault$1(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+    var _default$1 = function () {
+      function defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          (0, _defineProperty2.default)(target, descriptor.key, descriptor);
+        }
+      }
+
+      return function (Constructor, protoProps, staticProps) {
+        if (protoProps) defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) defineProperties(Constructor, staticProps);
+        return Constructor;
+      };
+    }();
+
+    var createClass = /*#__PURE__*/Object.defineProperty({
+    	default: _default$1
+    }, '__esModule', {value: true});
+
+    var symbol$1 = _core.Symbol;
+
+    var symbol = { "default": symbol$1, __esModule: true };
+
+    var createNowTime_1 = createNowTime;
+    var formatDelay_1 = formatDelay;
+    function createNowTime() {
+
+      var nowtime = null;
+      if (Date.now) {
         nowtime = Date.now;
       } else {
-        nowtime = () => (new Date()).getTime();
+        nowtime = function nowtime() {
+          return new Date().getTime();
+        };
       }
 
       return nowtime;
@@ -3083,54 +3339,91 @@
       delay = {entropy: 100} -> delay = {delay: 100, isEntropy: true}
      */
     function formatDelay(delay) {
-      if(typeof delay === 'number') {
-        delay = {delay};
-      } else if('entropy' in delay) {
-        delay = {delay: delay.entropy, isEntropy: true};
+      if (typeof delay === 'number') {
+        delay = { delay: delay };
+      } else if ('entropy' in delay) {
+        delay = { delay: delay.entropy, isEntropy: true };
       }
       return delay;
     }
 
-    const _nowtime = createNowTime();
+    var utils = /*#__PURE__*/Object.defineProperty({
+    	createNowTime: createNowTime_1,
+    	formatDelay: formatDelay_1
+    }, '__esModule', {value: true});
 
-    const defaultOptions$1 = {
+    var _slicedToArray3 = _interopRequireDefault(slicedToArray);
+
+
+
+    var _toConsumableArray3 = _interopRequireDefault(toConsumableArray);
+
+
+
+    var _map2 = _interopRequireDefault(map);
+
+
+
+    var _assign2 = _interopRequireDefault(assign);
+
+
+
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck);
+
+
+
+    var _createClass3 = _interopRequireDefault(createClass);
+
+
+
+    var _symbol2 = _interopRequireDefault(symbol);
+
+
+
+    function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+    var _nowtime = (0, utils.createNowTime)();
+
+    var defaultOptions$1 = {
       originTime: 0,
-      playbackRate: 1.0,
+      playbackRate: 1.0
     };
 
-    const _timeMark = Symbol('timeMark'),
-      _playbackRate = Symbol('playbackRate'),
-      _timers = Symbol('timers'),
-      _originTime = Symbol('originTime'),
-      _setTimer = Symbol('setTimer'),
-      _parent = Symbol('parent');
+    var _timeMark = (0, _symbol2.default)('timeMark'),
+        _playbackRate = (0, _symbol2.default)('playbackRate'),
+        _timers = (0, _symbol2.default)('timers'),
+        _originTime = (0, _symbol2.default)('originTime'),
+        _setTimer = (0, _symbol2.default)('setTimer'),
+        _parent = (0, _symbol2.default)('parent');
 
-    class Timeline {
-      constructor(options, parent) {
+    var Timeline = function () {
+      function Timeline(options, parent) {
+        (0, _classCallCheck3.default)(this, Timeline);
+
         if (options instanceof Timeline) {
           parent = options;
           options = {};
         }
 
-        options = Object.assign({}, defaultOptions$1, options);
+        options = (0, _assign2.default)({}, defaultOptions$1, options);
 
         if (parent) {
           this[_parent] = parent;
         }
 
-        const nowtime = options.nowtime || _nowtime;
+        var nowtime = options.nowtime || _nowtime;
         if (!parent) {
-          const createTime = nowtime();
+          var createTime = nowtime();
           Object.defineProperty(this, 'globalTime', {
-            get() {
+            get: function get() {
               return nowtime() - createTime;
-            },
+            }
           });
         } else {
           Object.defineProperty(this, 'globalTime', {
-            get() {
+            get: function get() {
               return parent.currentTime;
-            },
+            }
           });
         }
 
@@ -3140,15 +3433,13 @@
         // timeMark sorted by entropy
         // If you reset entropy, all the timeMarks behind the new entropy
         // should be dropped
-        this[_timeMark] = [
-          {
-            globalTime: this.globalTime,
-            localTime: -options.originTime,
-            entropy: -options.originTime,
-            playbackRate: options.playbackRate,
-            globalEntropy: 0,
-          },
-        ];
+        this[_timeMark] = [{
+          globalTime: this.globalTime,
+          localTime: -options.originTime,
+          entropy: -options.originTime,
+          playbackRate: options.playbackRate,
+          globalEntropy: 0
+        }];
 
         if (this[_parent]) {
           this[_timeMark][0].globalEntropy = this[_parent].entropy;
@@ -3156,284 +3447,359 @@
 
         this[_originTime] = options.originTime;
         this[_playbackRate] = options.playbackRate;
-        this[_timers] = new Map();
+        this[_timers] = new _map2.default();
       }
 
-      get parent() {
-        return this[_parent];
-      }
+      (0, _createClass3.default)(Timeline, [{
+        key: 'markTime',
+        value: function markTime() {
+          var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+              _ref$time = _ref.time,
+              time = _ref$time === undefined ? this.currentTime : _ref$time,
+              _ref$entropy = _ref.entropy,
+              entropy = _ref$entropy === undefined ? this.entropy : _ref$entropy,
+              _ref$playbackRate = _ref.playbackRate,
+              playbackRate = _ref$playbackRate === undefined ? this.playbackRate : _ref$playbackRate;
 
-      get lastTimeMark() {
-        return this[_timeMark][this[_timeMark].length - 1];
-      }
+          var timeMark = {
+            globalTime: this.globalTime,
+            localTime: time,
+            entropy: entropy,
+            playbackRate: playbackRate,
+            globalEntropy: this.globalEntropy
+          };
+          this[_timeMark].push(timeMark);
+        }
+      }, {
+        key: 'fork',
+        value: function fork(options) {
+          return new Timeline(options, this);
+        }
+      }, {
+        key: 'seekGlobalTime',
+        value: function seekGlobalTime(seekEntropy) {
+          var idx = this.seekTimeMark(seekEntropy),
+              timeMark = this[_timeMark][idx];
 
-      markTime({time = this.currentTime, entropy = this.entropy, playbackRate = this.playbackRate} = {}) {
-        const timeMark = {
-          globalTime: this.globalTime,
-          localTime: time,
-          entropy,
-          playbackRate,
-          globalEntropy: this.globalEntropy,
-        };
-        this[_timeMark].push(timeMark);
-      }
+          var entropy = timeMark.entropy,
+              playbackRate = timeMark.playbackRate,
+              globalTime = timeMark.globalTime;
 
-      get currentTime() {
-        const {localTime, globalTime} = this.lastTimeMark;
-        return localTime + (this.globalTime - globalTime) * this.playbackRate;
-      }
 
-      set currentTime(time) {
-        const from = this.currentTime,
-          to = time,
-          timers = this[_timers];
+          return globalTime + (seekEntropy - entropy) / Math.abs(playbackRate);
+        }
+      }, {
+        key: 'seekLocalTime',
+        value: function seekLocalTime(seekEntropy) {
+          var idx = this.seekTimeMark(seekEntropy),
+              timeMark = this[_timeMark][idx];
 
-        this.markTime({time});
-        [...timers].forEach(([id, timer]) => {
-          if (!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
-          const {isEntropy, delay, heading} = timer.time,
-            {handler, startTime} = timer;
+          var localTime = timeMark.localTime,
+              entropy = timeMark.entropy,
+              playbackRate = timeMark.playbackRate;
 
-          if (!isEntropy) {
-            const endTime = startTime + delay;
-            if (
-              delay === 0 ||
-              (heading !== false && (to - from) * delay <= 0) ||
-              (from <= endTime && endTime <= to) ||
-              (from >= endTime && endTime >= to)
-            ) {
-              handler();
-              this.clearTimeout(id);
-            }
-          } else if (delay === 0) {
-            handler();
-            this.clearTimeout(id);
+
+          if (playbackRate > 0) {
+            return localTime + (seekEntropy - entropy);
           }
-        });
-        this.updateTimers();
-      }
-
-      // Both currentTime and entropy should be influenced by playbackRate.
-      // If current playbackRate is negative, the currentTime should go backwards
-      // while the entropy remain to go forwards.
-      // Both of the initial values is set to -originTime
-      get entropy() {
-        const {entropy, globalEntropy} = this.lastTimeMark;
-        return entropy + Math.abs((this.globalEntropy - globalEntropy) * this.playbackRate);
-      }
-
-      get globalEntropy() {
-        return this[_parent] ? this[_parent].entropy : this.globalTime;
-      }
-
-      // get globalTime() {
-      //   if(this[_parent]) {
-      //     return this[_parent].currentTime;
-      //   }
-
-      //   return nowtime();
-      // }
-
-      // change entropy will NOT cause currentTime changing but may influence the pass
-      // and the future of the timeline. (It may change the result of seek***Time)
-      // While entropy is set, all the marks behind will be droped
-      // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
-      set entropy(entropy) {
-        if (this.entropy > entropy) {
-          const idx = this.seekTimeMark(entropy);
-          this[_timeMark].length = idx + 1;
+          return localTime - (seekEntropy - entropy);
         }
-        this.markTime({entropy});
-        this.updateTimers();
-      }
+      }, {
+        key: 'seekTimeMark',
+        value: function seekTimeMark(entropy) {
+          var timeMark = this[_timeMark];
 
-      fork(options) {
-        return new Timeline(options, this);
-      }
+          var l = 0,
+              r = timeMark.length - 1;
 
-      seekGlobalTime(seekEntropy) {
-        const idx = this.seekTimeMark(seekEntropy),
-          timeMark = this[_timeMark][idx];
+          if (entropy <= timeMark[l].entropy) {
+            return l;
+          }
+          if (entropy >= timeMark[r].entropy) {
+            return r;
+          }
 
-        const {entropy, playbackRate, globalTime} = timeMark;
+          var m = Math.floor((l + r) / 2); // binary search
 
-        return globalTime + (seekEntropy - entropy) / Math.abs(playbackRate);
-      }
+          while (m > l && m < r) {
+            if (entropy === timeMark[m].entropy) {
+              return m;
+            }if (entropy < timeMark[m].entropy) {
+              r = m;
+            } else if (entropy > timeMark[m].entropy) {
+              l = m;
+            }
+            m = Math.floor((l + r) / 2);
+          }
 
-      seekLocalTime(seekEntropy) {
-        const idx = this.seekTimeMark(seekEntropy),
-          timeMark = this[_timeMark][idx];
-
-        const {localTime, entropy, playbackRate} = timeMark;
-
-        if (playbackRate > 0) {
-          return localTime + (seekEntropy - entropy);
-        }
-        return localTime - (seekEntropy - entropy);
-      }
-
-      seekTimeMark(entropy) {
-        const timeMark = this[_timeMark];
-
-        let l = 0,
-          r = timeMark.length - 1;
-
-        if (entropy <= timeMark[l].entropy) {
           return l;
         }
-        if (entropy >= timeMark[r].entropy) {
-          return r;
+      }, {
+        key: 'updateTimers',
+        value: function updateTimers() {
+          var _this = this;
+
+          var timers = [].concat((0, _toConsumableArray3.default)(this[_timers]));
+          timers.forEach(function (_ref2) {
+            var _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
+                id = _ref3[0],
+                timer = _ref3[1];
+
+            _this[_setTimer](timer.handler, timer.time, id);
+          });
+        }
+      }, {
+        key: 'clearTimeout',
+        value: function (_clearTimeout) {
+          function clearTimeout(_x) {
+            return _clearTimeout.apply(this, arguments);
+          }
+
+          clearTimeout.toString = function () {
+            return _clearTimeout.toString();
+          };
+
+          return clearTimeout;
+        }(function (id) {
+          var timer = this[_timers].get(id);
+
+          if (timer && timer.timerID != null) {
+            if (this[_parent]) {
+              this[_parent].clearTimeout(timer.timerID);
+            } else {
+              clearTimeout(timer.timerID);
+            }
+          }
+          this[_timers].delete(id);
+        })
+      }, {
+        key: 'clearInterval',
+        value: function clearInterval(id) {
+          return this.clearTimeout(id);
+        }
+      }, {
+        key: 'clear',
+        value: function clear() {
+          var _this2 = this;
+
+          // clear all running timers
+          var timers = this[_timers];[].concat((0, _toConsumableArray3.default)(timers.keys())).forEach(function (id) {
+            _this2.clearTimeout(id);
+          });
         }
 
-        let m = Math.floor((l + r) / 2); // binary search
+        /*
+          setTimeout(func, {delay: 100, isEntropy: true})
+          setTimeout(func, {entropy: 100})
+          setTimeout(func, 100})
+         */
 
-        while (m > l && m < r) {
-          if (entropy === timeMark[m].entropy) {
-            return m;
-          }
-          if (entropy < timeMark[m].entropy) {
-            r = m;
-          } else if (entropy > timeMark[m].entropy) {
-            l = m;
-          }
-          m = Math.floor((l + r) / 2);
+      }, {
+        key: 'setTimeout',
+        value: function setTimeout(handler) {
+          var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { delay: 0 };
+
+          return this[_setTimer](handler, time);
         }
+      }, {
+        key: 'setInterval',
+        value: function setInterval(handler) {
+          var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { delay: 0 };
 
-        return l;
-      }
+          var that = this;
+          var id = this[_setTimer](function step() {
+            // reset timer before handler cause we may clearTimeout in handler()
+            that[_setTimer](step, time, id);
+            handler();
+          }, time);
 
-      get playbackRate() {
-        return this[_playbackRate];
-      }
+          return id;
+        }
+      }, {
+        key: _setTimer,
+        value: function value(handler, time) {
+          var _this3 = this;
 
-      set playbackRate(rate) {
-        if (rate !== this.playbackRate) {
-          this.markTime({playbackRate: rate});
-          this[_playbackRate] = rate;
+          var id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : (0, _symbol2.default)('timerID');
+
+          time = (0, utils.formatDelay)(time);
+
+          var timer = this[_timers].get(id);
+          var delay = void 0,
+              timerID = null,
+              startTime = void 0,
+              startEntropy = void 0;
+
+          if (timer) {
+            this.clearTimeout(id);
+            if (time.isEntropy) {
+              delay = (time.delay - (this.entropy - timer.startEntropy)) / Math.abs(this.playbackRate);
+            } else {
+              delay = (time.delay - (this.currentTime - timer.startTime)) / this.playbackRate;
+            }
+            startTime = timer.startTime;
+            startEntropy = timer.startEntropy;
+          } else {
+            delay = time.delay / (time.isEntropy ? Math.abs(this.playbackRate) : this.playbackRate);
+            startTime = this.currentTime;
+            startEntropy = this.entropy;
+          }
+
+          var parent = this[_parent],
+              globalTimeout = parent ? parent.setTimeout.bind(parent) : setTimeout;
+
+          var heading = time.heading;
+          // console.log(heading, parent, delay)
+          if (!parent && heading === false && delay < 0) {
+            delay = Infinity;
+          }
+
+          // if playbackRate is zero, delay will be infinity.
+          // For wxapp bugs, cannot use Number.isFinite yet.
+          if (isFinite(delay) || parent) {
+            // eslint-disable-line no-restricted-globals
+            delay = Math.ceil(delay);
+            if (globalTimeout !== setTimeout) {
+              delay = { delay: delay, heading: heading };
+            }
+            timerID = globalTimeout(function () {
+              _this3[_timers].delete(id);
+              handler();
+            }, delay);
+          }
+
+          this[_timers].set(id, {
+            timerID: timerID,
+            handler: handler,
+            time: time,
+            startTime: startTime,
+            startEntropy: startEntropy
+          });
+
+          return id;
+        }
+      }, {
+        key: 'parent',
+        get: function get() {
+          return this[_parent];
+        }
+      }, {
+        key: 'lastTimeMark',
+        get: function get() {
+          return this[_timeMark][this[_timeMark].length - 1];
+        }
+      }, {
+        key: 'currentTime',
+        get: function get() {
+          var _lastTimeMark = this.lastTimeMark,
+              localTime = _lastTimeMark.localTime,
+              globalTime = _lastTimeMark.globalTime;
+
+          return localTime + (this.globalTime - globalTime) * this.playbackRate;
+        },
+        set: function set(time) {
+          var _this4 = this;
+
+          var from = this.currentTime,
+              to = time,
+              timers = this[_timers];
+
+          this.markTime({ time: time });[].concat((0, _toConsumableArray3.default)(timers)).forEach(function (_ref4) {
+            var _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
+                id = _ref5[0],
+                timer = _ref5[1];
+
+            if (!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
+            var _timer$time = timer.time,
+                isEntropy = _timer$time.isEntropy,
+                delay = _timer$time.delay,
+                heading = _timer$time.heading,
+                handler = timer.handler,
+                startTime = timer.startTime;
+
+
+            if (!isEntropy) {
+              var endTime = startTime + delay;
+              if (delay === 0 || heading !== false && (to - from) * delay <= 0 || from <= endTime && endTime <= to || from >= endTime && endTime >= to) {
+                handler();
+                _this4.clearTimeout(id);
+              }
+            } else if (delay === 0) {
+              handler();
+              _this4.clearTimeout(id);
+            }
+          });
           this.updateTimers();
         }
-      }
 
-      get paused() {
-        if (this.playbackRate === 0) return true;
-        let parent = this.parent;
-        while (parent) {
-          if (parent.playbackRate === 0) return true;
-          parent = parent.parent;
+        // Both currentTime and entropy should be influenced by playbackRate.
+        // If current playbackRate is negative, the currentTime should go backwards
+        // while the entropy remain to go forwards.
+        // Both of the initial values is set to -originTime
+
+      }, {
+        key: 'entropy',
+        get: function get() {
+          var _lastTimeMark2 = this.lastTimeMark,
+              entropy = _lastTimeMark2.entropy,
+              globalEntropy = _lastTimeMark2.globalEntropy;
+
+          return entropy + Math.abs((this.globalEntropy - globalEntropy) * this.playbackRate);
+        },
+
+
+        // get globalTime() {
+        //   if(this[_parent]) {
+        //     return this[_parent].currentTime;
+        //   }
+
+        //   return nowtime();
+        // }
+
+        // change entropy will NOT cause currentTime changing but may influence the pass
+        // and the future of the timeline. (It may change the result of seek***Time)
+        // While entropy is set, all the marks behind will be droped
+        set: function set(entropy) {
+          if (this.entropy > entropy) {
+            var idx = this.seekTimeMark(entropy);
+            this[_timeMark].length = idx + 1;
+          }
+          this.markTime({ entropy: entropy });
+          this.updateTimers();
         }
-        return false;
-      }
-
-      updateTimers() {
-        const timers = Array.from(this[_timers].entries());
-        timers.forEach(([id, timer]) => {
-          this[_setTimer](timer.handler, timer.time, id);
-        });
-      }
-
-      clearTimeout(id) {
-        const timer = this[_timers].get(id);
-
-        if (timer && timer.timerID != null) {
-          if (this[_parent]) {
-            this[_parent].clearTimeout(timer.timerID);
-          } else {
-            clearTimeout(timer.timerID);
+      }, {
+        key: 'globalEntropy',
+        get: function get() {
+          return this[_parent] ? this[_parent].entropy : this.globalTime;
+        }
+      }, {
+        key: 'playbackRate',
+        get: function get() {
+          return this[_playbackRate];
+        },
+        set: function set(rate) {
+          if (rate !== this.playbackRate) {
+            this.markTime({ playbackRate: rate });
+            this[_playbackRate] = rate;
+            this.updateTimers();
           }
         }
-        this[_timers].delete(id);
-      }
-
-      clearInterval(id) {
-        return this.clearTimeout(id);
-      }
-
-      clear() {
-        // clear all running timers
-        const timers = this[_timers];
-        [...timers.keys()].forEach(id => {
-          this.clearTimeout(id);
-        });
-      }
-
-      /*
-        setTimeout(func, {delay: 100, isEntropy: true})
-        setTimeout(func, {entropy: 100})
-        setTimeout(func, 100})
-       */
-      setTimeout(handler, time = {delay: 0}) {
-        return this[_setTimer](handler, time);
-      }
-
-      setInterval(handler, time = {delay: 0}) {
-        const that = this;
-        const id = this[_setTimer](function step() {
-          // reset timer before handler cause we may clearTimeout in handler()
-          that[_setTimer](step, time, id);
-          handler();
-        }, time);
-
-        return id;
-      }
-
-      [_setTimer](handler, time, id = Symbol('timerID')) {
-        time = formatDelay(time);
-
-        const timer = this[_timers].get(id);
-        let delay,
-          timerID = null,
-          startTime,
-          startEntropy;
-
-        if (timer) {
-          this.clearTimeout(id);
-          if (time.isEntropy) {
-            delay = (time.delay - (this.entropy - timer.startEntropy)) / Math.abs(this.playbackRate);
-          } else {
-            delay = (time.delay - (this.currentTime - timer.startTime)) / this.playbackRate;
+      }, {
+        key: 'paused',
+        get: function get() {
+          if (this.playbackRate === 0) return true;
+          var parent = this.parent;
+          while (parent) {
+            if (parent.playbackRate === 0) return true;
+            parent = parent.parent;
           }
-          startTime = timer.startTime;
-          startEntropy = timer.startEntropy;
-        } else {
-          delay = time.delay / (time.isEntropy ? Math.abs(this.playbackRate) : this.playbackRate);
-          startTime = this.currentTime;
-          startEntropy = this.entropy;
+          return false;
         }
+      }]);
+      return Timeline;
+    }();
 
-        const parent = this[_parent],
-          globalTimeout = parent ? parent.setTimeout.bind(parent) : setTimeout;
-
-        const heading = time.heading;
-        // console.log(heading, parent, delay)
-        if (!parent && heading === false && delay < 0) {
-          delay = Infinity;
-        }
-
-        // if playbackRate is zero, delay will be infinity.
-        // For wxapp bugs, cannot use Number.isFinite yet.
-        if (isFinite(delay) || parent) {
-          // eslint-disable-line no-restricted-globals
-          delay = Math.ceil(delay);
-          if (globalTimeout !== setTimeout) {
-            delay = {delay, heading};
-          }
-          timerID = globalTimeout(() => {
-            this[_timers].delete(id);
-            handler();
-          }, delay);
-        }
-
-        this[_timers].set(id, {
-          timerID,
-          handler,
-          time,
-          startTime,
-          startEntropy,
-        });
-
-        return id;
-      }
-    }
+    var _default = Timeline;
 
     var defaultOptions = {
         autoStart: true,
@@ -3447,7 +3813,7 @@
             this._frameDuration = 1000 / options.frameRate;
             this.autoStart = options.autoStart;
             this.frameRate = options.frameRate;
-            this.timeline = new Timeline({ originTime: 0, playbackRate: 1.0 });
+            this.timeline = new _default({ originTime: 0, playbackRate: 1.0 });
             this._lastFrameTime = this.timeline.currentTime;
             this._tickers = new Set();
             this._requestId = null;
@@ -4592,6 +4958,7 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
+                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:

@@ -44,7 +44,8 @@ export function getComponentName<T extends Component<ComponentParams>>(
   }
 }
 
-export interface ComponentParams {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ComponentParams { }
 
 export interface ComponentConstructor<T extends Component<ComponentParams>> {
   componentName: string;

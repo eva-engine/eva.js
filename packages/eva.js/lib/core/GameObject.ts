@@ -21,13 +21,13 @@ class GameObject {
   private _scene: Scene;
 
   /** A key-value map for components on this gameObject */
-  private _componentCache: { [propName: string]: Component } = {};
+  private _componentCache: Record<string, Component<ComponentParams>> = {};
 
   /** Identifier of this gameObject */
   public id: number;
 
   /** Components apply to this gameObject */
-  public components: Component[] = [];
+  public components: Component<ComponentParams>[] = [];
 
   /**
    * Consruct a new gameObject
@@ -138,7 +138,7 @@ class GameObject {
    * @param C - component instance or Component class
    */
   addComponent<T extends Component<ComponentParams>>(C: T): T;
-  addComponent<T extends Component<ComponentParams>>(C:  ComponentConstructor<T>, obj?: ComponentParams): T;
+  addComponent<T extends Component<ComponentParams>>(C: ComponentConstructor<T>, obj?: ComponentParams): T;
   addComponent<T extends Component<ComponentParams>>(
     C: T | ComponentConstructor<T>,
     obj?: ComponentParams,

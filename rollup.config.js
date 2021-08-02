@@ -6,6 +6,9 @@ import {terser} from 'rollup-plugin-terser';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import copy from 'rollup-plugin-copy';
+import commonjs from '@rollup/plugin-commonjs';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import nodePolyfill from 'rollup-plugin-polyfill-node';
 import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
@@ -116,14 +119,7 @@ function createConfig(format, output, plugins = []) {
   });
   hasTypesChecked = true;
 
-  const nodePlugins =
-    format !== 'cjs' && format !== 'esm'
-      ? [
-          require('@rollup/plugin-commonjs')({sourceMap: false}),
-          require('rollup-plugin-polyfill-node')(),
-          require('@rollup/plugin-node-resolve').nodeResolve(),
-        ]
-      : [];
+  const nodePlugins = format === 'umd' ? [nodePolyfill(), nodeResolve()] : [];
 
   return {
     input: entryFile,
@@ -151,6 +147,7 @@ function createConfig(format, output, plugins = []) {
         __TEST__: false,
         __DEV__: process.env.NODE_ENV === 'development',
       }),
+      commonjs({sourceMap: false}),
       ...nodePlugins,
       ...plugins,
     ],

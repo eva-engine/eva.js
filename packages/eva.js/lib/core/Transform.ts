@@ -1,5 +1,6 @@
 import { IDEProp } from '../decorators/ide';
 import Component from './Component';
+import type { ComponentParams } from './Component'
 
 /**
  * Two dimensional vector
@@ -35,7 +36,7 @@ export interface TransformMatrix {
 /**
  * Transform propterty
  */
-export interface TransformParams {
+export interface TransformParams extends ComponentParams {
   position?: Vector2;
   size?: Size2;
   origin?: Vector2;
