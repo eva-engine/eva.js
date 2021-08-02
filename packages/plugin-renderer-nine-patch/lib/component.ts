@@ -9,7 +9,7 @@ export interface NinePatchParams {
   bottomHeight?: number;
 }
 
-export default class NinePatch extends Component {
+export default class NinePatch extends Component<NinePatchParams> {
   static componentName: string = 'NinePatch';
   ninePatch: any;
   @decorators.IDEProp resource: string = '';

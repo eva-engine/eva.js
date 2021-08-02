@@ -5,7 +5,7 @@ export interface RenderParams {
   visible?: boolean;
   sortableChildren?: boolean;
 }
-export default class Render extends Component {
+export default class Render extends Component<RenderParams> {
   static componentName: string = 'Render';
   sortDirty: boolean = false;
   @decorators.IDEProp visible: boolean = true;

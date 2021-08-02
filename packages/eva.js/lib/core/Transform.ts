@@ -45,7 +45,7 @@ export interface TransformParams {
 }
 
 /** Basic component for gameObject, See {@link TransformParams}  */
-class Transform extends Component {
+class Transform extends Component<TransformParams> {
   /**
    * component's name
    * @readonly

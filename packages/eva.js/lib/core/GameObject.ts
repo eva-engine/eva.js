@@ -1,6 +1,6 @@
 import Scene from '../game/Scene';
 import Transform, { TransformParams } from './Transform';
-import Component, { ComponentType, getComponentName } from './Component';
+import Component, { ComponentConstructor, ComponentParams, ComponentType, getComponentName } from './Component';
 import { observer, observerAdded, observerRemoved } from './observer';
 
 let _id = 0;
@@ -46,7 +46,7 @@ class GameObject {
    * @readonly
    */
   get transform(): Transform {
-    return this.getComponent<Transform>(Transform.componentName);
+    return this.getComponent(Transform);
   }
 
   /**
@@ -137,12 +137,12 @@ class GameObject {
    * If component has already been added on a gameObject, it will throw an error
    * @param C - component instance or Component class
    */
-  addComponent<T extends Component>(C: T): T;
-  addComponent<T extends ComponentType>(C: T, obj?: any): InstanceType<T>;
-  addComponent<T extends Component, U extends ComponentType>(
-    C: T | U,
-    obj?: any,
-  ): T | InstanceType<U> {
+  addComponent<T extends Component<ComponentParams>>(C: T): T;
+  addComponent<T extends Component<ComponentParams>>(C:  ComponentConstructor<T>, obj?: ComponentParams): T;
+  addComponent<T extends Component<ComponentParams>>(
+    C: T | ComponentConstructor<T>,
+    obj?: ComponentParams,
+  ): T {
     const componentName = getComponentName(C);
     if (this._componentCache[componentName]) return;
 
@@ -221,12 +221,11 @@ class GameObject {
    * @param c - one of the compnoentName, component instance, component Class
    * @returns
    */
+  getComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
   getComponent<T extends Component>(c: string): T;
-  getComponent<T extends Component>(c: T): T;
-  getComponent<T extends ComponentType>(c: T): InstanceType<T>;
-  getComponent<T extends Component, U extends ComponentType>(
-    c: T | U,
-  ): T | InstanceType<U> {
+  getComponent<T extends Component>(
+    c: string | ComponentConstructor<T>,
+  ): T {
     let componentName: string;
     if (typeof c === 'string') {
       componentName = c;

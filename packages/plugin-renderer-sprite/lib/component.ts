@@ -5,7 +5,7 @@ export interface SpriteParams {
   spriteName: string;
 }
 
-export default class Sprite extends Component {
+export default class Sprite extends Component<SpineParams> {
   static componentName: string = 'Sprite';
   @decorators.IDEProp resource: string = '';
   @decorators.IDEProp spriteName: string = '';
