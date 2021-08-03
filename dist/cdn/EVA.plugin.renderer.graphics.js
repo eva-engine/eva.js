@@ -1,31 +1,20 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined'
-    ? factory(exports, require('@eva/eva.js'), require('pixi.js'), require('@eva/plugin-renderer'))
-    : typeof define === 'function' && define.amd
-    ? define(['exports', '@eva/eva.js', 'pixi.js', '@eva/plugin-renderer'], factory)
-    : ((global = typeof globalThis !== 'undefined' ? globalThis : global || self),
-      factory(
-        ((global.EVA = global.EVA || {}),
-        (global.EVA.plugin = global.EVA.plugin || {}),
-        (global.EVA.plugin.renderer = global.EVA.plugin.renderer || {}),
-        (global.EVA.plugin.renderer.graphics = {})),
-        global.EVA,
-        global.PIXI,
-        global.EVA.plugin.renderer,
-      ));
-})(this, function (exports, eva_js, pixi_js, pluginRenderer) {
-  'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@eva/eva.js'), require('pixi.js'), require('@eva/plugin-renderer')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@eva/eva.js', 'pixi.js', '@eva/plugin-renderer'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.EVA = global.EVA || {}, global.EVA.plugin = global.EVA.plugin || {}, global.EVA.plugin.renderer = global.EVA.plugin.renderer || {}, global.EVA.plugin.renderer.graphics = {}), global.EVA, global.PIXI, global.EVA.plugin.renderer));
+}(this, (function (exports, eva_js, pixi_js, pluginRenderer) { 'use strict';
 
-  class Graphics$3 extends pixi_js.Graphics {}
+  class Graphics$3 extends pixi_js.Graphics {
+  }
 
   class Graphics$2 extends eva_js.Component {
-    constructor() {
-      super(...arguments);
-      this.graphics = null;
-    }
-    init() {
-      this.graphics = new Graphics$3();
-    }
+      constructor() {
+          super(...arguments);
+          this.graphics = null;
+      }
+      init() {
+          this.graphics = new Graphics$3();
+      }
   }
   Graphics$2.componentName = 'Graphics';
 
@@ -45,80 +34,58 @@
   ***************************************************************************** */
 
   function __decorate(decorators, target, key, desc) {
-    var c = arguments.length,
-      r = c < 3 ? target : desc === null ? (desc = Object.getOwnPropertyDescriptor(target, key)) : desc,
-      d;
-    if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if ((d = decorators[i])) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
   }
 
   function __awaiter(thisArg, _arguments, P, generator) {
-    function adopt(value) {
-      return value instanceof P
-        ? value
-        : new P(function (resolve) {
-            resolve(value);
-          });
-    }
-    return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator['throw'](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+      function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+      return new (P || (P = Promise))(function (resolve, reject) {
+          function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+          function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+          function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+          step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
   }
 
   let Graphics = class Graphics extends pluginRenderer.Renderer {
-    constructor() {
-      super(...arguments);
-      this.name = 'Graphics';
-    }
-    init() {
-      this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
-      this.renderSystem.rendererManager.register(this);
-    }
-    componentChanged(changed) {
-      return __awaiter(this, void 0, void 0, function* () {
-        if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
-          this.containerManager.getContainer(changed.gameObject.id).addChildAt(changed.component.graphics, 0);
-        } else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-          this.containerManager.getContainer(changed.gameObject.id).removeChild(changed.component.graphics);
-          changed.component.graphics.destroy(true);
-        }
-      });
-    }
+      constructor() {
+          super(...arguments);
+          this.name = 'Graphics';
+      }
+      init() {
+          this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
+          this.renderSystem.rendererManager.register(this);
+      }
+      componentChanged(changed) {
+          return __awaiter(this, void 0, void 0, function* () {
+              if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                  this.containerManager
+                      .getContainer(changed.gameObject.id)
+                      .addChildAt(changed.component.graphics, 0);
+              }
+              else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                  this.containerManager
+                      .getContainer(changed.gameObject.id)
+                      .removeChild(changed.component.graphics);
+                  changed.component.graphics.destroy(true);
+              }
+          });
+      }
   };
   Graphics.systemName = 'Graphics';
-  Graphics = __decorate(
-    [
+  Graphics = __decorate([
       eva_js.decorators.componentObserver({
-        Graphics: ['graphics'],
-      }),
-    ],
-    Graphics,
-  );
+          Graphics: ['graphics'],
+      })
+  ], Graphics);
   var Graphics$1 = Graphics;
 
   exports.Graphics = Graphics$2;
   exports.GraphicsSystem = Graphics$1;
 
-  Object.defineProperty(exports, '__esModule', {value: true});
-});
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

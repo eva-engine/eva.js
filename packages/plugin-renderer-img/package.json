@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-img",
-  "version": "1.1.0-alpha.0",
+  "version": "1.1.0-alpha.1",
   "description": "@eva/plugin-renderer-img",
   "main": "index.js",
   "module": "dist/plugin-renderer-img.esm.js",
@@ -18,9 +18,9 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/plugin-renderer": "1.1.0-alpha.0",
-    "@eva/renderer-adapter": "1.1.0-alpha.0",
-    "@eva/eva.js": "1.1.0-alpha.0",
+    "@eva/plugin-renderer": "1.1.0-alpha.1",
+    "@eva/renderer-adapter": "1.1.0-alpha.1",
+    "@eva/eva.js": "1.1.0-alpha.1",
     "pixi.js": "^4.8.7"
   }
 }
