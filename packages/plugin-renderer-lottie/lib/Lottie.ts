@@ -17,7 +17,7 @@ interface ExtendOptions extends IOptions {
   autoStart: boolean;
 }
 
-export default class Lottie extends Component {
+export default class Lottie extends Component<IOptions> {
   @decorators.IDEProp
   slot: { [key: string]: string }
 
@@ -49,7 +49,7 @@ export default class Lottie extends Component {
   }
 
   play(
-    params: Array<number> = [],
+    params: number[] = [],
     expandOpts: IExpandOpts = {
       repeats: 0
     }

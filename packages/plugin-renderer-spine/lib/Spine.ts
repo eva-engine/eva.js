@@ -6,7 +6,7 @@ export interface SpineParams {
   autoPlay: boolean;
 }
 
-export default class Spine extends Component {
+export default class Spine extends Component<SpineParams> {
   static componentName: string = 'Spine';
 
   @decorators.IDEProp

@@ -5,50 +5,25 @@
 }(this, (function (exports, eva_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
         else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
         return c > 3 && r && Object.defineProperty(target, key, r), r;
-    }
-
-    function __values(o) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-        if (m) return m.call(o);
-        return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
-            }
-        };
     }
 
     /*!
@@ -10885,15 +10860,14 @@
         PhysicsType["CIRCLE"] = "circle";
         PhysicsType["POLYGON"] = "polygon";
     })(exports.PhysicsType || (exports.PhysicsType = {}));
-    var Physics = (function (_super) {
-        __extends(Physics, _super);
-        function Physics(params) {
-            return _super.call(this, params) || this;
+    class Physics extends eva_js.Component {
+        constructor(params) {
+            super(params);
         }
-        Physics.prototype.init = function (params) {
+        init(params) {
             this.bodyParams = params;
-        };
-        Physics.prototype.update = function () {
+        }
+        update() {
             if (this.body && this.gameObject) {
                 this.gameObject.transform.anchor.x = 0;
                 this.gameObject.transform.anchor.y = 0;
@@ -10903,28 +10877,27 @@
                     this.gameObject.transform.rotation = this.body.angle;
                 }
             }
-        };
-        Physics.prototype.onDestroy = function () {
+        }
+        onDestroy() {
             Matter.World.remove(this.PhysicsEngine.world, this.body, true);
-        };
-        Physics.componentName = 'Physics';
-        return Physics;
-    }(eva_js.Component));
+        }
+    }
+    Physics.componentName = 'Physics';
 
-    var BodiesFactory = (function () {
-        function BodiesFactory() {
+    class BodiesFactory {
+        constructor() {
             this.Bodies = Matter.Bodies;
         }
-        BodiesFactory.prototype.create = function (component) {
-            var body = null;
-            var gameObject = component.gameObject, bodyParams = component.bodyParams;
-            var coordinate = this.getCoordinate(gameObject);
-            var x = bodyParams.position ? bodyParams.position.x : coordinate.x;
-            var y = bodyParams.position ? bodyParams.position.y : coordinate.y;
+        create(component) {
+            let body = null;
+            const { gameObject, bodyParams } = component;
+            const coordinate = this.getCoordinate(gameObject);
+            const x = bodyParams.position ? bodyParams.position.x : coordinate.x;
+            const y = bodyParams.position ? bodyParams.position.y : coordinate.y;
             switch (bodyParams.type) {
                 case exports.PhysicsType.RECTANGLE: {
-                    var width = gameObject.transform.size.width * gameObject.transform.scale.x;
-                    var height = gameObject.transform.size.height * gameObject.transform.scale.y;
+                    const width = gameObject.transform.size.width * gameObject.transform.scale.x;
+                    const height = gameObject.transform.size.height * gameObject.transform.scale.y;
                     body = this.Bodies.rectangle(x, y, width, height, bodyParams.bodyOptions);
                     break;
                 }
@@ -10938,20 +10911,19 @@
                 }
             }
             return body;
-        };
-        BodiesFactory.prototype.getCoordinate = function (gameObject) {
-            var x = gameObject.transform.position.x + gameObject.transform.anchor.x * gameObject.parent.transform.size.width;
-            var y = gameObject.transform.position.y + gameObject.transform.anchor.y * gameObject.parent.transform.size.height;
+        }
+        getCoordinate(gameObject) {
+            const x = gameObject.transform.position.x + gameObject.transform.anchor.x * gameObject.parent.transform.size.width;
+            const y = gameObject.transform.position.y + gameObject.transform.anchor.y * gameObject.parent.transform.size.height;
             return {
-                x: x,
-                y: y,
+                x,
+                y,
             };
-        };
-        return BodiesFactory;
-    }());
+        }
+    }
 
-    var PhysicsEngine = (function () {
-        function PhysicsEngine(game, options) {
+    class PhysicsEngine {
+        constructor(game, options) {
             this.enabled = false;
             this.Engine = Matter.Engine;
             this.World = Matter.World;
@@ -10964,15 +10936,15 @@
             this.bodyEvents = ['tick', 'beforeUpdate', 'afterUpdate', 'beforeRender', 'afterRender', 'afterTick'];
             this.options = options;
         }
-        PhysicsEngine.prototype.start = function () {
+        start() {
             this.engine = this.Engine.create();
-            var world = this.World.create(this.options.world);
+            const world = this.World.create(this.options.world);
             this.engine.world = world;
             this.runner = this.Runner.create({
                 fps: this.options.fps || 70,
             });
             if (this.options.isTest) {
-                var render = this.Render.create({
+                const render = this.Render.create({
                     element: this.options.element,
                     engine: this.engine,
                     options: {
@@ -10989,22 +10961,22 @@
             this.initMouse();
             this.initCollisionEvents();
             this.initBodyEvents();
-        };
-        PhysicsEngine.prototype.update = function () {
+        }
+        update() {
             if (!this.options.isTest) {
                 this.Runner.tick(this.runner, this.engine);
             }
-        };
-        PhysicsEngine.prototype.stop = function () {
+        }
+        stop() {
             this.enabled = false;
             this.runner.enabled = false;
-        };
-        PhysicsEngine.prototype.awake = function () {
+        }
+        awake() {
             this.enabled = true;
             this.runner.enabled = true;
-        };
-        PhysicsEngine.prototype.add = function (component) {
-            var body = this.createBodies(component);
+        }
+        add(component) {
+            const body = this.createBodies(component);
             this.World.add(this.engine.world, [body]);
             component.body = body;
             component.Body = Matter.Body;
@@ -11013,85 +10985,67 @@
             component.mouseConstraint = this.mouseConstraint;
             component.World = this.World;
             body.component = component;
-        };
-        PhysicsEngine.prototype.createBodies = function (params) {
-            var body = this.bodiesFatoty.create(params);
+        }
+        createBodies(params) {
+            const body = this.bodiesFatoty.create(params);
             return body;
-        };
-        PhysicsEngine.prototype.initCollisionEvents = function () {
-            var _this = this;
-            this.collisionEvents.forEach(function (eventName) {
-                Matter.Events.on(_this.engine, eventName, function (event) {
-                    var pairs = event.pairs || [];
-                    for (var i = 0; i < pairs.length; i++) {
-                        var pair = pairs[i];
-                        var bodyA = pair.bodyA, bodyB = pair.bodyB;
-                        var componentA = bodyA.component;
-                        var componentB = bodyB.component;
+        }
+        initCollisionEvents() {
+            this.collisionEvents.forEach(eventName => {
+                Matter.Events.on(this.engine, eventName, event => {
+                    const pairs = event.pairs || [];
+                    for (let i = 0; i < pairs.length; i++) {
+                        const pair = pairs[i];
+                        const { bodyA, bodyB } = pair;
+                        const componentA = bodyA.component;
+                        const componentB = bodyB.component;
                         componentA.emit(eventName, componentB.gameObject, componentA.gameObject);
                         componentB.emit(eventName, componentA.gameObject, componentB.gameObject);
                     }
                 });
             });
-        };
-        PhysicsEngine.prototype.initMouse = function () {
+        }
+        initMouse() {
             if (this.options.mouse && this.options.mouse.open) {
-                var mouse = Matter.Mouse.create(this.game.canvas);
+                const mouse = Matter.Mouse.create(this.game.canvas);
                 this.mouseConstraint = Matter.MouseConstraint.create(this.engine, {
                     mouse: mouse,
                     constraint: this.options.mouse.constraint,
                 });
                 this.World.add(this.engine.world, this.mouseConstraint);
             }
-        };
-        PhysicsEngine.prototype.initBodyEvents = function () {
-            var _this = this;
-            this.bodyEvents.forEach(function (eventName) {
-                Matter.Events.on(_this.engine, eventName, function (e) {
-                    var bodies = e.source.world.bodies;
-                    bodies.forEach(function (body) {
+        }
+        initBodyEvents() {
+            this.bodyEvents.forEach(eventName => {
+                Matter.Events.on(this.engine, eventName, e => {
+                    const bodies = e.source.world.bodies;
+                    bodies.forEach(body => {
                         body.component.emit(eventName, body, body.component.gameObject);
                     });
                 });
             });
-        };
-        return PhysicsEngine;
-    }());
-
-    var PhysicsSystem = (function (_super) {
-        __extends(PhysicsSystem, _super);
-        function PhysicsSystem() {
-            return _super !== null && _super.apply(this, arguments) || this;
         }
-        PhysicsSystem.prototype.init = function (param) {
+    }
+
+    let PhysicsSystem = class PhysicsSystem extends eva_js.System {
+        init(param) {
             this.engine = new PhysicsEngine(this.game, param);
             this.game.canvas.setAttribute('data-pixel-ratio', param.resolution || '1');
-        };
-        PhysicsSystem.prototype.awake = function () { };
-        PhysicsSystem.prototype.start = function () {
+        }
+        awake() { }
+        start() {
             this.engine.start();
-        };
-        PhysicsSystem.prototype.update = function () {
-            var e_1, _a;
-            var changes = this.componentObserver.clear();
-            try {
-                for (var changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
-                    var changed = changes_1_1.value;
-                    if (changed && changed.componentName === 'Physics') {
-                        this.componentChanged(changed);
-                    }
+        }
+        update() {
+            const changes = this.componentObserver.clear();
+            for (const changed of changes) {
+                if (changed && changed.componentName === 'Physics') {
+                    this.componentChanged(changed);
                 }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (changes_1_1 && !changes_1_1.done && (_a = changes_1.return)) _a.call(changes_1);
-                }
-                finally { if (e_1) throw e_1.error; }
             }
             this.engine.update();
-        };
-        PhysicsSystem.prototype.componentChanged = function (changed) {
+        }
+        componentChanged(changed) {
             switch (changed.type) {
                 case eva_js.OBSERVER_TYPE.ADD: {
                     this.engine.add(changed.component);
@@ -11104,28 +11058,28 @@
                     break;
                 }
             }
-        };
-        PhysicsSystem.prototype.lateUpdate = function () { };
-        PhysicsSystem.prototype.onResume = function () {
+        }
+        lateUpdate() { }
+        onResume() {
             if (!this.engine.enabled) {
                 this.engine.awake();
             }
-        };
-        PhysicsSystem.prototype.onPause = function () {
+        }
+        onPause() {
             this.engine.stop();
-        };
-        PhysicsSystem.prototype.onDestroy = function () { };
-        PhysicsSystem.systemName = 'PhysicsSystem';
-        PhysicsSystem = __decorate([
-            eva_js.decorators.componentObserver({
-                Physics: [{ prop: ['bodyParams'], deep: true }],
-            })
-        ], PhysicsSystem);
-        return PhysicsSystem;
-    }(eva_js.System));
+        }
+        onDestroy() { }
+    };
+    PhysicsSystem.systemName = 'PhysicsSystem';
+    PhysicsSystem = __decorate([
+        eva_js.decorators.componentObserver({
+            Physics: [{ prop: ['bodyParams'], deep: true }],
+        })
+    ], PhysicsSystem);
+    var PhysicsSystem$1 = PhysicsSystem;
 
     exports.Physics = Physics;
-    exports.PhysicsSystem = PhysicsSystem;
+    exports.PhysicsSystem = PhysicsSystem$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
