@@ -30,7 +30,7 @@ export default class Renderer extends System {
    */
   containerManager: ContainerManager;
   rendererManager: RendererManager;
-  constructor(params) {
+  constructor(params = {}) {
     super(params);
     // @ts-ignore
     this.observerInfo = this.constructor.observerInfo;
