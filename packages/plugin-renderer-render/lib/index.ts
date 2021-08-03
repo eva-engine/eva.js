@@ -1,3 +1,4 @@
-import Render, {RenderParams} from './component';
+import Render from './component';
+import type { RenderParams } from './component';
 import RenderSystem from './system';
-export {Render, RenderSystem, RenderParams};
+export { Render, RenderSystem, RenderParams };

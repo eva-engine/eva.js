@@ -19,12 +19,13 @@ const decorators = {
 };
 
 // for typescript
-export { PluginStruct } from './game/Game';
-export { TransformParams } from './core/Transform';
-export { ObserverEvent as ComponentChanged } from './core/ComponentObserver';
-export { PureObserverInfo } from './core/observer';
-export { UpdateParams, ComponentParams } from './core/Component';
-export { ObserverInfo } from './decorators/system';
+export type { PluginStruct } from './game/Game';
+export type { TransformParams } from './core/Transform';
+export type { ObserverEvent as ComponentChanged } from './core/ComponentObserver';
+export type { PureObserverInfo } from './core/observer';
+export type { UpdateParams, ComponentParams } from './core/Component';
+export type { ObserverInfo } from './decorators/system';
+export type { ResourceBase } from './loader/Resource';
 
 export {
   Game,
