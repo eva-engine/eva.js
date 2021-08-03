@@ -11,7 +11,6 @@ import Scene from './game/Scene';
 import { IDEProp } from './decorators/ide';
 import { componentObserver } from './decorators/system';
 import { resource, LOAD_EVENT, RESOURCE_TYPE, STRATEGY } from './loader/Resource';
-import type { ResourceBase } from './loader/Resource';
 
 /** Decorators util */
 const decorators = {
@@ -24,25 +23,24 @@ export type { PluginStruct } from './game/Game';
 export type { TransformParams } from './core/Transform';
 export type { ObserverEvent as ComponentChanged } from './core/ComponentObserver';
 export type { PureObserverInfo } from './core/observer';
-export type { UpdateParams } from './core/Component';
+export type { UpdateParams, ComponentParams } from './core/Component';
 export type { ObserverInfo } from './decorators/system';
+export type { ResourceBase } from './loader/Resource';
 
 export {
+  Game,
+  Scene,
   GameObject,
   Component,
   System,
-  Game,
+  Transform,
   resource,
   decorators,
-  Scene,
-  Transform,
   LOAD_EVENT,
   RESOURCE_TYPE,
   ObserverType as OBSERVER_TYPE,
   LOAD_SCENE_MODE,
-  /** decorators */
   IDEProp,
   componentObserver,
-  ResourceBase,
   STRATEGY
 };

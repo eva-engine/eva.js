@@ -18,20 +18,6 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -50,157 +36,90 @@
         });
     }
 
-    function __generator(thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    let SoundSystem = class SoundSystem extends eva_js.System {
+        constructor(obj) {
+            super();
+            this.autoPauseAndStart = true;
+            this.components = [];
+            this.pausedComponents = [];
+            this.audioBufferCache = {};
+            this.decodeAudioPromiseMap = {};
+            Object.assign(this, obj);
         }
-    }
-
-    function __values(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-        if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
+        get muted() {
+            return this.gainNode ? this.gainNode.gain.value === 0 : false;
+        }
+        set muted(v) {
+            if (!this.gainNode) {
+                return;
             }
-        };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-    }
-
-    var SoundSystem = (function (_super) {
-        __extends(SoundSystem, _super);
-        function SoundSystem(obj) {
-            var _this = _super.call(this) || this;
-            _this.autoPauseAndStart = true;
-            _this.components = [];
-            _this.pausedComponents = [];
-            _this.audioBufferCache = {};
-            _this.decodeAudioPromiseMap = {};
-            Object.assign(_this, obj);
-            return _this;
+            this.gainNode.gain.setValueAtTime(v ? 0 : 1, 0);
         }
-        Object.defineProperty(SoundSystem.prototype, "muted", {
-            get: function () {
-                return this.gainNode ? this.gainNode.gain.value === 0 : false;
-            },
-            set: function (v) {
-                if (!this.gainNode) {
-                    return;
-                }
-                this.gainNode.gain.setValueAtTime(v ? 0 : 1, 0);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(SoundSystem.prototype, "volume", {
-            get: function () {
-                return this.gainNode ? this.gainNode.gain.value : 1;
-            },
-            set: function (v) {
-                if (!this.gainNode || typeof v !== 'number' || v < 0 || v > 1) {
-                    return;
-                }
-                this.gainNode.gain.setValueAtTime(v, 0);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(SoundSystem.prototype, "audioLocked", {
-            get: function () {
-                if (!this.ctx) {
-                    return true;
-                }
-                return this.ctx.state !== 'running';
-            },
-            enumerable: false,
-            configurable: true
-        });
-        SoundSystem.prototype.resumeAll = function () {
-            var _this = this;
-            var handleResume = function () {
-                _this.pausedComponents.forEach(function (component) {
+        get volume() {
+            return this.gainNode ? this.gainNode.gain.value : 1;
+        }
+        set volume(v) {
+            if (!this.gainNode || typeof v !== 'number' || v < 0 || v > 1) {
+                return;
+            }
+            this.gainNode.gain.setValueAtTime(v, 0);
+        }
+        get audioLocked() {
+            if (!this.ctx) {
+                return true;
+            }
+            return this.ctx.state !== 'running';
+        }
+        resumeAll() {
+            const handleResume = () => {
+                this.pausedComponents.forEach((component) => {
                     component.play();
                 });
-                _this.pausedComponents = [];
+                this.pausedComponents = [];
             };
             this.ctx.resume().then(handleResume, handleResume);
-        };
-        SoundSystem.prototype.pauseAll = function () {
-            var _this = this;
-            this.components.forEach(function (component) {
+        }
+        pauseAll() {
+            this.components.forEach((component) => {
                 if (component.playing) {
-                    _this.pausedComponents.push(component);
+                    this.pausedComponents.push(component);
                     component.pause();
                 }
             });
             this.ctx.suspend().then();
-        };
-        SoundSystem.prototype.stopAll = function () {
-            this.components.forEach(function (component) {
+        }
+        stopAll() {
+            this.components.forEach((component) => {
                 if (component.playing) {
                     component.stop();
                 }
             });
             this.pausedComponents = [];
             this.ctx.suspend().then();
-        };
-        SoundSystem.prototype.init = function () {
+        }
+        init() {
             this.setupAudioContext();
-        };
-        SoundSystem.prototype.update = function () {
-            var e_1, _a;
-            var changes = this.componentObserver.clear();
-            try {
-                for (var changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
-                    var changed = changes_1_1.value;
-                    this.componentChanged(changed);
-                }
+        }
+        update() {
+            const changes = this.componentObserver.clear();
+            for (const changed of changes) {
+                this.componentChanged(changed);
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (changes_1_1 && !changes_1_1.done && (_a = changes_1.return)) _a.call(changes_1);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
-        };
-        SoundSystem.prototype.onPlay = function () {
+        }
+        onPlay() {
             if (!this.autoPauseAndStart) {
                 return;
             }
             this.resumeAll();
-        };
-        SoundSystem.prototype.onPause = function () {
+        }
+        onPause() {
             if (!this.autoPauseAndStart) {
                 return;
             }
             this.pauseAll();
-        };
-        SoundSystem.prototype.onDestroy = function () {
-            this.components.forEach(function (component) {
+        }
+        onDestroy() {
+            this.components.forEach((component) => {
                 component.onDestroy();
             });
             this.components = [];
@@ -210,24 +129,21 @@
                 this.ctx.close();
                 this.ctx = null;
             }
-        };
-        SoundSystem.prototype.componentChanged = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    if (changed.componentName !== 'Sound') {
-                        return [2];
-                    }
-                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
-                        this.add(changed);
-                    }
-                    return [2];
-                });
+        }
+        componentChanged(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (changed.componentName !== 'Sound') {
+                    return;
+                }
+                if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                    this.add(changed);
+                }
             });
-        };
-        SoundSystem.prototype.setupAudioContext = function () {
+        }
+        setupAudioContext() {
             try {
-                var AudioContext_1 = window.AudioContext || window.webkitAudioContext;
-                this.ctx = new AudioContext_1();
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
             }
             catch (error) {
                 console.error(error);
@@ -245,114 +161,94 @@
             this.gainNode.gain.setValueAtTime(this.muted ? 0 : this.volume, this.ctx.currentTime);
             this.gainNode.connect(this.ctx.destination);
             this.unlockAudio();
-        };
-        SoundSystem.prototype.unlockAudio = function () {
-            var _this = this;
+        }
+        unlockAudio() {
             if (!this.ctx || !this.audioLocked) {
                 return;
             }
-            var unlock = function () {
-                if (_this.ctx) {
-                    var removeListenerFn = function () {
+            const unlock = () => {
+                if (this.ctx) {
+                    const removeListenerFn = () => {
                         document.body.removeEventListener('touchstart', unlock);
                         document.body.removeEventListener('touchend', unlock);
                         document.body.removeEventListener('click', unlock);
                     };
-                    _this.ctx.resume().then(removeListenerFn, removeListenerFn);
+                    this.ctx.resume().then(removeListenerFn, removeListenerFn);
                 }
             };
             document.body.addEventListener('touchstart', unlock);
             document.body.addEventListener('touchend', unlock);
             document.body.addEventListener('click', unlock);
-        };
-        SoundSystem.prototype.add = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                var component, config, audio, _a, _b, error_1;
-                return __generator(this, function (_c) {
-                    switch (_c.label) {
-                        case 0:
-                            component = changed.component;
-                            this.components.push(component);
-                            _c.label = 1;
-                        case 1:
-                            _c.trys.push([1, 5, , 6]);
-                            config = component.config;
-                            component.state = 'loading';
-                            return [4, eva_js.resource.getResource(config.resource)];
-                        case 2:
-                            audio = _c.sent();
-                            if (!!this.audioBufferCache[audio.name]) return [3, 4];
-                            _a = this.audioBufferCache;
-                            _b = audio.name;
-                            return [4, this.decodeAudioData(audio.data.audio, audio.name)];
-                        case 3:
-                            _a[_b] = _c.sent();
-                            _c.label = 4;
-                        case 4:
-                            if (this.audioBufferCache[audio.name]) {
-                                component.systemContext = this.ctx;
-                                component.systemDestination = this.gainNode;
-                                component.onload(this.audioBufferCache[audio.name]);
-                            }
-                            return [3, 6];
-                        case 5:
-                            error_1 = _c.sent();
-                            console.error(error_1);
-                            if (this.onError) {
-                                this.onError(error_1);
-                            }
-                            return [3, 6];
-                        case 6: return [2];
+        }
+        add(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const component = changed.component;
+                this.components.push(component);
+                try {
+                    const { config } = component;
+                    component.state = 'loading';
+                    const audio = yield eva_js.resource.getResource(config.resource);
+                    if (!this.audioBufferCache[audio.name]) {
+                        this.audioBufferCache[audio.name] = yield this.decodeAudioData(audio.data.audio, audio.name);
                     }
-                });
+                    if (this.audioBufferCache[audio.name]) {
+                        component.systemContext = this.ctx;
+                        component.systemDestination = this.gainNode;
+                        component.onload(this.audioBufferCache[audio.name]);
+                    }
+                }
+                catch (error) {
+                    console.error(error);
+                    if (this.onError) {
+                        this.onError(error);
+                    }
+                }
             });
-        };
-        SoundSystem.prototype.decodeAudioData = function (arraybuffer, name) {
-            var _this = this;
+        }
+        decodeAudioData(arraybuffer, name) {
             if (this.decodeAudioPromiseMap[name]) {
                 return this.decodeAudioPromiseMap[name];
             }
-            var promise = new Promise(function (resolve, reject) {
-                if (!_this.ctx) {
+            const promise = new Promise((resolve, reject) => {
+                if (!this.ctx) {
                     reject(new Error('No audio support'));
                 }
-                var error = function (err) {
-                    if (_this.decodeAudioPromiseMap[name]) {
-                        delete _this.decodeAudioPromiseMap[name];
+                const error = (err) => {
+                    if (this.decodeAudioPromiseMap[name]) {
+                        delete this.decodeAudioPromiseMap[name];
                     }
-                    reject(new Error(err + ". arrayBuffer byteLength: " + (arraybuffer ? arraybuffer.byteLength : 0)));
+                    reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
                 };
-                var success = function (decodedData) {
-                    if (_this.decodeAudioPromiseMap[name]) {
-                        delete _this.decodeAudioPromiseMap[name];
+                const success = (decodedData) => {
+                    if (this.decodeAudioPromiseMap[name]) {
+                        delete this.decodeAudioPromiseMap[name];
                     }
                     if (decodedData) {
                         resolve(decodedData);
                     }
                     else {
-                        reject(new Error("Error decoding audio " + name));
+                        reject(new Error(`Error decoding audio ${name}`));
                     }
                 };
-                _this.ctx.decodeAudioData(arraybuffer, success, error);
+                this.ctx.decodeAudioData(arraybuffer, success, error);
             });
             this.decodeAudioPromiseMap[name] = promise;
             return promise;
-        };
-        SoundSystem.systemName = 'SoundSystem';
-        SoundSystem = __decorate([
-            eva_js.decorators.componentObserver({
-                Sound: [],
-            })
-        ], SoundSystem);
-        return SoundSystem;
-    }(eva_js.System));
+        }
+    };
+    SoundSystem.systemName = 'SoundSystem';
+    SoundSystem = __decorate([
+        eva_js.decorators.componentObserver({
+            Sound: [],
+        })
+    ], SoundSystem);
+    var SoundSystem$1 = SoundSystem;
 
-    var Sound = (function (_super) {
-        __extends(Sound, _super);
-        function Sound() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.state = 'unloaded';
-            _this.config = {
+    class Sound extends eva_js.Component {
+        constructor() {
+            super(...arguments);
+            this.state = 'unloaded';
+            this.config = {
                 resource: '',
                 autoplay: false,
                 muted: false,
@@ -360,43 +256,34 @@
                 loop: false,
                 seek: 0,
             };
-            _this.playTime = 0;
-            _this.startTime = 0;
-            _this.duration = 0;
-            _this.actionQueue = [];
-            return _this;
+            this.playTime = 0;
+            this.startTime = 0;
+            this.duration = 0;
+            this.actionQueue = [];
         }
-        Object.defineProperty(Sound.prototype, "muted", {
-            get: function () {
-                return this.gainNode ? this.gainNode.gain.value === 0 : false;
-            },
-            set: function (v) {
-                if (!this.gainNode) {
-                    return;
-                }
-                this.gainNode.gain.setValueAtTime(v ? 0 : this.config.volume, 0);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(Sound.prototype, "volume", {
-            get: function () {
-                return this.gainNode ? this.gainNode.gain.value : 1;
-            },
-            set: function (v) {
-                if (typeof v !== 'number' || v < 0 || v > 1) {
-                    return;
-                }
-                this.config.volume = v;
-                if (!this.gainNode) {
-                    return;
-                }
-                this.gainNode.gain.setValueAtTime(v, 0);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Sound.prototype.init = function (obj) {
+        get muted() {
+            return this.gainNode ? this.gainNode.gain.value === 0 : false;
+        }
+        set muted(v) {
+            if (!this.gainNode) {
+                return;
+            }
+            this.gainNode.gain.setValueAtTime(v ? 0 : this.config.volume, 0);
+        }
+        get volume() {
+            return this.gainNode ? this.gainNode.gain.value : 1;
+        }
+        set volume(v) {
+            if (typeof v !== 'number' || v < 0 || v > 1) {
+                return;
+            }
+            this.config.volume = v;
+            if (!this.gainNode) {
+                return;
+            }
+            this.gainNode.gain.setValueAtTime(v, 0);
+        }
+        init(obj) {
             if (!obj) {
                 return;
             }
@@ -404,9 +291,8 @@
             if (this.config.autoplay) {
                 this.actionQueue.push(this.play.bind(this));
             }
-        };
-        Sound.prototype.play = function () {
-            var _this = this;
+        }
+        play() {
             if (this.state !== 'loaded') {
                 this.actionQueue.push(this.play.bind(this));
             }
@@ -415,29 +301,29 @@
             if (!this.sourceNode) {
                 return;
             }
-            var when = this.systemContext.currentTime;
-            var offset = this.config.seek;
-            var duration = this.config.duration;
+            const when = this.systemContext.currentTime;
+            const offset = this.config.seek;
+            const duration = this.config.duration;
             this.sourceNode.start(0, offset, duration);
             this.startTime = when;
             this.playTime = when - offset;
             this.paused = false;
             this.playing = true;
             this.resetConfig();
-            this.endedListener = function () {
-                if (!_this.sourceNode) {
+            this.endedListener = () => {
+                if (!this.sourceNode) {
                     return;
                 }
-                if (_this.config.onEnd) {
-                    _this.config.onEnd();
+                if (this.config.onEnd) {
+                    this.config.onEnd();
                 }
-                if (_this.playing) {
-                    _this.destroySource();
+                if (this.playing) {
+                    this.destroySource();
                 }
             };
             this.sourceNode.addEventListener('ended', this.endedListener);
-        };
-        Sound.prototype.pause = function () {
+        }
+        pause() {
             if (this.state !== 'loaded') {
                 this.actionQueue.push(this.pause.bind(this));
             }
@@ -448,8 +334,8 @@
             this.playing = false;
             this.config.seek = this.getCurrentTime();
             this.destroySource();
-        };
-        Sound.prototype.stop = function () {
+        }
+        stop() {
             if (this.state !== 'loaded') {
                 this.actionQueue.push(this.stop.bind(this));
             }
@@ -460,28 +346,28 @@
             this.paused = false;
             this.destroySource();
             this.resetConfig();
-        };
-        Sound.prototype.onload = function (buffer) {
+        }
+        onload(buffer) {
             this.state = 'loaded';
             this.buffer = buffer;
             this.duration = this.buffer.duration;
-            this.actionQueue.forEach(function (action) { return action(); });
+            this.actionQueue.forEach((action) => action());
             this.actionQueue.length = 0;
-        };
-        Sound.prototype.onDestroy = function () {
+        }
+        onDestroy() {
             this.actionQueue.length = 0;
             this.destroySource();
-        };
-        Sound.prototype.resetConfig = function () {
+        }
+        resetConfig() {
             this.config.seek = 0;
-        };
-        Sound.prototype.getCurrentTime = function () {
+        }
+        getCurrentTime() {
             if (this.config.loop && this.duration > 0) {
                 return (this.systemContext.currentTime - this.playTime) % this.duration;
             }
             return this.systemContext.currentTime - this.playTime;
-        };
-        Sound.prototype.createSource = function () {
+        }
+        createSource() {
             if (!this.systemContext || this.state !== 'loaded') {
                 return;
             }
@@ -494,8 +380,8 @@
                 Object.assign(this, this.config);
             }
             this.sourceNode.connect(this.gainNode);
-        };
-        Sound.prototype.destroySource = function () {
+        }
+        destroySource() {
             if (!this.sourceNode)
                 return;
             this.sourceNode.removeEventListener('ended', this.endedListener);
@@ -505,13 +391,12 @@
             this.startTime = 0;
             this.playTime = 0;
             this.playing = false;
-        };
-        Sound.componentName = 'Sound';
-        return Sound;
-    }(eva_js.Component));
+        }
+    }
+    Sound.componentName = 'Sound';
 
     exports.Sound = Sound;
-    exports.SoundSystem = SoundSystem;
+    exports.SoundSystem = SoundSystem$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -1,4 +1,4 @@
-import {Component, decorators} from '@eva/eva.js';
+import { Component, decorators } from '@eva/eva.js';
 
 export interface SpriteParams {
   resource: string;

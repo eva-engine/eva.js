@@ -1,6 +1,6 @@
 {
   "name": "@eva/eva.js",
-  "version": "1.0.11",
+  "version": "1.1.0-alpha.1",
   "description": "@eva/eva.js",
   "main": "index.js",
   "module": "dist/eva.js.esm.js",
@@ -22,6 +22,7 @@
     "lodash-es": "^4.17.21",
     "mini-signals": "^1.2.0",
     "parse-uri": "^1.0.3",
-    "resource-loader": "^4.0.0-rc4"
+    "resource-loader": "^4.0.0-rc4",
+    "sprite-timeline": "^1.10.2"
   }
 }

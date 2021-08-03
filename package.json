@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.0.11",
+  "version": "1.1.0-alpha.1",
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.2",
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.9.1",
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^10.17.13",
     "@types/pixi.js": "^4.8.7",
@@ -96,6 +96,7 @@
   },
   "dependencies": {
     "@tweenjs/tween.js": "^18.6.4",
+    "core-js": "^3.16.0",
     "eventemitter3": "^4.0.7",
     "ios-version": "^1.0.1",
     "lodash": "^4.17.21",

@@ -5,84 +5,25 @@
 }(this, (function (exports, eva_js, rendererAdapter, pixi_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
-
-    var __assign = function() {
-        __assign = Object.assign || function __assign(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
         else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
         return c > 3 && r && Object.defineProperty(target, key, r), r;
-    }
-
-    function __values(o) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-        if (m) return m.call(o);
-        return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
-            }
-        };
-    }
-
-    function __read(o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-        }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    }
-
-    function __spread() {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
     }
 
     /**
@@ -325,7 +266,7 @@
     var root = freeGlobal || freeSelf || Function('return this')();
 
     /** Built-in value references. */
-    var Symbol$1 = root.Symbol;
+    var Symbol = root.Symbol;
 
     /** Used for built-in method references. */
     var objectProto$b = Object.prototype;
@@ -341,7 +282,7 @@
     var nativeObjectToString$1 = objectProto$b.toString;
 
     /** Built-in value references. */
-    var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
+    var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
 
     /**
      * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
@@ -396,7 +337,7 @@
         undefinedTag = '[object Undefined]';
 
     /** Built-in value references. */
-    var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
+    var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 
     /**
      * The base implementation of `getTag` without fallbacks for buggy environments.
@@ -1114,7 +1055,7 @@
         dataViewTag$2 = '[object DataView]';
 
     /** Used to convert symbols to primitives and strings. */
-    var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
+    var symbolProto = Symbol ? Symbol.prototype : undefined,
         symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
 
     /**
@@ -2102,168 +2043,103 @@
       return baseIsEqual(value, other);
     }
 
-    var RendererManager = (function () {
-        function RendererManager(_a) {
-            var game = _a.game, rendererSystem = _a.rendererSystem;
+    class RendererManager {
+        constructor({ game, rendererSystem }) {
             this.renderers = [];
             this.game = game;
             this.rendererSystem = rendererSystem;
         }
-        RendererManager.prototype.register = function () {
-            var e_1, _a;
-            var renderers = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                renderers[_i] = arguments[_i];
+        register(...renderers) {
+            for (const renderer of renderers) {
+                renderer.game = this.game;
+                renderer.rendererManager = this.rendererSystem.rendererManager;
+                renderer.containerManager = this.rendererSystem.containerManager;
+                this.renderers.push(renderer);
             }
-            try {
-                for (var renderers_1 = __values(renderers), renderers_1_1 = renderers_1.next(); !renderers_1_1.done; renderers_1_1 = renderers_1.next()) {
-                    var renderer = renderers_1_1.value;
-                    renderer.game = this.game;
-                    renderer.rendererManager = this.rendererSystem.rendererManager;
-                    renderer.containerManager = this.rendererSystem.containerManager;
-                    this.renderers.push(renderer);
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (renderers_1_1 && !renderers_1_1.done && (_a = renderers_1.return)) _a.call(renderers_1);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
-        };
-        RendererManager.prototype.componentChanged = function (changes) {
-            var e_2, _a;
-            var _loop_1 = function (changed) {
-                var e_3, _a;
-                try {
-                    for (var _b = (e_3 = void 0, __values(this_1.renderers)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                        var renderer = _c.value;
-                        var props = renderer.observerInfo[changed.componentName];
-                        if (props) {
-                            if ([eva_js.OBSERVER_TYPE.ADD, eva_js.OBSERVER_TYPE.REMOVE].indexOf(changed.type) > -1) {
-                                try {
-                                    renderer.componentChanged && renderer.componentChanged(changed);
-                                }
-                                catch (e) {
-                                    console.error("gameObject: " + changed.gameObject.name + ", " + changed.componentName + " is error.", changed, e);
-                                }
-                                continue;
+        }
+        componentChanged(changes) {
+            for (const changed of changes) {
+                for (const renderer of this.renderers) {
+                    const props = renderer.observerInfo[changed.componentName];
+                    if (props) {
+                        if ([eva_js.OBSERVER_TYPE.ADD, eva_js.OBSERVER_TYPE.REMOVE].indexOf(changed.type) > -1) {
+                            try {
+                                renderer.componentChanged && renderer.componentChanged(changed);
                             }
-                            var index = props.findIndex(function (prop) {
-                                return isEqual(prop, changed.prop);
-                            });
-                            if (index > -1) {
-                                try {
-                                    renderer.componentChanged && renderer.componentChanged(changed);
-                                }
-                                catch (e) {
-                                    console.error("gameObject: " + (changed.gameObject && changed.gameObject.name) + ", " + changed.componentName + " is componentChanged error.", changed, e);
-                                }
+                            catch (e) {
+                                console.error(`gameObject: ${changed.gameObject.name}, ${changed.componentName} is error.`, changed, e);
+                            }
+                            continue;
+                        }
+                        const index = props.findIndex(prop => {
+                            return isEqual(prop, changed.prop);
+                        });
+                        if (index > -1) {
+                            try {
+                                renderer.componentChanged && renderer.componentChanged(changed);
+                            }
+                            catch (e) {
+                                console.error(`gameObject: ${changed.gameObject && changed.gameObject.name}, ${changed.componentName} is componentChanged error.`, changed, e);
                             }
                         }
                     }
                 }
-                catch (e_3_1) { e_3 = { error: e_3_1 }; }
-                finally {
-                    try {
-                        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                    }
-                    finally { if (e_3) throw e_3.error; }
-                }
-            };
-            var this_1 = this;
-            try {
-                for (var changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
-                    var changed = changes_1_1.value;
-                    _loop_1(changed);
-                }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (changes_1_1 && !changes_1_1.done && (_a = changes_1.return)) _a.call(changes_1);
-                }
-                finally { if (e_2) throw e_2.error; }
-            }
-        };
-        RendererManager.prototype.update = function (gameObject) {
-            var e_4, _a, e_5, _b;
-            try {
-                for (var _c = __values(gameObject.components), _d = _c.next(); !_d.done; _d = _c.next()) {
-                    var component = _d.value;
-                    try {
-                        for (var _e = (e_5 = void 0, __values(this.renderers)), _f = _e.next(); !_f.done; _f = _e.next()) {
-                            var renderer = _f.value;
-                            var cache = [];
-                            var props = renderer.observerInfo[component.name];
-                            if (props && cache.indexOf(gameObject) === -1) {
-                                cache.push(gameObject);
-                                try {
-                                    renderer.rendererUpdate && renderer.rendererUpdate(gameObject);
-                                }
-                                catch (e) {
-                                    console.info("gameObject: " + gameObject.name + ", " + component.name + " is update error", e);
-                                }
-                            }
-                        }
-                    }
-                    catch (e_5_1) { e_5 = { error: e_5_1 }; }
-                    finally {
+        }
+        update(gameObject) {
+            for (const component of gameObject.components) {
+                for (const renderer of this.renderers) {
+                    const cache = [];
+                    const props = renderer.observerInfo[component.name];
+                    if (props && cache.indexOf(gameObject) === -1) {
+                        cache.push(gameObject);
                         try {
-                            if (_f && !_f.done && (_b = _e.return)) _b.call(_e);
+                            renderer.rendererUpdate && renderer.rendererUpdate(gameObject);
                         }
-                        finally { if (e_5) throw e_5.error; }
+                        catch (e) {
+                            console.info(`gameObject: ${gameObject.name}, ${component.name} is update error`, e);
+                        }
                     }
                 }
             }
-            catch (e_4_1) { e_4 = { error: e_4_1 }; }
-            finally {
-                try {
-                    if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
-                }
-                finally { if (e_4) throw e_4.error; }
-            }
-        };
-        return RendererManager;
-    }());
+        }
+    }
 
-    var ContainerManager = (function () {
-        function ContainerManager() {
+    class ContainerManager {
+        constructor() {
             this.containerMap = {};
         }
-        ContainerManager.prototype.addContainer = function (_a) {
-            var name = _a.name, container = _a.container;
+        addContainer({ name, container }) {
             this.containerMap[name] = container;
-        };
-        ContainerManager.prototype.getContainer = function (name) {
+        }
+        getContainer(name) {
             return this.containerMap[name];
-        };
-        ContainerManager.prototype.removeContainer = function (name) {
+        }
+        removeContainer(name) {
+            var _a;
+            (_a = this.containerMap[name]) === null || _a === void 0 ? void 0 : _a.destroy(true);
             delete this.containerMap[name];
-        };
-        ContainerManager.prototype.updateTransform = function (_a) {
-            var name = _a.name, transform = _a.transform;
-            var container = this.containerMap[name];
+        }
+        updateTransform({ name, transform }) {
+            const container = this.containerMap[name];
             if (!container)
                 return;
-            var anchor = transform.anchor, origin = transform.origin, position = transform.position, rotation = transform.rotation, scale = transform.scale, size = transform.size, skew = transform.skew;
+            const { anchor, origin, position, rotation, scale, size, skew } = transform;
             container.rotation = rotation;
             container.scale = scale;
             container.pivot.x = size.width * origin.x;
             container.pivot.y = size.height * origin.y;
             container.skew = skew;
-            var x = position.x;
-            var y = position.y;
+            let x = position.x;
+            let y = position.y;
             if (transform.parent) {
-                var parent_1 = transform.parent;
-                x = x + parent_1.size.width * anchor.x;
-                y = y + parent_1.size.height * anchor.y;
+                const parent = transform.parent;
+                x = x + parent.size.width * anchor.x;
+                y = y + parent.size.height * anchor.y;
             }
-            container.position = { x: x, y: y };
-        };
-        return ContainerManager;
-    }());
+            container.position = { x, y };
+        }
+    }
 
     function createCommonjsModule(fn) {
       var module = { exports: {} };
@@ -2608,62 +2484,36 @@
     }
     });
 
-    var Transform = (function (_super) {
-        __extends(Transform, _super);
-        function Transform(_a) {
-            var system = _a.system, containerManager = _a.containerManager;
-            var _this = _super.call(this) || this;
-            _this.name = 'Transform';
-            _this.waitRemoveIds = [];
-            _this.waitChangeScenes = [];
-            _this.containerManager = containerManager;
-            _this.init(system);
-            return _this;
+    let Transform = class Transform extends eventemitter3 {
+        constructor({ system, containerManager }) {
+            super();
+            this.name = 'Transform';
+            this.waitRemoveIds = [];
+            this.waitChangeScenes = [];
+            this.containerManager = containerManager;
+            this.init(system);
         }
-        Transform.prototype.init = function (system) {
-            var _this = this;
+        init(system) {
             this.system = system;
-            this.on('changeScene', function (_a) {
-                var scene = _a.scene, mode = _a.mode, application = _a.application;
-                _this.waitChangeScenes.push({ scene: scene, mode: mode, application: application });
+            this.on('changeScene', ({ scene, mode, application }) => {
+                this.waitChangeScenes.push({ scene, mode, application });
             });
-        };
-        Transform.prototype.update = function () {
-            var e_1, _a, e_2, _b;
-            try {
-                for (var _c = __values(this.waitRemoveIds), _d = _c.next(); !_d.done; _d = _c.next()) {
-                    var id = _d.value;
-                    this.containerManager.removeContainer(id);
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
-                }
-                finally { if (e_1) throw e_1.error; }
+        }
+        update() {
+            for (const id of this.waitRemoveIds) {
+                this.containerManager.removeContainer(id);
             }
             this.waitRemoveIds = [];
-            try {
-                for (var _e = __values(this.waitChangeScenes), _f = _e.next(); !_f.done; _f = _e.next()) {
-                    var sceneInfo = _f.value;
-                    var container = this.containerManager.getContainer(sceneInfo.scene.id);
-                    if (container) {
-                        sceneInfo.application.stage.removeChildren();
-                        sceneInfo.application.stage.addChild(container);
-                    }
+            for (const sceneInfo of this.waitChangeScenes) {
+                const container = this.containerManager.getContainer(sceneInfo.scene.id);
+                if (container) {
+                    sceneInfo.application.stage.removeChildren();
+                    sceneInfo.application.stage.addChild(container);
                 }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (_f && !_f.done && (_b = _e.return)) _b.call(_e);
-                }
-                finally { if (e_2) throw e_2.error; }
             }
             this.waitChangeScenes = [];
-        };
-        Transform.prototype.componentChanged = function (changed) {
+        }
+        componentChanged(changed) {
             if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
                 this.addContainer(changed);
             }
@@ -2673,47 +2523,48 @@
             else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                 this.waitRemoveIds.push(changed.gameObject.id);
             }
-        };
-        Transform.prototype.addContainer = function (changed) {
-            var container = new rendererAdapter.Container();
+        }
+        addContainer(changed) {
+            const container = new rendererAdapter.Container();
             container.name = changed.gameObject.name;
             this.containerManager.addContainer({
                 name: changed.gameObject.id,
-                container: container,
+                container,
             });
-            var transform = changed.component;
+            const transform = changed.component;
             transform.worldTransform = container.transform.worldTransform;
-        };
-        Transform.prototype.change = function (changed) {
-            var transform = changed.component;
+        }
+        change(changed) {
+            const transform = changed.component;
             if (transform.parent) {
-                var parentContainer = this.containerManager.getContainer(transform.parent.gameObject.id);
+                const parentContainer = this.containerManager.getContainer(transform.parent.gameObject.id);
                 parentContainer.addChild(this.containerManager.getContainer(changed.gameObject.id));
-                var render = changed.gameObject.transform.parent &&
+                const render = changed.gameObject.transform.parent &&
                     changed.gameObject.transform.parent.gameObject.getComponent('Render');
                 if (render) {
                     render.sortDirty = true;
                 }
             }
             else {
-                var container = this.containerManager.getContainer(changed.gameObject.id);
+                const container = this.containerManager.getContainer(changed.gameObject.id);
+                delete transform.worldTransform;
                 container.parent && container.parent.removeChild(container);
             }
-        };
-        Transform.prototype.destroy = function () {
+        }
+        destroy() {
             this.removeAllListeners();
             this.waitRemoveIds = null;
             this.waitChangeScenes = null;
             this.system = null;
             this.containerManager = null;
-        };
-        Transform = __decorate([
-            eva_js.decorators.componentObserver({
-                Transform: ['_parent'],
-            })
-        ], Transform);
-        return Transform;
-    }(eventemitter3));
+        }
+    };
+    Transform = __decorate([
+        eva_js.decorators.componentObserver({
+            Transform: ['_parent'],
+        })
+    ], Transform);
+    var Transform$1 = Transform;
 
     exports.RENDERER_TYPE = void 0;
     (function (RENDERER_TYPE) {
@@ -2721,23 +2572,20 @@
         RENDERER_TYPE[RENDERER_TYPE["WEBGL"] = 1] = "WEBGL";
         RENDERER_TYPE[RENDERER_TYPE["CANVAS"] = 2] = "CANVAS";
     })(exports.RENDERER_TYPE || (exports.RENDERER_TYPE = {}));
-    var disableScroll = function (renderer) {
+    const disableScroll = renderer => {
         renderer.plugins.interaction.autoPreventDefault = true;
         renderer.view.style.touchAction = 'none';
     };
-    var enableScroll = function (renderer) {
+    const enableScroll = renderer => {
         renderer.plugins.interaction.autoPreventDefault = false;
         renderer.view.style.touchAction = 'auto';
     };
-    var Renderer$1 = (function (_super) {
-        __extends(Renderer, _super);
-        function Renderer() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.multiApps = [];
-            return _this;
+    let Renderer$1 = class Renderer extends eva_js.System {
+        constructor() {
+            super(...arguments);
+            this.multiApps = [];
         }
-        Renderer.prototype.init = function (params) {
-            var _this = this;
+        init(params) {
             this.params = params;
             this.application = this.createApplication(params);
             this.containerManager = new ContainerManager();
@@ -2746,53 +2594,50 @@
                 rendererSystem: this,
             });
             this.game.canvas = this.application.view;
-            this.transform = new Transform({
+            this.transform = new Transform$1({
                 system: this,
                 containerManager: this.containerManager,
             });
-            this.game.on('sceneChanged', function (_a) {
-                var scene = _a.scene, mode = _a.mode, params = _a.params;
-                var application;
+            this.game.on('sceneChanged', ({ scene, mode, params }) => {
+                let application;
                 switch (mode) {
                     case eva_js.LOAD_SCENE_MODE.SINGLE:
-                        application = _this.application;
+                        application = this.application;
                         break;
                     case eva_js.LOAD_SCENE_MODE.MULTI_CANVAS:
-                        application = _this.createMultiApplication({ params: params });
+                        application = this.createMultiApplication({ params });
                         break;
                 }
                 scene.canvas = application.view;
-                _this.transform.emit('changeScene', {
-                    scene: scene,
-                    mode: mode,
-                    application: application,
+                this.transform.emit('changeScene', {
+                    scene,
+                    mode,
+                    application,
                 });
             });
-        };
-        Renderer.prototype.registerObserver = function (observerInfo) {
-            var _a;
-            var thisObserverInfo = this.constructor.observerInfo;
-            for (var key in observerInfo) {
+        }
+        registerObserver(observerInfo) {
+            const thisObserverInfo = this.constructor.observerInfo;
+            for (const key in observerInfo) {
                 if (!thisObserverInfo[key]) {
                     thisObserverInfo[key] = [];
                 }
-                (_a = thisObserverInfo[key]).push.apply(_a, __spread(observerInfo[key]));
+                thisObserverInfo[key].push(...observerInfo[key]);
             }
-        };
-        Renderer.prototype.createMultiApplication = function (_a) {
-            var params = _a.params;
-            var app = this.createApplication(params);
+        }
+        createMultiApplication({ params }) {
+            const app = this.createApplication(params);
             this.multiApps.push(app);
             return app;
-        };
-        Renderer.prototype.createApplication = function (params) {
+        }
+        createApplication(params) {
             params.view = params.canvas;
             if (params.renderType === exports.RENDERER_TYPE.CANVAS) {
                 params.forceCanvas = true;
             }
             pixi_js.ticker.shared.autoStart = false;
             pixi_js.ticker.shared.stop();
-            var app = new rendererAdapter.Application(__assign({ sharedTicker: true }, params));
+            const app = new rendererAdapter.Application(Object.assign({ sharedTicker: true }, params));
             if (params.preventScroll !== undefined) {
                 console.warn('PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game');
                 params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
@@ -2804,60 +2649,28 @@
                 enableScroll(app.renderer);
             }
             return app;
-        };
-        Renderer.prototype.update = function () {
-            var e_1, _a, e_2, _b;
-            var changes = this.componentObserver.clear();
-            try {
-                for (var changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
-                    var changed = changes_1_1.value;
-                    this.transform.componentChanged(changed);
-                }
+        }
+        update() {
+            const changes = this.componentObserver.clear();
+            for (const changed of changes) {
+                this.transform.componentChanged(changed);
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (changes_1_1 && !changes_1_1.done && (_a = changes_1.return)) _a.call(changes_1);
-                }
-                finally { if (e_1) throw e_1.error; }
+            for (const gameObject of this.game.gameObjects) {
+                this.containerManager.updateTransform({
+                    name: gameObject.id,
+                    transform: gameObject.transform,
+                });
+                this.rendererManager.update(gameObject);
             }
-            try {
-                for (var _c = __values(this.game.gameObjects), _d = _c.next(); !_d.done; _d = _c.next()) {
-                    var gameObject = _d.value;
-                    this.containerManager.updateTransform({
-                        name: gameObject.id,
-                        transform: gameObject.transform,
-                    });
-                    this.rendererManager.update(gameObject);
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
-                }
-                finally { if (e_2) throw e_2.error; }
-            }
-        };
-        Renderer.prototype.lateUpdate = function (e) {
+        }
+        lateUpdate(e) {
             this.transform.update();
             this.application.ticker.update(e.time);
-        };
-        Renderer.prototype.onDestroy = function () {
-            var e_3, _a;
+        }
+        onDestroy() {
             this.application.destroy();
-            try {
-                for (var _b = __values(this.multiApps), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var app = _c.value;
-                    app && app.destroy();
-                }
-            }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
-            finally {
-                try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                }
-                finally { if (e_3) throw e_3.error; }
+            for (const app of this.multiApps) {
+                app && app.destroy();
             }
             this.transform.destroy();
             this.transform = null;
@@ -2867,47 +2680,38 @@
             this.application = null;
             this.game = null;
             this.multiApps = null;
-        };
-        Renderer.systemName = 'Renderer';
-        Renderer = __decorate([
-            eva_js.decorators.componentObserver({
-                Transform: ['_parent'],
-            })
-        ], Renderer);
-        return Renderer;
-    }(eva_js.System));
-
-    var Renderer = (function (_super) {
-        __extends(Renderer, _super);
-        function Renderer() {
-            var _this = _super.call(this) || this;
-            _this.observerInfo = _this.constructor.observerInfo;
-            return _this;
         }
-        Renderer.prototype.update = function () {
-            var e_1, _a;
-            var changes = this.componentObserver.clear();
-            try {
-                for (var changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
-                    var changed = changes_1_1.value;
-                    this.componentChanged(changed);
-                }
+        resize(width, height) {
+            this.params.width = width;
+            this.params.height = height;
+            this.application.renderer.resize(width, height);
+        }
+    };
+    Renderer$1.systemName = 'Renderer';
+    Renderer$1 = __decorate([
+        eva_js.decorators.componentObserver({
+            Transform: ['_parent'],
+        })
+    ], Renderer$1);
+    var Renderer$2 = Renderer$1;
+
+    class Renderer extends eva_js.System {
+        constructor(params = {}) {
+            super(params);
+            this.observerInfo = this.constructor.observerInfo;
+        }
+        update() {
+            const changes = this.componentObserver.clear();
+            for (const changed of changes) {
+                this.componentChanged(changed);
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (changes_1_1 && !changes_1_1.done && (_a = changes_1.return)) _a.call(changes_1);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
-        };
-        return Renderer;
-    }(eva_js.System));
+        }
+    }
 
     exports.ContainerManager = ContainerManager;
     exports.Renderer = Renderer;
     exports.RendererManager = RendererManager;
-    exports.RendererSystem = Renderer$1;
+    exports.RendererSystem = Renderer$2;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

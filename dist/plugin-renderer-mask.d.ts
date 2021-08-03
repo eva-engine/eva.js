@@ -8,7 +8,7 @@ import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Sprite } from '@eva/renderer-adapter';
 
-export declare class Mask extends Component {
+export declare class Mask extends Component<MaskParams> {
     static componentName: string;
     type: MaskParams['type'];
     style?: MaskParams['style'];
