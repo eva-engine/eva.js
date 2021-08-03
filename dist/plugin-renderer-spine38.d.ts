@@ -6,7 +6,7 @@ import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 
-export declare class Spine extends Component {
+export declare class Spine extends Component<SpineParams> {
     static componentName: string;
     resource: string;
     animationName: string;

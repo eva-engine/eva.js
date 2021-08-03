@@ -101,7 +101,9 @@ export default class Renderer extends System {
      * PreventScroll is legacy, because it has bug.
      */
     if (params.preventScroll !== undefined) {
-      console.warn('PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game');
+      console.warn(
+        'PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game',
+      );
       params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
 
@@ -146,5 +148,10 @@ export default class Renderer extends System {
     this.application = null;
     this.game = null;
     this.multiApps = null;
+  }
+  resize(width, height) {
+    this.params.width = width;
+    this.params.height = height;
+    this.application.renderer.resize(width, height);
   }
 }

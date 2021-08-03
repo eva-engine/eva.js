@@ -34,8 +34,8 @@ export type ComponentType = typeof Component;
  * assert(getComponentName(new Transform()) === 'Transform')
  * ```
  */
-export function getComponentName<T extends Component, U extends ComponentType>(
-  component: T | U,
+export function getComponentName<T extends Component<ComponentParams>>(
+  component: T | ComponentConstructor<T>,
 ): string {
   if (component instanceof Component) {
     return component.name;
@@ -44,11 +44,19 @@ export function getComponentName<T extends Component, U extends ComponentType>(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ComponentParams { }
+
+export interface ComponentConstructor<T extends Component<ComponentParams>> {
+  componentName: string;
+  new(params?: ComponentParams): T;
+}
+
 /**
  * Component contain raw data apply to gameObject and how it interacts with the world
  * @public
  */
-class Component<T = any> extends EventEmitter {
+class Component<T extends ComponentParams = {}> extends EventEmitter {
   /** Name of this component */
   static componentName: string;
 

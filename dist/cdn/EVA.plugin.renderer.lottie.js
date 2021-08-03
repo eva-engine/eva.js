@@ -5,44 +5,19 @@
 }(this, (function (exports, eva_js, pluginRenderer, pixi_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
-
-    var __assign = function() {
-        __assign = Object.assign || function __assign(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
 
     function __rest(s, e) {
         var t = {};
@@ -64,40 +39,13 @@
     }
 
     function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
             function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
-    }
-
-    function __generator(thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
     }
 
     function t(t){return Object.prototype.toString.call(t)}const s={copyJSON:function(t){return JSON.parse(JSON.stringify(t))},isArray:function(){let s=t([]);return function(e){return t(e)===s}}(),isString:function(){let s=t("s");return function(e){return t(e)===s}}(),isNumber:function(){let s=t(1);return function(e){return t(e)===s}}(),isFunction:function(){let s=t((function(){}));return function(e){return t(e)===s}}(),isUndefined:function(t){return void 0===t},isBoolean:function(){let s=t(!0);return function(e){return t(e)===s}}(),isObject:function(){let s=t({});return function(e){return t(e)===s}}(),random:function(t,s){return this.isArray(t)?t[~~(Math.random()*t.length)]:(this.isNumber(s)||(s=t||1,t=0),t+Math.random()*(s-t))},euclideanModulo:function(t,s){return (t%s+s)%s},codomainBounce:function(t,s,e){return t<s?2*s-t:t>e?2*e-t:t},clamp:function(t,s,e){return t<s?s:t>e?e:t},inRange:(t,s,e)=>t>=s&&t<=e,getAssets(t,s){for(let e=0;e<s.length;e++)if(t===s[e].id)return s[e];return console.error("have not assets name as",t),{}},rgb2hex:t=>(t[0]<<16)+(t[1]<<8)+(0|t[2])};class e{constructor(){this.listeners={},this.addEventListener=this.on,this.removeEventListener=this.off;}on(t,e){return s.isFunction(e)?(s.isUndefined(this.listeners[t])&&(this.listeners[t]=[]),this.listeners[t].push(e),this):this}off(t,e){if(s.isUndefined(this.listeners[t]))return this;const i=this.listeners[t];let h=i.length;if(h>0)if(e)for(;h--;)i[h]===e&&i.splice(h,1);else i.length=0;return this}once(t,e){if(!s.isFunction(e))return this;const i=s=>{e(s),this.off(t,i);};return this.on(t,i),this}emit(t,...e){if(s.isUndefined(this.listeners[t]))return this;const i=(this.listeners[t]||[]).slice(0);for(let t=0;t<i.length;t++)i[t].apply(this,e);return this}}const i={},h={Ajax:"Ajax",Texture:"Texture"};var r={Type:h,registerLoaderByType:function(t,s){i[t]=s;}};function a(t,s,e){let i,h,r,p,c,d,u=t.length;for(h=0;h<u;h+=1)if(i=t[h],"ks"in i&&!i.completed){if(i.completed=!0,i.tt&&(t[h-1].td=i.tt),i.hasMask){let t=i.masksProperties;for(p=t.length,r=0;r<p;r+=1)if(t[r].pt.k.i)l(t[r].pt.k);else for(d=t[r].pt.k.length,c=0;c<d;c+=1)t[r].pt.k[c].s&&l(t[r].pt.k[c].s[0]),t[r].pt.k[c].e&&l(t[r].pt.k[c].e[0]);}0===i.ty?(i.layers=n(i.refId,s),a(i.layers,s)):4===i.ty?o(i.shapes):5==i.ty&&m(i);}}function n(t,s){let e=0,i=s.length;for(;e<i;){if(s[e].id===t)return s[e].layers.__used?JSON.parse(JSON.stringify(s[e].layers)):(s[e].layers.__used=!0,s[e].layers);e+=1;}}function o(t){let s,e,i;for(s=t.length-1;s>=0;s-=1)if("sh"==t[s].ty)if(t[s].ks.k.i)l(t[s].ks.k);else for(i=t[s].ks.k.length,e=0;e<i;e+=1)t[s].ks.k[e].s&&l(t[s].ks.k[e].s[0]),t[s].ks.k[e].e&&l(t[s].ks.k[e].e[0]);else "gr"==t[s].ty&&o(t[s].it);}function l(t){let s,e=t.i.length;for(s=0;s<e;s+=1)t.i[s][0]+=t.v[s][0],t.i[s][1]+=t.v[s][1],t.o[s][0]+=t.v[s][0],t.o[s][1]+=t.v[s][1];}function p(t,s){let e=s?s.split("."):[100,100,100];return t[0]>e[0]||!(e[0]>t[0])&&(t[1]>e[1]||!(e[1]>t[1])&&(t[2]>e[2]||!(e[2]>t[2])&&void 0))}let c=function(){let t=[4,4,14];function s(t){let s=t.t.d;t.t.d={k:[{s:s,t:0}]};}function e(t){let e,i=t.length;for(e=0;e<i;e+=1)5===t[e].ty&&s(t[e]);}return function(s){if(p(t,s.v)&&(e(s.layers),s.assets)){let t,i=s.assets.length;for(t=0;t<i;t+=1)s.assets[t].layers&&e(s.assets[t].layers);}}}(),d=function(){let t=[4,7,99];return function(s){if(s.chars&&!p(t,s.v)){let t,e,i,h,r,a=s.chars.length;for(t=0;t<a;t+=1)if(s.chars[t].data&&s.chars[t].data.shapes)for(r=s.chars[t].data.shapes[0].it,i=r.length,e=0;e<i;e+=1)h=r[e].ks.k,h.__converted||(l(r[e].ks.k),h.__converted=!0);}}}(),u=function(){let t=[4,1,9];function s(t){let e,i,h,r=t.length;for(e=0;e<r;e+=1)if("gr"===t[e].ty)s(t[e].it);else if("fl"===t[e].ty||"st"===t[e].ty)if(t[e].c.k&&t[e].c.k[0].i)for(h=t[e].c.k.length,i=0;i<h;i+=1)t[e].c.k[i].s&&(t[e].c.k[i].s[0]/=255,t[e].c.k[i].s[1]/=255,t[e].c.k[i].s[2]/=255,t[e].c.k[i].s[3]/=255),t[e].c.k[i].e&&(t[e].c.k[i].e[0]/=255,t[e].c.k[i].e[1]/=255,t[e].c.k[i].e[2]/=255,t[e].c.k[i].e[3]/=255);else t[e].c.k[0]/=255,t[e].c.k[1]/=255,t[e].c.k[2]/=255,t[e].c.k[3]/=255;}function e(t){let e,i=t.length;for(e=0;e<i;e+=1)4===t[e].ty&&s(t[e].shapes);}return function(s){if(p(t,s.v)&&(e(s.layers),s.assets)){let t,i=s.assets.length;for(t=0;t<i;t+=1)s.assets[t].layers&&e(s.assets[t].layers);}}}(),f=function(){let t=[4,4,18];function s(t){let e,i,h;for(e=t.length-1;e>=0;e-=1)if("sh"==t[e].ty)if(t[e].ks.k.i)t[e].ks.k.c=t[e].closed;else for(h=t[e].ks.k.length,i=0;i<h;i+=1)t[e].ks.k[i].s&&(t[e].ks.k[i].s[0].c=t[e].closed),t[e].ks.k[i].e&&(t[e].ks.k[i].e[0].c=t[e].closed);else "gr"==t[e].ty&&s(t[e].it);}function e(t){let e,i,h,r,a,n,o=t.length;for(i=0;i<o;i+=1){if(e=t[i],e.hasMask){let t=e.masksProperties;for(r=t.length,h=0;h<r;h+=1)if(t[h].pt.k.i)t[h].pt.k.c=t[h].cl;else for(n=t[h].pt.k.length,a=0;a<n;a+=1)t[h].pt.k[a].s&&(t[h].pt.k[a].s[0].c=t[h].cl),t[h].pt.k[a].e&&(t[h].pt.k[a].e[0].c=t[h].cl);}4===e.ty&&s(e.shapes);}}return function(s){if(p(t,s.v)&&(e(s.layers),s.assets)){let t,i=s.assets.length;for(t=0;t<i;t+=1)s.assets[t].layers&&e(s.assets[t].layers);}}}();function m(t,s){0!==t.t.a.length||"m"in t.t.p||(t.singleShape=!0);}var g={completeData:function(t,s){t.__complete||(u(t),c(t),d(t),f(t),a(t.layers,t.assets),t.__complete=!0);},checkColors:u,checkChars:d,checkShapes:f,completeLayers:a};let y="function"==typeof Float32Array;function v(t,s){return 1-3*s+3*t}function _$1(t,s){return 3*s-6*t}function k$1(t){return 3*t}function S$1(t,s,e){return ((v(s,e)*t+_$1(s,e))*t+k$1(s))*t}function x(t,s,e){return 3*v(s,e)*t*t+2*_$1(s,e)*t+k$1(s)}function M$1(t,s,e,i){if(!(0<=t&&t<=1&&0<=e&&e<=1))throw new Error("bezier x values must be in [0, 1] range");this.mX1=t,this.mY1=s,this.mX2=e,this.mY2=i,this.sampleValues=y?new Float32Array(11):new Array(11),this._preCompute(),this.get=this.get.bind(this);}M$1.prototype._preCompute=function(){if(this.mX1!==this.mY1||this.mX2!==this.mY2)for(let t=0;t<11;++t)this.sampleValues[t]=S$1(.1*t,this.mX1,this.mX2);},M$1.prototype._getTForX=function(t){let s=0,e=1;for(;10!==e&&this.sampleValues[e]<=t;++e)s+=.1;--e;let i=s+(t-this.sampleValues[e])/(this.sampleValues[e+1]-this.sampleValues[e])*.1,h=x(i,this.mX1,this.mX2);return h>=.001?function(t,s,e,i){for(let h=0;h<4;++h){let h=x(s,e,i);if(0===h)return s;s-=(S$1(s,e,i)-t)/h;}return s}(t,i,this.mX1,this.mX2):0===h?i:function(t,s,e,i,h){let r,a,n=0;do{a=s+(e-s)/2,r=S$1(a,i,h)-t,r>0?e=a:s=a;}while(Math.abs(r)>1e-7&&++n<10);return a}(t,s,s+.1,this.mX1,this.mX2)},M$1.prototype.get=function(t){return this.mX1===this.mY1&&this.mX2===this.mY2?t:0===t?0:1===t?1:S$1(this._getTForX(t),this.mY1,this.mY2)};const P={};var T$1={getBezierEasing:function(t,s,e,i,h){const r=h||("bez_"+t+"_"+s+"_"+e+"_"+i).replace(/\./g,"p");if(P[r])return P[r];const a=new M$1(t,s,e,i);return P[r]=a,a}};let w;function D$1(t){return new Array(t)}w="function"==typeof Uint8ClampedArray&&"function"==typeof Float32Array?function(t,s){return "float32"===t?new Float32Array(s):"int16"===t?new Int16Array(s):"uint8c"===t?new Uint8ClampedArray(s):void 0}:function(t,s){let e=0;const i=[];let h;switch(t){case"int16":case"uint8c":h=1;break;default:h=1.1;}for(e=0;e<s;e+=1)i.push(h);return i};var L$1={double:function(t){return t.concat(D$1(t.length))}};const F$1=function(t,s,e){let i=0,h=t,r=D$1(h);return {newElement:function(){let t;return i?(i-=1,t=r[i]):t=s(),t},release:function(t){i===h&&(r=L$1.double(r),h*=2),e&&e(t),r[i]=t,i+=1;}}};const A$1=F$1(8,(function(){return w("float32",2)}));class C$1{constructor(){this.c=!1,this._length=0,this._maxLength=8,this.v=D$1(this._maxLength),this.o=D$1(this._maxLength),this.i=D$1(this._maxLength);}setPathData(t,s){this.c=t,this.setLength(s);let e=0;for(;e<s;)this.v[e]=A$1.newElement(),this.o[e]=A$1.newElement(),this.i[e]=A$1.newElement(),e+=1;}setLength(t){for(;this._maxLength<t;)this.doubleArrayLength();this._length=t;}doubleArrayLength(){this.v=this.v.concat(D$1(this._maxLength)),this.i=this.i.concat(D$1(this._maxLength)),this.o=this.o.concat(D$1(this._maxLength)),this._maxLength*=2;}setXYAt(t,s,e,i,h){let r;switch(this._length=Math.max(this._length,i+1),this._length>=this._maxLength&&this.doubleArrayLength(),e){case"v":r=this.v;break;case"i":r=this.i;break;case"o":r=this.o;}(!r[i]||r[i]&&!h)&&(r[i]=A$1.newElement()),r[i][0]=t,r[i][1]=s;}setTripleAt(t,s,e,i,h,r,a,n){this.setXYAt(t,s,"v",a,n),this.setXYAt(e,i,"o",a,n),this.setXYAt(h,r,"i",a,n);}reverse(){const t=new C$1;t.setPathData(this.c,this._length);const s=this.v,e=this.o,i=this.i;let h=0;this.c&&(t.setTripleAt(s[0][0],s[0][1],i[0][0],i[0][1],e[0][0],e[0][1],0,!1),h=1);let r=this._length-1;const a=this._length;for(let n=h;n<a;n+=1)t.setTripleAt(s[r][0],s[r][1],i[r][0],i[r][1],e[r][0],e[r][1],n,!1),r-=1;return t}}const b=F$1(4,(function(){return new C$1}),(function(t){const s=t._length;for(let e=0;e<s;e+=1)A$1.release(t.v[e]),A$1.release(t.i[e]),A$1.release(t.o[e]),t.v[e]=null,t.i[e]=null,t.o[e]=null;t._length=0,t.c=!1;}));b.clone=function(t){const s=b.newElement(),e=void 0===t._length?t.v.length:t._length;s.setLength(e),s.c=t.c;for(let i=0;i<e;i+=1)s.setTripleAt(t.v[i][0],t.v[i][1],t.o[i][0],t.o[i][1],t.i[i][0],t.i[i][1],i);return s};class I$1{constructor(){this._length=0,this._maxLength=4,this.shapes=D$1(this._maxLength);}addShape(t){this._length===this._maxLength&&(this.shapes=this.shapes.concat(D$1(this._maxLength)),this._maxLength*=2),this.shapes[this._length]=t,this._length+=1;}releaseShapes(){for(let t=0;t<this._length;t+=1)b.release(this.shapes[t]);this._length=0;}}let E$1=0,V$1=4,N$1=D$1(V$1);var q$1={newShapeCollection:function(){let t;return E$1?(E$1-=1,t=N$1[E$1]):t=new I$1,t},release:function(t){const s=t._length;for(let e=0;e<s;e+=1)b.release(t.shapes[e]);t._length=0,E$1===V$1&&(N$1=L$1.double(N$1),V$1*=2),N$1[E$1]=t,E$1+=1;}};class O$1{outTypeExpressionMode(){this._hasOutTypeExpression=!0,this.container&&this.container.outTypeExpressionMode();}addDynamicProperty(t){-1===this.dynamicProperties.indexOf(t)&&(this.dynamicProperties.push(t),this.container.addDynamicProperty(this),this._isAnimated=!0,t._hasOutTypeExpression&&this.outTypeExpressionMode());}iterateDynamicProperties(t){this._mdf=!1;const s=this.dynamicProperties.length;for(let e=0;e<s;e+=1)this.dynamicProperties[e].getValue(t),this.dynamicProperties[e]._mdf&&(this._mdf=!0);}initDynamicPropertyContainer(t){this.container=t,this.dynamicProperties=[],this._mdf=!1,this._isAnimated=!1,this._hasOutTypeExpression=!1;}}const X$1=F$1(8,(function(){return {addedLength:0,percents:w("float32",200),lengths:w("float32",200)}}));const Y$1=F$1(8,(function(){return {lengths:[],totalLength:0}}),(function(t){const s=t.lengths.length;for(let e=0;e<s;e+=1)X$1.release(t.lengths[e]);t.lengths.length=0;}));function j$1(t,s,e,i,h,r){const a=t*i+s*h+e*r-h*i-r*t-e*s;return a>-.001&&a<.001}function z$1(t,s,e,i){let h,r=0;const a=[],n=[],o=X$1.newElement(),l=e.length;for(let p=0;p<200;p+=1){const c=p/199;h=0;for(let r=0;r<l;r+=1){const o=Math.pow(1-c,3)*t[r]+3*Math.pow(1-c,2)*c*e[r]+3*(1-c)*Math.pow(c,2)*i[r]+Math.pow(c,3)*s[r];a[r]=o,null!==n[r]&&(h+=Math.pow(a[r]-n[r],2)),n[r]=a[r];}h&&(h=Math.sqrt(h),r+=h),o.percents[p]=c,o.lengths[p]=r;}return o.addedLength=r,o}function B$1(t){this.segmentLength=0,this.points=new Array(t);}function R$1(t,s){this.partialLength=t,this.point=s;}const K$1={};function G$1(t,s){const e=s.percents,i=s.lengths,h=e.length;let r=Math.floor((h-1)*t);const a=t*s.addedLength;let n=0;if(r===h-1||0===r||a===i[r])return e[r];{const t=i[r]>a?-1:1;let s=!0;for(;s;)if(i[r]<=a&&i[r+1]>a?(n=(a-i[r])/(i[r+1]-i[r]),s=!1):r+=t,r<0||r>=h-1){if(r===h-1)return e[r];s=!1;}return e[r]+(e[r+1]-e[r])*n}}const J$1=w("float32",8);var H$1={getSegmentsLength:function(t){const s=Y$1.newElement(),e=t.c,i=t.v,h=t.o,r=t.i,a=t._length,n=s.lengths;let o=0,l=0;for(;l<a-1;l+=1)n[l]=z$1(i[l],i[l+1],h[l],r[l+1]),o+=n[l].addedLength;return e&&a&&(n[l]=z$1(i[l],i[0],h[l],r[0]),o+=n[l].addedLength),s.totalLength=o,s},getNewSegment:function(t,s,e,i,h,r,a){const n=G$1(h=h<0?0:h>1?1:h,a),o=G$1(r=r>1?1:r,a),l=t.length,p=1-n,c=1-o,d=p*p*p,u=n*p*p*3,f=n*n*p*3,m=n*n*n,g=p*p*c,y=n*p*c+p*n*c+p*p*o,v=n*n*c+p*n*o+n*p*o,_=n*n*o,k=p*c*c,S=n*c*c+p*o*c+p*c*o,x=n*o*c+p*o*o+n*c*o,M=n*o*o,P=c*c*c,T=o*c*c+c*o*c+c*c*o,w=o*o*c+c*o*o+o*c*o,D=o*o*o;for(let h=0;h<l;h+=1)J$1[4*h]=Math.round(1e3*(d*t[h]+u*e[h]+f*i[h]+m*s[h]))/1e3,J$1[4*h+1]=Math.round(1e3*(g*t[h]+y*e[h]+v*i[h]+_*s[h]))/1e3,J$1[4*h+2]=Math.round(1e3*(k*t[h]+S*e[h]+x*i[h]+M*s[h]))/1e3,J$1[4*h+3]=Math.round(1e3*(P*t[h]+T*e[h]+w*i[h]+D*s[h]))/1e3;return J$1},getPointInSegment:function(t,s,e,i,h,r){const a=G$1(h,r),n=1-a;return [Math.round(1e3*(n*n*n*t[0]+(a*n*n+n*a*n+n*n*a)*e[0]+(a*a*n+n*a*a+a*n*a)*i[0]+a*a*a*s[0]))/1e3,Math.round(1e3*(n*n*n*t[1]+(a*n*n+n*a*n+n*n*a)*e[1]+(a*a*n+n*a*a+a*n*a)*i[1]+a*a*a*s[1]))/1e3]},buildBezierData:function(t,s,e,i){const h=(t[0]+"_"+t[1]+"_"+s[0]+"_"+s[1]+"_"+e[0]+"_"+e[1]+"_"+i[0]+"_"+i[1]).replace(/\./g,"p");if(!K$1[h]){let r,a,n=200,o=0,l=null;2===t.length&&(t[0]!=s[0]||t[1]!=s[1])&&j$1(t[0],t[1],s[0],s[1],t[0]+e[0],t[1]+e[1])&&j$1(t[0],t[1],s[0],s[1],s[0]+i[0],s[1]+i[1])&&(n=2);const p=new B$1(n),c=e.length;for(let h=0;h<n;h+=1){a=D$1(c);const d=h/(n-1);r=0;for(let h=0;h<c;h+=1){const n=Math.pow(1-d,3)*t[h]+3*Math.pow(1-d,2)*d*(t[h]+e[h])+3*(1-d)*Math.pow(d,2)*(s[h]+i[h])+Math.pow(d,3)*s[h];a[h]=n,null!==l&&(r+=Math.pow(a[h]-l[h],2));}r=Math.sqrt(r),o+=r,p.points[h]=new R$1(r,a),l=a;}p.segmentLength=o,K$1[h]=p;}return K$1[h]},pointOnLine2D:j$1,pointOnLine3D:function(t,s,e,i,h,r,a,n,o){if(0===e&&0===r&&0===o)return j$1(t,s,i,h,a,n);const l=Math.sqrt(Math.pow(i-t,2)+Math.pow(h-s,2)+Math.pow(r-e,2)),p=Math.sqrt(Math.pow(a-t,2)+Math.pow(n-s,2)+Math.pow(o-e,2)),c=Math.sqrt(Math.pow(a-i,2)+Math.pow(n-h,2)+Math.pow(o-r,2));let d;return d=l>p?l>c?l-p-c:c-p-l:c>p?c-p-l:p-l-c,d>-1e-4&&d<1e-4}};const U$1=Math.PI/180,Z$1=[0,0],Q=/(loopIn|loopOut)\(([^)]+)/,W$1=/["']\w+["']/;class $$1{constructor(t,s,e){this.begin=s,this.end=e,this.total=this.end-this.begin,this.type=t;}update(t){return "in"===this.type?t>=this.begin?t:this.end-s.euclideanModulo(this.begin-t,this.total):"out"===this.type?t<=this.end?t:this.begin+s.euclideanModulo(t-this.end,this.total):void 0}}class tt{constructor(t,s,e){this.begin=s,this.end=e,this.total=this.end-this.begin,this.type=t;}update(t){if("in"===this.type&&t<this.begin||"out"===this.type&&t>this.end){const s=t-this.end;return this.pingpong(s)}return t}pingpong(t){return Math.floor(t/this.total)%2?this.begin+s.euclideanModulo(t,this.total):this.end-s.euclideanModulo(t,this.total)}}const st={loopIn(t,s,e){const i=t[0].t,h=t.length-1,r=t[Math.min(h,e)].t;switch(s){case"cycle":return new $$1("in",i,r);case"pingpong":return new tt("in",i,r)}return null},loopOut(t,s,e){const i=t.length-1,h=t[Math.max(0,i-e)].t,r=t[i].t;switch(s){case"cycle":return new $$1("out",h,r);case"pingpong":return new tt("out",h,r)}return null}};function et(t){const s=t.match(Q),e=s[2].split(/\s*,\s*/).map(t=>W$1.test(t)?t.replace(/"|'/g,""):parseInt(t));return {name:s[1],mode:e[0],offset:e[1]}}var it={hasSupportExpression:function(t){return t.x&&Q.test(t.x)},getExpression:function(t){const{name:s,mode:e,offset:i=0}=et(t.x),h=0===i?t.k.length-1:i;return st[s]&&st[s](t.k,e,h)}};function ht(t){const s=t[0]*U$1,e=t[1]*U$1,i=t[2]*U$1,h=Math.cos(s/2),r=Math.cos(e/2),a=Math.cos(i/2),n=Math.sin(s/2),o=Math.sin(e/2),l=Math.sin(i/2);return [n*o*a+h*r*l,n*r*a+h*o*l,h*o*a-n*r*l,h*r*a-n*o*l]}class rt{interpolateValue(t,s){let e;"multidimensional"===this.propType&&(e=w("float32",this.pv.length));let i,h,r,a,n,o,l,p,c=s.lastIndex,d=c,u=this.keyframes.length-1,f=!0;for(;f;){if(i=this.keyframes[d],h=this.keyframes[d+1],d===u-1&&t>=h.t){i.h&&(i=h),c=0;break}if(h.t>t){c=d;break}d<u-1?d+=1:(c=0,f=!1);}let m,g=h.t,y=i.t;if(i.to){i.bezierData||(i.bezierData=H$1.buildBezierData(i.s,h.s||i.e,i.to,i.ti));let c=i.bezierData;if(t>=g||t<y){let s=t>=g?c.points.length-1:0;for(a=c.points[s].point.length,r=0;r<a;r+=1)e[r]=c.points[s].point[r];}else {i.__fnct?p=i.__fnct:(p=T$1.getBezierEasing(i.o.x,i.o.y,i.i.x,i.i.y,i.n).get,i.__fnct=p),n=p((t-y)/(g-y));let h,u=c.segmentLength*n,m=s.lastFrame<t&&s._lastKeyframeIndex===d?s._lastAddedLength:0;for(l=s.lastFrame<t&&s._lastKeyframeIndex===d?s._lastPoint:0,f=!0,o=c.points.length;f;){if(m+=c.points[l].partialLength,0===u||0===n||l===c.points.length-1){for(a=c.points[l].point.length,r=0;r<a;r+=1)e[r]=c.points[l].point[r];break}if(u>=m&&u<m+c.points[l+1].partialLength){for(h=(u-m)/c.points[l+1].partialLength,a=c.points[l].point.length,r=0;r<a;r+=1)e[r]=c.points[l].point[r]+(c.points[l+1].point[r]-c.points[l].point[r])*h;break}l<o-1?l+=1:f=!1;}s._lastPoint=l,s._lastAddedLength=m-c.points[l].partialLength,s._lastKeyframeIndex=d;}}else {let s,r,a,o,l;if(u=i.s.length,m=h.s||i.e,this.sh&&1!==i.h)if(t>=g)e[0]=m[0],e[1]=m[1],e[2]=m[2];else if(t<=y)e[0]=i.s[0],e[1]=i.s[1],e[2]=i.s[2];else {!function(t,s){const e=s[0],i=s[1],h=s[2],r=s[3],a=Math.atan2(2*i*r-2*e*h,1-2*i*i-2*h*h),n=Math.asin(2*e*i+2*h*r),o=Math.atan2(2*e*r-2*i*h,1-2*e*e-2*h*h);t[0]=a/U$1,t[1]=n/U$1,t[2]=o/U$1;}(e,function(t,s,e){const i=[],h=t[0],r=t[1],a=t[2],n=t[3];let o,l,p,c,d,u=s[0],f=s[1],m=s[2],g=s[3];return l=h*u+r*f+a*m+n*g,l<0&&(l=-l,u=-u,f=-f,m=-m,g=-g),1-l>1e-6?(o=Math.acos(l),p=Math.sin(o),c=Math.sin((1-e)*o)/p,d=Math.sin(e*o)/p):(c=1-e,d=e),i[0]=c*h+d*u,i[1]=c*r+d*f,i[2]=c*a+d*m,i[3]=c*n+d*g,i}(ht(i.s),ht(m),(t-y)/(g-y)));}else for(d=0;d<u;d+=1)1!==i.h&&(t>=g?n=1:t<y?n=0:(i.o.x.constructor===Array?(i.__fnct||(i.__fnct=[]),i.__fnct[d]?p=i.__fnct[d]:(s=void 0===i.o.x[d]?i.o.x[0]:i.o.x[d],r=void 0===i.o.y[d]?i.o.y[0]:i.o.y[d],a=void 0===i.i.x[d]?i.i.x[0]:i.i.x[d],o=void 0===i.i.y[d]?i.i.y[0]:i.i.y[d],p=T$1.getBezierEasing(s,r,a,o).get,i.__fnct[d]=p)):i.__fnct?p=i.__fnct:(s=i.o.x,r=i.o.y,a=i.i.x,o=i.i.y,p=T$1.getBezierEasing(s,r,a,o).get,i.__fnct=p),n=p((t-y)/(g-y)))),m=h.s||i.e,l=1===i.h?i.s[d]:i.s[d]+(m[d]-i.s[d])*n,"multidimensional"===this.propType?e[d]=l:e=l;}return s.lastIndex=c,e}getValueAtCurrentTime(t){let s=this.keyframes[0].t,e=this.keyframes[this.keyframes.length-1].t;if(!(t===this._caching.lastFrame||-999999!==this._caching.lastFrame&&(this._caching.lastFrame>=e&&t>=e||this._caching.lastFrame<s&&t<s))){this._caching.lastFrame>=t&&(this._caching._lastKeyframeIndex=-1,this._caching.lastIndex=0);let s=this.interpolateValue(t,this._caching);this.pv=s;}return this._caching.lastFrame=t,this.pv}setVValue(t){let s;if("unidimensional"===this.propType)s=t*this.mult,Math.abs(this.v-s)>1e-5&&(this.v=s,this._mdf=!0);else {let e=0;const i=this.v.length;for(;e<i;)s=t[e]*this.mult,Math.abs(this.v[e]-s)>1e-5&&(this.v[e]=s,this._mdf=!0),e+=1;}}processEffectsSequence(t){if(this.expression&&(t=this.expression.update(t)),t===this.frameId||!this.effectsSequence.length)return;if(this.lock)return void this.setVValue(this.pv);let s;this.lock=!0,this._mdf=this._isFirstFrame;let e=this.effectsSequence.length,i=this.kf?this.pv:this.data.k;for(s=0;s<e;s+=1)i=this.effectsSequence[s](t);this.setVValue(i),this._isFirstFrame=!1,this.lock=!1,this.frameId=t;}addEffect(t){this.effectsSequence.push(t),this.container.addDynamicProperty(this);}}class at extends rt{constructor(t,s,e,i){super(),this.propType="unidimensional",this.mult=e||1,this.data=s,this.v=e?s.k*e:s.k,this.pv=s.k,this._mdf=!1,this.elem=t,this.container=i,this.k=!1,this.kf=!1,this.vel=0,this.effectsSequence=[],this._isFirstFrame=!0,this.getValue=this.processEffectsSequence;}}class nt extends rt{constructor(t,s,e,i){super(),this.propType="multidimensional",this.mult=e||1,this.data=s,this._mdf=!1,this.elem=t,this.container=i,this.comp=t.comp,this.k=!1,this.kf=!1,this.frameId=-1;const h=s.k.length;this.v=w("float32",h),this.pv=w("float32",h),this.vel=w("float32",h);for(let t=0;t<h;t+=1)this.v[t]=s.k[t]*this.mult,this.pv[t]=s.k[t];this._isFirstFrame=!0,this.effectsSequence=[],this.getValue=this.processEffectsSequence;}}class ot extends rt{constructor(t,s,e,i){super(),this.propType="unidimensional",this.keyframes=s.k,this.frameId=-1,this._caching={lastFrame:-999999,lastIndex:0,value:0,_lastKeyframeIndex:-1},this.k=!0,this.kf=!0,this.data=s,this.mult=e||1,this.elem=t,this.container=i,this.comp=t.comp,this.v=-999999,this.pv=-999999,this._isFirstFrame=!0,this.getValue=this.processEffectsSequence,this.effectsSequence=[this.getValueAtCurrentTime.bind(this)],this._hasOutTypeExpression=!1,it.hasSupportExpression(s)&&(this.expression=it.getExpression(s),this._hasOutTypeExpression="out"===this.expression.type);}}class lt extends rt{constructor(t,s,e,i){let h;super(),this.propType="multidimensional";let r,a,n,o,l=s.k.length;for(h=0;h<l-1;h+=1)s.k[h].to&&s.k[h].s&&s.k[h+1]&&s.k[h+1].s&&(r=s.k[h].s,a=s.k[h+1].s,n=s.k[h].to,o=s.k[h].ti,(2===r.length&&(r[0]!==a[0]||r[1]!==a[1])&&H$1.pointOnLine2D(r[0],r[1],a[0],a[1],r[0]+n[0],r[1]+n[1])&&H$1.pointOnLine2D(r[0],r[1],a[0],a[1],a[0]+o[0],a[1]+o[1])||3===r.length&&(r[0]!==a[0]||r[1]!==a[1]||r[2]!==a[2])&&H$1.pointOnLine3D(r[0],r[1],r[2],a[0],a[1],a[2],r[0]+n[0],r[1]+n[1],r[2]+n[2])&&H$1.pointOnLine3D(r[0],r[1],r[2],a[0],a[1],a[2],a[0]+o[0],a[1]+o[1],a[2]+o[2]))&&(s.k[h].to=null,s.k[h].ti=null),r[0]===a[0]&&r[1]===a[1]&&0===n[0]&&0===n[1]&&0===o[0]&&0===o[1]&&(2===r.length||r[2]===a[2]&&0===n[2]&&0===o[2])&&(s.k[h].to=null,s.k[h].ti=null));this.effectsSequence=[this.getValueAtCurrentTime.bind(this)],this.keyframes=s.k,this.k=!0,this.kf=!0,this._isFirstFrame=!0,this.mult=e||1,this.elem=t,this.container=i,this.comp=t.comp,this.getValue=this.processEffectsSequence,this.frameId=-1;let p=s.k[0].s.length;for(this.v=w("float32",p),this.pv=w("float32",p),h=0;h<p;h+=1)this.v[h]=-999999,this.pv[h]=-999999;this._caching={lastFrame:-999999,lastIndex:0,value:w("float32",p)},this._hasOutTypeExpression=!1,it.hasSupportExpression(s)&&(this.expression=it.getExpression(s),this._hasOutTypeExpression="out"===this.expression.type);}}var pt={getProp:function(t,s,e,i,h){let r;if(s.k.length)if("number"==typeof s.k[0])r=new nt(t,s,i,h);else switch(e){case 0:r=new ot(t,s,i,h);break;case 1:r=new lt(t,s,i,h);}else r=new at(t,s,i,h);return r.effectsSequence.length&&h.addDynamicProperty(r),r}};class ct{interpolateShape(t,s,e){let i,h,r,a,n,o,l,p,c,d=e.lastIndex,u=this.keyframes;if(t<u[0].t)i=u[0].s[0],r=!0,d=0;else if(t>=u[u.length-1].t)i=u[u.length-1].s?u[u.length-1].s[0]:u[u.length-2].e[0],r=!0;else {let s,e,a=d,n=u.length-1,o=!0;for(;o&&(s=u[a],e=u[a+1],!(e.t>t));)a<n-1?a+=1:o=!1;if(r=1===s.h,d=a,!r){if(t>=e.t)p=1;else if(t<s.t)p=0;else {let i;s.__fnct?i=s.__fnct:(i=T$1.getBezierEasing(s.o.x,s.o.y,s.i.x,s.i.y).get,s.__fnct=i),p=i((t-s.t)/(e.t-s.t));}h=e.s?e.s[0]:s.e[0];}i=s.s[0];}for(o=s._length,l=i.i[0].length,e.lastIndex=d,a=0;a<o;a+=1)for(n=0;n<l;n+=1)c=r?i.i[a][n]:i.i[a][n]+(h.i[a][n]-i.i[a][n])*p,s.i[a][n]=c,c=r?i.o[a][n]:i.o[a][n]+(h.o[a][n]-i.o[a][n])*p,s.o[a][n]=c,c=r?i.v[a][n]:i.v[a][n]+(h.v[a][n]-i.v[a][n])*p,s.v[a][n]=c;}interpolateShapeCurrentTime(t){let s=this.keyframes[0].t,e=this.keyframes[this.keyframes.length-1].t,i=this._caching.lastFrame;return -999999!==i&&(i<s&&t<s||i>e&&t>e)||(this._caching.lastIndex=i<t?this._caching.lastIndex:0,this.interpolateShape(t,this.pv,this._caching)),this._caching.lastFrame=t,this.pv}resetShape(){this.paths=this.localShapeCollection;}shapesEqual(t,s){if(t._length!==s._length||t.c!==s.c)return !1;let e,i=t._length;for(e=0;e<i;e+=1)if(t.v[e][0]!==s.v[e][0]||t.v[e][1]!==s.v[e][1]||t.o[e][0]!==s.o[e][0]||t.o[e][1]!==s.o[e][1]||t.i[e][0]!==s.i[e][0]||t.i[e][1]!==s.i[e][1])return !1;return !0}setVValue(t){this.shapesEqual(this.v,t)||(this.v=b.clone(t),this.localShapeCollection.releaseShapes(),this.localShapeCollection.addShape(this.v),this._mdf=!0,this.paths=this.localShapeCollection);}processEffectsSequence(t){if(t===this.frameId)return;if(!this.effectsSequence.length)return void(this._mdf=!1);if(this.lock)return void this.setVValue(this.pv);this.lock=!0,this._mdf=!1;let s,e=this.kf?this.pv:this.data.ks?this.data.ks.k:this.data.pt.k,i=this.effectsSequence.length;for(s=0;s<i;s+=1)e=this.effectsSequence[s](t);this.setVValue(e),this.lock=!1,this.frameId=t;}addEffect(t){this.effectsSequence.push(t),this.container.addDynamicProperty(this);}}class dt extends ct{constructor(t,s,e){super(),this.propType="shape",this.comp=t.comp,this.container=t,this.elem=t,this.data=s,this.k=!1,this.kf=!1,this._mdf=!1;let i=3===e?s.pt.k:s.ks.k;this.v=b.clone(i),this.pv=b.clone(this.v),this.localShapeCollection=q$1.newShapeCollection(),this.paths=this.localShapeCollection,this.paths.addShape(this.v),this.reset=this.resetShape,this.effectsSequence=[],this.getValue=this.processEffectsSequence;}}class ut extends ct{constructor(t,s,e){super(),this.propType="shape",this.comp=t.comp,this.elem=t,this.container=t,this.keyframes=3===e?s.pt.k:s.ks.k,this.k=!0,this.kf=!0;let i=this.keyframes[0].s[0].i.length;this.v=b.newElement(),this.v.setPathData(this.keyframes[0].s[0].c,i),this.pv=b.clone(this.v),this.localShapeCollection=q$1.newShapeCollection(),this.paths=this.localShapeCollection,this.paths.addShape(this.v),this.lastFrame=-999999,this.reset=this.resetShape,this._caching={lastFrame:-999999,lastIndex:0},this.effectsSequence=[this.interpolateShapeCurrentTime.bind(this)],this.getValue=this.processEffectsSequence,this._hasOutTypeExpression=!1,it.hasSupportExpression(s)&&(this.expression=it.getExpression(s),this._hasOutTypeExpression="out"===this.expression.type);}}class ft extends O$1{constructor(t,s){super(),this.v=b.newElement(),this.v.setPathData(!0,4),this.localShapeCollection=q$1.newShapeCollection(),this.paths=this.localShapeCollection,this.localShapeCollection.addShape(this.v),this.d=s.d,this.elem=t,this.comp=t.comp,this.frameId=-1,this.initDynamicPropertyContainer(t),this.p=pt.getProp(t,s.p,1,0,this),this.s=pt.getProp(t,s.s,1,0,this),this.dynamicProperties.length?this.k=!0:(this.k=!1,this.convertEllToPath());}reset(){this.paths=this.localShapeCollection;}getValue(t){t!==this.frameId&&(this.iterateDynamicProperties(t),this.frameId=t,this._mdf&&this.convertEllToPath());}convertEllToPath(){const t=this.p.v[0],s=this.p.v[1],e=this.s.v[0]/2,i=this.s.v[1]/2,h=3!==this.d,r=this.v;r.v[0][0]=t,r.v[0][1]=s-i,r.v[1][0]=h?t+e:t-e,r.v[1][1]=s,r.v[2][0]=t,r.v[2][1]=s+i,r.v[3][0]=h?t-e:t+e,r.v[3][1]=s,r.i[0][0]=h?t-e*gt:t+e*gt,r.i[0][1]=s-i,r.i[1][0]=h?t+e:t-e,r.i[1][1]=s-i*gt,r.i[2][0]=h?t+e*gt:t-e*gt,r.i[2][1]=s+i,r.i[3][0]=h?t-e:t+e,r.i[3][1]=s+i*gt,r.o[0][0]=h?t+e*gt:t-e*gt,r.o[0][1]=s-i,r.o[1][0]=h?t+e:t-e,r.o[1][1]=s+i*gt,r.o[2][0]=h?t-e*gt:t+e*gt,r.o[2][1]=s+i,r.o[3][0]=h?t-e:t+e,r.o[3][1]=s-i*gt;}}class mt extends O$1{constructor(t,s){super(),this.v=b.newElement(),this.v.setPathData(!0,0),this.elem=t,this.comp=t.comp,this.data=s,this.frameId=-1,this.d=s.d,this.initDynamicPropertyContainer(t),1===s.sy?(this.ir=pt.getProp(t,s.ir,0,0,this),this.is=pt.getProp(t,s.is,0,.01,this),this.convertToPath=this.convertStarToPath):this.convertToPath=this.convertPolygonToPath,this.pt=pt.getProp(t,s.pt,0,0,this),this.p=pt.getProp(t,s.p,1,0,this),this.r=pt.getProp(t,s.r,0,U$1,this),this.or=pt.getProp(t,s.or,0,0,this),this.os=pt.getProp(t,s.os,0,.01,this),this.localShapeCollection=q$1.newShapeCollection(),this.localShapeCollection.addShape(this.v),this.paths=this.localShapeCollection,this.dynamicProperties.length?this.k=!0:(this.k=!1,this.convertToPath());}reset(){this.paths=this.localShapeCollection;}getValue(t){t!==this.frameId&&(this.frameId=t,this.iterateDynamicProperties(t),this._mdf&&this.convertToPath());}convertStarToPath(){let t,s,e,i,h=2*Math.floor(this.pt.v),r=2*Math.PI/h,a=!0,n=this.or.v,o=this.ir.v,l=this.os.v,p=this.is.v,c=2*Math.PI*n/(2*h),d=2*Math.PI*o/(2*h),u=-Math.PI/2;u+=this.r.v;let f=3===this.data.d?-1:1;for(this.v._length=0,t=0;t<h;t+=1){s=a?n:o,e=a?l:p,i=a?c:d;let h=s*Math.cos(u),m=s*Math.sin(u),g=0===h&&0===m?0:m/Math.sqrt(h*h+m*m),y=0===h&&0===m?0:-h/Math.sqrt(h*h+m*m);h+=+this.p.v[0],m+=+this.p.v[1],this.v.setTripleAt(h,m,h-g*i*e*f,m-y*i*e*f,h+g*i*e*f,m+y*i*e*f,t,!0),a=!a,u+=r*f;}}convertPolygonToPath(){let t,s=Math.floor(this.pt.v),e=2*Math.PI/s,i=this.or.v,h=this.os.v,r=2*Math.PI*i/(4*s),a=-Math.PI/2,n=3===this.data.d?-1:1;for(a+=this.r.v,this.v._length=0,t=0;t<s;t+=1){let s=i*Math.cos(a),o=i*Math.sin(a),l=0===s&&0===o?0:o/Math.sqrt(s*s+o*o),p=0===s&&0===o?0:-s/Math.sqrt(s*s+o*o);s+=+this.p.v[0],o+=+this.p.v[1],this.v.setTripleAt(s,o,s-l*r*h*n,o-p*r*h*n,s+l*r*h*n,o+p*r*h*n,t,!0),a+=e*n;}this.paths.length=0,this.paths[0]=this.v;}}const gt=.5519;class yt extends O$1{constructor(t,s){super(),this.v=b.newElement(),this.v.c=!0,this.localShapeCollection=q$1.newShapeCollection(),this.localShapeCollection.addShape(this.v),this.paths=this.localShapeCollection,this.elem=t,this.comp=t.comp,this.frameId=-1,this.d=s.d,this.initDynamicPropertyContainer(t),this.p=pt.getProp(t,s.p,1,0,this),this.s=pt.getProp(t,s.s,1,0,this),this.r=pt.getProp(t,s.r,0,0,this),this.dynamicProperties.length?this.k=!0:(this.k=!1,this.convertRectToPath());}reset(){this.paths=this.localShapeCollection;}getValue(t){t!==this.frameId&&(this.frameId=t,this.iterateDynamicProperties(t),this._mdf&&this.convertRectToPath());}convertRectToPath(){let t=this.p.v[0],s=this.p.v[1],e=this.s.v[0]/2,i=this.s.v[1]/2,h=Math.min(e,i,this.r.v),r=h*(1-.5519);this.v._length=0,2===this.d||1===this.d?(this.v.setTripleAt(t+e,s-i+h,t+e,s-i+h,t+e,s-i+r,0,!0),this.v.setTripleAt(t+e,s+i-h,t+e,s+i-r,t+e,s+i-h,1,!0),0!==h?(this.v.setTripleAt(t+e-h,s+i,t+e-h,s+i,t+e-r,s+i,2,!0),this.v.setTripleAt(t-e+h,s+i,t-e+r,s+i,t-e+h,s+i,3,!0),this.v.setTripleAt(t-e,s+i-h,t-e,s+i-h,t-e,s+i-r,4,!0),this.v.setTripleAt(t-e,s-i+h,t-e,s-i+r,t-e,s-i+h,5,!0),this.v.setTripleAt(t-e+h,s-i,t-e+h,s-i,t-e+r,s-i,6,!0),this.v.setTripleAt(t+e-h,s-i,t+e-r,s-i,t+e-h,s-i,7,!0)):(this.v.setTripleAt(t-e,s+i,t-e+r,s+i,t-e,s+i,2),this.v.setTripleAt(t-e,s-i,t-e,s-i+r,t-e,s-i,3))):(this.v.setTripleAt(t+e,s-i+h,t+e,s-i+r,t+e,s-i+h,0,!0),0!==h?(this.v.setTripleAt(t+e-h,s-i,t+e-h,s-i,t+e-r,s-i,1,!0),this.v.setTripleAt(t-e+h,s-i,t-e+r,s-i,t-e+h,s-i,2,!0),this.v.setTripleAt(t-e,s-i+h,t-e,s-i+h,t-e,s-i+r,3,!0),this.v.setTripleAt(t-e,s+i-h,t-e,s+i-r,t-e,s+i-h,4,!0),this.v.setTripleAt(t-e+h,s+i,t-e+h,s+i,t-e+r,s+i,5,!0),this.v.setTripleAt(t+e-h,s+i,t+e-r,s+i,t+e-h,s+i,6,!0),this.v.setTripleAt(t+e,s+i-h,t+e,s+i-h,t+e,s+i-r,7,!0)):(this.v.setTripleAt(t-e,s-i,t-e+r,s-i,t-e,s-i,1,!0),this.v.setTripleAt(t-e,s+i,t-e,s+i-r,t-e,s+i,2,!0),this.v.setTripleAt(t+e,s+i,t+e-r,s+i,t+e,s+i,3,!0)));}}var vt={getShapeProp:function(t,s,e){let i;if(3===e||4===e){i=(3===e?s.pt:s.ks).k.length?new ut(t,s,e):new dt(t,s,e);}else 5===e?i=new yt(t,s):6===e?i=new ft(t,s):7===e&&(i=new mt(t,s));return i.k&&t.addDynamicProperty(i),i},getConstructorFunction:function(){return dt},getKeyframedConstructorFunction:function(){return ut}};class _t extends O$1{constructor(t,s,e){super(),this.frameId=-1,this.elem=t,this.session=e,this.masksProperties=s||[],this.initDynamicPropertyContainer(t),this.viewData=D$1(this.masksProperties.length);const i=this.masksProperties.length;let h=!1;for(let t=0;t<i;t++)"n"!==this.masksProperties[t].mode&&(h=!0),this.viewData[t]=vt.getShapeProp(this,this.masksProperties[t],3),this.viewData[t].inv=this.masksProperties[t].inv;this.hasMasks=h;}getValue(t){t!==this.frameId&&(this.iterateDynamicProperties(t),this.frameId=t);}}
@@ -112,9 +60,48 @@
 
     class T extends pixi_js.Graphics{constructor(t){super(),this.parentCompBox=t,this.lineStyle(0);}updateLayerMask(t){for(let e=0;e<t.viewData.length;e++){if(t.viewData[e].inv){const t=this.parentCompBox;this.moveTo(0,0),this.lineTo(t.w,0),this.lineTo(t.w,t.h),this.lineTo(0,t.h),this.lineTo(0,0);}const s=t.viewData[e].v,i=s.v[0];this.moveTo(i[0],i[1]);const n=s._length;let r=1;for(;r<n;r++){const t=s.o[r-1],e=s.i[r],i=s.v[r];this.bezierCurveTo(t[0],t[1],e[0],e[1],i[0],i[1]);}const h=s.o[r-1],o=s.i[0],a=s.v[0];this.bezierCurveTo(h[0],h[1],o[0],o[1],a[0],a[1]),t.viewData[e].inv&&this.addHole();}}updateMasks(t){this.clear(),this.beginFill(0),this.updateLayerMask(t),this.endFill();}}class M extends pixi_js.Graphics{constructor(t){super(),this.viewport=t,this.lineStyle(0),this.initCompMask();}initCompMask(){this.clear(),this.beginFill(0);const t=this.viewport;this.moveTo(0,0),this.lineTo(t.w,0),this.lineTo(t.w,t.h),this.lineTo(0,t.h),this.lineTo(0,0),this.endFill();}}class k extends pixi_js.Container{constructor(t,e){super(),this.lottieElement=t,this.config=e;}onSetupLottie(){if(this.config.maskComp){const t=this.config.viewport;this.preCompMask=new M(t),this.mask=this.preCompMask,this.addChild(this.mask);}if(this.lottieElement.hasValidMasks()){const t=this.config.session.local;if(this.graphicsMasks=new T(t),this.mask){const t=new pixi_js.Container;t.mask=this.graphicsMasks,t.addChild(this.mask),this.lottieElement.innerDisplay=t,this.addChild(t);}else this.mask=this.graphicsMasks,this.addChild(this.mask);}}setHierarchy(t){this.hierarchy=t;}show(){this.visible=!0;}hide(){this.visible=!1;}updateLottieTransform(t){this.x=t.x,this.y=t.y,this.pivot.x=t.anchorX,this.pivot.y=t.anchorY,this.scale.x=t.scaleX,this.scale.y=t.scaleY,this.rotation=t.rotation,this.alpha=t.alpha;}updateLottieMasks(t){this.graphicsMasks&&this.graphicsMasks.updateMasks(t);}}class C extends pixi_js.Shader{constructor(t){super(t,["attribute vec2 aVertexPosition;","uniform mat3 translationMatrix;","uniform mat3 projectionMatrix;","void main(void){","   gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);","}"].join("\n"),["uniform float alpha;","uniform vec3 color;","void main(void){","   gl_FragColor = vec4(color * alpha, alpha);","}"].join("\n"));}}function S(t,e){this.buffer=new t(10),this.length=0;}S.prototype={reset(){this.length=0;},destroy(){this.buffer=null,this.length=0;},push(...t){if(this.length+t.length>this.buffer.length){const e=new this.buffer.constructor(Math.max(this.length+t.length,Math.round(2*this.buffer.length)));e.set(this.buffer,0),this.buffer=e;}for(let e=0;e<t.length;e++)this.buffer[this.length++]=t[e];return this.length},setBuffer(t){this.buffer=t,this.length=this.buffer.length;}};class D{constructor(t,e,s){this.gl=t,this.vertices=new S(Float32Array),this.indices=new S(Uint16Array),this.buffer=pixi_js.glCore.GLBuffer.createVertexBuffer(t),this.indexBuffer=pixi_js.glCore.GLBuffer.createIndexBuffer(t),this.dirty=!0,this.shader=e,this.vao=new pixi_js.glCore.VertexArrayObject(t,s).addIndex(this.indexBuffer).addAttribute(this.buffer,e.attributes.aVertexPosition,t.FLOAT,!1,8,0);}reset(){this.vertices.reset(),this.indices.reset();}upload(){this.buffer.upload(this.vertices.buffer),this.indexBuffer.upload(this.indices.buffer),this.dirty=!1;}destroy(){this.vertices.destroy(),this.indices.destroy(),this.vao.destroy(),this.buffer.destroy(),this.indexBuffer.destroy(),this.gl=null,this.buffer=null,this.indexBuffer=null;}}function _(t,e,s){return t.push(e,s),t}function O(t,e){return Math.sqrt(t*t+e*e)}function L(t,e,s,i,n){return function(t,e){const s=1-t;return s*s*s*e}(t,e)+function(t,e){const s=1-t;return 3*s*s*t*e}(t,s)+function(t,e){return 3*(1-t)*t*t*e}(t,i)+function(t,e){return t*t*t*e}(t,n)}function A(t,e,s,i,n,r,h){if(!(isFinite(e)&&isFinite(s)&&isFinite(i)&&isFinite(n)&&isFinite(r)&&isFinite(h)))return t;const o=t[t.length-2],a=t[t.length-1],l=function(t,e,s,i,n,r,h,o){const a=n-s,l=r-i,p=s-t,c=i-e;return O(h-n,o-r)+O(a,l)+O(p,c)}(o,a,e,s,i,n,r,h),p=Math.min(10/l,.5);for(let l=p;l<1;l+=p){const p=L(l,o,e,i,r),c=L(l,a,s,n,h);t.push(p,c);}return t.push(r,h),t}function I(t,e){for(let s=0;s<t.length;s++){const{cmd:i,args:n}=t[s];switch(i){case"M":case"L":_(e,n[0],n[1]);break;case"C":A(e,n[0],n[1],n[2],n[3],n[4],n[5]);}}return e}function E(t,e,s,i,n,r,h){n%=2*Math.PI,r%=2*Math.PI,n<0&&(n+=2*Math.PI),r<0&&(r+=2*Math.PI),n>=r&&(r+=2*Math.PI);let o=r-n,a=1;h&&(a=-1,o=2*Math.PI-o,0==o&&(o=2*Math.PI));const l=o*i;let p=Math.sqrt(l/1)>>0;p=p%2==0?p+1:p;const c=o/p;let u=n;for(let n=0;n<p+1;n++)t.push(e,s,e+i*Math.cos(u),s+i*Math.sin(u)),u+=a*c;}function B(t,e,s){const i=I(t.cmds,[]),n=t.isClosed,r=e.lineDash.length>=2,h=e.lineWidth/2;let o,a=[i[0],i[1]];for(let t=2;t<i.length;t+=2)i[t]==a[a.length-2]&&i[t+1]==a[a.length-1]||a.push(i[t],i[t+1]);if(!n||a[a.length-2]==a[0]&&a[a.length-1]==a[1]||a.push(a[0],a[1]),r){const t=function(t,e,s,i){e&&t.push(t[0],t[1]);let n=i,r=0,h=1;for(;n>s[r];)n-=s[r],r++,h=h?0:1,r==s.length&&(r=0);let o=[t[0],t[1]],a=[h];for(let e=2;e<t.length;e+=2){let i=[t[e]-t[e-2],t[e+1]-t[e-1]],l=O(i[0],i[1]);i[0]/=l,i[1]/=l;let p=0;for(;l-p+n>=s[r];)p+=s[r]-n,n=0,h=h?0:1,r++,r==s.length&&(r=0),a.push(h),o.push(t[e-2]+p*i[0],t[e-1]+p*i[1]);l-p!=0&&(o.push(t[e],t[e+1]),a.push(h)),n+=l-p;}return e&&(t.pop(),t.pop(),o.pop(),o.pop(),a.pop()),{newPoints:o,toDrawOrNotToDraw:a}}(a,n,e.lineDash,e.lineDashOffset);o=t.toDrawOrNotToDraw,a=t.newPoints;}const l=s.length;let p=s.length;const c=[];if(n)a.push(a[2],a[3]);else {const t=[a[2]-a[0],a[3]-a[1]],i=O(t[0],t[1]);t[0]/=i,t[1]/=i;const n=[-t[1],t[0]],l=[a[0]+h*n[0],a[1]+h*n[1]],u=[a[0]-h*n[0],a[1]-h*n[1]];if("butt"==e.lineCap)s.push(l[0],l[1],u[0],u[1]);else if("square"==e.lineCap)s.push(l[0]-h*t[0],l[1]-h*t[1],u[0]-h*t[0],u[1]-h*t[1]);else {s.push(a[0],a[1],l[0],l[1]);const t=Math.atan2(l[1]-a[1],l[0]-a[0]),e=Math.atan2(u[1]-a[1],u[0]-a[0]);E(s,a[0],a[1],h,t,e),s.push(a[0],a[1],u[0],u[1]),s.push(l[0],l[1],u[0],u[1]);}if(r){const t=o[0];for(let e=p;e<s.length;e+=2)c.push(t);p=s.length;}}for(let t=2;t<a.length-2;t+=2){const i=[a[t]-a[t-2],a[t+1]-a[t-1]],n=[-i[1],i[0]];let l=O(n[0],n[1]);n[0]/=l,n[1]/=l;let u=[a[t+2]-a[t],a[t+3]-a[t+1]];l=O(u[0],u[1]),u[0]/=l,u[1]/=l;let d=[a[t]-a[t-2],a[t+1]-a[t-1]];l=O(d[0],d[1]),d[0]/=l,d[1]/=l;let f=[d[0]+u[0],d[1]+u[1]];l=O(f[0],f[1]);let m,g,y=0;l>0?(f[0]/=l,f[1]/=l,g=[-f[1],f[0]],m=g[0]*n[0]+g[1]*n[1],y=h/m):(y=0,g=[-f[1],f[0]]);const w=[a[t]+y*g[0],a[t+1]+y*g[1]],v=[a[t]-y*g[0],a[t+1]-y*g[1]];if("miter"==e.lineJoin&&1/m<=e.miterLimit)s.push(w[0],w[1],v[0],v[1]);else {const i=d[1]*u[0]-d[0]*u[1];if("round"==e.lineJoin)if(i<0){const e=[a[t]+d[1]*h,a[t+1]-d[0]*h],i=[a[t]+u[1]*h,a[t+1]-u[0]*h];s.push(w[0],w[1],e[0],e[1]);const n=Math.atan2(e[1]-a[t+1],e[0]-a[t]),r=Math.atan2(i[1]-a[t+1],i[0]-a[t]);E(s,a[t],a[t+1],h,n,r),s.push(w[0],w[1],i[0],i[1]);}else {const e=[a[t]-d[1]*h,a[t+1]+d[0]*h],i=[a[t]-u[1]*h,a[t+1]+u[0]*h];s.push(e[0],e[1],v[0],v[1]);const n=Math.atan2(i[1]-a[t+1],i[0]-a[t]),r=Math.atan2(e[1]-a[t+1],e[0]-a[t]);E(s,a[t],a[t+1],h,n,r),s.push(i[0],i[1],v[0],v[1]);}else if(i<0){const e=[a[t]+d[1]*h,a[t+1]-d[0]*h],i=[a[t]+u[1]*h,a[t+1]-u[0]*h];s.push(w[0],w[1],e[0],e[1],w[0],w[1],i[0],i[1]);}else {const e=[a[t]-d[1]*h,a[t+1]+d[0]*h],i=[a[t]-u[1]*h,a[t+1]+u[0]*h];s.push(e[0],e[1],v[0],v[1],i[0],i[1],v[0],v[1]);}}if(r){const e=o[t/2];for(let t=p;t<s.length;t+=2)c.push(e);p=s.length;}}if(n)s.push(s.buffer[l],s.buffer[l+1],s.buffer[l+2],s.buffer[l+3]);else {const t=[a[a.length-2]-a[a.length-4],a[a.length-1]-a[a.length-3]],i=Math.sqrt(Math.pow(t[0],2)+Math.pow(t[1],2));t[0]/=i,t[1]/=i;const n=[-t[1],t[0]],r=[a[a.length-2]+h*n[0],a[a.length-1]+h*n[1]],o=[a[a.length-2]-h*n[0],a[a.length-1]-h*n[1]];if("butt"==e.lineCap)s.push(r[0],r[1],o[0],o[1]);else if("square"==e.lineCap)s.push(r[0]+h*t[0],r[1]+h*t[1],o[0]+h*t[0],o[1]+h*t[1]);else {s.push(r[0],r[1],o[0],o[1]),s.push(a[a.length-2],a[a.length-1],o[0],o[1]);const t=Math.atan2(o[1]-a[a.length-1],o[0]-a[a.length-2]),e=Math.atan2(r[1]-a[a.length-1],r[0]-a[a.length-2]);E(s,a[a.length-2],a[a.length-1],h,t,e),s.push(a[a.length-2],a[a.length-1],r[0],r[1]);}}if(r){const t=o[o.length-1];for(let e=p;e<s.length;e+=2)c.push(t);p=s.length;}return c}function F(t,e){const s=t.isClosed;let i=!0;const n=I(t.cmds,[]);let r=[n[0],n[1]];for(let t=2;t<n.length;t+=2)n[t]==r[r.length-2]&&n[t+1]==r[r.length-1]||r.push(n[t],n[t+1]);if(!s||r[r.length-2]==r[0]&&r[r.length-1]==r[1]||r.push(r[0],r[1]),r.length>=6){for(let t=0;t<r.length;t++)e.push(r[t]);i=!1;}return i}pixi_js.WebGLRenderer.registerPlugin("lottiegraphics",class extends pixi_js.ObjectRenderer{constructor(t){super(t),this.graphicsDataPool=[],this.primitiveShader=null,this.webGLData=null,this.gl=t.gl,this.CONTEXT_UID=0;}onContextChange(){this.gl=this.renderer.gl,this.CONTEXT_UID=this.renderer.CONTEXT_UID,this.primitiveShader=new C(this.gl);}destroy(){pixi_js.ObjectRenderer.prototype.destroy.call(this);for(let t=0;t<this.graphicsDataPool.length;++t)this.graphicsDataPool[t].destroy();this.graphicsDataPool=null;}render(t){const e=this.renderer,s=e.gl,i=this.getWebGLData(t);if(t.isDirty&&this.updateGraphics(t,i),0===i.indices.length)return;const n=this.primitiveShader;e.bindShader(n),e.state.setBlendMode(t.blendMode),n.uniforms.translationMatrix=t.transform.worldTransform.toArray(!0),n.uniforms.color=pixi_js.utils.hex2rgb(t.color),n.uniforms.alpha=t.worldAlpha,e.bindVao(i.vao),i.vao.draw(s.TRIANGLES,i.indices.length);}updateGraphics(t,e){e.reset(),"stroke"===t.drawType?this.buildStroke(t,e):this.buildFill(t,e),t.isDirty=!1;}buildStroke(t,e){const{vertices:s,indices:i}=e,{paths:n,lineStyle:r}=t,h=r.lineDash.length>=2;for(let t=0;t<n.length;t++){const e=n[t],o=s.length/2,a=B(e,r,s);if(h)for(let t=o+2;t<s.length/2;t+=2)a[t-o-1]&&i.push(t-2,t,t-1,t,t+1,t-1);else for(let t=o+2;t<s.length/2;t+=2)i.push(t-2,t,t-1,t,t+1,t-1);}e.upload();}buildFill(t,e){const{vertices:s,indices:i}=e,{paths:n}=t;let r=[];const h=[];for(let t=0;t<n.length;t++){const e=n[t],s=[];if(F(e,s))break;const i=e.holes,o=[];for(let t=0;t<i.length;t++){const e=i[t],n=s.length;if(F(e,s))break;o.push(n/2);}const a=pixi_js.utils.earcut(s,o,2),l=r.length/2;for(let t=0;t<s.length;t+=2)r.push(s[t],s[t+1]);for(let t=0;t<a.length;t+=3)h.push(l+a[t],l+a[t+1],l+a[t+2]);}r.length<6||h<3||(s.setBuffer(new Float32Array(r)),i.setBuffer(new Uint16Array(h)),e.upload());}getWebGLData(t){return t.webGLData&&this.CONTEXT_UID===t.webGLData.CONTEXT_UID||(t.webGLData=new D(this.renderer.gl,this.primitiveShader,this.renderer.state.attribState),t.webGLData.CONTEXT_UID=this.CONTEXT_UID),t.webGLData}});pixi_js.CanvasRenderer.registerPlugin("lottiegraphics",class{constructor(t){this.renderer=t;}destroy(){this.renderer=null;}render(t){const e=this.renderer,s=e.context,i=t.lineStyle,n=t.worldAlpha,r=t.transform.worldTransform,h=e.resolution;s.setTransform(r.a*h,r.b*h,r.c*h,r.d*h,r.tx*h,r.ty*h),e.setBlendMode(t.blendMode),s.globalAlpha=n,"stroke"===t.drawType?(s.lineWidth=i.lineWidth,s.lineJoin=i.lineJoin,s.miterLimit=i.miterLimit,s.lineCap=i.lineCap,s.lineDashOffset=i.lineDashOffset,s.setLineDash(i.lineDash||[]),this.buildStroke(t)):this.buildFill(t);}buildStroke(t){const e=this.renderer.context,s=`#${`00000${(0|t.color).toString(16)}`.substr(-6)}`,{paths:i,lineStyle:n}=t;e.lineWidth=n.lineWidth,e.lineJoin=n.lineJoin,e.miterLimit=n.miterLimit,e.lineCap=n.lineCap,e.lineDashOffset=n.lineDashOffset,e.setLineDash(n.lineDash||[]),e.beginPath();for(let t=0;t<i.length;t++)this.drawPath(e,i[t]);e.strokeStyle=s,e.stroke();}buildFill(t){const e=this.renderer.context,s=`#${`00000${(0|t.color).toString(16)}`.substr(-6)}`,{paths:i}=t;e.beginPath();for(let t=0;t<i.length;t++){const s=i[t];this.drawPath(e,s);for(let t=0;t<s.holes.length;t++)this.drawPath(e,s.holes[t]);}e.fillStyle=s,e.fill();}drawPath(t,e){for(let s=0;s<e.cmds.length;s++){const{cmd:i,args:n}=e.cmds[s];switch(i){case"M":t.moveTo(n[0],n[1]);break;case"L":t.lineTo(n[0],n[1]);break;case"C":t.bezierCurveTo(n[0],n[1],n[2],n[3],n[4],n[5]);}}}});class W{constructor(){this.cmds=[],this.holes=[],this.isClosed=!1,this.isClockWise=!1;}getLength(){return this.cmds.length}add(t,e){this.cmds.push({cmd:t,args:e});}moveTo(t=0,e=0){this.add("M",[t,e]);}lineTo(t,e){this.add("L",[t,e]);}bezierCurveTo(t,e,s,i,n,r){this.add("C",[t,e,s,i,n,r]);}closePath(){this.isClosed=!0;}}class X extends pixi_js.Container{constructor(){super(),this.paths=[],this._samplerPoints=[],this.currentPath=null,this.color=0,this.lineStyle={lineWidth:1,lineJoin:"miter",miterLimit:10,lineCap:"butt",lineDash:[],lineDashOffset:0},this.isDirty=!0,this.drawType="",this.blendMode=pixi_js.BLEND_MODES.NORMAL,this.webGLData=null,this.firstIsClockWise=!0,this.preClockWiseStatus=null;}clear(){this.paths.length=0,this.currentPath=null,this.firstIsClockWise=!0,this.preClockWiseStatus=null,this.isDirty=!0;}moveTo(t=0,e=0){this.endPath(),this.currentPath=new W,this.currentPath.moveTo(t,e),this._samplerPoints.push([t,e]);}lineTo(t,e){this.currentPath.lineTo(t,e),this._samplerPoints.push([t,e]);}bezierCurveTo(t,e,s,i,n,r){this.currentPath.bezierCurveTo(t,e,s,i,n,r),this._samplerPoints.push([n,r]);}endPath(){if(this.currentPath&&this.currentPath.getLength()>1){const t=this.paths.length,e=function(t){const e=t.length;let s=0;for(let i=e-1,n=0;n<e;i=n++)s+=t[i][0]*t[n][1]-t[n][0]*t[i][1];return .5*s}(this._samplerPoints)>0;if(this.currentPath.isClockWise=e,0===t&&(this.firstIsClockWise=e),t>0&&this.preClockWiseStatus===this.firstIsClockWise&&this.preClockWiseStatus!==e){(t>0?this.paths[t-1]:null).holes.push(this.currentPath);}else this.paths.push(this.currentPath),this.preClockWiseStatus=e;this.currentPath=null,this.isDirty=!0;}this._samplerPoints.length=0;}closePath(){this.currentPath.closePath();}stroke(){this.endPath(),this.drawType="stroke";}fill(){null!==this.currentPath&&(this.closePath(),this.endPath(),this.drawType="fill");}_renderWebGL(t){t.setObjectRenderer(t.plugins.lottiegraphics),t.plugins.lottiegraphics.render(this);}_renderCanvas(t){t.plugins.lottiegraphics.render(this);}}class z extends X{constructor(t,e){super(),this.lottieElement=t,this.config=e,this.passMatrix=new pixi_js.Matrix;}setShapeTransform(){const t=this.lottieElement.preTransforms.finalTransform.props;this.passMatrix.set(t[0],t[1],t[4],t[5],t[12],t[13]),this.transform.setFromMatrix(this.passMatrix);}updateTransform(){this.setShapeTransform(),this.transform.updateTransform(this.parent.transform),this.worldAlpha=this.alpha*this.parent.worldAlpha,this._bounds.updateID++;}updateLottieGrahpics(e){const s$1=e.type;if(this.clear(),("st"===s$1||"gs"===s$1)&&0===e.wi||!e.data._shouldRender||0===e.coOp)return;const i=e.elements,n=i.length;for(let t=0;t<n;t+=1){const e=i[t].trNodes,s=e.length;for(let t=0;t<s;t++)"m"==e[t].t?this.moveTo(e[t].p[0],e[t].p[1]):"c"==e[t].t?this.bezierCurveTo(e[t].pts[0],e[t].pts[1],e[t].pts[2],e[t].pts[3],e[t].pts[4],e[t].pts[5]):this.closePath();}"st"!==s$1&&"gs"!==s$1||(e.da?(this.lineStyle.lineDash=e.da,this.lineStyle.lineDashOffset=e.do):this.lineStyle.lineDash=[]),"st"===s$1||"gs"===s$1?(this.lineStyle.lineWidth=e.wi,this.lineStyle.lineCap=e.lc,this.lineStyle.lineJoin=e.lj,this.lineStyle.miterLimit=e.ml||0,this.color=s.rgb2hex(e.co||e.grd),this.alpha=e.coOp,this.stroke()):(this.color=s.rgb2hex(e.co||e.grd),this.alpha=e.coOp,this.fill());}}class G extends pixi_js.Graphics{constructor(t,e){super(),this.lottieElement=t,this.config=e;const s=parseInt(e.color.replace("#",""),16);this.beginFill(s),this.drawRect(0,0,e.rect.width,e.rect.height),this.endFill();}onSetupLottie(){if(this.lottieElement.hasValidMasks()){const t=this.config.session.local;this.graphicsMasks=new T(t),this.mask=this.graphicsMasks,this.addChild(this.mask);}}setHierarchy(t){this.hierarchy=t;}show(){this.visible=!0;}hide(){this.visible=!1;}updateLottieTransform(t){this.x=t.x,this.y=t.y,this.pivot.x=t.anchorX,this.pivot.y=t.anchorY,this.scale.x=t.scaleX,this.scale.y=t.scaleY,this.rotation=t.rotation,this.alpha=t.alpha;}updateLottieMasks(t){this.graphicsMasks&&this.graphicsMasks.updateMasks(t);}}class R extends pixi_js.Sprite{constructor(t,e){const{texture:s,asset:i}=e;super(s),s.baseTexture.hasLoaded?(s.orig=new pixi_js.Rectangle(0,0,i.w,i.h),s._updateUvs()):s.baseTexture.on("loaded",()=>{s.orig=new pixi_js.Rectangle(0,0,i.w,i.h),s._updateUvs();}),this.lottieElement=t,this.config=e;}onSetupLottie(){if(this.lottieElement.hasValidMasks()){const t=this.config.session.local;this.graphicsMasks=new T(t),this.mask=this.graphicsMasks,this.addChild(this.mask);}}setHierarchy(t){this.hierarchy=t;}show(){this.visible=!0;}hide(){this.visible=!1;}updateLottieTransform(t){this.x=t.x,this.y=t.y,this.pivot.x=t.anchorX,this.pivot.y=t.anchorY,this.scale.x=t.scaleX,this.scale.y=t.scaleY,this.rotation=t.rotation,this.alpha=t.alpha;}updateLottieMasks(t){this.graphicsMasks&&this.graphicsMasks.updateMasks(t);}}const U=/^(https?:)?\/\//;class N extends e{constructor(t,{prefix:e,autoLoad:s=!0}){super(),this.assets=t,this.prefix=e||"",this.textures={},this._total=0,this._failed=0,this._received=0,this.loaded=!1,s&&this.load();}load(){this.assets.forEach(t=>{const e=t.id,s=function(t,e){if(1===t.e)return t.p;e&&(e=e.replace(/\/?$/,"/"));const s=t.u+t.p;let i="";return i=t.up?t.up:U.test(s)?s:e+s,i}(t,this.prefix),i=pixi_js.Texture.fromImage(s,"*");this.textures[e]=i,this._total++,i.baseTexture.hasLoaded?(this._received++,this.emit("update"),this._received+this._failed>=this._total&&this._onComplete()):(i.baseTexture.once("loaded",()=>{this._received++,this.emit("update"),this._received+this._failed>=this._total&&this._onComplete();}),i.baseTexture.once("error",()=>{this._failed++,this.emit("update"),this._received+this._failed>=this._total&&this._onComplete();}));});}_onComplete(){this.loaded=!0,this.emit("complete"),this._failed>0&&(this._failed>=this._total?this.emit("fail"):this.emit("partlyfail",this._failed));}getTextureById(t){return this.textures[t]}}function j(t){return t.response&&"object"==typeof t.response?t.response:t.response&&"string"==typeof t.response?JSON.parse(t.response):t.responseText?JSON.parse(t.responseText):void 0}class q extends e{constructor(t){super(),this.path=t,this.onSuccess=this.onSuccess.bind(this),this.onFail=this.onFail.bind(this),function(t,e,s){let i,n=new XMLHttpRequest;n.open("GET",t,!0);try{n.responseType="json";}catch(t){console.error("lottie-pixi loadAjax:",t);}n.send(),n.onreadystatechange=function(){if(4==n.readyState)if(200==n.status)i=j(n),e(i);else try{i=j(n),e(i);}catch(t){s&&s(t);}};}(t,this.onSuccess,this.onFail);}onSuccess(t){this.emit("success",t),this.emit("complete",t);}onFail(t){this.emit("fail",t),this.emit("error",t);}}const Y={Linear:{None:t=>t},Ease:{In:function(){const t=new M$1(.42,0,1,1);return function(e){return t.get(e)}}(),Out:function(){const t=new M$1(0,0,.58,1);return function(e){return t.get(e)}}(),InOut:function(){const t=new M$1(.42,0,.58,1);return function(e){return t.get(e)}}(),Bezier(t,e,i,n){const r=new M$1(t,e,i,n);return function(t){return r.get(t)}}},Elastic:{In:t=>0===t?0:1===t?1:-Math.pow(2,10*(t-1))*Math.sin(5*(t-1.1)*Math.PI),Out:t=>0===t?0:1===t?1:Math.pow(2,-10*t)*Math.sin(5*(t-.1)*Math.PI)+1,InOut:t=>0===t?0:1===t?1:(t*=2)<1?-.5*Math.pow(2,10*(t-1))*Math.sin(5*(t-1.1)*Math.PI):.5*Math.pow(2,-10*(t-1))*Math.sin(5*(t-1.1)*Math.PI)+1},Back:{In(t){const e=1.70158;return t*t*((e+1)*t-e)},Out(t){const e=1.70158;return --t*t*((e+1)*t+e)+1},InOut(t){const e=2.5949095;return (t*=2)<1?t*t*((e+1)*t-e)*.5:.5*((t-=2)*t*((e+1)*t+e)+2)}},Bounce:{In:t=>1-Y.Bounce.Out(1-t),Out:t=>t<1/2.75?7.5625*t*t:t<2/2.75?7.5625*(t-=1.5/2.75)*t+.75:t<2.5/2.75?7.5625*(t-=2.25/2.75)*t+.9375:7.5625*(t-=2.625/2.75)*t+.984375,InOut:t=>t<.5?.5*Y.Bounce.In(2*t):.5*Y.Bounce.Out(2*t-1)+.5}};function J(s$1){e.call(this),this.element=s$1.element||{},this.duration=s$1.duration||300,this.living=!0,this.resident=s$1.resident||!1,this.infinite=s$1.infinite||!1,this.alternate=s$1.alternate||!1,this.repeats=s$1.repeats||0,this.delay=s$1.delay||0,this.wait=s$1.wait||0,this.timeScale=s.isNumber(s$1.timeScale)?s$1.timeScale:1,s$1.onComplete&&this.on("complete",s$1.onComplete.bind(this)),s$1.onUpdate&&this.on("update",s$1.onUpdate.bind(this)),this.init(),this.paused=!1;}function V(e){J.call(this,e),e.from=e.from||{};for(const s$1 in e.to)s.isUndefined(e.from[s$1])&&(e.from[s$1]=this.element[s$1]);this.ease=e.ease||Y.Ease.InOut,this.from=e.from,this.to=e.to;}function H(e){J.call(this,e),this.dynamicProperties=[],this._mdf=!1,this.keyframes=s.copyJSON(e.keyframes),this.frameRate=e.frameRate||30,this.tpf=1e3/this.frameRate,this.ip=s.isUndefined(e.ip)?this.keyframes.ip:e.ip,this.op=s.isUndefined(e.ip)?this.keyframes.op:e.op,this.tfs=this.op-this.ip,this.duration=this.tfs*this.tpf,this.ignoreProps=s.isArray(e.ignoreProps)?e.ignoreProps:[],this.transform=new qt(this,this.keyframes.ks);}function $(t,e){J.call(this,e),this.runners=[],this.queues=[],this.cursor=0,this.total=0,this.alternate=!1,t&&this.then(t);}J.prototype=Object.create(e.prototype),J.prototype.update=function(e){const s$1=this.direction*this.timeScale*e;if(this.waitCut>0)return void(this.waitCut-=Math.abs(s$1));if(this.paused||!this.living||this.delayCut>0)return void(this.delayCut>0&&(this.delayCut-=Math.abs(s$1)));this.progress+=s$1;let i=!1;const n=this.progress;let r;return this.spill()&&(this.repeatsCut>0||this.infinite?(this.repeatsCut>0&&--this.repeatsCut,this.delayCut=this.delay,this.alternate?(this.direction*=-1,this.progress=s.codomainBounce(this.progress,0,this.duration)):(this.direction=1,this.progress=s.euclideanModulo(this.progress,this.duration))):i=!0),i?(this.resident||(this.living=!1),this.progress=s.clamp(n,0,this.duration),r=this.nextPose(),this.emit("complete",r,n-this.progress)):(r=this.nextPose(),this.emit("update",r,this.progress/this.duration)),r},J.prototype.spill=function(){const t=this.progress<=0&&-1===this.direction,e=this.progress>=this.duration&&1===this.direction;return t||e},J.prototype.init=function(){this.direction=1,this.progress=0,this.repeatsCut=this.repeats,this.delayCut=this.delay,this.waitCut=this.wait;},J.prototype.nextPose=function(){console.warn("should be overwrite");},J.prototype.linear=function(t,e,s){return (e-t)*s+t},J.prototype.setSpeed=function(t){return this.timeScale=t,this},J.prototype.pause=function(){return this.paused=!0,this},J.prototype.resume=function(){return this.paused=!1,this},J.prototype.restart=J.prototype.resume,J.prototype.stop=function(){return this.repeats=0,this.infinite=!1,this.progress=this.duration,this},J.prototype.cancel=function(){return this.living=!1,this},V.prototype=Object.create(J.prototype),V.prototype.nextPose=function(){const t={},e=this.ease(this.progress/this.duration);for(const s in this.to)void 0!==this.element[s]&&(this.element[s]=t[s]=this.linear(this.from[s],this.to[s],e));return t},H.prototype=Object.create(J.prototype),H.prototype.prepareProperties=function(t){const e=this.dynamicProperties.length;let s;for(s=0;s<e;s+=1)this.dynamicProperties[s].getValue(t),this.dynamicProperties[s]._mdf&&(this._mdf=!0);},H.prototype.addDynamicProperty=function(t){-1===this.dynamicProperties.indexOf(t)&&this.dynamicProperties.push(t);},H.prototype.nextPose=function(){const t={},e=this.ip+this.progress/this.tpf;return this.prepareProperties(e),-1===this.ignoreProps.indexOf("position")&&(-1===this.ignoreProps.indexOf("x")&&(t.x=this.element.x=this.transform.x),-1===this.ignoreProps.indexOf("y")&&(t.y=this.element.y=this.transform.y)),-1===this.ignoreProps.indexOf("pivot")&&(t.pivot={},-1===this.ignoreProps.indexOf("pivotX")&&(t.pivot.x=this.element.pivot.x=this.transform.anchorX),-1===this.ignoreProps.indexOf("pivotY")&&(t.pivot.y=this.element.pivot.y=this.transform.anchorY)),-1===this.ignoreProps.indexOf("scale")&&(t.scale={},-1===this.ignoreProps.indexOf("scaleX")&&(t.scale.x=this.element.scale.x=this.transform.scaleX),-1===this.ignoreProps.indexOf("scaleY")&&(t.scale.y=this.element.scale.y=this.transform.scaleY)),-1===this.ignoreProps.indexOf("rotation")&&(t.rotation=this.element.rotation=this.transform.rotation),-1===this.ignoreProps.indexOf("alpha")&&(t.alpha=this.element.alpha=this.transform.alpha),t},$.prototype=Object.create(J.prototype),$.prototype.then=function(t){return this.queues.push(t),this.total=this.queues.length,this},$.prototype.nextOne=function(t,e){this.runners[this.cursor].init(),this.cursor++,this._residueTime=Math.abs(e);},$.prototype.initOne=function(){const t=this.queues[this.cursor];t.infinite=!1,t.resident=!0,t.element=this.element;let e=null;t.keyframes?e=new H(t):t.to&&(e=new V(t)),null!==e&&(e.on("complete",this.nextOne.bind(this)),this.runners.push(e));},$.prototype.nextPose=function(t){return !this.runners[this.cursor]&&this.queues[this.cursor]&&this.initOne(),this._residueTime>0&&(t+=this._residueTime,this._residueTime=0),this.runners[this.cursor].update(t)},$.prototype.update=function(t){if(this.wait>0)return void(this.wait-=Math.abs(t));if(this.paused||!this.living||this.delayCut>0)return void(this.delayCut>0&&(this.delayCut-=Math.abs(t)));const e=this.cursor,s=this.nextPose(this.timeScale*t);return this.emit("update",{index:e,pose:s},this.progress/this.duration),this.spill()&&(this.repeats>0||this.infinite?(this.repeats>0&&--this.repeats,this.delayCut=this.delay,this.cursor=0):(this.resident||(this.living=!1),this.emit("complete",s))),s},$.prototype.spill=function(){return this.cursor>=this.total};const K={settings:pixi_js.settings,UPDATE_PRIORITY:pixi_js.UPDATE_PRIORITY,animationTicker:pixi_js.ticker.shared};function Z(t){this.element=t,this.animates=[],this.timeScale=1,this.paused=!1,this.updateDeltaTime=this.updateDeltaTime.bind(this),K.animationTicker.add(this.updateDeltaTime,K.UPDATE_PRIORITY.HIGH);}Z.prototype.clearAnimators=function(t){if(this.paused)return;const e=this.animates;for(let s=0;s<t.length;s++){const i=t[s];e[i].living||e[i].resident||this.animates.splice(i,1);}},Z.prototype.updateDeltaTime=function(t){if(this.animates.length<=0)return;const e=t/K.settings.TARGET_FPMS;this.update(e);},Z.prototype.update=function(t){if(this.paused)return;if(this.animates.length<=0)return;t=this.timeScale*t;const e=[];for(let s=0;s<this.animates.length;s++)this.animates[s].living||this.animates[s].resident?this.animates[s].update(t):e.push(s);e.length>0&&this.clearAnimators(e);},Z.prototype.animate=function(t,e){return t.element=this.element,this._addMove(new V(t),e)},Z.prototype.queues=function(t,e,s){return e.element=this.element,this._addMove(new $(t,e),s)},Z.prototype.bodymovin=function(t,e){return t.element=this.element,this._addMove(new H(t),e)},Z.prototype._addMove=function(t,e){return e&&this.clearAll(),this.animates.push(t),t},Z.prototype.pause=function(){this.paused=!0;},Z.prototype.resume=function(){this.paused=!1;},Z.prototype.restart=Z.prototype.resume,Z.prototype.setSpeed=function(t){this.timeScale=t;},Z.prototype.clearAll=function(){this.animates.length=0;},pixi_js.DisplayObject.prototype.setupAnimations=function(){this.animations||(this.animations=new Z(this));},pixi_js.DisplayObject.prototype.animate=function(t,e){return this.animations||this.setupAnimations(),this.animations.animate(t,e)},pixi_js.DisplayObject.prototype.queues=function(t,e={},s){return this.animations||this.setupAnimations(),this.animations.queues(t,e,s)},pixi_js.DisplayObject.prototype.bodymovin=function(t,e){return this.animations||this.setupAnimations(),this.animations.bodymovin(t,e)},Object.defineProperties(pixi_js.DisplayObject.prototype,{scaleXY:{get(){return this.scale.x},set(t){this.scale.set(t);}},scaleX:{get(){return this.scale.x},set(t){this.scale.x=t;}},scaleY:{get(){return this.scale.y},set(t){this.scale.y=t;}},pivotX:{get(){return this.pivot.x},set(t){this.pivot.x=t;}},pivotY:{get(){return this.pivot.y},set(t){this.pivot.y=t;}}}),pixi_js.Container.prototype.updateTransform=function(){this.emit("pretransform"),this._boundsID++,this.hierarchy&&this.hierarchy.transform?(this.hierarchy.updateTransform(),this.transform.updateTransform(this.hierarchy.transform)):this.transform.updateTransform(this.parent.transform),this.worldAlpha=this.alpha*this.parent.worldAlpha;for(let t=0,e=this.children.length;t<e;++t){const e=this.children[t];e.visible&&e.updateTransform();}this.emit("posttransform");},pixi_js.Container.prototype.containerUpdateTransform=pixi_js.Container.prototype.updateTransform;
 
-    const iOSVersion = require('ios-version');
+    var _isFinite = Number.isFinite || function (value) {
+    	return !(typeof value !== 'number' || value !== value || value === Infinity || value === -Infinity);
+    };
 
-    const { major } = iOSVersion(window.navigator.userAgent) || {};
+    // https://github.com/paulmillr/es6-shim
+    // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isinteger
+
+    var isInteger = Number.isInteger || function(val) {
+      return typeof val === "number" &&
+        _isFinite(val) &&
+        Math.floor(val) === val;
+    };
+
+    var isIntegerRegex = /^-?\d+$/;
+
+    var _parseInt = function parseIntStrict (integer) {
+      if (typeof integer === 'number') {
+        return isInteger(integer) ? integer : undefined
+      }
+      if (typeof integer === 'string') {
+        return isIntegerRegex.test(integer) ? parseInt(integer, 10) : undefined
+      }
+    };
+
+    var REGEX = /OS (\d\d?_\d(_\d)?)/;
+
+    var iosVersion = function iOsVersion (agent) {
+      if (!agent) return null
+
+      var matches = REGEX.exec(agent);
+      if (!matches) return null
+
+      var parts = matches[1].split('_').map(_parseInt);
+
+      return {
+        major: parts[0],
+        minor: parts[1],
+        patch: parts[2] || 0
+      }
+    };
+
+    const {major} = iosVersion(window.navigator.userAgent) || {};
 
     /**
      * dataURL 转成 blob
@@ -132,7 +119,7 @@
       let data = [intArray];
       let result;
       try {
-        result = new Blob(data, { type: mime });
+        result = new Blob(data, {type: mime});
       } catch (error) {
         console.log(error);
       }
@@ -148,23 +135,13 @@
       if (window.URL && URL.createObjectURL) {
         // dataURL2blob 此方法需额外定义
         const blob = dataURL2blob(dataURL);
-        return URL.createObjectURL(blob)
+        return URL.createObjectURL(blob);
       }
-      return dataURL
+      return dataURL;
     }
 
     function imageHandle(source) {
-      // if (!imageHandle.systemOs) {
-      //   imageHandle.systemOs = UA().os
-      // }
-      // const {
-      //   version: {
-      //     original = ''
-      //   },
-      //   name = ''
-      // } = imageHandle.systemOs;
-      // const isBase64Reg = /^data:image\/png;base64/;
-      // const isLtiOS10 = name === 'iOS' && (+original.split('.')[0] <= 10)
+      const isBase64Reg = /^data:image\/png;base64/;
       if (major <= 8 && isBase64Reg.test(source)) {
         return dataURL2ObjUrl(source);
       }
@@ -187,11 +164,10 @@
     wt.registerDisplayByType(wt.Type.Sprite, R);
     wt.registerDisplayByType(wt.Type.Component, k);
     wt.registerDisplayByType(wt.Type.Container, pixi_js.Container);
-    var LottieSystem = (function (_super) {
-        __extends(LottieSystem, _super);
-        function LottieSystem() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.managerLife = [
+    let LottieSystem = class LottieSystem extends pluginRenderer.Renderer {
+        constructor() {
+            super(...arguments);
+            this.managerLife = [
                 'DisplayReady',
                 'ImageReady',
                 'success',
@@ -201,143 +177,121 @@
                 'enterFrame',
                 'update'
             ];
-            return _this;
         }
-        LottieSystem.prototype.init = function () {
-            this.renderSystem = this.game.systems.find(function (s) { return (s.application); });
+        init() {
+            this.renderSystem = this.game.systems.find((s) => (s.application));
             this.app = this.renderSystem.application;
-        };
-        LottieSystem.prototype.componentChanged = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    if (changed.componentName === 'Lottie') {
-                        if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
-                            this.add(changed);
-                        }
-                        else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                            this.remove(changed);
-                        }
+        }
+        componentChanged(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (changed.componentName === 'Lottie') {
+                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                        this.add(changed);
                     }
-                    return [2];
-                });
-            });
-        };
-        LottieSystem.prototype.add = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                var component, container, _a, rn, otherOpts, data, json, assets, anim;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
-                        case 0:
-                            this.manager = new Gt(this.app);
-                            component = changed.component;
-                            container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
-                            if (!container)
-                                return [2];
-                            _a = component.options, rn = _a.resource, otherOpts = __rest(_a, ["resource"]);
-                            return [4, eva_js.resource.getResource(rn)];
-                        case 1:
-                            data = (_b.sent()).data;
-                            json = __assign({}, (data.json || {}));
-                            assets = json.assets || [];
-                            assets.forEach(function (item) {
-                                if (item.p)
-                                    item.p = imageHandle(item.p);
-                            });
-                            anim = this.manager.parseAnimation(__assign({ keyframes: json }, otherOpts));
-                            component.anim = anim;
-                            container.addChildAt(anim.group, 0);
-                            this.managerLife.forEach(function (eventName) {
-                                anim.on(eventName, function (e) { return component.emit(eventName, e); });
-                            });
-                            if (anim.isImagesLoaded)
-                                component.emit('success', {});
-                            return [2];
+                    else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                        this.remove(changed);
                     }
-                });
+                }
             });
-        };
-        LottieSystem.prototype.remove = function (changed) {
-            var component = changed.component;
-            var container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
+        }
+        add(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.manager = new Gt(this.app);
+                const component = changed.component;
+                const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
+                if (!container)
+                    return;
+                const _a = component.options, { resource: rn } = _a, otherOpts = __rest(_a, ["resource"]);
+                const { data } = yield eva_js.resource.getResource(rn);
+                const json = Object.assign({}, (data.json || {}));
+                const assets = json.assets || [];
+                assets.forEach(item => {
+                    if (item.p)
+                        item.p = imageHandle(item.p);
+                });
+                const anim = this.manager.parseAnimation(Object.assign({ keyframes: json }, otherOpts));
+                component.anim = anim;
+                container.addChildAt(anim.group, 0);
+                this.managerLife.forEach(eventName => {
+                    anim.on(eventName, e => component.emit(eventName, e));
+                });
+                if (anim.isImagesLoaded)
+                    component.emit('success', {});
+            });
+        }
+        remove(changed) {
+            const component = changed.component;
+            const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
             if (container) {
                 container.removeChild(component.anim.group);
             }
             component.anim = null;
-        };
-        LottieSystem.systemName = 'LottieSystem';
-        LottieSystem = __decorate([
-            eva_js.decorators.componentObserver({
-                Lottie: []
-            })
-        ], LottieSystem);
-        return LottieSystem;
-    }(pluginRenderer.Renderer));
-
-    var Lottie = (function (_super) {
-        __extends(Lottie, _super);
-        function Lottie(options) {
-            var _this = _super.call(this) || this;
-            _this.loadStatus = false;
-            _this.firstPlay = null;
-            _this.prevSlot = {};
-            _this.currentSlot = {};
-            _this.options = __assign({ autoStart: false }, options);
-            _this.on('success', function () {
-                _this.loadStatus = true;
-                var _a = _this.anim.keyframes, ip = _a.ip, op = _a.op;
-                var _loop_1 = function (i) {
-                    var event_1 = "@" + i;
-                    _this.anim.on(event_1, function (e) { return _this.emit(event_1, e); });
-                };
-                for (var i = ip; i <= op; i++) {
-                    _loop_1(i);
-                }
-                _this.firstPlay && _this.firstPlay();
-            });
-            return _this;
         }
-        Lottie.prototype.play = function (params, expandOpts) {
-            var _this = this;
-            if (params === void 0) { params = []; }
-            if (expandOpts === void 0) { expandOpts = {
-                repeats: 0
-            }; }
+    };
+    LottieSystem.systemName = 'LottieSystem';
+    LottieSystem = __decorate([
+        eva_js.decorators.componentObserver({
+            Lottie: []
+        })
+    ], LottieSystem);
+    var LottieSystem$1 = LottieSystem;
+
+    class Lottie extends eva_js.Component {
+        constructor(options) {
+            super();
+            this.loadStatus = false;
+            this.firstPlay = null;
+            this.prevSlot = {};
+            this.currentSlot = {};
+            this.options = Object.assign({ autoStart: false }, options);
+            this.on('success', () => {
+                this.loadStatus = true;
+                const { ip, op } = this.anim.keyframes;
+                for (let i = ip; i <= op; i++) {
+                    const event = `@${i}`;
+                    this.anim.on(event, e => this.emit(event, e));
+                }
+                this.firstPlay && this.firstPlay();
+            });
+        }
+        play(params = [], expandOpts = {
+            repeats: 0
+        }) {
             if (!this.loadStatus) {
-                this.firstPlay = function () {
-                    _this.play(params, expandOpts);
+                this.firstPlay = () => {
+                    this.play(params, expandOpts);
                 };
                 return;
             }
-            var _a = expandOpts.slot, slot = _a === void 0 ? [] : _a;
-            slot.forEach(function (_a) {
-                var name = _a.name, type = _a.type, value = _a.value, _b = _a.style, style = _b === void 0 ? {} : _b;
-                var x = style.x, y = style.y, _c = style.anchor, anchor = _c === void 0 ? { x: 0, y: 0 } : _c, _d = style.pivot, pivot = _d === void 0 ? { x: 0, y: 0 } : _d, width = style.width, height = style.height;
+            const { slot = [] } = expandOpts;
+            slot.forEach(({ name, type, value, style = {} }) => {
+                const { x, y, anchor = { x: 0, y: 0 }, pivot = { x: 0, y: 0 }, width, height } = style;
                 if (type === 'IMAGE') {
-                    _this.currentSlot[name] = pixi_js.Sprite.from(value);
+                    this.currentSlot[name] = pixi_js.Sprite.from(value);
                 }
                 else if (type === 'TEXT') {
-                    _this.currentSlot[name] = new pixi_js.Text(value, new pixi_js.TextStyle(style));
+                    this.currentSlot[name] = new pixi_js.Text(value, new pixi_js.TextStyle(style));
                 }
                 if (x)
-                    _this.currentSlot[name].x = x;
+                    this.currentSlot[name].x = x;
                 if (y)
-                    _this.currentSlot[name].y = y;
+                    this.currentSlot[name].y = y;
                 if (width)
-                    _this.currentSlot[name].width = width;
+                    this.currentSlot[name].width = width;
                 if (height)
-                    _this.currentSlot[name].height = height;
-                _this.currentSlot[name].anchor.set(anchor.x || 0, anchor.y || 0);
-                _this.currentSlot[name].pivot.set(_this.currentSlot[name].width * (pivot.x || 0), _this.currentSlot[name].height * (pivot.y || 0));
-                if (_this.prevSlot[name])
-                    _this.anim.unbindSlot(name, _this.prevSlot[name]);
-                _this.anim.bindSlot(name, _this.currentSlot[name]);
-                _this.prevSlot[name] = _this.currentSlot[name];
+                    this.currentSlot[name].height = height;
+                this.currentSlot[name].anchor.set(anchor.x || 0, anchor.y || 0);
+                this.currentSlot[name].pivot.set(this.currentSlot[name].width * (pivot.x || 0), this.currentSlot[name].height * (pivot.y || 0));
+                if (this.prevSlot[name])
+                    this.anim.unbindSlot(name, this.prevSlot[name]);
+                this.anim.bindSlot(name, this.currentSlot[name]);
+                this.prevSlot[name] = this.currentSlot[name];
             });
             this.anim.playSegment(this.playParamsHandle(params), expandOpts);
-        };
-        Lottie.prototype.playParamsHandle = function (params) {
-            var p = [].concat(params);
-            var keyframes = this.anim.keyframes;
+        }
+        playParamsHandle(params) {
+            let p = [].concat(params);
+            const { keyframes } = this.anim;
             if (!p.length || p.length > 2) {
                 p = [keyframes.ip, keyframes.op];
             }
@@ -345,33 +299,31 @@
                 p = [p[0] % keyframes.op, keyframes.op];
             }
             return p;
-        };
-        Lottie.prototype.onTap = function (name, callback) {
-            var _this = this;
-            var g = new pixi_js.Graphics();
-            this.on('success', function () {
-                var ele = _this.anim.querySelector(name);
-                var display = ele.display;
+        }
+        onTap(name, callback) {
+            const g = new pixi_js.Graphics();
+            this.on('success', () => {
+                const ele = this.anim.querySelector(name);
+                const display = ele.display;
                 g.beginFill(0xFFFFFF);
                 g.drawRect(0, 0, 100, 100);
                 g.endFill();
                 g.alpha = 0;
                 display.addChild(g);
                 ele.display.interactive = true;
-                ele.display.on('pointertap', function () {
+                ele.display.on('pointertap', () => {
                     callback();
                 });
             });
-        };
-        Lottie.componentName = 'Lottie';
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Lottie.prototype, "slot", void 0);
-        return Lottie;
-    }(eva_js.Component));
+        }
+    }
+    Lottie.componentName = 'Lottie';
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Lottie.prototype, "slot", void 0);
 
     exports.Lottie = Lottie;
-    exports.LottieSystem = LottieSystem;
+    exports.LottieSystem = LottieSystem$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

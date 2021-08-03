@@ -1,4 +1,4 @@
-import { Component, decorators, Game, GameObject } from '@eva/eva.js';
+import { Component, decorators } from '@eva/eva.js';
 
 export interface ImgParams {
   resource: string;
