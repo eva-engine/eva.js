@@ -236,7 +236,7 @@
             const animate = this.animates[id];
             this.autoPlay[id] = animate.animatedSprite.playing;
             this.containerManager.getContainer(id).removeChild(animate.animatedSprite);
-            animate.animatedSprite.destroy();
+            animate.animatedSprite.destroy(true);
             delete this.animates[id];
             if (!isChange) {
                 delete this.autoPlay[id];

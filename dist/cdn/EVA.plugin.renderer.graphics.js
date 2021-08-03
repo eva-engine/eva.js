@@ -50,37 +50,43 @@
       });
   }
 
-  let Graphics = class Graphics extends pluginRenderer.Renderer {
-      constructor() {
-          super(...arguments);
-          this.name = 'Graphics';
-      }
-      init() {
-          this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
-          this.renderSystem.rendererManager.register(this);
-      }
-      componentChanged(changed) {
-          return __awaiter(this, void 0, void 0, function* () {
-              if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
-                  this.containerManager
-                      .getContainer(changed.gameObject.id)
-                      .addChildAt(changed.component.graphics, 0);
-              }
-              else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                  this.containerManager
-                      .getContainer(changed.gameObject.id)
-                      .removeChild(changed.component.graphics);
-              }
-          });
-      }
-  };
-  Graphics.systemName = 'Graphics';
-  Graphics = __decorate([
-      eva_js.decorators.componentObserver({
-          Graphics: ['graphics'],
-      })
-  ], Graphics);
-  var Graphics$1 = Graphics;
+    var Graphics = (function (_super) {
+        __extends(Graphics, _super);
+        function Graphics() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.name = 'Graphics';
+            return _this;
+        }
+        Graphics.prototype.init = function () {
+            this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
+            this.renderSystem.rendererManager.register(this);
+        };
+        Graphics.prototype.componentChanged = function (changed) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .addChildAt(changed.component.graphics, 0);
+                    }
+                    else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .removeChild(changed.component.graphics);
+                        changed.component.graphics.destroy(true);
+                    }
+                    return [2];
+                });
+            });
+        };
+        Graphics.systemName = 'Graphics';
+        Graphics = __decorate([
+            eva_js.decorators.componentObserver({
+                Graphics: ['graphics'],
+            })
+        ], Graphics);
+        return Graphics;
+    }(pluginRenderer.Renderer));
 
   exports.Graphics = Graphics$2;
   exports.GraphicsSystem = Graphics$1;

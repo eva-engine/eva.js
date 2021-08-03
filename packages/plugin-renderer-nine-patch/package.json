@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-nine-patch",
-  "version": "1.0.12-alpha.2",
+  "version": "1.0.12",
   "description": "@eva/plugin-renderer-nine-patch",
   "main": "index.js",
   "module": "dist/plugin-renderer-nine-patch.esm.js",
@@ -18,8 +18,8 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/plugin-renderer": "^1.0.12-alpha.2",
-    "@eva/renderer-adapter": "^1.0.12-alpha.2",
-    "@eva/eva.js": "^1.0.12-alpha.2"
+    "@eva/plugin-renderer": "^1.0.12",
+    "@eva/renderer-adapter": "^1.0.12",
+    "@eva/eva.js": "^1.0.12"
   }
 }

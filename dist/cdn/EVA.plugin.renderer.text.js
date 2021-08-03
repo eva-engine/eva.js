@@ -76,33 +76,38 @@
         init() {
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
-        }
-        componentChanged(changed) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (changed.componentName !== 'Text')
-                    return;
-                if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
-                    const component = changed.component;
-                    const text = new rendererAdapter.Text(component.text, component.style);
-                    this.containerManager
-                        .getContainer(changed.gameObject.id)
-                        .addChildAt(text, 0);
-                    this.texts[changed.gameObject.id] = {
-                        text,
-                        component: changed.component,
-                    };
-                    this.setSize(changed);
-                }
-                else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                    this.containerManager
-                        .getContainer(changed.gameObject.id)
-                        .removeChild(this.texts[changed.gameObject.id].text);
-                    delete this.texts[changed.gameObject.id];
-                }
-                else {
-                    this.change(changed);
-                    this.setSize(changed);
-                }
+        };
+        Text.prototype.componentChanged = function (changed) {
+            return __awaiter(this, void 0, void 0, function () {
+                var component, text;
+                return __generator(this, function (_a) {
+                    if (changed.componentName !== 'Text')
+                        return [2];
+                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                        component = changed.component;
+                        text = new rendererAdapter.Text(component.text, component.style);
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .addChildAt(text, 0);
+                        this.texts[changed.gameObject.id] = {
+                            text: text,
+                            component: changed.component,
+                        };
+                        this.setSize(changed);
+                    }
+                    else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .removeChild(this.texts[changed.gameObject.id].text);
+                        this.texts[changed.gameObject.id].text.destroy(true);
+                        delete this.texts[changed.gameObject.id];
+                    }
+                    else {
+                        this.change(changed);
+                        this.setSize(changed);
+                    }
+                    return [2];
+                });
             });
         }
         change(changed) {

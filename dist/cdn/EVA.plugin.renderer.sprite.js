@@ -153,7 +153,19 @@
                         const sprite = new Sprite$2(null);
                         eva_js.resource.getResource(component.resource).then(({ instance }) => __awaiter(this, void 0, void 0, function* () {
                             if (!instance) {
-                                throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+                                throw new Error("GameObject:" + changed.gameObject.name + "'s Sprite resource load error");
+                            }
+                            this.sprites[changed.gameObject.id].image =
+                                instance[component_1.resource + resourceKeySplit + component_1.spriteName];
+                            return [3, 4];
+                        case 3:
+                            if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                                sprite = this.sprites[changed.gameObject.id];
+                                this.containerManager
+                                    .getContainer(changed.gameObject.id)
+                                    .removeChild(sprite.sprite);
+                                sprite.sprite.destroy(true);
+                                delete this.sprites[changed.gameObject.id];
                             }
                             sprite.image =
                                 instance[component.resource + resourceKeySplit + component.spriteName];

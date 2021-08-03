@@ -114,7 +114,19 @@
                         }
                         else {
                             this.setProp(changed.gameObject.id, component);
-                        }
+                            _a.label = 4;
+                        case 4: return [3, 6];
+                        case 5:
+                            if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                                sprite = this.imgs[changed.gameObject.id];
+                                this.containerManager
+                                    .getContainer(changed.gameObject.id)
+                                    .removeChild(sprite.tilingSprite);
+                                sprite.tilingSprite.destory(true);
+                                delete this.imgs[changed.gameObject.id];
+                            }
+                            _a.label = 6;
+                        case 6: return [2];
                     }
                     else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                         const sprite = this.imgs[changed.gameObject.id];

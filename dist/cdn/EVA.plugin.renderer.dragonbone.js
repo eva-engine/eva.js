@@ -19249,10 +19249,16 @@
         FRAME_EVENT: 'frameEvent',
         SOUND_EVENT: 'soundEvent',
     };
-    const factory = dragonBones$1.PixiFactory.factory;
-    eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.DRAGONBONE, ({ data }) => {
-        factory.parseDragonBonesData(data.ske);
-        factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image));
+    var factory = dragonBones$1.PixiFactory.factory;
+    eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.DRAGONBONE, function (_a) {
+        var data = _a.data, name = _a.name;
+        factory.parseDragonBonesData(data.ske, name);
+        factory.parseTextureAtlasData(data.tex, pixi_js.Texture.from(data.image), name);
+    });
+    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.DRAGONBONE, function (_a) {
+        var name = _a.name;
+        factory.removeDragonBonesData(name);
+        factory.removeTextureAtlasData(name);
     });
     let DragonBone = class DragonBone extends pluginRenderer.Renderer {
         constructor() {
@@ -19331,8 +19337,8 @@
                 .getContainer(changed.gameObject.id)
                 .removeChild(armature.armature);
             armature.armature.removeAllListeners();
-            armature.armature.destroy();
-            const component = changed.component;
+            armature.armature.destroy(true);
+            var component = changed.component;
             component.armature = null;
             delete this.armatures[changed.gameObject.id];
             if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) {
