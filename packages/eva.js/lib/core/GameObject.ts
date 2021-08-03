@@ -8,9 +8,6 @@ let _id = 0;
 function getId() {
   return ++_id;
 }
-type ComponentCtor<T extends Component<unknown>> = (new (...args: any[]) => T) &
-  Omit<typeof Component, 'prototype'>;
-
 
 // type ComponentCtor<T extends Component> = new () => T
 /**
