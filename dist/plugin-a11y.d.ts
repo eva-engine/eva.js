@@ -5,7 +5,7 @@ import { GameObject } from '@eva/eva.js';
 import { System } from '@eva/eva.js';
 import { Transform } from '@eva/eva.js';
 
-export declare class A11y extends Component {
+export declare class A11y extends Component<A11yParams> {
     static componentName: string;
     interactive: boolean;
     hint: string;

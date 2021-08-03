@@ -4,35 +4,6 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.EVA = global.EVA || {}, global.EVA.plugin = global.EVA.plugin || {}, global.EVA.plugin.transition = {}), global.EVA));
 }(this, (function (exports, eva_js) { 'use strict';
 
-    /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
-
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
-
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
-    ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
-
     /**
      * The Ease class provides a collection of easing functions for use with tween.js.
      */
@@ -807,7 +778,7 @@
     TWEEN.remove.bind(TWEEN);
     TWEEN.update.bind(TWEEN);
 
-    var easingMap = {
+    const easingMap = {
         linear: Easing.Linear.None,
         'ease-in': Easing.Quadratic.In,
         'ease-out': Easing.Quadratic.Out,
@@ -815,10 +786,10 @@
         'bounce-in': Easing.Bounce.In,
         'bounce-out': Easing.Bounce.Out,
         'bounce-in-out': Easing.Bounce.InOut,
-        none: function (p) { return ~~p; },
+        none: p => ~~p,
     };
-    var Animation = (function () {
-        function Animation(timelines, tweenGroup) {
+    class Animation {
+        constructor(timelines, tweenGroup) {
             this.tweens = [];
             this.timelines = [];
             this.finishCount = 0;
@@ -828,19 +799,19 @@
             this.timelines = timelines;
             this.tweenGroup = tweenGroup;
         }
-        Animation.prototype.on = function (eventName, callback) {
+        on(eventName, callback) {
             if (!this.callbacks[eventName]) {
                 this.callbacks.set(eventName, []);
             }
             this.callbacks.get(eventName).push(callback);
-        };
-        Animation.prototype.emit = function (eventName) {
-            var callbacks = this.callbacks.get(eventName);
+        }
+        emit(eventName) {
+            const callbacks = this.callbacks.get(eventName);
             if (!callbacks || !callbacks.length)
                 return;
-            callbacks.forEach(function (fn) { return fn(); });
-        };
-        Animation.prototype.checkFinish = function () {
+            callbacks.forEach(fn => fn());
+        }
+        checkFinish() {
             if (++this.finishCount == this.tweens.length) {
                 if (++this.currIteration == this.iteration) {
                     this.emit('finish');
@@ -851,112 +822,105 @@
                     this.start();
                 }
             }
-        };
-        Animation.prototype.getObjectCache = function (component, name) {
-            var key = "" + component.gameObject.id + component.name;
+        }
+        getObjectCache(component, name) {
+            const key = `${component.gameObject.id}${component.name}`;
             if (!this.objectCache[key]) {
                 this.objectCache[key] = {};
             }
             if (this.objectCache[key][name]) {
                 return this.objectCache[key][name];
             }
-            var keys = name.split('.');
-            var keyIndex = keys.length - 1;
-            var property = component;
-            for (var i = 0; i < keyIndex; i++) {
+            const keys = name.split('.');
+            const keyIndex = keys.length - 1;
+            let property = component;
+            for (let i = 0; i < keyIndex; i++) {
                 property = property[keys[i]];
             }
-            this.objectCache[key][name] = { property: property, key: keys[keyIndex] };
+            this.objectCache[key][name] = { property, key: keys[keyIndex] };
             return this.objectCache[key][name];
-        };
-        Animation.prototype.doAnim = function (_a) {
-            var component = _a.component, name = _a.name, value = _a.value;
-            var _b = this.getObjectCache(component, name), property = _b.property, key = _b.key;
+        }
+        doAnim({ component, name, value }) {
+            const { property, key } = this.getObjectCache(component, name);
             property[key] = value;
-        };
-        Animation.prototype.init = function () {
-            var _this = this;
+        }
+        init() {
             this.checkFinishFunc = this.checkFinish.bind(this);
-            var lastTween;
-            this.timelines.forEach(function (timeline, i) {
-                for (var j = 0; j < timeline.values.length - 1; j++) {
-                    var frame = timeline.values[j];
-                    var nextFrame = timeline.values[j + 1];
-                    var tween = new Tween({ value: frame.value }, _this.tweenGroup)
+            let lastTween;
+            this.timelines.forEach((timeline, i) => {
+                for (let j = 0; j < timeline.values.length - 1; j++) {
+                    const frame = timeline.values[j];
+                    const nextFrame = timeline.values[j + 1];
+                    const tween = new Tween({ value: frame.value }, this.tweenGroup)
                         .to({ value: nextFrame.value })
                         .duration(nextFrame.time - frame.time)
                         .easing(easingMap[frame.tween])
-                        .onUpdate(function (props) {
-                        _this.doAnim({
+                        .onUpdate(props => {
+                        this.doAnim({
                             component: timeline.component,
                             name: timeline.name,
                             value: props.value,
                         });
                     });
                     if (j === 0) {
-                        _this.tweens[i] = tween;
+                        this.tweens[i] = tween;
                     }
                     else {
                         lastTween.chain(tween);
                     }
                     lastTween = tween;
                 }
-                lastTween && lastTween.onComplete(function () { return _this.checkFinishFunc(); });
+                lastTween && lastTween.onComplete(() => this.checkFinishFunc());
             });
-        };
-        Animation.prototype.play = function (iteration) {
-            if (iteration === void 0) { iteration = 1; }
+        }
+        play(iteration = 1) {
             this.stoped = false;
             this.start();
             this.currIteration = 0;
             this.iteration = iteration;
-        };
-        Animation.prototype.start = function () {
+        }
+        start() {
             this.finishCount = 0;
             this.tweens.length = 0;
             this.init();
-            this.tweens.forEach(function (tween) { return tween.start(); });
-        };
-        Animation.prototype.pause = function () {
-            this.tweens.forEach(function (tween) { return tween.pause(); });
-        };
-        Animation.prototype.resume = function () {
-            this.tweens.forEach(function (tween) { return tween.resume(); });
-        };
-        Animation.prototype.stop = function () {
+            this.tweens.forEach((tween) => tween.start());
+        }
+        pause() {
+            this.tweens.forEach((tween) => tween.pause());
+        }
+        resume() {
+            this.tweens.forEach((tween) => tween.resume());
+        }
+        stop() {
             this.stoped = true;
-            this.tweens.forEach(function (tween) { return tween.stop(); });
-        };
-        Animation.prototype.destroy = function () {
+            this.tweens.forEach((tween) => tween.stop());
+        }
+        destroy() {
             this.stop();
             this.tweens = null;
             this.timelines = null;
             this.objectCache = null;
             this.callbacks.clear();
             this.callbacks = null;
-        };
-        return Animation;
-    }());
-
-    var Transition = (function (_super) {
-        __extends(Transition, _super);
-        function Transition() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.animations = {};
-            _this.group = {};
-            return _this;
         }
-        Transition.prototype.init = function (_a) {
-            var group = (_a === void 0 ? { group: {} } : _a).group;
+    }
+
+    class Transition extends eva_js.Component {
+        constructor() {
+            super(...arguments);
+            this.animations = {};
+            this.group = {};
+        }
+        init({ group } = { group: {} }) {
             this.group = group;
             this.tweenGroup = new Group();
-        };
-        Transition.prototype.awake = function () {
-            for (var name_1 in this.group) {
-                this.newAnimation(name_1);
+        }
+        awake() {
+            for (const name in this.group) {
+                this.newAnimation(name);
             }
-        };
-        Transition.prototype.play = function (name, iteration) {
+        }
+        play(name, iteration) {
             if (!name) {
                 name = Object.keys(this.group)[0];
             }
@@ -966,29 +930,29 @@
             if (name && this.animations[name]) {
                 this.animations[name].play(iteration);
             }
-        };
-        Transition.prototype.stop = function (name) {
+        }
+        stop(name) {
             if (!name) {
-                for (var key in this.animations) {
+                for (const key in this.animations) {
                     this.animations[key].stop();
                 }
             }
             else {
                 this.animations[name].stop();
             }
-        };
-        Transition.prototype.onPause = function () {
-            for (var key in this.animations) {
+        }
+        onPause() {
+            for (const key in this.animations) {
                 this.animations[key].pause();
             }
-        };
-        Transition.prototype.onResume = function () {
-            for (var key in this.animations) {
+        }
+        onResume() {
+            for (const key in this.animations) {
                 this.animations[key].resume();
             }
-        };
-        Transition.prototype.onDestroy = function () {
-            for (var key in this.animations) {
+        }
+        onDestroy() {
+            for (const key in this.animations) {
                 this.animations[key].destroy();
             }
             this.tweenGroup.removeAll();
@@ -996,30 +960,25 @@
             this.group = null;
             this.animations = null;
             this.removeAllListeners();
-        };
-        Transition.prototype.update = function () {
-            this.tweenGroup.update();
-        };
-        Transition.prototype.newAnimation = function (name) {
-            var _this = this;
-            var animation = new Animation(this.group[name], this.tweenGroup);
-            animation.on('finish', function () { return _this.emit('finish', name); });
-            this.animations[name] = animation;
-        };
-        Transition.componentName = 'Transition';
-        return Transition;
-    }(eva_js.Component));
-
-    var TransitionSystem = (function (_super) {
-        __extends(TransitionSystem, _super);
-        function TransitionSystem() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = 'transition';
-            return _this;
         }
-        TransitionSystem.systemName = 'transition';
-        return TransitionSystem;
-    }(eva_js.System));
+        update() {
+            this.tweenGroup.update();
+        }
+        newAnimation(name) {
+            const animation = new Animation(this.group[name], this.tweenGroup);
+            animation.on('finish', () => this.emit('finish', name));
+            this.animations[name] = animation;
+        }
+    }
+    Transition.componentName = 'Transition';
+
+    class TransitionSystem extends eva_js.System {
+        constructor() {
+            super(...arguments);
+            this.name = 'transition';
+        }
+    }
+    TransitionSystem.systemName = 'transition';
 
     exports.Transition = Transition;
     exports.TransitionSystem = TransitionSystem;

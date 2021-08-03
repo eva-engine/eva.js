@@ -11,7 +11,7 @@ export interface SoundParams {
   onEnd?: () => void;
 }
 
-class Sound extends Component {
+class Sound extends Component<SoundParams> {
   static componentName = 'Sound';
 
   systemContext: AudioContext;

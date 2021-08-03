@@ -12,7 +12,7 @@ declare interface AnimationStruct {
     }[];
 }
 
-export declare class Transition extends Component {
+export declare class Transition extends Component<TransitionParams> {
     static componentName: string;
     private animations;
     tweenGroup: Group;
@@ -28,6 +28,10 @@ export declare class Transition extends Component {
     onDestroy(): void;
     update(): void;
     newAnimation(name: any): void;
+}
+
+declare interface TransitionParams {
+    group: Record<string, AnimationStruct[]>;
 }
 
 export declare class TransitionSystem extends System {

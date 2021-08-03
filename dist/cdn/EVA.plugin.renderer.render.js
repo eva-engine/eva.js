@@ -5,33 +5,19 @@
 }(this, (function (exports, eva_js, pluginRenderer) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -40,85 +26,53 @@
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     }
 
-    function __read(o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    class Render$2 extends eva_js.Component {
+        constructor() {
+            super(...arguments);
+            this.sortDirty = false;
+            this.visible = true;
+            this.alpha = 1;
+            this.zIndex = 0;
+            this.sortableChildren = false;
         }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    }
-
-    function __spread() {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
-    }
-
-    var Render$1 = (function (_super) {
-        __extends(Render, _super);
-        function Render() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.sortDirty = false;
-            _this.visible = true;
-            _this.alpha = 1;
-            _this.zIndex = 0;
-            _this.sortableChildren = false;
-            return _this;
-        }
-        Render.prototype.init = function (obj) {
+        init(obj) {
             obj && Object.assign(this, obj);
-        };
-        Render.componentName = 'Render';
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Render.prototype, "visible", void 0);
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Render.prototype, "alpha", void 0);
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Render.prototype, "zIndex", void 0);
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], Render.prototype, "sortableChildren", void 0);
-        return Render;
-    }(eva_js.Component));
-
-    var Render = (function (_super) {
-        __extends(Render, _super);
-        function Render() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = 'Render';
-            return _this;
         }
-        Render.prototype.init = function () {
+    }
+    Render$2.componentName = 'Render';
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Render$2.prototype, "visible", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Render$2.prototype, "alpha", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Render$2.prototype, "zIndex", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Render$2.prototype, "sortableChildren", void 0);
+
+    let Render = class Render extends pluginRenderer.Renderer {
+        constructor() {
+            super(...arguments);
+            this.name = 'Render';
+        }
+        init() {
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
-        };
-        Render.prototype.rendererUpdate = function (gameObject) {
-            var _this = this;
-            var component = gameObject.getComponent('Render');
-            var container = this.containerManager.getContainer(gameObject.id);
+        }
+        rendererUpdate(gameObject) {
+            const component = gameObject.getComponent('Render');
+            const container = this.containerManager.getContainer(gameObject.id);
             container.alpha = component.alpha;
             container.visible = component.visible;
             if (component.sortDirty && component.sortableChildren) {
-                var gameObjects = gameObject.transform.children.map(function (_a) {
-                    var gameObject = _a.gameObject;
-                    return gameObject;
-                });
-                var children_1 = gameObjects
-                    .sort(function (a, b) {
-                    var aRender = a.getComponent('Render');
-                    var bRender = b.getComponent('Render');
+                const gameObjects = gameObject.transform.children.map(({ gameObject }) => gameObject);
+                const children = gameObjects
+                    .sort((a, b) => {
+                    const aRender = a.getComponent('Render');
+                    const bRender = b.getComponent('Render');
                     if (!aRender) {
                         return -1;
                     }
@@ -127,17 +81,17 @@
                     }
                     return aRender.zIndex - bRender.zIndex;
                 })
-                    .map(function (gameObject) {
-                    return _this.containerManager.getContainer(gameObject.id);
+                    .map(gameObject => {
+                    return this.containerManager.getContainer(gameObject.id);
                 });
-                var oldChildren = this.containerManager.getContainer(component.gameObject.id).children;
-                var elements = oldChildren.filter(function (c) { return children_1.indexOf(c) === -1; });
+                const oldChildren = this.containerManager.getContainer(component.gameObject.id).children;
+                const elements = oldChildren.filter(c => children.indexOf(c) === -1);
                 oldChildren.length = 0;
-                oldChildren.push.apply(oldChildren, __spread(elements, children_1));
+                oldChildren.push(...elements, ...children);
                 component.sortDirty = false;
             }
-        };
-        Render.prototype.componentChanged = function (changed) {
+        }
+        componentChanged(changed) {
             if (changed.type === eva_js.OBSERVER_TYPE.ADD ||
                 changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                 this.add(changed);
@@ -148,42 +102,42 @@
             if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                 this.remove(changed);
             }
-        };
-        Render.prototype.add = function (changed) {
+        }
+        add(changed) {
             if (changed.component.name === 'Render') {
                 this.setDirty(changed);
             }
-        };
-        Render.prototype.change = function (changed) {
+        }
+        change(changed) {
             if (changed.component.name === 'Render' &&
                 changed.prop.prop[0] === 'zIndex') {
                 this.setDirty(changed);
             }
-        };
-        Render.prototype.remove = function (changed) {
+        }
+        remove(changed) {
             if (changed.component.name === 'Render') {
-                var container = this.containerManager.getContainer(changed.gameObject.id);
+                const container = this.containerManager.getContainer(changed.gameObject.id);
                 container.alpha = 1;
             }
-        };
-        Render.prototype.setDirty = function (changed) {
-            var parentRender = changed.gameObject.parent &&
+        }
+        setDirty(changed) {
+            const parentRender = changed.gameObject.parent &&
                 changed.gameObject.parent.getComponent('Render');
             if (parentRender) {
                 parentRender.sortDirty = true;
             }
-        };
-        Render.systemName = 'Render';
-        Render = __decorate([
-            eva_js.decorators.componentObserver({
-                Render: ['zIndex'],
-            })
-        ], Render);
-        return Render;
-    }(pluginRenderer.Renderer));
+        }
+    };
+    Render.systemName = 'Render';
+    Render = __decorate([
+        eva_js.decorators.componentObserver({
+            Render: ['zIndex'],
+        })
+    ], Render);
+    var Render$1 = Render;
 
-    exports.Render = Render$1;
-    exports.RenderSystem = Render;
+    exports.Render = Render$2;
+    exports.RenderSystem = Render$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

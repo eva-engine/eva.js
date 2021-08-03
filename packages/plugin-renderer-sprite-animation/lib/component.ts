@@ -7,7 +7,7 @@ export interface SpriteAnimationParams {
   speed: number;
 }
 
-export default class SpriteAnimation extends Component {
+export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   static componentName: string = 'SpriteAnimation';
   @decorators.IDEProp resource: string = '';
   @decorators.IDEProp autoPlay: boolean = true;

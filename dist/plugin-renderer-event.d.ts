@@ -5,7 +5,7 @@ import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 
-declare class Event_2 extends Component {
+declare class Event_2 extends Component<EventParams> {
     static componentName: string;
     hitArea: HitArea;
     init(params?: EventParams): void;
@@ -22,7 +22,9 @@ export declare class EventSystem extends Renderer {
     renderSystem: RendererSystem;
     rendererManager: RendererManager;
     containerManager: ContainerManager;
-    init(): void;
+    init({ moveWhenInside }?: {
+        moveWhenInside?: boolean;
+    }): void;
     componentChanged(changed: ComponentChanged): void;
     add(changed: ComponentChanged): void;
     remove(changed: ComponentChanged): void;

@@ -9,7 +9,7 @@ declare const _default: {
 };
 export default _default;
 
-export declare class EvaX extends Component {
+export declare class EvaX extends Component<EvaXParams> {
     static componentName: string;
     constructor(gameObject: any);
     evax: EvaXSystem;

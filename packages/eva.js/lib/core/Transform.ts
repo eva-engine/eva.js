@@ -1,5 +1,6 @@
 import { IDEProp } from '../decorators/ide';
 import Component from './Component';
+import type { ComponentParams } from './Component'
 
 /**
  * Two dimensional vector
@@ -35,17 +36,18 @@ export interface TransformMatrix {
 /**
  * Transform propterty
  */
-export interface TransformParams {
+export interface TransformParams extends ComponentParams {
   position?: Vector2;
   size?: Size2;
   origin?: Vector2;
   anchor?: Vector2;
   scale?: Vector2;
+  skew?: Vector2;
   rotation?: number;
 }
 
 /** Basic component for gameObject, See {@link TransformParams}  */
-class Transform extends Component {
+class Transform extends Component<TransformParams> {
   /**
    * component's name
    * @readonly

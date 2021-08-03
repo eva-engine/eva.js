@@ -12,7 +12,7 @@ export interface EvaXParams {
   events: Events;
 }
 
-export default class EvaXComponent extends Component {
+export default class EvaXComponent extends Component<EvaXParams> {
   static componentName: string = 'EvaX';
   constructor(gameObject) {
     super(gameObject);

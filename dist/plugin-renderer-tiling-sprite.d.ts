@@ -7,7 +7,7 @@ import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { TilingSprite as TilingSprite_2 } from '@eva/renderer-adapter';
 
-export declare class TilingSprite extends Component {
+export declare class TilingSprite extends Component<TilingSpriteParams> {
     static componentName: string;
     resource: string;
     tileScale: TilingSpriteParams['tileScale'];

@@ -5,7 +5,7 @@ import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 
-export declare class DragonBone extends Component {
+export declare class DragonBone extends Component<DragonBoneParams> {
     static componentName: string;
     private _armature;
     private waitPlay;

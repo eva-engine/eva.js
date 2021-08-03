@@ -3,12 +3,12 @@ import Transform from '../lib/core/Transform';
 describe('transform component', () => {
   it('create transform Component with params', () => {
     const transform = new Transform({
-      size: {width: 200, height: 200},
-      position: {x: 10, y: 10},
-      origin: {x: 0, y: 0},
-      anchor: {x: 20, y: 20},
-      skew: {x: 10, y: 10},
-      scale: 1.2,
+      size: { width: 200, height: 200 },
+      position: { x: 10, y: 10 },
+      origin: { x: 0, y: 0 },
+      anchor: { x: 20, y: 20 },
+      skew: { x: 10, y: 10 },
+      scale: { x: 1.2, y: 1.2 },
     });
     expect(transform.children.length).toBe(0);
     expect(transform.name).toBe('Transform');

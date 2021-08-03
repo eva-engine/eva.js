@@ -1,7 +1,7 @@
 import { Component } from '@eva/eva.js';
 import { System } from '@eva/eva.js';
 
-export declare class Physics extends Component {
+export declare class Physics extends Component<PhysicsType> {
     static componentName: string;
     private bodyParams;
     body: any;

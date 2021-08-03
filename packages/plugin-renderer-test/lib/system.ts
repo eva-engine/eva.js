@@ -1,31 +1,31 @@
-import {System} from '../../eva.js/lib';
+import { System } from '@eva/eva.js';
 
 export default class Test extends System {
   static systemName = 'Test';
   readonly name = 'Test';
   static observerInfo = {
     Test: [
-      {prop: ['size'], deep: false},
-      {prop: ['geomerty', 'data', 'vertex'], deep: true},
-      {prop: ['style'], deep: true},
+      { prop: ['size'], deep: false },
+      { prop: ['geomerty', 'data', 'vertex'], deep: true },
+      { prop: ['style'], deep: true },
     ],
   };
 
-  init() {}
+  init() { }
 
-  awake() {}
+  awake() { }
 
-  start() {}
+  start() { }
 
-  onResume() {}
+  onResume() { }
 
-  onPause() {}
+  onPause() { }
 
-  onDestroy() {}
+  onDestroy() { }
 
-  update() {}
+  update() { }
 
-  lateUpdate() {}
+  lateUpdate() { }
 
-  destroy() {}
+  destroy() { }
 }

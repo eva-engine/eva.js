@@ -8,7 +8,7 @@ export interface DragonBoneParams {
   autoPlay: boolean;
 }
 
-export default class DragonBone extends Component {
+export default class DragonBone extends Component<DragonBoneParams> {
   static componentName: string = 'DragonBone';
   private _armature: DragonboneEngine;
   private waitPlay: boolean = false;

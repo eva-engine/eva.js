@@ -5,33 +5,19 @@
 }(this, (function (exports, eva_js) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -40,58 +26,20 @@
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     }
 
-    function __values(o) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-        if (m) return m.call(o);
-        return {
-            next: function () {
-                if (o && i >= o.length) o = void 0;
-                return { value: o && o[i++], done: !o };
-            }
-        };
-    }
-
-    function __read(o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    class EvaXComponent extends eva_js.Component {
+        constructor(gameObject) {
+            super(gameObject);
+            this.events = {};
         }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    }
-
-    function __spread() {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
-    }
-
-    var EvaXComponent = (function (_super) {
-        __extends(EvaXComponent, _super);
-        function EvaXComponent(gameObject) {
-            var _this = _super.call(this, gameObject) || this;
-            _this.events = {};
-            return _this;
-        }
-        EvaXComponent.prototype.init = function (option) {
-            if (option === void 0) { option = { events: {} }; }
-            var events = option.events;
+        init(option = { events: {} }) {
+            const { events } = option;
             this.events = events || {};
-        };
-        EvaXComponent.componentName = 'EvaX';
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], EvaXComponent.prototype, "events", void 0);
-        return EvaXComponent;
-    }(eva_js.Component));
+        }
+    }
+    EvaXComponent.componentName = 'EvaX';
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], EvaXComponent.prototype, "events", void 0);
 
     function createCommonjsModule(fn) {
       var module = { exports: {} };
@@ -676,7 +624,7 @@
     var root = freeGlobal || freeSelf || Function('return this')();
 
     /** Built-in value references. */
-    var Symbol$1 = root.Symbol;
+    var Symbol = root.Symbol;
 
     /** Used for built-in method references. */
     var objectProto$c = Object.prototype;
@@ -692,7 +640,7 @@
     var nativeObjectToString$1 = objectProto$c.toString;
 
     /** Built-in value references. */
-    var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
+    var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
 
     /**
      * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
@@ -747,7 +695,7 @@
         undefinedTag = '[object Undefined]';
 
     /** Built-in value references. */
-    var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
+    var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 
     /**
      * The base implementation of `getTag` without fallbacks for buggy environments.
@@ -2321,7 +2269,7 @@
     }
 
     /** Used to convert symbols to primitives and strings. */
-    var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
+    var symbolProto = Symbol ? Symbol.prototype : undefined,
         symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
 
     /**
@@ -2698,7 +2646,7 @@
       return baseClone(value, CLONE_DEEP_FLAG | CLONE_SYMBOLS_FLAG);
     }
 
-    var _defineCache = new Map();
+    const _defineCache = new Map();
     function defineProperty(key, deep, store, originKey, originStore, callback) {
         if (!_defineCache.has(store)) {
             _defineCache.set(store, []);
@@ -2707,45 +2655,45 @@
             return;
         }
         _defineCache.get(store).push(key);
-        var props = key.split('.');
-        var obj = store;
-        var length = props.length;
-        for (var i = 0; i < length - 1; i++) {
+        const props = key.split('.');
+        let obj = store;
+        const length = props.length;
+        for (let i = 0; i < length - 1; i++) {
             if (obj[props[i]] === undefined) {
                 return;
             }
             obj = obj[props[i]];
         }
-        var value = obj[props[length - 1]];
+        const value = obj[props[length - 1]];
         if (deep && isObject(value)) {
-            for (var key_1 in value) {
-                defineProperty(key_1, deep, value, originKey, originStore, callback);
+            for (const key in value) {
+                defineProperty(key, deep, value, originKey, originStore, callback);
             }
         }
-        var _key = "_" + props[length - 1];
+        const _key = `_${props[length - 1]}`;
         obj[_key] = value;
         Object.defineProperty(obj, _key, {
             enumerable: false,
         });
         Object.defineProperty(obj, props[length - 1], {
-            set: function (val) {
-                var oldStore = cloneDeep(originStore);
-                obj["_" + props[length - 1]] = val;
+            set(val) {
+                const oldStore = cloneDeep(originStore);
+                obj[`_${props[length - 1]}`] = val;
                 callback(originKey, oldStore);
                 if (deep && isObject(val)) {
                     _defineCache.delete(obj);
-                    for (var key_2 in val) {
-                        defineProperty(key_2, deep, val, originKey, originStore, callback);
+                    for (const key in val) {
+                        defineProperty(key, deep, val, originKey, originStore, callback);
                     }
                 }
             },
-            get: function () {
-                return obj["_" + props[length - 1]];
+            get() {
+                return obj[`_${props[length - 1]}`];
             },
         });
     }
     function updateStore(store, newStore, force) {
-        for (var key in store) {
+        for (const key in store) {
             if (!(key in newStore)) {
                 continue;
             }
@@ -2760,96 +2708,69 @@
         }
     }
 
-    var EvaXSystem = (function (_super) {
-        __extends(EvaXSystem, _super);
-        function EvaXSystem() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.changeList = [];
-            return _this;
+    let EvaXSystem = class EvaXSystem extends eva_js.System {
+        constructor() {
+            super(...arguments);
+            this.changeList = [];
         }
-        EvaXSystem.prototype.init = function (_a) {
-            var _b = (_a === void 0 ? { store: {} } : _a).store, store = _b === void 0 ? {} : _b;
+        init({ store = {} } = { store: {} }) {
             this.ee = new eventemitter3();
             this.store = store;
             this.bindDefaultListener();
-        };
-        EvaXSystem.prototype.bindDefaultListener = function () {
-            var _this = this;
-            this.ee.on('evax.updateStore', function (store) {
-                _this.updateStore(store);
+        }
+        bindDefaultListener() {
+            this.ee.on('evax.updateStore', store => {
+                this.updateStore(store);
             });
-            this.ee.on('evax.forceUpdateStore', function (store) {
-                _this.forceUpdateStore(store);
+            this.ee.on('evax.forceUpdateStore', store => {
+                this.forceUpdateStore(store);
             });
-        };
-        EvaXSystem.prototype.changeCallback = function (key, oldStore) {
+        }
+        changeCallback(key, oldStore) {
             this.changeList.push({
                 key: key,
                 oldStore: oldStore,
             });
-        };
-        EvaXSystem.prototype.updateStore = function (store) {
+        }
+        updateStore(store) {
             updateStore(this.store, store, false);
-        };
-        EvaXSystem.prototype.forceUpdateStore = function (store) {
+        }
+        forceUpdateStore(store) {
             updateStore(this.store, store, true);
-        };
-        EvaXSystem.prototype.bindListener = function (key, deep) {
-            var _this = this;
+        }
+        bindListener(key, deep) {
             if (key.indexOf('store.') === -1) {
                 return;
             }
-            var realKey = key.split('.').slice(1).join('.');
-            defineProperty(realKey, deep, this.store, key, this.store, function (key, oldStore) { return _this.changeCallback(key, oldStore); });
-        };
-        EvaXSystem.prototype.update = function () {
-            var e_1, _a;
-            var changes = this.componentObserver.clear();
-            try {
-                for (var changes_1 = __values(changes), changes_1_1 = changes_1.next(); !changes_1_1.done; changes_1_1 = changes_1.next()) {
-                    var changed = changes_1_1.value;
-                    switch (changed.type) {
-                        case eva_js.OBSERVER_TYPE.ADD:
-                            this.add(changed);
-                            break;
-                        case eva_js.OBSERVER_TYPE.REMOVE:
-                            this.remove(changed);
-                            break;
-                    }
+            const realKey = key.split('.').slice(1).join('.');
+            defineProperty(realKey, deep, this.store, key, this.store, (key, oldStore) => this.changeCallback(key, oldStore));
+        }
+        update() {
+            const changes = this.componentObserver.clear();
+            for (const changed of changes) {
+                switch (changed.type) {
+                    case eva_js.OBSERVER_TYPE.ADD:
+                        this.add(changed);
+                        break;
+                    case eva_js.OBSERVER_TYPE.REMOVE:
+                        this.remove(changed);
+                        break;
                 }
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (changes_1_1 && !changes_1_1.done && (_a = changes_1.return)) _a.call(changes_1);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
-        };
-        EvaXSystem.prototype.lateUpdate = function () {
-            var e_2, _a;
-            try {
-                for (var _b = __values(this.changeList), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var item = _c.value;
-                    this.ee.emit(item.key, this.store, item.oldStore);
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                }
-                finally { if (e_2) throw e_2.error; }
+        }
+        lateUpdate() {
+            for (const item of this.changeList) {
+                this.ee.emit(item.key, this.store, item.oldStore);
             }
             this.changeList = [];
-        };
-        EvaXSystem.prototype.add = function (changed) {
-            var component = changed.component;
+        }
+        add(changed) {
+            const component = changed.component;
             component.evax = this;
-            for (var key in component.events) {
+            for (const key in component.events) {
                 if (component.events[key]) {
                     this.bindListener(key, !!component.events[key].deep);
-                    var func = void 0;
+                    let func;
                     if (component.events[key] instanceof Function) {
                         func = component.events[key];
                     }
@@ -2859,46 +2780,41 @@
                     this.ee.on(key, func.bind(component));
                 }
             }
-        };
-        EvaXSystem.prototype.remove = function (changed) {
-            var component = changed.component;
-            for (var key in component.events) {
+        }
+        remove(changed) {
+            const component = changed.component;
+            for (const key in component.events) {
                 if (component.events[key] instanceof Function) {
                     this.ee.off(key, component.events[key].bind(component));
                 }
             }
-        };
-        EvaXSystem.prototype.on = function (eventName, func) {
+        }
+        on(eventName, func) {
             return this.ee.on(eventName, func, this);
-        };
-        EvaXSystem.prototype.off = function (eventName, func) {
+        }
+        off(eventName, func) {
             return this.ee.off(eventName, func);
-        };
-        EvaXSystem.prototype.emit = function (eventName) {
-            var _a;
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
-            return (_a = this.ee).emit.apply(_a, __spread([eventName], args));
-        };
-        EvaXSystem.prototype.onDestroy = function () { };
-        EvaXSystem.systemName = 'EvaX';
-        EvaXSystem = __decorate([
-            eva_js.decorators.componentObserver({
-                EvaX: [],
-            })
-        ], EvaXSystem);
-        return EvaXSystem;
-    }(eva_js.System));
+        }
+        emit(eventName, ...args) {
+            return this.ee.emit(eventName, ...args);
+        }
+        onDestroy() { }
+    };
+    EvaXSystem.systemName = 'EvaX';
+    EvaXSystem = __decorate([
+        eva_js.decorators.componentObserver({
+            EvaX: [],
+        })
+    ], EvaXSystem);
+    var EvaXSystem$1 = EvaXSystem;
 
     var index = {
         Components: [EvaXComponent],
-        Systems: [EvaXSystem],
+        Systems: [EvaXSystem$1],
     };
 
     exports.EvaX = EvaXComponent;
-    exports.EvaXSystem = EvaXSystem;
+    exports.EvaXSystem = EvaXSystem$1;
     exports.default = index;
 
     Object.defineProperty(exports, '__esModule', { value: true });

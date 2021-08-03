@@ -41,7 +41,9 @@
             width: 750,
             height: 1000,
           }),
-          new EventSystem(),
+          new EventSystem({
+            // moveWhenInside: true // 代表只有在元素内部才会执行move事件，默认为false
+          }),
           new ImgSystem(),
         ],
       });

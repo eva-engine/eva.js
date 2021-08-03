@@ -2,14 +2,14 @@ import EE from 'eventemitter3';
 import EventEmitter from 'eventemitter3';
 import { Loader } from 'resource-loader';
 
-export declare class Component extends EventEmitter {
+export declare class Component<T extends ComponentParams = {}> extends EventEmitter {
     static componentName: string;
     readonly name: string;
     started: boolean;
     gameObject: GameObject;
-    __componentDefaultParams: string;
-    constructor(params?: any);
-    init?(params?: any): void;
+    __componentDefaultParams: T;
+    constructor(params?: T);
+    init?(params?: T): void;
     awake?(): void;
     start?(): void;
     update?(frame: UpdateParams): void;
@@ -24,6 +24,11 @@ export declare interface ComponentChanged extends ObserverEventParams {
     systemName?: string;
 }
 
+declare interface ComponentConstructor<T extends Component<ComponentParams>> {
+    componentName: string;
+    new (params?: ComponentParams): T;
+}
+
 declare type ComponentName = string;
 
 declare class ComponentObserver {
@@ -35,6 +40,9 @@ declare class ComponentObserver {
 }
 
 export declare function componentObserver(observerInfo?: ObserverInfo): (constructor: any) => void;
+
+declare interface ComponentParams {
+}
 
 declare type ComponentType = typeof Component;
 
@@ -82,7 +90,7 @@ export declare class GameObject {
     private _scene;
     private _componentCache;
     id: number;
-    components: Component[];
+    components: Component<ComponentParams>[];
     constructor(name: string, obj?: TransformParams);
     get transform(): Transform;
     get parent(): GameObject;
@@ -91,15 +99,14 @@ export declare class GameObject {
     get scene(): Scene;
     addChild(gameObject: GameObject): void;
     removeChild(gameObject: GameObject): GameObject;
-    addComponent<T extends Component>(C: T): T;
-    addComponent<T extends ComponentType>(C: T, obj?: any): InstanceType<T>;
+    addComponent<T extends Component<ComponentParams>>(C: T): T;
+    addComponent<T extends Component<ComponentParams>>(C: ComponentConstructor<T>, obj?: ComponentParams): T;
     removeComponent<T extends Component>(c: string): T;
     removeComponent<T extends Component>(c: T): T;
     removeComponent<T extends ComponentType>(c: T): InstanceType<T>;
     private _removeComponent;
+    getComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
     getComponent<T extends Component>(c: string): T;
-    getComponent<T extends Component>(c: T): T;
-    getComponent<T extends ComponentType>(c: T): InstanceType<T>;
     remove(): GameObject;
     destroy(): void;
 }
@@ -319,7 +326,7 @@ declare interface TickerOptions {
     frameRate?: number;
 }
 
-export declare class Transform extends Component {
+export declare class Transform extends Component<TransformParams> {
     static componentName: string;
     readonly name: string;
     private _parent;
@@ -351,7 +358,7 @@ declare interface TransformMatrix {
     array?: number[];
 }
 
-export declare interface TransformParams {
+export declare interface TransformParams extends ComponentParams {
     position?: Vector2;
     size?: Size2;
     origin?: Vector2;

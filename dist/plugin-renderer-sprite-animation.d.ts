@@ -7,7 +7,7 @@ import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { SpriteAnimation as SpriteAnimation_2 } from '@eva/renderer-adapter';
 
-export declare class SpriteAnimation extends Component {
+export declare class SpriteAnimation extends Component<SpriteAnimationParams> {
     static componentName: string;
     resource: string;
     autoPlay: boolean;

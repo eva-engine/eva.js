@@ -42,7 +42,7 @@ export interface TextParams {
   };
 }
 
-export default class Text extends Component {
+export default class Text extends Component<TextParams> {
   static componentName: string = 'Text';
   @decorators.IDEProp text: string = '';
   @decorators.IDEProp style: TextParams['style'] = {};

@@ -2,7 +2,7 @@ import { Component } from '@eva/eva.js';
 import { ComponentChanged } from '@eva/eva.js';
 import { System } from '@eva/eva.js';
 
-export declare class Sound extends Component {
+export declare class Sound extends Component<SoundParams> {
     static componentName: string;
     systemContext: AudioContext;
     systemDestination: GainNode;

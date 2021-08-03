@@ -13,7 +13,7 @@ export interface A11yParams {
   [propName: string]: string | object | number;
 }
 
-export default class A11y extends Component {
+export default class A11y extends Component<A11yParams> {
   static componentName: string = 'A11y';
 
   /**
