@@ -10,7 +10,7 @@ import Game, { LOAD_SCENE_MODE } from './game/Game';
 import Scene from './game/Scene';
 import { IDEProp } from './decorators/ide';
 import { componentObserver } from './decorators/system';
-import { resource, LOAD_EVENT, RESOURCE_TYPE, STRATEGY } from './loader/Resource';
+import { resource, LOAD_EVENT, RESOURCE_TYPE } from './loader/Resource';
 
 /** Decorators util */
 const decorators = {
@@ -42,5 +42,4 @@ export {
   LOAD_SCENE_MODE,
   IDEProp,
   componentObserver,
-  STRATEGY
 };
