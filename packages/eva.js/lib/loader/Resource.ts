@@ -1,4 +1,4 @@
-import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy } from 'resource-loader';
+import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy, AbstractLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
 
@@ -27,10 +27,17 @@ interface SrcBase {
   type: string;
   url?: string;
   data?: any;
+  texture?: TextureBase[]
+}
+
+interface TextureBase {
+  type: string,
+  internalFormat: string | number,
+  url: string
 }
 
 /** Eva resource base */
-interface ResourceBase {
+export interface ResourceBase {
   name?: string;
   type?: RESOURCE_TYPE;
   src?: {
@@ -69,7 +76,7 @@ XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer)
 XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer)
 XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer)
 
-const STRATEGY = {
+export const STRATEGY: { [type: string]: new (...args: any[]) => AbstractLoadStrategy } = {
   png: ImageLoadStrategy,
   jpg: ImageLoadStrategy,
   jpeg: ImageLoadStrategy,
@@ -78,11 +85,13 @@ const STRATEGY = {
   tex: XhrLoadStrategy,
   ske: XhrLoadStrategy,
   audio: XhrLoadStrategy,
-  video: VideoLoadStrategy
+  video: VideoLoadStrategy,
 };
 
 type ResourceName = string;
 type ResourceProcessFn = (resource: ResourceStruct) => any;
+type PreProcessResourceHandler = (res: ResourceBase) => void;
+
 
 /**
  * Resource manager
@@ -92,6 +101,8 @@ class Resource extends EE {
   // TODO: specify timeout in config to overwrite it
   /** load resource timeout */
   public timeout: number = 6000;
+
+  private preProcessResourceHandlers: PreProcessResourceHandler[] = []
 
   /** Resource cache  */
   private resourcesMap: Record<ResourceName, ResourceStruct> = {};
@@ -139,9 +150,21 @@ class Resource extends EE {
         console.warn(res.name + ' was already added');
         continue;
       }
+      for (const handler of this.preProcessResourceHandlers) {
+        handler(res);
+      }
       this.resourcesMap[res.name] = res;
       this.resourcesMap[res.name].data = {};
     }
+  }
+
+  /** dd resource preprocesser*/
+  public addPreProcessResourceHandler(handler: PreProcessResourceHandler) {
+    this.preProcessResourceHandlers.push(handler);
+  }
+
+  public removePreProcessResourceHandler(handler: PreProcessResourceHandler) {
+    this.preProcessResourceHandlers.splice(this.preProcessResourceHandlers.indexOf(handler), 1);
   }
 
   /** Start preload */

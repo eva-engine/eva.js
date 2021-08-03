@@ -4,24 +4,27 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>测试</title>
+  <title>Eva.js Examples</title>
   <style>
-    body{
+    body {
       margin: 0;
     }
-    div.link{
+
+    div.link {
       position: relative;
-      display:inline-block;
+      display: inline-block;
       margin: 0.15em 4em;
       text-decoration: underline;
-      color:blueviolet;
+      color: blueviolet;
       font-size: 16px;
     }
-    div.link:hover{
+
+    div.link:hover {
       color: #0055cc;
       cursor: pointer;
     }
-    div.link::before{
+
+    div.link::before {
       position: absolute;
       display: block;
       left: -1em;
@@ -40,6 +43,7 @@
   <script>
     const __TEST__ = true;
     const global = window;
+    const globalThis = window;
   </script>
   <canvas id="canvas" style="width: 100%"></canvas>
   <script type="module" src="./index.ts"></script>

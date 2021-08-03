@@ -4,7 +4,6 @@ type ExampleModule = () => Promise<{
 }>
 //@ts-ignore
 const modules: { [key: string]: ExampleModule } = import.meta.glob('./ts/*.ts');
-const moduleEntries = Object.entries(modules);
 declare const canvas: HTMLCanvasElement;
 const path = location.hash.replace('#', '');
 import VConsole from "vconsole";
@@ -15,7 +14,7 @@ if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.le
     alert(e.message)
   }
 }
-window.onhashchange = e => {
+window.onhashchange = () => {
   location.reload();
 }
 if (modules[path]) {

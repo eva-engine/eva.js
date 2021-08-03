@@ -108,5 +108,5 @@
     "packages/*/lib",
     "packages/*/__tests__",
     "vite-test"
-  ],
+  ]
 }

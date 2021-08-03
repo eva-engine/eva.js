@@ -1000,7 +1000,7 @@
     }
 
     /** Built-in value references. */
-    var Uint8Array = root.Uint8Array;
+    var Uint8Array$1 = root.Uint8Array;
 
     /**
      * Converts `map` to its key-value pairs.
@@ -1087,7 +1087,7 @@
 
         case arrayBufferTag$1:
           if ((object.byteLength != other.byteLength) ||
-              !equalFunc(new Uint8Array(object), new Uint8Array(other))) {
+              !equalFunc(new Uint8Array$1(object), new Uint8Array$1(other))) {
             return false;
           }
           return true;
@@ -1852,7 +1852,7 @@
     }
 
     /* Built-in method references that are verified to be native. */
-    var DataView = getNative(root, 'DataView');
+    var DataView$1 = getNative(root, 'DataView');
 
     /* Built-in method references that are verified to be native. */
     var Promise$1 = getNative(root, 'Promise');
@@ -1873,7 +1873,7 @@
     var dataViewTag = '[object DataView]';
 
     /** Used to detect maps, sets, and weakmaps. */
-    var dataViewCtorString = toSource(DataView),
+    var dataViewCtorString = toSource(DataView$1),
         mapCtorString = toSource(Map),
         promiseCtorString = toSource(Promise$1),
         setCtorString = toSource(Set),
@@ -1889,7 +1889,7 @@
     var getTag = baseGetTag;
 
     // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-    if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
+    if ((DataView$1 && getTag(new DataView$1(new ArrayBuffer(1))) != dataViewTag) ||
         (Map && getTag(new Map) != mapTag) ||
         (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
         (Set && getTag(new Set) != setTag) ||
@@ -2642,11 +2642,29 @@
                 console.warn('PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game');
                 params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
             }
-            if (params.enableScroll !== undefined) {
-                params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+            return handlers;
+        };
+        Signal.prototype.hasAny = function () {
+            return !!this._head;
+        };
+        Signal.prototype.has = function (node) {
+            return node.owner === this;
+        };
+        Signal.prototype.dispatch = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
             }
-            if (params.preventScroll === undefined && params.enableScroll === undefined) {
-                enableScroll(app.renderer);
+            var node = this._head;
+            if (!node)
+                return false;
+            if (this._filter && !this._filter.apply(this, args))
+                return false;
+            while (node) {
+                if (node.once)
+                    this.detach(node);
+                node.fn.apply(node.thisArg, args);
+                node = node.next;
             }
             return app;
         }
@@ -2709,6 +2727,7 @@
     }
 
     exports.ContainerManager = ContainerManager;
+    exports.INTERNAL_FORMAT_TO_BYTES_PER_PIXEL = INTERNAL_FORMAT_TO_BYTES_PER_PIXEL;
     exports.Renderer = Renderer;
     exports.RendererManager = RendererManager;
     exports.RendererSystem = Renderer$2;
