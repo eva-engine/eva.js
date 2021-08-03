@@ -2966,6 +2966,7 @@
                 return;
             var component = this.components.splice(index, 1)[0];
             delete this._componentCache[componentName];
+            delete component.__componentDefaultParams;
             component.onDestroy && component.onDestroy();
             observerRemoved(component, componentName);
             component.gameObject = undefined;
@@ -4592,6 +4593,7 @@
             }
             switch (this._xhrType) {
                 case XhrResponseType.Buffer:
+                    console.warn(ResourceType.Buffer, xhr.response);
                     this._complete(ResourceType.Buffer, xhr.response);
                     break;
                 case XhrResponseType.Blob:
@@ -5380,6 +5382,7 @@
                             return [3, 5];
                         case 5:
                             delete this.promiseMap[name];
+                            resource.data = {};
                             resource.complete = false;
                             resource.instance = undefined;
                             return [2];

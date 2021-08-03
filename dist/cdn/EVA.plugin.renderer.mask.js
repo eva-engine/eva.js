@@ -242,11 +242,14 @@
             }
             var container = this.containerManager.getContainer(changed.gameObject.id);
             container.mask = mask;
-            this.containerManager.getContainer(changed.gameObject.id).addChild(mask);
+            container.addChild(mask);
         };
         Mask.prototype.remove = function (changed) {
             var container = this.containerManager.getContainer(changed.gameObject.id);
+            container.removeChild(container.mask);
+            container.mask.destroy(true);
             container.mask = null;
+            delete this.maskSpriteCache[changed.component.gameObject.id];
         };
         Mask.prototype.change = function (changed) {
             if (this.changedCache[changed.gameObject.id])

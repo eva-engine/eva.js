@@ -145,6 +145,7 @@
                         this.containerManager
                             .getContainer(changed.gameObject.id)
                             .removeChild(this.texts[changed.gameObject.id].text);
+                        this.texts[changed.gameObject.id].text.destroy(true);
                         delete this.texts[changed.gameObject.id];
                     }
                     else {
