@@ -23,7 +23,6 @@ interface HitArea {
 export interface EventParams {
   hitArea: HitArea;
 }
-
 export default class Event extends Component<EventParams> {
   static componentName = 'Event';
   hitArea: HitArea = undefined;
