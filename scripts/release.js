@@ -149,7 +149,7 @@ function updateDeps(pkg, depType, version) {
   Object.keys(deps).forEach(dep => {
     if (dep.startsWith('@eva/')) {
       console.log(chalk.yellow(`${pkg.name} -> ${depType} -> ${dep}@${version}`));
-      deps[dep] = `^${version}`;
+      deps[dep] = `${version}`;
     }
   });
 }

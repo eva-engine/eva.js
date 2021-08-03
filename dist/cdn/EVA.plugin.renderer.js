@@ -2114,8 +2114,8 @@
         }
         getContainer(name) {
             return this.containerMap[name];
-        };
-        ContainerManager.prototype.removeContainer = function (name) {
+        }
+        removeContainer(name) {
             var _a;
             (_a = this.containerMap[name]) === null || _a === void 0 ? void 0 : _a.destroy(true);
             delete this.containerMap[name];
@@ -2546,7 +2546,7 @@
                 }
             }
             else {
-                var container = this.containerManager.getContainer(changed.gameObject.id);
+                const container = this.containerManager.getContainer(changed.gameObject.id);
                 delete transform.worldTransform;
                 container.parent && container.parent.removeChild(container);
             }
@@ -2696,7 +2696,7 @@
     var Renderer$2 = Renderer$1;
 
     class Renderer extends eva_js.System {
-        constructor(params) {
+        constructor(params = {}) {
             super(params);
             this.observerInfo = this.constructor.observerInfo;
         }

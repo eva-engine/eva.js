@@ -33,7 +33,7 @@ export declare class Renderer extends System {
     observerInfo: PureObserverInfo;
     containerManager: ContainerManager;
     rendererManager: RendererManager;
-    constructor(params: any);
+    constructor(params?: {});
     init?(arg?: any): void;
     componentChanged?(changed: ComponentChanged): void;
     rendererUpdate?(gameObject: GameObject): void;
