@@ -9,7 +9,6 @@ function getId() {
   return ++_id;
 }
 
-// type ComponentCtor<T extends Component> = new () => T
 /**
  * GameObject is a general purpose object. It consists of a unique id and components.
  * @public
