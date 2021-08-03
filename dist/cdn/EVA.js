@@ -1,5 +1,3 @@
-
-(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -4211,7 +4209,6 @@
 	        }
 	        switch (this._xhrType) {
 	            case XhrResponseType.Buffer:
-	                console.warn(ResourceType.Buffer, xhr.response);
 	                this._complete(ResourceType.Buffer, xhr.response);
 	                break;
 	            case XhrResponseType.Blob:
@@ -4866,12 +4863,13 @@
 	    tex: XhrLoadStrategy,
 	    ske: XhrLoadStrategy,
 	    audio: XhrLoadStrategy,
-	    video: VideoLoadStrategy
+	    video: VideoLoadStrategy,
 	};
 	class Resource extends eventemitter3 {
 	    constructor(options) {
 	        super();
 	        this.timeout = 6000;
+	        this.preProcessResourceHandlers = [];
 	        this.resourcesMap = {};
 	        this.makeInstanceFunctions = {};
 	        this.destroyInstanceFunctions = {};
@@ -4899,9 +4897,18 @@
 	                console.warn(res.name + ' was already added');
 	                continue;
 	            }
+	            for (const handler of this.preProcessResourceHandlers) {
+	                handler(res);
+	            }
 	            this.resourcesMap[res.name] = res;
 	            this.resourcesMap[res.name].data = {};
 	        }
+	    }
+	    addPreProcessResourceHandler(handler) {
+	        this.preProcessResourceHandlers.push(handler);
+	    }
+	    removePreProcessResourceHandler(handler) {
+	        this.preProcessResourceHandlers.splice(this.preProcessResourceHandlers.indexOf(handler), 1);
 	    }
 	    preload() {
 	        const names = Object.values(this.resourcesMap)
@@ -5081,6 +5088,7 @@
 	exports.Game = Game;
 	exports.GameObject = GameObject;
 	exports.IDEProp = IDEProp;
+	exports.STRATEGY = STRATEGY;
 	exports.Scene = Scene;
 	exports.System = System;
 	exports.Transform = Transform;

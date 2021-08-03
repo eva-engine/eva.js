@@ -151,21 +151,21 @@
     ***************************************************************************** */
     /* global Reflect, Promise */
 
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
+    var extendStatics$1 = function(d, b) {
+        extendStatics$1 = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
+        return extendStatics$1(d, b);
     };
 
-    function __extends(d, b) {
-        extendStatics(d, b);
+    function __extends$1(d, b) {
+        extendStatics$1(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
     var Application = (function (_super) {
-        __extends(Application, _super);
+        __extends$1(Application, _super);
         function Application(params) {
             var _this = this;
             params.autoStart = false;
@@ -176,7 +176,7 @@
     }(pixi_js.Application));
 
     var Container = (function (_super) {
-        __extends(Container, _super);
+        __extends$1(Container, _super);
         function Container() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
@@ -184,7 +184,7 @@
     }(pixi_js.Container));
 
     ((function (_super) {
-        __extends(Graphics, _super);
+        __extends$1(Graphics, _super);
         function Graphics() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
@@ -192,7 +192,7 @@
     })(pixi_js.Graphics));
 
     ((function (_super) {
-        __extends(NinePatch, _super);
+        __extends$1(NinePatch, _super);
         function NinePatch(img, leftWidth, topHeight, rightWidth, bottomHeight) {
             var _this = this;
             var texture;
@@ -278,7 +278,7 @@
     })());
 
     ((function (_super) {
-        __extends(Text, _super);
+        __extends$1(Text, _super);
         function Text(text, style) {
             return _super.call(this, text, style) || this;
         }
@@ -564,7 +564,7 @@
     var root = freeGlobal || freeSelf || Function('return this')();
 
     /** Built-in value references. */
-    var Symbol = root.Symbol;
+    var Symbol$1 = root.Symbol;
 
     /** Used for built-in method references. */
     var objectProto$b = Object.prototype;
@@ -580,7 +580,7 @@
     var nativeObjectToString$1 = objectProto$b.toString;
 
     /** Built-in value references. */
-    var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
+    var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
 
     /**
      * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
@@ -635,7 +635,7 @@
         undefinedTag = '[object Undefined]';
 
     /** Built-in value references. */
-    var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+    var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
 
     /**
      * The base implementation of `getTag` without fallbacks for buggy environments.
@@ -1298,7 +1298,7 @@
     }
 
     /** Built-in value references. */
-    var Uint8Array = root.Uint8Array;
+    var Uint8Array$1 = root.Uint8Array;
 
     /**
      * Converts `map` to its key-value pairs.
@@ -1353,7 +1353,7 @@
         dataViewTag$2 = '[object DataView]';
 
     /** Used to convert symbols to primitives and strings. */
-    var symbolProto = Symbol ? Symbol.prototype : undefined,
+    var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
         symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
 
     /**
@@ -1385,7 +1385,7 @@
 
         case arrayBufferTag$1:
           if ((object.byteLength != other.byteLength) ||
-              !equalFunc(new Uint8Array(object), new Uint8Array(other))) {
+              !equalFunc(new Uint8Array$1(object), new Uint8Array$1(other))) {
             return false;
           }
           return true;
@@ -2150,7 +2150,7 @@
     }
 
     /* Built-in method references that are verified to be native. */
-    var DataView = getNative(root, 'DataView');
+    var DataView$1 = getNative(root, 'DataView');
 
     /* Built-in method references that are verified to be native. */
     var Promise$1 = getNative(root, 'Promise');
@@ -2171,7 +2171,7 @@
     var dataViewTag = '[object DataView]';
 
     /** Used to detect maps, sets, and weakmaps. */
-    var dataViewCtorString = toSource(DataView),
+    var dataViewCtorString = toSource(DataView$1),
         mapCtorString = toSource(Map$1),
         promiseCtorString = toSource(Promise$1),
         setCtorString = toSource(Set),
@@ -2187,7 +2187,7 @@
     var getTag = baseGetTag;
 
     // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-    if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
+    if ((DataView$1 && getTag(new DataView$1(new ArrayBuffer(1))) != dataViewTag) ||
         (Map$1 && getTag(new Map$1) != mapTag) ||
         (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
         (Set && getTag(new Set) != setTag) ||
@@ -2864,6 +2864,2028 @@
     ], Transform);
     var Transform$1 = Transform;
 
+    let res = undefined;
+    function getAbilities() {
+        if (res)
+            return res;
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+        if (!gl) {
+            console.warn('WebGL not available for compressed textures. Silently failing.');
+            return;
+        }
+        const extensions = {
+            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'),
+            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
+            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
+                || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+            astc: gl.getExtension('WEBGL_compressed_texture_astc')
+        };
+        const textureFormats = {};
+        for (const extensionName in extensions) {
+            const extension = extensions[extensionName];
+            if (!extension) {
+                continue;
+            }
+            Object.assign(textureFormats, Object.getPrototypeOf(extension));
+        }
+        let formats = Object.values(textureFormats);
+        res = {
+            extensions,
+            textureFormats,
+            formats
+        };
+        return res;
+    }
+
+    /*!
+     * type-signals - v1.1.0
+     * https://github.com/englercj/type-signals
+     * Compiled Wed, 22 Apr 2020 17:58:58 UTC
+     *
+     * type-signals is licensed under the MIT license.
+     * http://www.opensource.org/licenses/mit-license
+     */
+    var SignalBindingImpl = (function () {
+        function SignalBindingImpl(fn, once, thisArg) {
+            if (once === void 0) { once = false; }
+            this.next = null;
+            this.prev = null;
+            this.owner = null;
+            this.fn = fn;
+            this.once = once;
+            this.thisArg = thisArg;
+        }
+        SignalBindingImpl.prototype.detach = function () {
+            if (this.owner === null)
+                return false;
+            this.owner.detach(this);
+            return true;
+        };
+        SignalBindingImpl.prototype.dispose = function () {
+            this.detach();
+        };
+        return SignalBindingImpl;
+    }());
+    var Signal = (function () {
+        function Signal() {
+            this._head = null;
+            this._tail = null;
+            this._filter = null;
+        }
+        Signal.prototype.handlers = function () {
+            var node = this._head;
+            var handlers = [];
+            while (node) {
+                handlers.push(node);
+                node = node.next;
+            }
+            return handlers;
+        };
+        Signal.prototype.hasAny = function () {
+            return !!this._head;
+        };
+        Signal.prototype.has = function (node) {
+            return node.owner === this;
+        };
+        Signal.prototype.dispatch = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var node = this._head;
+            if (!node)
+                return false;
+            if (this._filter && !this._filter.apply(this, args))
+                return false;
+            while (node) {
+                if (node.once)
+                    this.detach(node);
+                node.fn.apply(node.thisArg, args);
+                node = node.next;
+            }
+            return true;
+        };
+        Signal.prototype.add = function (fn, thisArg) {
+            if (thisArg === void 0) { thisArg = null; }
+            return this._addSignalBinding(new SignalBindingImpl(fn, false, thisArg));
+        };
+        Signal.prototype.once = function (fn, thisArg) {
+            if (thisArg === void 0) { thisArg = null; }
+            return this._addSignalBinding(new SignalBindingImpl(fn, true, thisArg));
+        };
+        Signal.prototype.detach = function (node_) {
+            var node = node_;
+            if (node.owner !== this)
+                return this;
+            if (node.prev)
+                node.prev.next = node.next;
+            if (node.next)
+                node.next.prev = node.prev;
+            if (node === this._head) {
+                this._head = node.next;
+                if (node.next === null) {
+                    this._tail = null;
+                }
+            }
+            else if (node === this._tail) {
+                this._tail = node.prev;
+                if (this._tail)
+                    this._tail.next = null;
+            }
+            node.owner = null;
+            return this;
+        };
+        Signal.prototype.detachAll = function () {
+            var node = this._head;
+            if (!node)
+                return this;
+            this._head = null;
+            this._tail = null;
+            while (node) {
+                node.owner = null;
+                node = node.next;
+            }
+            return this;
+        };
+        Signal.prototype.filter = function (filter) {
+            this._filter = filter;
+        };
+        Signal.prototype.proxy = function () {
+            var _this = this;
+            var signals = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                signals[_i] = arguments[_i];
+            }
+            var fn = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return _this.dispatch.apply(_this, args);
+            };
+            for (var i = 0; i < signals.length; ++i) {
+                signals[i].add(fn);
+            }
+            return this;
+        };
+        Signal.prototype._addSignalBinding = function (node_) {
+            var node = node_;
+            if (!this._head) {
+                this._head = node;
+                this._tail = node;
+            }
+            else {
+                if (this._tail)
+                    this._tail.next = node;
+                node.prev = this._tail;
+                this._tail = node;
+            }
+            node.owner = this;
+            return node;
+        };
+        return Signal;
+    }());
+
+    function parseURI (str, opts) {
+      if (!str) return undefined
+
+      opts = opts || {};
+
+      var o = {
+        key: [
+          'source',
+          'protocol',
+          'authority',
+          'userInfo',
+          'user',
+          'password',
+          'host',
+          'port',
+          'relative',
+          'path',
+          'directory',
+          'file',
+          'query',
+          'anchor'
+        ],
+        q: {
+          name: 'queryKey',
+          parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+        },
+        parser: {
+          strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+          loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+        }
+      };
+
+      var m = o.parser[opts.strictMode ? 'strict' : 'loose'].exec(str);
+      var uri = {};
+      var i = 14;
+
+      while (i--) uri[o.key[i]] = m[i] || '';
+
+      uri[o.q.name] = {};
+      uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+        if ($1) uri[o.q.name][$1] = $2;
+      });
+
+      return uri
+    }
+
+    var parseUri = parseURI;
+
+    /*!
+     * resource-loader - v4.0.0-rc4
+     * https://github.com/englercj/resource-loader
+     * Compiled Sun, 08 Mar 2020 16:55:29 UTC
+     *
+     * resource-loader is licensed under the MIT license.
+     * http://www.opensource.org/licenses/mit-license
+     */
+
+    var AbstractLoadStrategy = (function () {
+        function AbstractLoadStrategy(config) {
+            this.config = config;
+            this.onError = new Signal();
+            this.onComplete = new Signal();
+            this.onProgress = new Signal();
+        }
+        return AbstractLoadStrategy;
+    }());
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    }
+
+    function getExtension(url) {
+        var isDataUrl = url.indexOf('data:') === 0;
+        var ext = '';
+        if (isDataUrl) {
+            var slashIndex = url.indexOf('/');
+            ext = url.substring(slashIndex + 1, url.indexOf(';', slashIndex));
+        }
+        else {
+            var queryStart = url.indexOf('?');
+            var hashStart = url.indexOf('#');
+            var index = Math.min(queryStart > -1 ? queryStart : url.length, hashStart > -1 ? hashStart : url.length);
+            url = url.substring(0, index);
+            ext = url.substring(url.lastIndexOf('.') + 1);
+        }
+        return ext.toLowerCase();
+    }
+    function assertNever(x) {
+        throw new Error('Unexpected value. Should have been never.');
+    }
+
+    var ResourceType;
+    (function (ResourceType) {
+        ResourceType[ResourceType["Unknown"] = 0] = "Unknown";
+        ResourceType[ResourceType["Buffer"] = 1] = "Buffer";
+        ResourceType[ResourceType["Blob"] = 2] = "Blob";
+        ResourceType[ResourceType["Json"] = 3] = "Json";
+        ResourceType[ResourceType["Xml"] = 4] = "Xml";
+        ResourceType[ResourceType["Image"] = 5] = "Image";
+        ResourceType[ResourceType["Audio"] = 6] = "Audio";
+        ResourceType[ResourceType["Video"] = 7] = "Video";
+        ResourceType[ResourceType["Text"] = 8] = "Text";
+    })(ResourceType || (ResourceType = {}));
+    var ResourceState;
+    (function (ResourceState) {
+        ResourceState[ResourceState["NotStarted"] = 0] = "NotStarted";
+        ResourceState[ResourceState["Loading"] = 1] = "Loading";
+        ResourceState[ResourceState["Complete"] = 2] = "Complete";
+    })(ResourceState || (ResourceState = {}));
+
+    var MediaElementLoadStrategy = (function (_super) {
+        __extends(MediaElementLoadStrategy, _super);
+        function MediaElementLoadStrategy(config, elementType) {
+            var _this = _super.call(this, config) || this;
+            _this.elementType = elementType;
+            _this._boundOnLoad = _this._onLoad.bind(_this);
+            _this._boundOnError = _this._onError.bind(_this);
+            _this._boundOnTimeout = _this._onTimeout.bind(_this);
+            _this._element = _this._createElement();
+            _this._elementTimer = 0;
+            return _this;
+        }
+        MediaElementLoadStrategy.prototype.load = function () {
+            var config = this.config;
+            if (config.crossOrigin)
+                this._element.crossOrigin = config.crossOrigin;
+            var urls = config.sourceSet || [config.url];
+            if (navigator.isCocoonJS) {
+                this._element.src = urls[0];
+            }
+            else {
+                for (var i = 0; i < urls.length; ++i) {
+                    var url = urls[i];
+                    var mimeType = config.mimeTypes ? config.mimeTypes[i] : undefined;
+                    if (!mimeType)
+                        mimeType = this.elementType + "/" + getExtension(url);
+                    var source = document.createElement('source');
+                    source.src = url;
+                    source.type = mimeType;
+                    this._element.appendChild(source);
+                }
+            }
+            this._element.addEventListener('load', this._boundOnLoad, false);
+            this._element.addEventListener('canplaythrough', this._boundOnLoad, false);
+            this._element.addEventListener('error', this._boundOnError, false);
+            this._element.load();
+            if (config.timeout)
+                this._elementTimer = window.setTimeout(this._boundOnTimeout, config.timeout);
+        };
+        MediaElementLoadStrategy.prototype.abort = function () {
+            this._clearEvents();
+            while (this._element.firstChild) {
+                this._element.removeChild(this._element.firstChild);
+            }
+            this._error(this.elementType + " load aborted by the user.");
+        };
+        MediaElementLoadStrategy.prototype._createElement = function () {
+            if (this.config.loadElement)
+                return this.config.loadElement;
+            else
+                return document.createElement(this.elementType);
+        };
+        MediaElementLoadStrategy.prototype._clearEvents = function () {
+            clearTimeout(this._elementTimer);
+            this._element.removeEventListener('load', this._boundOnLoad, false);
+            this._element.removeEventListener('canplaythrough', this._boundOnLoad, false);
+            this._element.removeEventListener('error', this._boundOnError, false);
+        };
+        MediaElementLoadStrategy.prototype._error = function (errMessage) {
+            this._clearEvents();
+            this.onError.dispatch(errMessage);
+        };
+        MediaElementLoadStrategy.prototype._complete = function () {
+            this._clearEvents();
+            var resourceType = ResourceType.Unknown;
+            switch (this.elementType) {
+                case 'audio':
+                    resourceType = ResourceType.Audio;
+                    break;
+                case 'video':
+                    resourceType = ResourceType.Video;
+                    break;
+                default: assertNever(this.elementType);
+            }
+            this.onComplete.dispatch(resourceType, this._element);
+        };
+        MediaElementLoadStrategy.prototype._onLoad = function () {
+            this._complete();
+        };
+        MediaElementLoadStrategy.prototype._onError = function () {
+            this._error(this.elementType + " failed to load.");
+        };
+        MediaElementLoadStrategy.prototype._onTimeout = function () {
+            this._error(this.elementType + " load timed out.");
+        };
+        return MediaElementLoadStrategy;
+    }(AbstractLoadStrategy));
+
+    var AudioLoadStrategy = (function (_super) {
+        __extends(AudioLoadStrategy, _super);
+        function AudioLoadStrategy(config) {
+            return _super.call(this, config, 'audio') || this;
+        }
+        return AudioLoadStrategy;
+    }(MediaElementLoadStrategy));
+
+    var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+    var ImageLoadStrategy = (function (_super) {
+        __extends(ImageLoadStrategy, _super);
+        function ImageLoadStrategy() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this._boundOnLoad = _this._onLoad.bind(_this);
+            _this._boundOnError = _this._onError.bind(_this);
+            _this._boundOnTimeout = _this._onTimeout.bind(_this);
+            _this._element = _this._createElement();
+            _this._elementTimer = 0;
+            return _this;
+        }
+        ImageLoadStrategy.prototype.load = function () {
+            var config = this.config;
+            if (config.crossOrigin)
+                this._element.crossOrigin = config.crossOrigin;
+            this._element.src = config.url;
+            this._element.addEventListener('load', this._boundOnLoad, false);
+            this._element.addEventListener('error', this._boundOnError, false);
+            if (config.timeout)
+                this._elementTimer = window.setTimeout(this._boundOnTimeout, config.timeout);
+        };
+        ImageLoadStrategy.prototype.abort = function () {
+            this._clearEvents();
+            this._element.src = EMPTY_GIF;
+            this._error('Image load aborted by the user.');
+        };
+        ImageLoadStrategy.prototype._createElement = function () {
+            if (this.config.loadElement)
+                return this.config.loadElement;
+            else
+                return document.createElement('img');
+        };
+        ImageLoadStrategy.prototype._clearEvents = function () {
+            clearTimeout(this._elementTimer);
+            this._element.removeEventListener('load', this._boundOnLoad, false);
+            this._element.removeEventListener('error', this._boundOnError, false);
+        };
+        ImageLoadStrategy.prototype._error = function (errMessage) {
+            this._clearEvents();
+            this.onError.dispatch(errMessage);
+        };
+        ImageLoadStrategy.prototype._complete = function () {
+            this._clearEvents();
+            this.onComplete.dispatch(ResourceType.Image, this._element);
+        };
+        ImageLoadStrategy.prototype._onLoad = function () {
+            this._complete();
+        };
+        ImageLoadStrategy.prototype._onError = function () {
+            this._error('Image failed to load.');
+        };
+        ImageLoadStrategy.prototype._onTimeout = function () {
+            this._error('Image load timed out.');
+        };
+        return ImageLoadStrategy;
+    }(AbstractLoadStrategy));
+
+    var VideoLoadStrategy = (function (_super) {
+        __extends(VideoLoadStrategy, _super);
+        function VideoLoadStrategy(config) {
+            return _super.call(this, config, 'video') || this;
+        }
+        return VideoLoadStrategy;
+    }(MediaElementLoadStrategy));
+
+    var useXdr = !!(window.XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
+    var XhrResponseType;
+    (function (XhrResponseType) {
+        XhrResponseType["Default"] = "text";
+        XhrResponseType["Buffer"] = "arraybuffer";
+        XhrResponseType["Blob"] = "blob";
+        XhrResponseType["Document"] = "document";
+        XhrResponseType["Json"] = "json";
+        XhrResponseType["Text"] = "text";
+    })(XhrResponseType || (XhrResponseType = {}));
+    function reqType(xhr) {
+        return xhr.toString().replace('object ', '');
+    }
+    var XhrLoadStrategy = (function (_super) {
+        __extends(XhrLoadStrategy, _super);
+        function XhrLoadStrategy() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this._boundOnLoad = _this._onLoad.bind(_this);
+            _this._boundOnAbort = _this._onAbort.bind(_this);
+            _this._boundOnError = _this._onError.bind(_this);
+            _this._boundOnTimeout = _this._onTimeout.bind(_this);
+            _this._boundOnProgress = _this._onProgress.bind(_this);
+            _this._xhr = _this._createRequest();
+            _this._xhrType = XhrResponseType.Default;
+            return _this;
+        }
+        XhrLoadStrategy.prototype.load = function () {
+            var config = this.config;
+            var ext = getExtension(config.url);
+            if (typeof config.xhrType !== 'string') {
+                config.xhrType = this._determineXhrType(ext);
+            }
+            var xhr = this._xhr;
+            this._xhrType = config.xhrType || XhrResponseType.Default;
+            if (useXdr) {
+                xhr.timeout = config.timeout || 5000;
+                xhr.onload = this._boundOnLoad;
+                xhr.onerror = this._boundOnError;
+                xhr.ontimeout = this._boundOnTimeout;
+                xhr.onprogress = this._boundOnProgress;
+                xhr.open('GET', config.url, true);
+                setTimeout(function () { xhr.send(); }, 0);
+            }
+            else {
+                xhr.open('GET', config.url, true);
+                if (config.timeout)
+                    xhr.timeout = config.timeout;
+                if (config.xhrType === XhrResponseType.Json || config.xhrType === XhrResponseType.Document)
+                    xhr.responseType = XhrResponseType.Text;
+                else
+                    xhr.responseType = config.xhrType;
+                xhr.addEventListener('load', this._boundOnLoad, false);
+                xhr.addEventListener('abort', this._boundOnAbort, false);
+                xhr.addEventListener('error', this._boundOnError, false);
+                xhr.addEventListener('timeout', this._boundOnTimeout, false);
+                xhr.addEventListener('progress', this._boundOnProgress, false);
+                xhr.send();
+            }
+        };
+        XhrLoadStrategy.prototype.abort = function () {
+            if (useXdr) {
+                this._clearEvents();
+                this._xhr.abort();
+                this._onAbort();
+            }
+            else {
+                this._xhr.abort();
+            }
+        };
+        XhrLoadStrategy.prototype._createRequest = function () {
+            if (useXdr)
+                return new window.XDomainRequest();
+            else
+                return new XMLHttpRequest();
+        };
+        XhrLoadStrategy.prototype._determineXhrType = function (ext) {
+            return XhrLoadStrategy._xhrTypeMap[ext] || XhrResponseType.Default;
+        };
+        XhrLoadStrategy.prototype._clearEvents = function () {
+            if (useXdr) {
+                this._xhr.onload = null;
+                this._xhr.onerror = null;
+                this._xhr.ontimeout = null;
+                this._xhr.onprogress = null;
+            }
+            else {
+                this._xhr.removeEventListener('load', this._boundOnLoad, false);
+                this._xhr.removeEventListener('abort', this._boundOnAbort, false);
+                this._xhr.removeEventListener('error', this._boundOnError, false);
+                this._xhr.removeEventListener('timeout', this._boundOnTimeout, false);
+                this._xhr.removeEventListener('progress', this._boundOnProgress, false);
+            }
+        };
+        XhrLoadStrategy.prototype._error = function (errMessage) {
+            this._clearEvents();
+            this.onError.dispatch(errMessage);
+        };
+        XhrLoadStrategy.prototype._complete = function (type, data) {
+            this._clearEvents();
+            this.onComplete.dispatch(type, data);
+        };
+        XhrLoadStrategy.prototype._onLoad = function () {
+            var xhr = this._xhr;
+            var text = '';
+            var status = typeof xhr.status === 'undefined' ? 200 : xhr.status;
+            if (typeof xhr.responseType === 'undefined' || xhr.responseType === '' || xhr.responseType === 'text') {
+                text = xhr.responseText;
+            }
+            if (status === 0 && (text.length > 0 || xhr.responseType === XhrResponseType.Buffer)) {
+                status = 200;
+            }
+            else if (status === 1223) {
+                status = 204;
+            }
+            var flattenedStatus = Math.floor(status / 100) * 100;
+            if (flattenedStatus !== 200) {
+                this._error("[" + xhr.status + "] " + xhr.statusText + ": " + xhr.responseURL);
+                return;
+            }
+            switch (this._xhrType) {
+                case XhrResponseType.Buffer:
+                    this._complete(ResourceType.Buffer, xhr.response);
+                    break;
+                case XhrResponseType.Blob:
+                    this._complete(ResourceType.Blob, xhr.response);
+                    break;
+                case XhrResponseType.Document:
+                    this._parseDocument(text);
+                    break;
+                case XhrResponseType.Json:
+                    this._parseJson(text);
+                    break;
+                case XhrResponseType.Default:
+                case XhrResponseType.Text:
+                    this._complete(ResourceType.Text, text);
+                    break;
+                default:
+                    assertNever(this._xhrType);
+            }
+        };
+        XhrLoadStrategy.prototype._parseDocument = function (text) {
+            try {
+                if (window.DOMParser) {
+                    var parser = new DOMParser();
+                    var data = parser.parseFromString(text, 'text/xml');
+                    this._complete(ResourceType.Xml, data);
+                }
+                else {
+                    var div = document.createElement('div');
+                    div.innerHTML = text;
+                    this._complete(ResourceType.Xml, div);
+                }
+            }
+            catch (e) {
+                this._error("Error trying to parse loaded xml: " + e);
+            }
+        };
+        XhrLoadStrategy.prototype._parseJson = function (text) {
+            try {
+                var data = JSON.parse(text);
+                this._complete(ResourceType.Json, data);
+            }
+            catch (e) {
+                this._error("Error trying to parse loaded json: " + e);
+            }
+        };
+        XhrLoadStrategy.prototype._onAbort = function () {
+            var xhr = this._xhr;
+            this._error(reqType(xhr) + " Request was aborted by the user.");
+        };
+        XhrLoadStrategy.prototype._onError = function () {
+            var xhr = this._xhr;
+            this._error(reqType(xhr) + " Request failed. Status: " + xhr.status + ", text: \"" + xhr.statusText + "\"");
+        };
+        XhrLoadStrategy.prototype._onTimeout = function () {
+            var xhr = this._xhr;
+            this._error(reqType(xhr) + " Request timed out.");
+        };
+        XhrLoadStrategy.prototype._onProgress = function (event) {
+            if (event && event.lengthComputable) {
+                this.onProgress.dispatch(event.loaded / event.total);
+            }
+        };
+        XhrLoadStrategy.setExtensionXhrType = function (extname, xhrType) {
+            if (extname && extname.indexOf('.') === 0)
+                extname = extname.substring(1);
+            if (!extname)
+                return;
+            XhrLoadStrategy._xhrTypeMap[extname] = xhrType;
+        };
+        XhrLoadStrategy.ResponseType = XhrResponseType;
+        XhrLoadStrategy._xhrTypeMap = {
+            xhtml: XhrResponseType.Document,
+            html: XhrResponseType.Document,
+            htm: XhrResponseType.Document,
+            xml: XhrResponseType.Document,
+            tmx: XhrResponseType.Document,
+            svg: XhrResponseType.Document,
+            tsx: XhrResponseType.Document,
+            gif: XhrResponseType.Blob,
+            png: XhrResponseType.Blob,
+            bmp: XhrResponseType.Blob,
+            jpg: XhrResponseType.Blob,
+            jpeg: XhrResponseType.Blob,
+            tif: XhrResponseType.Blob,
+            tiff: XhrResponseType.Blob,
+            webp: XhrResponseType.Blob,
+            tga: XhrResponseType.Blob,
+            json: XhrResponseType.Json,
+            text: XhrResponseType.Text,
+            txt: XhrResponseType.Text,
+            ttf: XhrResponseType.Buffer,
+            otf: XhrResponseType.Buffer,
+        };
+        return XhrLoadStrategy;
+    }(AbstractLoadStrategy));
+
+    function onlyOnce(func) {
+        var fn = func;
+        return function onceWrapper() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            if (fn === null)
+                throw new Error('Callback was already called.');
+            var callFn = fn;
+            fn = null;
+            return callFn.apply(this, args);
+        };
+    }
+    var AsyncQueue = (function () {
+        function AsyncQueue(worker, concurrency) {
+            if (concurrency === void 0) { concurrency = 1; }
+            this.worker = worker;
+            this.concurrency = concurrency;
+            this.workers = 0;
+            this.buffer = 0;
+            this.paused = false;
+            this._started = false;
+            this._tasks = [];
+            this.onSaturated = new Signal();
+            this.onUnsaturated = new Signal();
+            this.onEmpty = new Signal();
+            this.onDrain = new Signal();
+            this.onError = new Signal();
+            if (concurrency === 0)
+                throw new Error('Concurrency must not be zero');
+            this.buffer = concurrency / 4;
+        }
+        Object.defineProperty(AsyncQueue.prototype, "started", {
+            get: function () { return this._started; },
+            enumerable: true,
+            configurable: true
+        });
+        AsyncQueue.prototype.reset = function () {
+            this.onDrain.detachAll();
+            this.workers = 0;
+            this._started = false;
+            this._tasks = [];
+        };
+        AsyncQueue.prototype.push = function (data, callback) {
+            this._insert(data, false, callback);
+        };
+        AsyncQueue.prototype.unshift = function (data, callback) {
+            this._insert(data, true, callback);
+        };
+        AsyncQueue.prototype.process = function () {
+            while (!this.paused && this.workers < this.concurrency && this._tasks.length) {
+                var task = this._tasks.shift();
+                if (this._tasks.length === 0)
+                    this.onEmpty.dispatch();
+                this.workers += 1;
+                if (this.workers === this.concurrency)
+                    this.onSaturated.dispatch();
+                this.worker(task.data, onlyOnce(this._next(task)));
+            }
+        };
+        AsyncQueue.prototype.length = function () {
+            return this._tasks.length;
+        };
+        AsyncQueue.prototype.running = function () {
+            return this.workers;
+        };
+        AsyncQueue.prototype.idle = function () {
+            return this._tasks.length + this.workers === 0;
+        };
+        AsyncQueue.prototype.pause = function () {
+            if (this.paused === true)
+                return;
+            this.paused = true;
+        };
+        AsyncQueue.prototype.resume = function () {
+            if (this.paused === false)
+                return;
+            this.paused = false;
+            for (var w = 1; w <= this.concurrency; w++) {
+                this.process();
+            }
+        };
+        AsyncQueue.prototype.getTask = function (index) {
+            return this._tasks[index];
+        };
+        AsyncQueue.prototype._insert = function (data, insertAtFront, callback) {
+            var _this = this;
+            if (callback != null && typeof callback !== 'function') {
+                throw new Error('task callback must be a function');
+            }
+            this._started = true;
+            if (data == null && this.idle()) {
+                setTimeout(function () { return _this.onDrain.dispatch(); }, 1);
+                return;
+            }
+            var task = { data: data, callback: callback };
+            if (insertAtFront)
+                this._tasks.unshift(task);
+            else
+                this._tasks.push(task);
+            setTimeout(function () { return _this.process(); }, 1);
+        };
+        AsyncQueue.prototype._next = function (task) {
+            var _this = this;
+            return function (err) {
+                var args = [];
+                for (var _i = 1; _i < arguments.length; _i++) {
+                    args[_i - 1] = arguments[_i];
+                }
+                _this.workers -= 1;
+                if (task.callback)
+                    task.callback.apply(task, __spreadArrays([err], args));
+                if (err)
+                    _this.onError.dispatch(err, task.data);
+                if (_this.workers <= (_this.concurrency - _this.buffer))
+                    _this.onUnsaturated.dispatch();
+                if (_this.idle())
+                    _this.onDrain.dispatch();
+                _this.process();
+            };
+        };
+        return AsyncQueue;
+    }());
+
+    var Resource = (function () {
+        function Resource(name, options) {
+            this.children = [];
+            this.onStart = new Signal();
+            this.onProgress = new Signal();
+            this.onComplete = new Signal();
+            this.onAfterMiddleware = new Signal();
+            this.data = null;
+            this.type = ResourceType.Unknown;
+            this.error = '';
+            this.progressChunk = 0;
+            this._dequeue = function () { };
+            this._onCompleteBinding = null;
+            this._state = ResourceState.NotStarted;
+            this.name = name;
+            this.metadata = options.metadata;
+            if (typeof options.crossOrigin !== 'string')
+                options.crossOrigin = this._determineCrossOrigin(options.url);
+            if (options.strategy && typeof options.strategy !== 'function') {
+                this._strategy = options.strategy;
+                this._strategy.config = options;
+            }
+            else {
+                var StrategyCtor = options.strategy;
+                if (!StrategyCtor)
+                    StrategyCtor = Resource._loadStrategyMap[getExtension(options.url)];
+                if (!StrategyCtor)
+                    StrategyCtor = Resource._defaultLoadStrategy;
+                this._strategy = new StrategyCtor(options);
+            }
+            this._strategy.onError.add(this._error, this);
+            this._strategy.onComplete.add(this._complete, this);
+            this._strategy.onProgress.add(this._progress, this);
+        }
+        Resource.setDefaultLoadStrategy = function (strategy) {
+            Resource._defaultLoadStrategy = strategy;
+        };
+        Resource.setLoadStrategy = function (extname, strategy) {
+            if (extname && extname.indexOf('.') === 0)
+                extname = extname.substring(1);
+            if (!extname)
+                return;
+            Resource._loadStrategyMap[extname] = strategy;
+        };
+        Object.defineProperty(Resource.prototype, "strategy", {
+            get: function () { return this._strategy; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Resource.prototype, "url", {
+            get: function () { return this._strategy.config.url; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Resource.prototype, "isLoading", {
+            get: function () { return this._state === ResourceState.Loading; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Resource.prototype, "isComplete", {
+            get: function () { return this._state === ResourceState.Complete; },
+            enumerable: true,
+            configurable: true
+        });
+        Resource.prototype.abort = function () {
+            this._strategy.abort();
+        };
+        Resource.prototype.load = function () {
+            this._state = ResourceState.Loading;
+            this.onStart.dispatch(this);
+            this._strategy.load();
+        };
+        Resource.prototype._error = function (errMessage) {
+            this._state = ResourceState.Complete;
+            this.error = errMessage;
+            this.onComplete.dispatch(this);
+        };
+        Resource.prototype._complete = function (type, data) {
+            this._state = ResourceState.Complete;
+            this.type = type;
+            this.data = data;
+            this.onComplete.dispatch(this);
+        };
+        Resource.prototype._progress = function (percent) {
+            this.onProgress.dispatch(this, percent);
+        };
+        Resource.prototype._determineCrossOrigin = function (url, loc) {
+            if (loc === void 0) { loc = window.location; }
+            if (url.indexOf('data:') === 0 || url.indexOf('javascript:') === 0)
+                return '';
+            if (window.origin !== window.location.origin)
+                return 'anonymous';
+            if (!Resource._tempAnchor)
+                Resource._tempAnchor = document.createElement('a');
+            Resource._tempAnchor.href = url;
+            var parsed = parseUri(Resource._tempAnchor.href, { strictMode: true });
+            var samePort = (!parsed.port && loc.port === '') || (parsed.port === loc.port);
+            var protocol = parsed.protocol ? parsed.protocol + ":" : '';
+            if (parsed.host !== loc.hostname || !samePort || protocol !== loc.protocol)
+                return 'anonymous';
+            return '';
+        };
+        Resource._tempAnchor = null;
+        Resource._defaultLoadStrategy = XhrLoadStrategy;
+        Resource._loadStrategyMap = {
+            gif: ImageLoadStrategy,
+            png: ImageLoadStrategy,
+            bmp: ImageLoadStrategy,
+            jpg: ImageLoadStrategy,
+            jpeg: ImageLoadStrategy,
+            tif: ImageLoadStrategy,
+            tiff: ImageLoadStrategy,
+            webp: ImageLoadStrategy,
+            tga: ImageLoadStrategy,
+            svg: ImageLoadStrategy,
+            'svg+xml': ImageLoadStrategy,
+            mp3: AudioLoadStrategy,
+            ogg: AudioLoadStrategy,
+            wav: AudioLoadStrategy,
+            mp4: VideoLoadStrategy,
+            webm: VideoLoadStrategy,
+            mov: VideoLoadStrategy,
+        };
+        return Resource;
+    }());
+
+    function eachSeries(array, iterator, callback, deferNext) {
+        if (deferNext === void 0) { deferNext = false; }
+        var i = 0;
+        var len = array.length;
+        (function next(err) {
+            if (err || i === len) {
+                if (callback)
+                    callback(err);
+                return;
+            }
+            if (deferNext)
+                setTimeout(function () { return iterator(array[i++], next); }, 1);
+            else
+                iterator(array[i++], next);
+        })();
+    }
+
+    var MAX_PROGRESS = 100;
+    var rgxExtractUrlHash = /(#[\w-]+)?$/;
+    ((function () {
+        function Loader(baseUrl, concurrency) {
+            if (baseUrl === void 0) { baseUrl = ''; }
+            if (concurrency === void 0) { concurrency = 10; }
+            this.progress = 0;
+            this.loading = false;
+            this.defaultQueryString = '';
+            this.resources = {};
+            this.onError = new Signal();
+            this.onLoad = new Signal();
+            this.onStart = new Signal();
+            this.onComplete = new Signal();
+            this.onProgress = new Signal();
+            this._baseUrl = '';
+            this._urlResolvers = [];
+            this._middleware = [];
+            this._resourcesParsing = [];
+            this._boundLoadResource = this._loadResource.bind(this);
+            this.baseUrl = baseUrl;
+            this._queue = new AsyncQueue(this._boundLoadResource, concurrency);
+            this._queue.pause();
+            this._middleware = Loader._defaultMiddleware.slice();
+        }
+        Object.defineProperty(Loader.prototype, "baseUrl", {
+            get: function () { return this._baseUrl; },
+            set: function (url) {
+                while (url.length && url.charAt(url.length - 1) === '/') {
+                    url = url.slice(0, -1);
+                }
+                this._baseUrl = url;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Loader.prototype.add = function (options, url_) {
+            if (Array.isArray(options)) {
+                for (var i = 0; i < options.length; ++i) {
+                    this.add(options[i]);
+                }
+                return this;
+            }
+            var url = '';
+            var name = '';
+            var baseUrl = this._baseUrl;
+            var resOptions = { url: '' };
+            if (typeof options === 'object') {
+                url = options.url;
+                name = options.name || options.url;
+                baseUrl = options.baseUrl || baseUrl;
+                resOptions = options;
+            }
+            else {
+                name = options;
+                if (typeof url_ === 'string')
+                    url = url_;
+                else
+                    url = name;
+            }
+            if (!url)
+                throw new Error('You must specify the `url` property.');
+            if (this.loading && !resOptions.parentResource) {
+                throw new Error('Cannot add root resources while the loader is running.');
+            }
+            if (this.resources[name]) {
+                throw new Error("Resource named \"" + name + "\" already exists.");
+            }
+            url = this._prepareUrl(url, baseUrl);
+            resOptions.url = url;
+            var resource = new Resource(name, resOptions);
+            this.resources[name] = resource;
+            if (typeof resOptions.onComplete === 'function') {
+                resource.onAfterMiddleware.once(resOptions.onComplete);
+            }
+            if (this.loading) {
+                var parent_1 = resOptions.parentResource;
+                var incompleteChildren = [];
+                for (var i = 0; i < parent_1.children.length; ++i) {
+                    if (!parent_1.children[i].isComplete) {
+                        incompleteChildren.push(parent_1.children[i]);
+                    }
+                }
+                var fullChunk = parent_1.progressChunk * (incompleteChildren.length + 1);
+                var eachChunk = fullChunk / (incompleteChildren.length + 2);
+                parent_1.children.push(resource);
+                parent_1.progressChunk = eachChunk;
+                for (var i = 0; i < incompleteChildren.length; ++i) {
+                    incompleteChildren[i].progressChunk = eachChunk;
+                }
+                resource.progressChunk = eachChunk;
+            }
+            this._queue.push(resource);
+            return this;
+        };
+        Loader.prototype.use = function (fn, priority) {
+            if (priority === void 0) { priority = Loader.DefaultMiddlewarePriority; }
+            this._middleware.push({ fn: fn, priority: priority });
+            this._middleware.sort(function (a, b) { return a.priority - b.priority; });
+            return this;
+        };
+        Loader.prototype.reset = function () {
+            this.progress = 0;
+            this.loading = false;
+            this._queue.reset();
+            this._queue.pause();
+            for (var k in this.resources) {
+                var res = this.resources[k];
+                if (!res)
+                    continue;
+                if (res._onCompleteBinding)
+                    res._onCompleteBinding.detach();
+                if (res.isLoading)
+                    res.abort();
+            }
+            this.resources = {};
+            return this;
+        };
+        Loader.prototype.load = function (cb) {
+            if (typeof cb === 'function')
+                this.onComplete.once(cb);
+            if (this.loading)
+                return this;
+            if (this._queue.idle()) {
+                this._onStart();
+                this._onComplete();
+            }
+            else {
+                var numTasks = this._queue.length();
+                var chunk = MAX_PROGRESS / numTasks;
+                for (var i = 0; i < this._queue.length(); ++i) {
+                    this._queue.getTask(i).data.progressChunk = chunk;
+                }
+                this._onStart();
+                this._queue.resume();
+            }
+            return this;
+        };
+        Object.defineProperty(Loader.prototype, "concurrency", {
+            get: function () {
+                return this._queue.concurrency;
+            },
+            set: function (concurrency) {
+                this._queue.concurrency = concurrency;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Loader.prototype.addUrlResolver = function (func) {
+            this._urlResolvers.push(func);
+            return this;
+        };
+        Loader.prototype._prepareUrl = function (url, baseUrl) {
+            var parsed = parseUri(url, { strictMode: true });
+            this._urlResolvers.forEach(function (resolver) {
+                url = resolver(url, parsed);
+                parsed = parseUri(url, { strictMode: true });
+            });
+            if (!parsed.protocol && url.indexOf('//') !== 0) {
+                if (baseUrl.length && url.charAt(0) !== '/')
+                    url = baseUrl + "/" + url;
+                else
+                    url = baseUrl + url;
+            }
+            if (this.defaultQueryString) {
+                var match = rgxExtractUrlHash.exec(url);
+                if (match) {
+                    var hash = match[0];
+                    url = url.substr(0, url.length - hash.length);
+                    if (url.indexOf('?') !== -1)
+                        url += "&" + this.defaultQueryString;
+                    else
+                        url += "?" + this.defaultQueryString;
+                    url += hash;
+                }
+            }
+            return url;
+        };
+        Loader.prototype._loadResource = function (resource, dequeue) {
+            resource._dequeue = dequeue;
+            resource._onCompleteBinding = resource.onComplete.once(this._onLoad, this);
+            resource.load();
+        };
+        Loader.prototype._onStart = function () {
+            this.progress = 0;
+            this.loading = true;
+            this.onStart.dispatch(this);
+        };
+        Loader.prototype._onComplete = function () {
+            this.progress = MAX_PROGRESS;
+            this.loading = false;
+            this.onComplete.dispatch(this, this.resources);
+        };
+        Loader.prototype._onLoad = function (resource) {
+            var _this = this;
+            resource._onCompleteBinding = null;
+            this._resourcesParsing.push(resource);
+            resource._dequeue();
+            eachSeries(this._middleware, function (middleware, next) {
+                middleware.fn.call(_this, resource, next);
+            }, function () {
+                resource.onAfterMiddleware.dispatch(resource);
+                _this.progress = Math.min(MAX_PROGRESS, _this.progress + resource.progressChunk);
+                _this.onProgress.dispatch(_this, resource);
+                if (resource.error)
+                    _this.onError.dispatch(resource.error, _this, resource);
+                else
+                    _this.onLoad.dispatch(_this, resource);
+                _this._resourcesParsing.splice(_this._resourcesParsing.indexOf(resource), 1);
+                if (_this._queue.idle() && _this._resourcesParsing.length === 0)
+                    _this._onComplete();
+            }, true);
+        };
+        Loader.use = function (fn, priority) {
+            if (priority === void 0) { priority = Loader.DefaultMiddlewarePriority; }
+            Loader._defaultMiddleware.push({ fn: fn, priority: priority });
+            Loader._defaultMiddleware.sort(function (a, b) { return a.priority - b.priority; });
+            return Loader;
+        };
+        Loader.DefaultMiddlewarePriority = 50;
+        Loader._defaultMiddleware = [];
+        return Loader;
+    })());
+
+    /*!
+     * @pixi/constants - v6.0.4
+     * Compiled Tue, 11 May 2021 18:00:23 UTC
+     *
+     * @pixi/constants is licensed under the MIT License.
+     * http://www.opensource.org/licenses/mit-license
+     */
+    /**
+     * Different types of environments for WebGL.
+     *
+     * @static
+     * @memberof PIXI
+     * @name ENV
+     * @enum {number}
+     * @property {number} WEBGL_LEGACY - Used for older v1 WebGL devices. PixiJS will aim to ensure compatibility
+     *  with older / less advanced devices. If you experience unexplained flickering prefer this environment.
+     * @property {number} WEBGL - Version 1 of WebGL
+     * @property {number} WEBGL2 - Version 2 of WebGL
+     */
+    var ENV;
+    (function (ENV) {
+        ENV[ENV["WEBGL_LEGACY"] = 0] = "WEBGL_LEGACY";
+        ENV[ENV["WEBGL"] = 1] = "WEBGL";
+        ENV[ENV["WEBGL2"] = 2] = "WEBGL2";
+    })(ENV || (ENV = {}));
+    /**
+     * Constant to identify the Renderer Type.
+     *
+     * @static
+     * @memberof PIXI
+     * @name RENDERER_TYPE
+     * @enum {number}
+     * @property {number} UNKNOWN - Unknown render type.
+     * @property {number} WEBGL - WebGL render type.
+     * @property {number} CANVAS - Canvas render type.
+     */
+    var RENDERER_TYPE$1;
+    (function (RENDERER_TYPE) {
+        RENDERER_TYPE[RENDERER_TYPE["UNKNOWN"] = 0] = "UNKNOWN";
+        RENDERER_TYPE[RENDERER_TYPE["WEBGL"] = 1] = "WEBGL";
+        RENDERER_TYPE[RENDERER_TYPE["CANVAS"] = 2] = "CANVAS";
+    })(RENDERER_TYPE$1 || (RENDERER_TYPE$1 = {}));
+    /**
+     * Bitwise OR of masks that indicate the buffers to be cleared.
+     *
+     * @static
+     * @memberof PIXI
+     * @name BUFFER_BITS
+     * @enum {number}
+     * @property {number} COLOR - Indicates the buffers currently enabled for color writing.
+     * @property {number} DEPTH - Indicates the depth buffer.
+     * @property {number} STENCIL - Indicates the stencil buffer.
+     */
+    var BUFFER_BITS;
+    (function (BUFFER_BITS) {
+        BUFFER_BITS[BUFFER_BITS["COLOR"] = 16384] = "COLOR";
+        BUFFER_BITS[BUFFER_BITS["DEPTH"] = 256] = "DEPTH";
+        BUFFER_BITS[BUFFER_BITS["STENCIL"] = 1024] = "STENCIL";
+    })(BUFFER_BITS || (BUFFER_BITS = {}));
+    /**
+     * Various blend modes supported by PIXI.
+     *
+     * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
+     * Anything else will silently act like NORMAL.
+     *
+     * @memberof PIXI
+     * @name BLEND_MODES
+     * @enum {number}
+     * @property {number} NORMAL
+     * @property {number} ADD
+     * @property {number} MULTIPLY
+     * @property {number} SCREEN
+     * @property {number} OVERLAY
+     * @property {number} DARKEN
+     * @property {number} LIGHTEN
+     * @property {number} COLOR_DODGE
+     * @property {number} COLOR_BURN
+     * @property {number} HARD_LIGHT
+     * @property {number} SOFT_LIGHT
+     * @property {number} DIFFERENCE
+     * @property {number} EXCLUSION
+     * @property {number} HUE
+     * @property {number} SATURATION
+     * @property {number} COLOR
+     * @property {number} LUMINOSITY
+     * @property {number} NORMAL_NPM
+     * @property {number} ADD_NPM
+     * @property {number} SCREEN_NPM
+     * @property {number} NONE
+     * @property {number} SRC_IN
+     * @property {number} SRC_OUT
+     * @property {number} SRC_ATOP
+     * @property {number} DST_OVER
+     * @property {number} DST_IN
+     * @property {number} DST_OUT
+     * @property {number} DST_ATOP
+     * @property {number} SUBTRACT
+     * @property {number} SRC_OVER
+     * @property {number} ERASE
+     * @property {number} XOR
+     */
+    var BLEND_MODES;
+    (function (BLEND_MODES) {
+        BLEND_MODES[BLEND_MODES["NORMAL"] = 0] = "NORMAL";
+        BLEND_MODES[BLEND_MODES["ADD"] = 1] = "ADD";
+        BLEND_MODES[BLEND_MODES["MULTIPLY"] = 2] = "MULTIPLY";
+        BLEND_MODES[BLEND_MODES["SCREEN"] = 3] = "SCREEN";
+        BLEND_MODES[BLEND_MODES["OVERLAY"] = 4] = "OVERLAY";
+        BLEND_MODES[BLEND_MODES["DARKEN"] = 5] = "DARKEN";
+        BLEND_MODES[BLEND_MODES["LIGHTEN"] = 6] = "LIGHTEN";
+        BLEND_MODES[BLEND_MODES["COLOR_DODGE"] = 7] = "COLOR_DODGE";
+        BLEND_MODES[BLEND_MODES["COLOR_BURN"] = 8] = "COLOR_BURN";
+        BLEND_MODES[BLEND_MODES["HARD_LIGHT"] = 9] = "HARD_LIGHT";
+        BLEND_MODES[BLEND_MODES["SOFT_LIGHT"] = 10] = "SOFT_LIGHT";
+        BLEND_MODES[BLEND_MODES["DIFFERENCE"] = 11] = "DIFFERENCE";
+        BLEND_MODES[BLEND_MODES["EXCLUSION"] = 12] = "EXCLUSION";
+        BLEND_MODES[BLEND_MODES["HUE"] = 13] = "HUE";
+        BLEND_MODES[BLEND_MODES["SATURATION"] = 14] = "SATURATION";
+        BLEND_MODES[BLEND_MODES["COLOR"] = 15] = "COLOR";
+        BLEND_MODES[BLEND_MODES["LUMINOSITY"] = 16] = "LUMINOSITY";
+        BLEND_MODES[BLEND_MODES["NORMAL_NPM"] = 17] = "NORMAL_NPM";
+        BLEND_MODES[BLEND_MODES["ADD_NPM"] = 18] = "ADD_NPM";
+        BLEND_MODES[BLEND_MODES["SCREEN_NPM"] = 19] = "SCREEN_NPM";
+        BLEND_MODES[BLEND_MODES["NONE"] = 20] = "NONE";
+        BLEND_MODES[BLEND_MODES["SRC_OVER"] = 0] = "SRC_OVER";
+        BLEND_MODES[BLEND_MODES["SRC_IN"] = 21] = "SRC_IN";
+        BLEND_MODES[BLEND_MODES["SRC_OUT"] = 22] = "SRC_OUT";
+        BLEND_MODES[BLEND_MODES["SRC_ATOP"] = 23] = "SRC_ATOP";
+        BLEND_MODES[BLEND_MODES["DST_OVER"] = 24] = "DST_OVER";
+        BLEND_MODES[BLEND_MODES["DST_IN"] = 25] = "DST_IN";
+        BLEND_MODES[BLEND_MODES["DST_OUT"] = 26] = "DST_OUT";
+        BLEND_MODES[BLEND_MODES["DST_ATOP"] = 27] = "DST_ATOP";
+        BLEND_MODES[BLEND_MODES["ERASE"] = 26] = "ERASE";
+        BLEND_MODES[BLEND_MODES["SUBTRACT"] = 28] = "SUBTRACT";
+        BLEND_MODES[BLEND_MODES["XOR"] = 29] = "XOR";
+    })(BLEND_MODES || (BLEND_MODES = {}));
+    /**
+     * Various webgl draw modes. These can be used to specify which GL drawMode to use
+     * under certain situations and renderers.
+     *
+     * @memberof PIXI
+     * @static
+     * @name DRAW_MODES
+     * @enum {number}
+     * @property {number} POINTS
+     * @property {number} LINES
+     * @property {number} LINE_LOOP
+     * @property {number} LINE_STRIP
+     * @property {number} TRIANGLES
+     * @property {number} TRIANGLE_STRIP
+     * @property {number} TRIANGLE_FAN
+     */
+    var DRAW_MODES;
+    (function (DRAW_MODES) {
+        DRAW_MODES[DRAW_MODES["POINTS"] = 0] = "POINTS";
+        DRAW_MODES[DRAW_MODES["LINES"] = 1] = "LINES";
+        DRAW_MODES[DRAW_MODES["LINE_LOOP"] = 2] = "LINE_LOOP";
+        DRAW_MODES[DRAW_MODES["LINE_STRIP"] = 3] = "LINE_STRIP";
+        DRAW_MODES[DRAW_MODES["TRIANGLES"] = 4] = "TRIANGLES";
+        DRAW_MODES[DRAW_MODES["TRIANGLE_STRIP"] = 5] = "TRIANGLE_STRIP";
+        DRAW_MODES[DRAW_MODES["TRIANGLE_FAN"] = 6] = "TRIANGLE_FAN";
+    })(DRAW_MODES || (DRAW_MODES = {}));
+    /**
+     * Various GL texture/resources formats.
+     *
+     * @memberof PIXI
+     * @static
+     * @name FORMATS
+     * @enum {number}
+     * @property {number} RGBA=6408
+     * @property {number} RGB=6407
+     * @property {number} RED=6403
+     * @property {number} ALPHA=6406
+     * @property {number} LUMINANCE=6409
+     * @property {number} LUMINANCE_ALPHA=6410
+     * @property {number} DEPTH_COMPONENT=6402
+     * @property {number} DEPTH_STENCIL=34041
+     */
+    var FORMATS;
+    (function (FORMATS) {
+        FORMATS[FORMATS["RGBA"] = 6408] = "RGBA";
+        FORMATS[FORMATS["RGB"] = 6407] = "RGB";
+        FORMATS[FORMATS["ALPHA"] = 6406] = "ALPHA";
+        FORMATS[FORMATS["LUMINANCE"] = 6409] = "LUMINANCE";
+        FORMATS[FORMATS["LUMINANCE_ALPHA"] = 6410] = "LUMINANCE_ALPHA";
+        FORMATS[FORMATS["DEPTH_COMPONENT"] = 6402] = "DEPTH_COMPONENT";
+        FORMATS[FORMATS["DEPTH_STENCIL"] = 34041] = "DEPTH_STENCIL";
+    })(FORMATS || (FORMATS = {}));
+    /**
+     * Various GL target types.
+     *
+     * @memberof PIXI
+     * @static
+     * @name TARGETS
+     * @enum {number}
+     * @property {number} TEXTURE_2D=3553
+     * @property {number} TEXTURE_CUBE_MAP=34067
+     * @property {number} TEXTURE_2D_ARRAY=35866
+     * @property {number} TEXTURE_CUBE_MAP_POSITIVE_X=34069
+     * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_X=34070
+     * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Y=34071
+     * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Y=34072
+     * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
+     * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
+     */
+    var TARGETS;
+    (function (TARGETS) {
+        TARGETS[TARGETS["TEXTURE_2D"] = 3553] = "TEXTURE_2D";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP"] = 34067] = "TEXTURE_CUBE_MAP";
+        TARGETS[TARGETS["TEXTURE_2D_ARRAY"] = 35866] = "TEXTURE_2D_ARRAY";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP_POSITIVE_X"] = 34069] = "TEXTURE_CUBE_MAP_POSITIVE_X";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP_NEGATIVE_X"] = 34070] = "TEXTURE_CUBE_MAP_NEGATIVE_X";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP_POSITIVE_Y"] = 34071] = "TEXTURE_CUBE_MAP_POSITIVE_Y";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP_NEGATIVE_Y"] = 34072] = "TEXTURE_CUBE_MAP_NEGATIVE_Y";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP_POSITIVE_Z"] = 34073] = "TEXTURE_CUBE_MAP_POSITIVE_Z";
+        TARGETS[TARGETS["TEXTURE_CUBE_MAP_NEGATIVE_Z"] = 34074] = "TEXTURE_CUBE_MAP_NEGATIVE_Z";
+    })(TARGETS || (TARGETS = {}));
+    /**
+     * Various GL data format types.
+     *
+     * @memberof PIXI
+     * @static
+     * @name TYPES
+     * @enum {number}
+     * @property {number} UNSIGNED_BYTE=5121
+     * @property {number} UNSIGNED_SHORT=5123
+     * @property {number} UNSIGNED_SHORT_5_6_5=33635
+     * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
+     * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
+     * @property {number} FLOAT=5126
+     * @property {number} HALF_FLOAT=36193
+     */
+    var TYPES;
+    (function (TYPES) {
+        TYPES[TYPES["UNSIGNED_BYTE"] = 5121] = "UNSIGNED_BYTE";
+        TYPES[TYPES["UNSIGNED_SHORT"] = 5123] = "UNSIGNED_SHORT";
+        TYPES[TYPES["UNSIGNED_SHORT_5_6_5"] = 33635] = "UNSIGNED_SHORT_5_6_5";
+        TYPES[TYPES["UNSIGNED_SHORT_4_4_4_4"] = 32819] = "UNSIGNED_SHORT_4_4_4_4";
+        TYPES[TYPES["UNSIGNED_SHORT_5_5_5_1"] = 32820] = "UNSIGNED_SHORT_5_5_5_1";
+        TYPES[TYPES["FLOAT"] = 5126] = "FLOAT";
+        TYPES[TYPES["HALF_FLOAT"] = 36193] = "HALF_FLOAT";
+    })(TYPES || (TYPES = {}));
+    /**
+     * Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
+     * WebGL1 works only with FLOAT.
+     *
+     * @memberof PIXI
+     * @static
+     * @name SAMPLER_TYPES
+     * @enum {number}
+     * @property {number} FLOAT=0
+     * @property {number} INT=1
+     * @property {number} UINT=2
+     */
+    var SAMPLER_TYPES;
+    (function (SAMPLER_TYPES) {
+        SAMPLER_TYPES[SAMPLER_TYPES["FLOAT"] = 0] = "FLOAT";
+        SAMPLER_TYPES[SAMPLER_TYPES["INT"] = 1] = "INT";
+        SAMPLER_TYPES[SAMPLER_TYPES["UINT"] = 2] = "UINT";
+    })(SAMPLER_TYPES || (SAMPLER_TYPES = {}));
+    /**
+     * The scale modes that are supported by pixi.
+     *
+     * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
+     * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
+     *
+     * @memberof PIXI
+     * @static
+     * @name SCALE_MODES
+     * @enum {number}
+     * @property {number} LINEAR Smooth scaling
+     * @property {number} NEAREST Pixelating scaling
+     */
+    var SCALE_MODES;
+    (function (SCALE_MODES) {
+        SCALE_MODES[SCALE_MODES["NEAREST"] = 0] = "NEAREST";
+        SCALE_MODES[SCALE_MODES["LINEAR"] = 1] = "LINEAR";
+    })(SCALE_MODES || (SCALE_MODES = {}));
+    /**
+     * The wrap modes that are supported by pixi.
+     *
+     * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wrapping mode of future operations.
+     * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
+     * If the texture is non power of two then clamp will be used regardless as WebGL can
+     * only use REPEAT if the texture is po2.
+     *
+     * This property only affects WebGL.
+     *
+     * @name WRAP_MODES
+     * @memberof PIXI
+     * @static
+     * @enum {number}
+     * @property {number} CLAMP - The textures uvs are clamped
+     * @property {number} REPEAT - The texture uvs tile and repeat
+     * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
+     */
+    var WRAP_MODES;
+    (function (WRAP_MODES) {
+        WRAP_MODES[WRAP_MODES["CLAMP"] = 33071] = "CLAMP";
+        WRAP_MODES[WRAP_MODES["REPEAT"] = 10497] = "REPEAT";
+        WRAP_MODES[WRAP_MODES["MIRRORED_REPEAT"] = 33648] = "MIRRORED_REPEAT";
+    })(WRAP_MODES || (WRAP_MODES = {}));
+    /**
+     * Mipmap filtering modes that are supported by pixi.
+     *
+     * The {@link PIXI.settings.MIPMAP_TEXTURES} affects default texture filtering.
+     * Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
+     * or its `POW2` and texture dimensions are powers of 2.
+     * Due to platform restriction, `ON` option will work like `POW2` for webgl-1.
+     *
+     * This property only affects WebGL.
+     *
+     * @name MIPMAP_MODES
+     * @memberof PIXI
+     * @static
+     * @enum {number}
+     * @property {number} OFF - No mipmaps
+     * @property {number} POW2 - Generate mipmaps if texture dimensions are pow2
+     * @property {number} ON - Always generate mipmaps
+     * @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them; this is used with a resource
+     *   that supports buffering each level-of-detail.
+     */
+    var MIPMAP_MODES;
+    (function (MIPMAP_MODES) {
+        MIPMAP_MODES[MIPMAP_MODES["OFF"] = 0] = "OFF";
+        MIPMAP_MODES[MIPMAP_MODES["POW2"] = 1] = "POW2";
+        MIPMAP_MODES[MIPMAP_MODES["ON"] = 2] = "ON";
+        MIPMAP_MODES[MIPMAP_MODES["ON_MANUAL"] = 3] = "ON_MANUAL";
+    })(MIPMAP_MODES || (MIPMAP_MODES = {}));
+    /**
+     * How to treat textures with premultiplied alpha
+     *
+     * @name ALPHA_MODES
+     * @memberof PIXI
+     * @static
+     * @enum {number}
+     * @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
+     *  Option for compressed and data textures that are created from typed arrays.
+     * @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
+     *  Default option, used for all loaded images.
+     * @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
+     *  Example: spine atlases with `_pma` suffix.
+     * @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
+     * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
+     * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
+     */
+    var ALPHA_MODES;
+    (function (ALPHA_MODES) {
+        ALPHA_MODES[ALPHA_MODES["NPM"] = 0] = "NPM";
+        ALPHA_MODES[ALPHA_MODES["UNPACK"] = 1] = "UNPACK";
+        ALPHA_MODES[ALPHA_MODES["PMA"] = 2] = "PMA";
+        ALPHA_MODES[ALPHA_MODES["NO_PREMULTIPLIED_ALPHA"] = 0] = "NO_PREMULTIPLIED_ALPHA";
+        ALPHA_MODES[ALPHA_MODES["PREMULTIPLY_ON_UPLOAD"] = 1] = "PREMULTIPLY_ON_UPLOAD";
+        ALPHA_MODES[ALPHA_MODES["PREMULTIPLY_ALPHA"] = 2] = "PREMULTIPLY_ALPHA";
+    })(ALPHA_MODES || (ALPHA_MODES = {}));
+    /**
+     * Configure whether filter textures are cleared after binding.
+     *
+     * Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
+     * this and skip clearing as an optimization.
+     *
+     * @name CLEAR_MODES
+     * @memberof PIXI
+     * @static
+     * @enum {number}
+     * @property {number} BLEND - Do not clear the filter texture. The filter's output will blend on top of the output texture.
+     * @property {number} CLEAR - Always clear the filter texture.
+     * @property {number} BLIT - Clear only if {@link FilterSystem.forceClear} is set or if the filter uses pixel blending.
+     * @property {number} NO - Alias for BLEND, same as `false` in earlier versions
+     * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
+     * @property {number} AUTO - Alias for BLIT
+     */
+    var CLEAR_MODES;
+    (function (CLEAR_MODES) {
+        CLEAR_MODES[CLEAR_MODES["NO"] = 0] = "NO";
+        CLEAR_MODES[CLEAR_MODES["YES"] = 1] = "YES";
+        CLEAR_MODES[CLEAR_MODES["AUTO"] = 2] = "AUTO";
+        CLEAR_MODES[CLEAR_MODES["BLEND"] = 0] = "BLEND";
+        CLEAR_MODES[CLEAR_MODES["CLEAR"] = 1] = "CLEAR";
+        CLEAR_MODES[CLEAR_MODES["BLIT"] = 2] = "BLIT";
+    })(CLEAR_MODES || (CLEAR_MODES = {}));
+    /**
+     * The gc modes that are supported by pixi.
+     *
+     * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for PixiJS textures is AUTO
+     * If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
+     * used for a specified period of time they will be removed from the GPU. They will of course
+     * be uploaded again when they are required. This is a silent behind the scenes process that
+     * should ensure that the GPU does not  get filled up.
+     *
+     * Handy for mobile devices!
+     * This property only affects WebGL.
+     *
+     * @name GC_MODES
+     * @enum {number}
+     * @static
+     * @memberof PIXI
+     * @property {number} AUTO - Garbage collection will happen periodically automatically
+     * @property {number} MANUAL - Garbage collection will need to be called manually
+     */
+    var GC_MODES;
+    (function (GC_MODES) {
+        GC_MODES[GC_MODES["AUTO"] = 0] = "AUTO";
+        GC_MODES[GC_MODES["MANUAL"] = 1] = "MANUAL";
+    })(GC_MODES || (GC_MODES = {}));
+    /**
+     * Constants that specify float precision in shaders.
+     *
+     * @name PRECISION
+     * @memberof PIXI
+     * @constant
+     * @static
+     * @enum {string}
+     * @property {string} LOW='lowp'
+     * @property {string} MEDIUM='mediump'
+     * @property {string} HIGH='highp'
+     */
+    var PRECISION;
+    (function (PRECISION) {
+        PRECISION["LOW"] = "lowp";
+        PRECISION["MEDIUM"] = "mediump";
+        PRECISION["HIGH"] = "highp";
+    })(PRECISION || (PRECISION = {}));
+    /**
+     * Constants for mask implementations.
+     * We use `type` suffix because it leads to very different behaviours
+     *
+     * @name MASK_TYPES
+     * @memberof PIXI
+     * @static
+     * @enum {number}
+     * @property {number} NONE - Mask is ignored
+     * @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
+     * @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
+     * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
+     */
+    var MASK_TYPES;
+    (function (MASK_TYPES) {
+        MASK_TYPES[MASK_TYPES["NONE"] = 0] = "NONE";
+        MASK_TYPES[MASK_TYPES["SCISSOR"] = 1] = "SCISSOR";
+        MASK_TYPES[MASK_TYPES["STENCIL"] = 2] = "STENCIL";
+        MASK_TYPES[MASK_TYPES["SPRITE"] = 3] = "SPRITE";
+    })(MASK_TYPES || (MASK_TYPES = {}));
+    /**
+     * Constants for multi-sampling antialiasing.
+     *
+     * @see PIXI.Framebuffer#multisample
+     *
+     * @name MSAA_QUALITY
+     * @memberof PIXI
+     * @static
+     * @enum {number}
+     * @property {number} NONE - No multisampling for this renderTexture
+     * @property {number} LOW - Try 2 samples
+     * @property {number} MEDIUM - Try 4 samples
+     * @property {number} HIGH - Try 8 samples
+     */
+    var MSAA_QUALITY;
+    (function (MSAA_QUALITY) {
+        MSAA_QUALITY[MSAA_QUALITY["NONE"] = 0] = "NONE";
+        MSAA_QUALITY[MSAA_QUALITY["LOW"] = 2] = "LOW";
+        MSAA_QUALITY[MSAA_QUALITY["MEDIUM"] = 4] = "MEDIUM";
+        MSAA_QUALITY[MSAA_QUALITY["HIGH"] = 8] = "HIGH";
+    })(MSAA_QUALITY || (MSAA_QUALITY = {}));
+
+    var INTERNAL_FORMATS;
+    (function (INTERNAL_FORMATS) {
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB_S3TC_DXT1_EXT"] = 33776] = "COMPRESSED_RGB_S3TC_DXT1_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_S3TC_DXT1_EXT"] = 33777] = "COMPRESSED_RGBA_S3TC_DXT1_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_S3TC_DXT3_EXT"] = 33778] = "COMPRESSED_RGBA_S3TC_DXT3_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_S3TC_DXT5_EXT"] = 33779] = "COMPRESSED_RGBA_S3TC_DXT5_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT"] = 35917] = "COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT"] = 35918] = "COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT"] = 35919] = "COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB_S3TC_DXT1_EXT"] = 35916] = "COMPRESSED_SRGB_S3TC_DXT1_EXT";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_R11_EAC"] = 37488] = "COMPRESSED_R11_EAC";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SIGNED_R11_EAC"] = 37489] = "COMPRESSED_SIGNED_R11_EAC";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RG11_EAC"] = 37490] = "COMPRESSED_RG11_EAC";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SIGNED_RG11_EAC"] = 37491] = "COMPRESSED_SIGNED_RG11_EAC";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB8_ETC2"] = 37492] = "COMPRESSED_RGB8_ETC2";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA8_ETC2_EAC"] = 37496] = "COMPRESSED_RGBA8_ETC2_EAC";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ETC2"] = 37493] = "COMPRESSED_SRGB8_ETC2";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ETC2_EAC"] = 37497] = "COMPRESSED_SRGB8_ALPHA8_ETC2_EAC";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2"] = 37494] = "COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2"] = 37495] = "COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB_PVRTC_4BPPV1_IMG"] = 35840] = "COMPRESSED_RGB_PVRTC_4BPPV1_IMG";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_PVRTC_4BPPV1_IMG"] = 35842] = "COMPRESSED_RGBA_PVRTC_4BPPV1_IMG";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB_PVRTC_2BPPV1_IMG"] = 35841] = "COMPRESSED_RGB_PVRTC_2BPPV1_IMG";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_PVRTC_2BPPV1_IMG"] = 35843] = "COMPRESSED_RGBA_PVRTC_2BPPV1_IMG";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB_ETC1_WEBGL"] = 36196] = "COMPRESSED_RGB_ETC1_WEBGL";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGB_ATC_WEBGL"] = 35986] = "COMPRESSED_RGB_ATC_WEBGL";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL"] = 35986] = "COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL"] = 34798] = "COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_10x10_KHR"] = 37819] = "COMPRESSED_RGBA_ASTC_10x10_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_10x5_KHR"] = 37816] = "COMPRESSED_RGBA_ASTC_10x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_10x6_KHR"] = 37817] = "COMPRESSED_RGBA_ASTC_10x6_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_10x8_KHR"] = 37818] = "COMPRESSED_RGBA_ASTC_10x8_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_12x10_KHR"] = 37820] = "COMPRESSED_RGBA_ASTC_12x10_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_12x12_KHR"] = 37821] = "COMPRESSED_RGBA_ASTC_12x12_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_4x4_KHR"] = 37808] = "COMPRESSED_RGBA_ASTC_4x4_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_5x4_KHR"] = 37809] = "COMPRESSED_RGBA_ASTC_5x4_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_5x5_KHR"] = 37810] = "COMPRESSED_RGBA_ASTC_5x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_6x5_KHR"] = 37811] = "COMPRESSED_RGBA_ASTC_6x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_6x6_KHR"] = 37812] = "COMPRESSED_RGBA_ASTC_6x6_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_8x5_KHR"] = 37813] = "COMPRESSED_RGBA_ASTC_8x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_8x6_KHR"] = 37814] = "COMPRESSED_RGBA_ASTC_8x6_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_RGBA_ASTC_8x8_KHR"] = 37815] = "COMPRESSED_RGBA_ASTC_8x8_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR"] = 3781] = "COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR"] = 37847] = "COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR"] = 37849] = "COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR"] = 37850] = "COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR"] = 37852] = "COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR"] = 37853] = "COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR"] = 37840] = "COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR"] = 37841] = "COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR"] = 37842] = "COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR"] = 37843] = "COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR"] = 37844] = "COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR"] = 37845] = "COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR"] = 37846] = "COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR";
+        INTERNAL_FORMATS[INTERNAL_FORMATS["COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR"] = 37847] = "COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR";
+    })(INTERNAL_FORMATS || (INTERNAL_FORMATS = {}));
+    const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL = {
+        [INTERNAL_FORMATS.COMPRESSED_RGB_S3TC_DXT1_EXT]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB_S3TC_DXT1_EXT]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_R11_EAC]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_SIGNED_R11_EAC]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RG11_EAC]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_SIGNED_RG11_EAC]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_RGB8_ETC2]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA8_ETC2_EAC]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB8_ETC2]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_4BPPV1_IMG]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG]: 0.25,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG]: 0.25,
+        [INTERNAL_FORMATS.COMPRESSED_RGB_ETC1_WEBGL]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL]: 0.5,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x5_KHR]: 5.12 * 0.125,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x6_KHR]: 3.56 * 0.125,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x8_KHR]: 2 * 0.125,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x10_KHR]: 1.28 * 0.125,
+        [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x12_KHR]: 0.89 * 0.125,
+    };
+
+    class CompressedTextureResource {
+        upload(gl) {
+            const { levels } = this;
+            for (var i = 0; i < this.levels; ++i) {
+                let { levelWidth, levelHeight, levelBuffer } = this.levelBuffers[i];
+                gl.compressedTexImage2D(gl.TEXTURE_2D, i, this.internalFormat, levelWidth, levelHeight, 0, levelBuffer);
+            }
+            if (levels > 1) {
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+            }
+            else {
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            }
+        }
+    }
+
+    const FILE_HEADER_SIZE = 64;
+    const TYPES_TO_BYTES_PER_COMPONENT = {
+        [TYPES.UNSIGNED_BYTE]: 1,
+        [TYPES.UNSIGNED_SHORT]: 2,
+        [TYPES.FLOAT]: 4,
+        [TYPES.HALF_FLOAT]: 8
+    };
+    const FORMATS_TO_COMPONENTS = {
+        [FORMATS.RGBA]: 4,
+        [FORMATS.RGB]: 3,
+        [FORMATS.LUMINANCE]: 1,
+        [FORMATS.LUMINANCE_ALPHA]: 2,
+        [FORMATS.ALPHA]: 1
+    };
+    const TYPES_TO_BYTES_PER_PIXEL = {
+        [TYPES.UNSIGNED_SHORT_4_4_4_4]: 2,
+        [TYPES.UNSIGNED_SHORT_5_5_5_1]: 2,
+        [TYPES.UNSIGNED_SHORT_5_6_5]: 2
+    };
+    const KTX_FIELDS = {
+        FILE_IDENTIFIER: 0,
+        ENDIANNESS: 12,
+        GL_TYPE: 16,
+        GL_TYPE_SIZE: 20,
+        GL_FORMAT: 24,
+        GL_INTERNAL_FORMAT: 28,
+        GL_BASE_INTERNAL_FORMAT: 32,
+        PIXEL_WIDTH: 36,
+        PIXEL_HEIGHT: 40,
+        PIXEL_DEPTH: 44,
+        NUMBER_OF_ARRAY_ELEMENTS: 48,
+        NUMBER_OF_FACES: 52,
+        NUMBER_OF_MIPMAP_LEVELS: 56,
+        BYTES_OF_KEY_VALUE_DATA: 60
+    };
+    const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A];
+    const ENDIANNESS = 0x04030201;
+    class KTXTextureResource extends CompressedTextureResource {
+        constructor(source, src) {
+            super();
+            this.src = src;
+            this.complete = true;
+            const dataView = new DataView(source);
+            if (!validateKTX(dataView)) {
+                throw new Error('Not a valid KTX Texture');
+            }
+            const littleEndian = dataView.getUint32(KTX_FIELDS.ENDIANNESS, true) === ENDIANNESS;
+            const glType = dataView.getUint32(KTX_FIELDS.GL_TYPE, littleEndian);
+            const glFormat = dataView.getUint32(KTX_FIELDS.GL_FORMAT, littleEndian);
+            const glInternalFormat = this.internalFormat = dataView.getUint32(KTX_FIELDS.GL_INTERNAL_FORMAT, littleEndian);
+            const pixelWidth = this.width = dataView.getUint32(KTX_FIELDS.PIXEL_WIDTH, littleEndian);
+            const pixelHeight = this.height = dataView.getUint32(KTX_FIELDS.PIXEL_HEIGHT, littleEndian) || 1;
+            const pixelDepth = dataView.getUint32(KTX_FIELDS.PIXEL_DEPTH, littleEndian) || 1;
+            const numberOfArrayElements = dataView.getUint32(KTX_FIELDS.NUMBER_OF_ARRAY_ELEMENTS, littleEndian) || 1;
+            const numberOfFaces = dataView.getUint32(KTX_FIELDS.NUMBER_OF_FACES, littleEndian);
+            const numberOfMipmapLevels = this.levels = dataView.getUint32(KTX_FIELDS.NUMBER_OF_MIPMAP_LEVELS, littleEndian);
+            const bytesOfKeyValueData = dataView.getUint32(KTX_FIELDS.BYTES_OF_KEY_VALUE_DATA, littleEndian);
+            if (pixelHeight === 0 || pixelDepth !== 1) {
+                throw new Error('Only 2D textures are supported');
+            }
+            if (numberOfFaces !== 1) {
+                throw new Error('CubeTextures are not supported by KTXLoader yet!');
+            }
+            if (numberOfArrayElements !== 1) {
+                throw new Error('WebGL does not support array textures');
+            }
+            const blockWidth = 4;
+            const blockHeight = 4;
+            const alignedWidth = (pixelWidth + 3) & ~3;
+            const alignedHeight = (pixelHeight + 3) & ~3;
+            const imageBuffers = new Array(numberOfArrayElements);
+            let imagePixels = pixelWidth * pixelHeight;
+            if (glType === 0) {
+                imagePixels = alignedWidth * alignedHeight;
+            }
+            let imagePixelByteSize;
+            if (glType !== 0) {
+                if (TYPES_TO_BYTES_PER_COMPONENT[glType]) {
+                    imagePixelByteSize = TYPES_TO_BYTES_PER_COMPONENT[glType] * FORMATS_TO_COMPONENTS[glFormat];
+                }
+                else {
+                    imagePixelByteSize = TYPES_TO_BYTES_PER_PIXEL[glType];
+                }
+            }
+            else {
+                imagePixelByteSize = INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[glInternalFormat];
+            }
+            if (imagePixelByteSize === undefined) {
+                throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
+            }
+            const imageByteSize = imagePixels * imagePixelByteSize;
+            let mipByteSize = imageByteSize;
+            let mipWidth = pixelWidth;
+            let mipHeight = pixelHeight;
+            let alignedMipWidth = alignedWidth;
+            let alignedMipHeight = alignedHeight;
+            let imageOffset = FILE_HEADER_SIZE + bytesOfKeyValueData;
+            for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++) {
+                const imageSize = dataView.getUint32(imageOffset, littleEndian);
+                let elementOffset = imageOffset + 4;
+                for (let arrayElement = 0; arrayElement < numberOfArrayElements; arrayElement++) {
+                    let mips = imageBuffers[arrayElement];
+                    if (!mips) {
+                        mips = imageBuffers[arrayElement] = new Array(numberOfMipmapLevels);
+                    }
+                    mips[mipmapLevel] = {
+                        levelID: mipmapLevel,
+                        levelWidth: numberOfMipmapLevels > 1 ? mipWidth : alignedMipWidth,
+                        levelHeight: numberOfMipmapLevels > 1 ? mipHeight : alignedMipHeight,
+                        levelBuffer: new Uint8Array(source, elementOffset, mipByteSize)
+                    };
+                    elementOffset += mipByteSize;
+                }
+                imageOffset += imageSize + 4;
+                imageOffset = imageOffset % 4 !== 0 ? imageOffset + 4 - (imageOffset % 4) : imageOffset;
+                mipWidth = (mipWidth >> 1) || 1;
+                mipHeight = (mipHeight >> 1) || 1;
+                alignedMipWidth = (mipWidth + blockWidth - 1) & ~(blockWidth - 1);
+                alignedMipHeight = (mipHeight + blockHeight - 1) & ~(blockHeight - 1);
+                mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
+            }
+            if (glType !== 0) {
+                throw new Error('TODO: Uncompressed');
+            }
+            this.levelBuffers = imageBuffers[0];
+        }
+    }
+    function validateKTX(dataView) {
+        for (let i = 0; i < FILE_IDENTIFIER.length; i++) {
+            if (dataView.getUint8(i) !== FILE_IDENTIFIER[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    class KTXLoadStrategy extends XhrLoadStrategy {
+        _complete(type, data) {
+            super._complete(type, new KTXTextureResource(data, this.config.url));
+        }
+    }
+
+    function addPreProcessResourceHandler(resource) {
+        resource.addPreProcessResourceHandler(function normalizeResource(resource) {
+            var _a, _b;
+            const textures = (_b = (_a = resource.src) === null || _a === void 0 ? void 0 : _a.image) === null || _b === void 0 ? void 0 : _b.texture;
+            if (!textures)
+                return;
+            const { extensions, textureFormats, formats } = getAbilities();
+            let target = textures.find(texture => extensions[texture.type] &&
+                (formats.includes(texture.internalFormat) || textureFormats[texture.internalFormat]));
+            if (target) {
+                resource.src.image.url = target.url;
+                resource.src.image.type = target.type;
+            }
+        });
+    }
+    function addKTXStragetyAndRegister() {
+        Object.assign(eva_js.STRATEGY, {
+            astc: KTXLoadStrategy,
+            etc: KTXLoadStrategy,
+            pvrtc: KTXLoadStrategy,
+            s3tc: KTXLoadStrategy,
+            atc: KTXLoadStrategy,
+        });
+        KTXLoadStrategy.setExtensionXhrType('ktx', XhrResponseType.Buffer);
+    }
+
+    const GLTexture = pixi_js.glCore.GLTexture;
+    const GLTextureMixin = {
+        uploadNotCompressed: GLTexture.prototype.upload,
+        isCompressed: false,
+        upload: function (source) {
+            if (!(source instanceof CompressedTextureResource)) {
+                return this.uploadNotCompressed(source);
+            }
+            this.bind();
+            var gl = this.gl;
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultiplyAlpha);
+            this.isCompressed = true;
+            source.upload(gl);
+        },
+        enableMipmap: function () {
+            if (this.isCompressed) {
+                return;
+            }
+            var gl = this.gl;
+            this.bind();
+            this.mipmap = true;
+            gl.generateMipmap(gl.TEXTURE_2D);
+        }
+    };
+
+    const oldFrom$1 = Symbol();
+    const TextureMixin = {
+        [oldFrom$1]: pixi_js.Texture.from,
+        from(source) {
+            if (!(source instanceof CompressedTextureResource)) {
+                return this[oldFrom$1](source);
+            }
+            return new pixi_js.Texture(pixi_js.BaseTexture.from(source));
+        }
+    };
+
+    const oldFrom = Symbol();
+    const BaseTextureMixin = {
+        [oldFrom]: pixi_js.BaseTexture.from,
+        from(source, scaleMode, sourceScale) {
+            if (!(source instanceof CompressedTextureResource)) {
+                return this[oldFrom](source, scaleMode, sourceScale);
+            }
+            const imageUrl = source.src;
+            let baseTexture = pixi_js.utils.BaseTextureCache[imageUrl];
+            if (!baseTexture) {
+                baseTexture = new pixi_js.BaseTexture(source, scaleMode);
+                baseTexture.imageUrl = imageUrl;
+                if (sourceScale) {
+                    baseTexture.sourceScale = sourceScale;
+                }
+                pixi_js.BaseTexture.addToCache(baseTexture, imageUrl);
+            }
+            return baseTexture;
+        }
+    };
+
+    addPreProcessResourceHandler(eva_js.resource);
+    addKTXStragetyAndRegister();
+    Object.assign(pixi_js.glCore.GLTexture.prototype, GLTextureMixin);
+    Object.assign(pixi_js.Texture, TextureMixin);
+    Object.assign(pixi_js.BaseTexture, BaseTextureMixin);
+    function activeCompressedTextureAbilityOnRenderer(application) {
+        try {
+            const gl = application.renderer.gl;
+            gl.getExtension('WEBGL_compressed_texture_s3tc');
+            gl.getExtension('WEBGL_compressed_texture_s3tc_srgb');
+            gl.getExtension('WEBGL_compressed_texture_etc');
+            gl.getExtension('WEBGL_compressed_texture_etc1');
+            gl.getExtension('WEBGL_compressed_texture_pvrtc');
+            gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc');
+            gl.getExtension('WEBGL_compressed_texture_atc');
+            gl.getExtension('WEBGL_compressed_texture_astc');
+        }
+        catch (e) {
+            console.error('Compressed texture ability failure ! The message is :', e.message);
+        }
+    }
+
     var RENDERER_TYPE;
     (function (RENDERER_TYPE) {
         RENDERER_TYPE[RENDERER_TYPE["UNKNOWN"] = 0] = "UNKNOWN";
@@ -2913,6 +4935,9 @@
                     application,
                 });
             });
+            if (params.useCompressedTexture !== false) {
+                activeCompressedTextureAbilityOnRenderer(this.application);
+            }
         }
         registerObserver(observerInfo) {
             const thisObserverInfo = this.constructor.observerInfo;

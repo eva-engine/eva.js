@@ -19,10 +19,9 @@
     "noImplicitReturns": false,
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
     "lib": [
       "esnext",
-      "dom",
+      "dom"
     ],
     "types": [
       "jest",
@@ -100,7 +99,7 @@
       ],
       "@eva/*": [
         "packages/*/lib"
-      ],
+      ]
     }
   },
   "include": [
@@ -108,5 +107,5 @@
     "packages/*/lib",
     "packages/*/__tests__",
     "vite-test"
-  ],
+  ]
 }

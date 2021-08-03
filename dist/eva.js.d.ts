@@ -1,3 +1,4 @@
+import { AbstractLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import EventEmitter from 'eventemitter3';
 import { Loader } from 'resource-loader';
@@ -166,6 +167,8 @@ export declare interface PluginStruct {
     Systems?: typeof System[];
 }
 
+declare type PreProcessResourceHandler = (res: ResourceBase) => void;
+
 declare class Progress extends EE {
     progress: number;
     resourceTotal: number;
@@ -188,6 +191,7 @@ declare interface PureObserverProp {
 
 declare class Resource extends EE {
     timeout: number;
+    private preProcessResourceHandlers;
     private resourcesMap;
     private makeInstanceFunctions;
     private destroyInstanceFunctions;
@@ -200,6 +204,8 @@ declare class Resource extends EE {
     loadConfig(resources: ResourceBase[]): void;
     loadSingle(resource: ResourceBase): Promise<ResourceStruct>;
     addResource(resources: ResourceBase[]): void;
+    addPreProcessResourceHandler(handler: PreProcessResourceHandler): void;
+    removePreProcessResourceHandler(handler: PreProcessResourceHandler): void;
     preload(): void;
     getResource(name: string): Promise<ResourceStruct>;
     private instance;
@@ -227,7 +233,7 @@ export declare enum RESOURCE_TYPE {
     'VIDEO' = "VIDEO"
 }
 
-declare interface ResourceBase {
+export declare interface ResourceBase {
     name?: string;
     type?: RESOURCE_TYPE;
     src?: {
@@ -276,7 +282,12 @@ declare interface SrcBase {
     type: string;
     url?: string;
     data?: any;
+    texture?: TextureBase[];
 }
+
+export declare const STRATEGY: {
+    [type: string]: new (...args: any[]) => AbstractLoadStrategy;
+};
 
 export declare class System {
     static systemName: string;
@@ -299,6 +310,12 @@ export declare class System {
 }
 
 declare type SystemType = typeof System;
+
+declare interface TextureBase {
+    type: string;
+    internalFormat: string | number;
+    url: string;
+}
 
 declare class Ticker {
     autoStart: boolean;
