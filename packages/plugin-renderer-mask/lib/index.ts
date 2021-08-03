@@ -1,3 +1,4 @@
-import Mask, {MASK_TYPE, MaskParams} from './component';
+import Mask, { MASK_TYPE } from './component';
+import type { MaskParams } from './component';
 import MaskSystem from './system';
-export {Mask, MaskSystem, MASK_TYPE, MaskParams};
+export { Mask, MaskSystem, MASK_TYPE, MaskParams };
