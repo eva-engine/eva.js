@@ -224,6 +224,7 @@
             const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
             if (container) {
                 container.removeChild(component.anim.group);
+                component.anim.group.destory(true);
             }
             component.anim = null;
         }

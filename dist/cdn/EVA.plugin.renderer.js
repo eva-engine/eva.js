@@ -2116,6 +2116,8 @@
             return this.containerMap[name];
         }
         removeContainer(name) {
+            var _a;
+            (_a = this.containerMap[name]) === null || _a === void 0 ? void 0 : _a.destroy(true);
             delete this.containerMap[name];
         }
         updateTransform({ name, transform }) {
@@ -2545,6 +2547,7 @@
             }
             else {
                 const container = this.containerManager.getContainer(changed.gameObject.id);
+                delete transform.worldTransform;
                 container.parent && container.parent.removeChild(container);
             }
         }

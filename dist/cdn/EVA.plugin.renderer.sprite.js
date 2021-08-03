@@ -176,6 +176,7 @@
                         this.containerManager
                             .getContainer(changed.gameObject.id)
                             .removeChild(sprite.sprite);
+                        sprite.sprite.destroy(true);
                         delete this.sprites[changed.gameObject.id];
                     }
                 }

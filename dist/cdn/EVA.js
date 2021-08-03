@@ -2789,6 +2789,7 @@
 	            return;
 	        const component = this.components.splice(index, 1)[0];
 	        delete this._componentCache[componentName];
+	        delete component.__componentDefaultParams;
 	        component.onDestroy && component.onDestroy();
 	        observerRemoved(component, componentName);
 	        component.gameObject = undefined;
@@ -4945,6 +4946,7 @@
 	                }
 	            }
 	            delete this.promiseMap[name];
+	            resource.data = {};
 	            resource.complete = false;
 	            resource.instance = undefined;
 	        });

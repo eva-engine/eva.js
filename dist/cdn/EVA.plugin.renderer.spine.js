@@ -9324,6 +9324,7 @@
         if (data.ref <= 0) {
             releaseTexture(data.imgName);
             delete dataMap[name];
+            eva_js.resource.destroy(name);
         }
     }
 

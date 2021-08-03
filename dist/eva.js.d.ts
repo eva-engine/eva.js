@@ -41,10 +41,8 @@ declare class ComponentObserver {
 
 export declare function componentObserver(observerInfo?: ObserverInfo): (constructor: any) => void;
 
-declare interface ComponentParams {
+export declare interface ComponentParams {
 }
-
-declare type ComponentType = typeof Component;
 
 export declare const decorators: {
     IDEProp: typeof IDEProp;
@@ -101,9 +99,9 @@ export declare class GameObject {
     removeChild(gameObject: GameObject): GameObject;
     addComponent<T extends Component<ComponentParams>>(C: T): T;
     addComponent<T extends Component<ComponentParams>>(C: ComponentConstructor<T>, obj?: ComponentParams): T;
-    removeComponent<T extends Component>(c: string): T;
-    removeComponent<T extends Component>(c: T): T;
-    removeComponent<T extends ComponentType>(c: T): InstanceType<T>;
+    removeComponent<T extends Component<ComponentParams>>(c: string): T;
+    removeComponent<T extends Component<ComponentParams>>(c: T): T;
+    removeComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
     private _removeComponent;
     getComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
     getComponent<T extends Component>(c: string): T;
@@ -364,6 +362,7 @@ export declare interface TransformParams extends ComponentParams {
     origin?: Vector2;
     anchor?: Vector2;
     scale?: Vector2;
+    skew?: Vector2;
     rotation?: number;
 }
 
