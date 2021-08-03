@@ -92,25 +92,26 @@
                             if (!instance) {
                                 console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
                             }
-                            this.imgs[changed.gameObject.id].image = instance;
-                            return [3, 4];
-                        case 3:
-                            if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                                sprite = this.imgs[changed.gameObject.id];
-                                this.containerManager
-                                    .getContainer(changed.gameObject.id)
-                                    .removeChild(sprite.sprite);
-                                sprite.sprite.destroy(true);
-                                delete this.imgs[changed.gameObject.id];
-                            }
-                            _a.label = 4;
-                        case 4: return [2];
+                            sprite.image = instance;
+                        });
+                        this.imgs[changed.gameObject.id] = sprite;
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .addChildAt(sprite.sprite, 0);
+                    }
+                    else if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) {
+                        const { instance } = yield eva_js.resource.getResource(component.resource);
+                        if (!instance) {
+                            console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
+                        }
+                        this.imgs[changed.gameObject.id].image = instance;
                     }
                     else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
                         const sprite = this.imgs[changed.gameObject.id];
                         this.containerManager
                             .getContainer(changed.gameObject.id)
                             .removeChild(sprite.sprite);
+                        sprite.sprite.destroy(true);
                         delete this.imgs[changed.gameObject.id];
                     }
                 }

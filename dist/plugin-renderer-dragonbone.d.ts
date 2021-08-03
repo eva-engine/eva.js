@@ -1,5 +1,6 @@
 import { Component } from '@eva/eva.js';
 import { ComponentChanged } from '@eva/eva.js';
+import { ComponentParams } from '@eva/eva.js';
 import { ContainerManager } from '@eva/plugin-renderer';
 import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
@@ -33,11 +34,11 @@ declare class DragonBone_2 {
     stop(name: any): any;
 }
 
-export declare interface DragonBoneParams {
+export declare interface DragonBoneParams extends ComponentParams {
     resource: string;
     armatureName: string;
-    animationName: string;
-    autoPlay: boolean;
+    animationName?: string;
+    autoPlay?: boolean;
 }
 
 export declare class DragonBoneSystem extends Renderer {
