@@ -176,6 +176,7 @@
                                 this.containerManager
                                     .getContainer(changed.gameObject.id)
                                     .removeChild(sprite.tilingSprite);
+                                sprite.tilingSprite.destory(true);
                                 delete this.imgs[changed.gameObject.id];
                             }
                             _a.label = 6;

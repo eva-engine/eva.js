@@ -196,7 +196,7 @@
                     .getContainer(changed.gameObject.id)
                     .removeChild(sprite);
                 delete this.ninePatch[changed.gameObject.id];
-                sprite.destroy();
+                sprite.destroy(true);
             }
         };
         NinePatch.systemName = 'NinePatch';
