@@ -247,7 +247,7 @@
         Mask.prototype.remove = function (changed) {
             var container = this.containerManager.getContainer(changed.gameObject.id);
             container.removeChild(container.mask);
-            container.mask.destroy(true);
+            container.mask.destroy({ children: true });
             container.mask = null;
             delete this.maskSpriteCache[changed.component.gameObject.id];
         };

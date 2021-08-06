@@ -114,7 +114,7 @@
                         this.containerManager
                             .getContainer(changed.gameObject.id)
                             .removeChild(changed.component.graphics);
-                        changed.component.graphics.destroy(true);
+                        changed.component.graphics.destroy({ children: true });
                     }
                     return [2];
                 });
