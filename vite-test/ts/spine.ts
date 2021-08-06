@@ -1,5 +1,5 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { INTERNAL_FORMATS, RendererSystem } from "@eva/plugin-renderer";
+import { RendererSystem } from "@eva/plugin-renderer";
 import { Spine, SpineSystem } from "@eva/plugin-renderer-spine";
 export const name = 'spine';
 export async function init(canvas) {
@@ -19,23 +19,12 @@ export async function init(canvas) {
         image: {
           type: 'png',
           url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/spine/TB1YHC8Vxz1gK0jSZSgXXavwpXa-711-711.png',
-          texture: [{
-              type:'astc',
-              internalFormat:INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR,
-              url:'./cat.astc.ktx'
-            },{
-              type: 'etc',
-              internalFormat: INTERNAL_FORMATS.COMPRESSED_SRGB8_ETC2,
-              url: './cat.etc.ktx'
-            }
-          ]
         },
       },
       preload: true
     },
   ]);
 
-  console.log('load result: ',(await resource.getResource('anim')).data.image);
 
   const game = new Game({
     systems: [

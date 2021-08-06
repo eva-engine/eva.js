@@ -7,14 +7,19 @@ export default defineConfig({
     port: 8083,
     host: '0.0.0.0',
   },
-  publicDir:'./public/',
+  build: {
+    target: 'es5',
+    outDir: './vite-test/dist',
+    emptyOutDir: true
+  },
+  publicDir: './public/',
   base: './',
-  root:'./vite-test',
+  root: './vite-test',
   resolve: {
     alias: [
       {
-        find:/@eva\/(.*)/,
-        replacement: (()=>{console.log('?');return resolve(__dirname, './packages/$1/lib')})()
+        find: /@eva\/(.*)/,
+        replacement: resolve(__dirname, './packages/$1/lib')
       }
     ]
   }

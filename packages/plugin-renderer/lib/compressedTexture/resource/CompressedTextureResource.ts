@@ -1,7 +1,6 @@
 /**
- * @ignore
+ * Inspired by PIXI.KTXLoader
  */
-// Used in PIXI.KTXLoader
 export type CompressedLevelBuffer = {
   levelID: number,
   levelWidth: number,

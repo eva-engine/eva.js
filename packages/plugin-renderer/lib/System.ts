@@ -4,7 +4,7 @@ import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
 import { ticker } from 'pixi.js';
-import { activeCompressedTextureAbilityOnRenderer } from './compressedTexture';
+import activeCompressedTextureAbilityOnRenderer from './compressedTexture';
 
 export enum RENDERER_TYPE {
   UNKNOWN = 0,

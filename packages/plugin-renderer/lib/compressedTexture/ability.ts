@@ -1,7 +1,7 @@
-import { INTERNAL_FORMATS } from "./const";
 /**
  * Inspired by PixiJS v6
  */
+import { INTERNAL_FORMATS } from "./const";
 export type CompressedTextureExtensions = {
   s3tc?: WEBGL_compressed_texture_s3tc,
   s3tc_sRGB: WEBGL_compressed_texture_s3tc_srgb,

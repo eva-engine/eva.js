@@ -1,10 +1,12 @@
+/**
+ * Inspired by PixiJS v6
+ */
+
 import { TYPES, FORMATS } from "@pixi/constants";
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from "../const";
 import { CompressedLevelBuffer } from "./CompressedTextureResource";
 import { CompressedTextureResource } from "./CompressedTextureResource";
-/**
- * Inspired by PixiJS v6
- */
+
 export interface KTXResource {
   width: number,
   height: number,

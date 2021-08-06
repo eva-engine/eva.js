@@ -27,12 +27,11 @@ interface SrcBase {
   type: string;
   url?: string;
   data?: any;
-  texture?: TextureBase[]
+  texture?: TextureBase[] | TextureBase
 }
 
 interface TextureBase {
   type: string,
-  internalFormat: string | number,
   url: string
 }
 

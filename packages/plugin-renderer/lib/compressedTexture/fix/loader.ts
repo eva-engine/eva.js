@@ -4,12 +4,14 @@ import KTXLoadStrategy from "./KTXLoadStrategy";
 import { XhrResponseType } from 'resource-loader'
 export function addPreProcessResourceHandler(resource) {
   resource.addPreProcessResourceHandler(function normalizeResource(resource: ResourceBase): void {
-    const textures = resource.src?.image?.texture;
+    let textures = resource.src?.image?.texture;
     if (!textures) return;
-    const { extensions, textureFormats, formats } = getAbilities();
-    let target = textures.find(texture =>
-      extensions[texture.type] &&
-      (formats.includes(texture.internalFormat as number) || textureFormats[texture.internalFormat]));
+    if (!Array.isArray(textures)) {
+      textures = [textures];
+    }
+    // When astc is supported, its all types are supported. 《MoChuan》
+    const { extensions } = getAbilities();
+    let target = textures.find(texture => extensions[texture.type]);
     if (target) {
       resource.src.image.url = target.url;
       resource.src.image.type = target.type;

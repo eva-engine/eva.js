@@ -1,5 +1,5 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { INTERNAL_FORMATS, RendererSystem } from "@eva/plugin-renderer";
+import { RendererSystem } from "@eva/plugin-renderer";
 import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 
 export const name = 'compressed-textures';
@@ -12,33 +12,18 @@ export async function init(canvas: HTMLCanvasElement) {
       src: {
         image: {
           type: 'png',
-          url: './yanhua.png',
+          url: './person.png',
           texture: [
-            // {
-            //   type: 'etc',
-            //   internalFormat: INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR,
-            //   url: './yanhua.etc.ktx'
-            // },
             {
+              type: 'etc',
+              url: './person.etc.ktx'
+            }, {
               type: 'astc',
-              internalFormat: INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR,
-              url: './yanhua.astc.ktx'
+              url: './person.astc.ktx'
             }, {
               type: 's3tc',
-              internalFormat: INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
-              url: './yanhua.s3tc.ktx'
+              url: './person.s3tc.ktx'
             },]
-        },
-      },
-      preload: false,
-    },
-    {
-      name: 'image2',
-      type: RESOURCE_TYPE.IMAGE,
-      src: {
-        image: {
-          type: 'png',
-          url: './person.png',
         },
       },
       preload: false,
@@ -51,28 +36,16 @@ export async function init(canvas: HTMLCanvasElement) {
         canvas,
         width: window.innerWidth,
         height: window.innerHeight,
-        backgroundColor: '0xff0000'
+        backgroundColor: '0x003355'
       }),
       //@ts-ignore
       new ImgSystem(),
     ],
   });
-  const res = await resource.getResource('imageName');
-  console.log('load finish ', res);
+  var res = await resource.getResource('imageName');
+  console.log('load finish ', res.src.image.type, res.src.image.url, res.data.image);
 
   const image = new GameObject('image', {
-    size: { width: window.innerWidth, height: window.innerWidth },
-    origin: { x: 0, y: 0 },
-    position: {
-      x: 0,
-      y: 0,
-    },
-    anchor: {
-      x: 0,
-      y: 0,
-    },
-  });
-  const image2 = new GameObject('image', {
     size: { width: window.innerWidth, height: window.innerWidth },
     origin: { x: 0, y: 0 },
     position: {
@@ -90,9 +63,5 @@ export async function init(canvas: HTMLCanvasElement) {
   image.addComponent(
     img,
   );
-  // image2.addComponent(new Img({
-  //   resource: 'image2'
-  // }))
-  // game.scene.addChild(image2);
   game.scene.addChild(image);
 }
