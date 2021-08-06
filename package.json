@@ -95,7 +95,6 @@
     "coverage": true
   },
   "dependencies": {
-    "@eva/inspector-decorator": "^0.0.3",
     "@tweenjs/tween.js": "^18.6.4",
     "core-js": "^3.16.0",
     "eventemitter3": "^4.0.7",
