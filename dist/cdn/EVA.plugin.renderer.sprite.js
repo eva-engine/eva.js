@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@eva/eva.js'), require('@eva/plugin-renderer'), require('@eva/renderer-adapter'), require('pixi.js')) :
-    typeof define === 'function' && define.amd ? define(['exports', '@eva/eva.js', '@eva/plugin-renderer', '@eva/renderer-adapter', 'pixi.js'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.EVA = global.EVA || {}, global.EVA.plugin = global.EVA.plugin || {}, global.EVA.plugin.renderer = global.EVA.plugin.renderer || {}, global.EVA.plugin.renderer.sprite = {}), global.EVA, global.EVA.plugin.renderer, global.EVA.rendererAdapter, global.PIXI));
-}(this, (function (exports, eva_js, pluginRenderer, rendererAdapter, pixi_js) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@eva/eva.js'), require('@eva/plugin-renderer'), require('pixi.js')) :
+    typeof define === 'function' && define.amd ? define(['exports', '@eva/eva.js', '@eva/plugin-renderer', 'pixi.js'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.EVA = global.EVA || {}, global.EVA.plugin = global.EVA.plugin || {}, global.EVA.plugin.renderer = global.EVA.plugin.renderer || {}, global.EVA.plugin.renderer.sprite = {}), global.EVA, global.EVA.plugin.renderer, global.PIXI));
+}(this, (function (exports, eva_js, pluginRenderer, pixi_js) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -18,20 +18,6 @@
     See the Apache Version 2.0 License for specific language governing permissions
     and limitations under the License.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -47,6 +33,7 @@
             function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
+<<<<<<< HEAD
     }
 
     function __generator(thisArg, body) {
@@ -377,12 +364,22 @@
             _this.resource = '';
             _this.spriteName = '';
             return _this;
+=======
+    }
+
+    class Sprite$3 extends eva_js.Component {
+        constructor() {
+            super(...arguments);
+            this.resource = '';
+            this.spriteName = '';
+>>>>>>> origin/dev
         }
-        Sprite.prototype.init = function (obj) {
+        init(obj) {
             if (obj && obj.resource) {
                 this.resource = obj.resource;
                 this.spriteName = obj.spriteName;
             }
+<<<<<<< HEAD
         };
         Sprite.componentName = 'Sprite';
         __decorate([
@@ -393,141 +390,154 @@
         ], Sprite.prototype, "spriteName", void 0);
         return Sprite;
     }(eva_js.Component));
+=======
+        }
+    }
+    Sprite$3.componentName = 'Sprite';
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Sprite$3.prototype, "resource", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], Sprite$3.prototype, "spriteName", void 0);
+>>>>>>> origin/dev
 
-    var resourceKeySplit = '_s|r|c_';
-    eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.SPRITE, function (_a) {
-        var name = _a.name, data = _a.data;
-        return new Promise(function (r) {
-            var e_1, _a;
-            var textureObj = data.json;
-            var texture = pixi_js.BaseTexture.from(data.image);
-            var frames = textureObj.frames || {};
-            var animations = textureObj.animations || {};
-            var newFrames = {};
-            for (var key in frames) {
-                var newKey = name + resourceKeySplit + key;
+    class Sprite$2 {
+        constructor(image) {
+            this._image = null;
+            this._image = image;
+            if (image) {
+                if (image instanceof HTMLImageElement) {
+                    this.sprite = pixi_js.Sprite.from(image);
+                }
+                else if (image instanceof pixi_js.Texture) {
+                    this.sprite = new pixi_js.Sprite(image);
+                }
+            }
+            else {
+                this.sprite = new pixi_js.Sprite();
+            }
+        }
+        set image(val) {
+            if (this._image === val) {
+                return;
+            }
+            if (val instanceof HTMLImageElement) {
+                this.sprite.texture && this.sprite.texture.destroy(false);
+                this.sprite.texture = pixi_js.Texture.from(val);
+            }
+            else if (val instanceof pixi_js.Texture) {
+                this.sprite.texture = val;
+            }
+            this._image = val;
+        }
+        get image() {
+            return this._image;
+        }
+    }
+
+    const resourceKeySplit = '_s|r|c_';
+    eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.SPRITE, ({ name, data }) => {
+        return new Promise(r => {
+            const textureObj = data.json;
+            const texture = pixi_js.BaseTexture.from(data.image);
+            const frames = textureObj.frames || {};
+            const animations = textureObj.animations || {};
+            const newFrames = {};
+            for (const key in frames) {
+                const newKey = name + resourceKeySplit + key;
                 newFrames[newKey] = frames[key];
             }
-            for (var key in animations) {
-                var spriteList = [];
+            for (const key in animations) {
+                let spriteList = [];
                 if (animations[key] && animations[key].length >= 0) {
-                    try {
-                        for (var _b = (e_1 = void 0, __values(animations[key])), _c = _b.next(); !_c.done; _c = _b.next()) {
-                            var spriteName = _c.value;
-                            var newSpriteName = name + resourceKeySplit + spriteName;
-                            spriteList.push(newSpriteName);
-                        }
-                    }
-                    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-                    finally {
-                        try {
-                            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                        }
-                        finally { if (e_1) throw e_1.error; }
+                    for (let spriteName of animations[key]) {
+                        const newSpriteName = name + resourceKeySplit + spriteName;
+                        spriteList.push(newSpriteName);
                     }
                 }
                 animations[key] = spriteList;
             }
             textureObj.frames = newFrames;
-            var spriteSheet = new pixi_js.Spritesheet(texture, textureObj);
-            spriteSheet.parse(function () {
-                var textures = spriteSheet.textures;
+            const spriteSheet = new pixi_js.Spritesheet(texture, textureObj);
+            spriteSheet.parse(() => {
+                const { textures } = spriteSheet;
                 r(textures);
             });
         });
     });
-    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.SPRITE, function (_a) {
-        var instance = _a.instance;
+    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.SPRITE, ({ instance }) => {
         if (!instance)
             return;
-        for (var key in instance) {
+        for (let key in instance) {
             instance[key].destroy(true);
         }
     });
-    var Sprite = (function (_super) {
-        __extends(Sprite, _super);
-        function Sprite() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = 'Sprite';
-            _this.sprites = {};
-            return _this;
+    let Sprite = class Sprite extends pluginRenderer.Renderer {
+        constructor() {
+            super(...arguments);
+            this.name = 'Sprite';
+            this.sprites = {};
         }
-        Sprite.prototype.init = function () {
+        init() {
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
-        };
-        Sprite.prototype.rendererUpdate = function (gameObject) {
-            var _a = gameObject.transform.size, width = _a.width, height = _a.height;
+        }
+        rendererUpdate(gameObject) {
+            const { width, height } = gameObject.transform.size;
             if (this.sprites[gameObject.id]) {
                 this.sprites[gameObject.id].sprite.width = width;
                 this.sprites[gameObject.id].sprite.height = height;
             }
-        };
-        Sprite.prototype.componentChanged = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                var component_1, sprite_1, instance, sprite;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (!(changed.componentName === 'Sprite')) return [3, 4];
-                            component_1 = changed.component;
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3, 1];
-                            sprite_1 = new rendererAdapter.Sprite(null);
-                            eva_js.resource.getResource(component_1.resource).then(function (_a) {
-                                var instance = _a.instance;
-                                return __awaiter(_this, void 0, void 0, function () {
-                                    return __generator(this, function (_b) {
-                                        if (!instance) {
-                                            throw new Error("GameObject:" + changed.gameObject.name + "'s Sprite resource load error");
-                                        }
-                                        sprite_1.image =
-                                            instance[component_1.resource + resourceKeySplit + component_1.spriteName];
-                                        return [2];
-                                    });
-                                });
-                            });
-                            this.sprites[changed.gameObject.id] = sprite_1;
-                            this.containerManager
-                                .getContainer(changed.gameObject.id)
-                                .addChildAt(sprite_1.sprite, 0);
-                            return [3, 4];
-                        case 1:
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3, 3];
-                            return [4, eva_js.resource.getResource(component_1.resource)];
-                        case 2:
-                            instance = (_a.sent()).instance;
+        }
+        componentChanged(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (changed.componentName === 'Sprite') {
+                    const component = changed.component;
+                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                        const sprite = new Sprite$2(null);
+                        eva_js.resource.getResource(component.resource).then(({ instance }) => __awaiter(this, void 0, void 0, function* () {
                             if (!instance) {
-                                throw new Error("GameObject:" + changed.gameObject.name + "'s Sprite resource load error");
+                                throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
                             }
-                            this.sprites[changed.gameObject.id].image =
-                                instance[component_1.resource + resourceKeySplit + component_1.spriteName];
-                            return [3, 4];
-                        case 3:
-                            if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                                sprite = this.sprites[changed.gameObject.id];
-                                this.containerManager
-                                    .getContainer(changed.gameObject.id)
-                                    .removeChild(sprite.sprite);
-                                delete this.sprites[changed.gameObject.id];
-                            }
-                            _a.label = 4;
-                        case 4: return [2];
+                            sprite.image =
+                                instance[component.resource + resourceKeySplit + component.spriteName];
+                        }));
+                        this.sprites[changed.gameObject.id] = sprite;
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .addChildAt(sprite.sprite, 0);
                     }
-                });
+                    else if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) {
+                        const { instance } = yield eva_js.resource.getResource(component.resource);
+                        if (!instance) {
+                            throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+                        }
+                        this.sprites[changed.gameObject.id].image =
+                            instance[component.resource + resourceKeySplit + component.spriteName];
+                    }
+                    else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                        const sprite = this.sprites[changed.gameObject.id];
+                        this.containerManager
+                            .getContainer(changed.gameObject.id)
+                            .removeChild(sprite.sprite);
+                        sprite.sprite.destroy(true);
+                        delete this.sprites[changed.gameObject.id];
+                    }
+                }
             });
-        };
-        Sprite.systemName = 'Sprite';
-        Sprite = __decorate([
-            eva_js.decorators.componentObserver({
-                Sprite: ['spriteName'],
-            })
-        ], Sprite);
-        return Sprite;
-    }(pluginRenderer.Renderer));
+        }
+    };
+    Sprite.systemName = 'Sprite';
+    Sprite = __decorate([
+        eva_js.decorators.componentObserver({
+            Sprite: ['spriteName'],
+        })
+    ], Sprite);
+    var Sprite$1 = Sprite;
 
-    exports.Sprite = Sprite$1;
-    exports.SpriteSystem = Sprite;
+    exports.Sprite = Sprite$3;
+    exports.SpriteSystem = Sprite$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

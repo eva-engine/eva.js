@@ -18,20 +18,6 @@
     See the Apache Version 2.0 License for specific language governing permissions
     and limitations under the License.
     ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
 
     function __decorate(decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -47,6 +33,7 @@
             function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
+<<<<<<< HEAD
     }
 
     function __generator(thisArg, body) {
@@ -382,19 +369,31 @@
             _this.times = Infinity;
             _this.count = 0;
             return _this;
+=======
+    }
+
+    class SpriteAnimation$2 extends eva_js.Component {
+        constructor() {
+            super(...arguments);
+            this.resource = '';
+            this.autoPlay = true;
+            this.speed = 100;
+            this.waitPlay = false;
+            this.waitStop = false;
+            this.times = Infinity;
+            this.count = 0;
+>>>>>>> origin/dev
         }
-        SpriteAnimation.prototype.init = function (obj) {
-            var _this = this;
+        init(obj) {
             obj && Object.assign(this, obj);
-            this.on('loop', function () {
-                if (++_this.count >= _this.times) {
-                    _this.animate.stop();
-                    _this.emit('complete');
+            this.on('loop', () => {
+                if (++this.count >= this.times) {
+                    this.animate.stop();
+                    this.emit('complete');
                 }
             });
-        };
-        SpriteAnimation.prototype.play = function (times) {
-            if (times === void 0) { times = Infinity; }
+        }
+        play(times = Infinity) {
             if (times === 0) {
                 return;
             }
@@ -406,38 +405,35 @@
                 this.animate.play();
                 this.count = 0;
             }
-        };
-        SpriteAnimation.prototype.stop = function () {
+        }
+        stop() {
             if (!this.animate) {
                 this.waitStop = true;
             }
             else {
                 this.animate.stop();
             }
-        };
-        Object.defineProperty(SpriteAnimation.prototype, "animate", {
-            get: function () {
-                return this._animate;
-            },
-            set: function (val) {
-                this._animate = val;
-                if (this.waitPlay) {
-                    this.waitPlay = false;
-                    this.play(this.times);
-                }
-                if (this.waitStop) {
-                    this.waitStop = false;
-                    this.stop();
-                }
-            },
-            enumerable: false,
-            configurable: true
-        });
-        SpriteAnimation.prototype.gotoAndPlay = function (frameNumber) {
+        }
+        set animate(val) {
+            this._animate = val;
+            if (this.waitPlay) {
+                this.waitPlay = false;
+                this.play(this.times);
+            }
+            if (this.waitStop) {
+                this.waitStop = false;
+                this.stop();
+            }
+        }
+        get animate() {
+            return this._animate;
+        }
+        gotoAndPlay(frameNumber) {
             this.animate.gotoAndPlay(frameNumber);
-        };
-        SpriteAnimation.prototype.gotoAndStop = function (frameNumber) {
+        }
+        gotoAndStop(frameNumber) {
             this.animate.gotoAndStop(frameNumber);
+<<<<<<< HEAD
         };
         SpriteAnimation.componentName = 'SpriteAnimation';
         __decorate([
@@ -452,157 +448,132 @@
         ], SpriteAnimation.prototype, "speed", void 0);
         return SpriteAnimation;
     }(eva_js.Component));
+=======
+        }
+    }
+    SpriteAnimation$2.componentName = 'SpriteAnimation';
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], SpriteAnimation$2.prototype, "resource", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], SpriteAnimation$2.prototype, "autoPlay", void 0);
+    __decorate([
+        eva_js.decorators.IDEProp
+    ], SpriteAnimation$2.prototype, "speed", void 0);
+>>>>>>> origin/dev
 
-    var resourceKeySplit = '_s|r|c_';
-    eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.SPRITE_ANIMATION, function (_a) {
-        var name = _a.name, data = _a.data;
-        return new Promise(function (r) {
-            var e_1, _a;
-            var textureObj = data.json;
-            var texture = pixi_js.BaseTexture.from(data.image);
-            var frames = textureObj.frames || {};
-            var animations = textureObj.animations || {};
-            var newFrames = {};
-            for (var key in frames) {
-                var newKey = name + resourceKeySplit + key;
+    const resourceKeySplit = '_s|r|c_';
+    eva_js.resource.registerInstance(eva_js.RESOURCE_TYPE.SPRITE_ANIMATION, ({ name, data }) => {
+        return new Promise(r => {
+            const textureObj = data.json;
+            const texture = pixi_js.BaseTexture.from(data.image);
+            const frames = textureObj.frames || {};
+            const animations = textureObj.animations || {};
+            const newFrames = {};
+            for (const key in frames) {
+                const newKey = name + resourceKeySplit + key;
                 newFrames[newKey] = frames[key];
             }
-            for (var key in animations) {
-                var spriteList = [];
+            for (const key in animations) {
+                const spriteList = [];
                 if (animations[key] && animations[key].length >= 0) {
-                    try {
-                        for (var _b = (e_1 = void 0, __values(animations[key])), _c = _b.next(); !_c.done; _c = _b.next()) {
-                            var spriteName = _c.value;
-                            var newSpriteName = name + resourceKeySplit + spriteName;
-                            spriteList.push(newSpriteName);
-                        }
-                    }
-                    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-                    finally {
-                        try {
-                            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                        }
-                        finally { if (e_1) throw e_1.error; }
+                    for (const spriteName of animations[key]) {
+                        const newSpriteName = name + resourceKeySplit + spriteName;
+                        spriteList.push(newSpriteName);
                     }
                 }
                 animations[key] = spriteList;
             }
             textureObj.frames = newFrames;
-            var spriteSheet = new pixi_js.Spritesheet(texture, textureObj);
-            spriteSheet.parse(function () {
-                var textures = spriteSheet.textures;
-                var spriteFrames = [];
-                for (var key in textures) {
+            const spriteSheet = new pixi_js.Spritesheet(texture, textureObj);
+            spriteSheet.parse(() => {
+                const { textures } = spriteSheet;
+                const spriteFrames = [];
+                for (const key in textures) {
                     spriteFrames.push(textures[key]);
                 }
                 r(spriteFrames);
             });
         });
     });
-    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.SPRITE_ANIMATION, function (_a) {
-        var e_2, _b;
-        var instance = _a.instance;
+    eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.SPRITE_ANIMATION, ({ instance }) => {
         if (!instance)
             return;
-        try {
-            for (var instance_1 = __values(instance), instance_1_1 = instance_1.next(); !instance_1_1.done; instance_1_1 = instance_1.next()) {
-                var texture = instance_1_1.value;
-                texture.destroy(true);
-            }
-        }
-        catch (e_2_1) { e_2 = { error: e_2_1 }; }
-        finally {
-            try {
-                if (instance_1_1 && !instance_1_1.done && (_b = instance_1.return)) _b.call(instance_1);
-            }
-            finally { if (e_2) throw e_2.error; }
+        for (const texture of instance) {
+            texture.destroy(true);
         }
     });
-    var SpriteAnimation = (function (_super) {
-        __extends(SpriteAnimation, _super);
-        function SpriteAnimation() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.name = 'SpriteAnimation';
-            _this.animates = {};
-            _this.autoPlay = {};
-            return _this;
+    let SpriteAnimation = class SpriteAnimation extends pluginRenderer.Renderer {
+        constructor() {
+            super(...arguments);
+            this.name = 'SpriteAnimation';
+            this.animates = {};
+            this.autoPlay = {};
         }
-        SpriteAnimation.prototype.init = function () {
+        init() {
             this.renderSystem = this.game.getSystem(pluginRenderer.RendererSystem);
             this.renderSystem.rendererManager.register(this);
-        };
-        SpriteAnimation.prototype.rendererUpdate = function (gameObject) {
-            var _a = gameObject.transform.size, width = _a.width, height = _a.height;
+        }
+        rendererUpdate(gameObject) {
+            const { width, height } = gameObject.transform.size;
             if (this.animates[gameObject.id]) {
                 this.animates[gameObject.id].animatedSprite.width = width;
                 this.animates[gameObject.id].animatedSprite.height = height;
             }
-        };
-        SpriteAnimation.prototype.componentChanged = function (changed) {
-            return __awaiter(this, void 0, void 0, function () {
-                var component, frames_1, frames_2;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (!(changed.componentName === 'SpriteAnimation')) return [3, 7];
-                            component = changed.component;
-                            this.autoPlay[changed.gameObject.id] = component.autoPlay;
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.ADD)) return [3, 2];
-                            return [4, eva_js.resource.getResource(component.resource)];
-                        case 1:
-                            frames_1 = (_a.sent()).instance;
-                            if (!frames_1) {
-                                console.error("GameObject:" + changed.gameObject.name + "'s Img resource load error");
-                            }
-                            this.add({
-                                frames: frames_1,
-                                id: changed.gameObject.id,
-                                component: component,
-                            });
-                            return [3, 7];
-                        case 2:
-                            if (!(changed.type === eva_js.OBSERVER_TYPE.CHANGE)) return [3, 6];
-                            if (!(changed.prop && changed.prop.prop[0] === 'speed')) return [3, 3];
+        }
+        componentChanged(changed) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (changed.componentName === 'SpriteAnimation') {
+                    const component = changed.component;
+                    this.autoPlay[changed.gameObject.id] = component.autoPlay;
+                    if (changed.type === eva_js.OBSERVER_TYPE.ADD) {
+                        const { instance: frames } = yield eva_js.resource.getResource(component.resource);
+                        if (!frames) {
+                            console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
+                        }
+                        this.add({
+                            frames: frames,
+                            id: changed.gameObject.id,
+                            component,
+                        });
+                    }
+                    else if (changed.type === eva_js.OBSERVER_TYPE.CHANGE) {
+                        if (changed.prop && changed.prop.prop[0] === 'speed') {
                             this.animates[changed.gameObject.id].speed =
                                 1000 / 60 / component.speed;
-                            return [3, 5];
-                        case 3: return [4, eva_js.resource.getResource(component.resource)];
-                        case 4:
-                            frames_2 = (_a.sent()).instance;
-                            if (!frames_2) {
-                                console.error("GameObject:" + changed.gameObject.name + "'s Img resource load error");
+                        }
+                        else {
+                            const { instance: frames } = yield eva_js.resource.getResource(component.resource);
+                            if (!frames) {
+                                console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
                             }
                             this.change({
-                                frames: frames_2,
+                                frames: frames,
                                 id: changed.gameObject.id,
-                                component: component,
+                                component,
                             });
-                            _a.label = 5;
-                        case 5: return [3, 7];
-                        case 6:
-                            if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
-                                this.remove(changed.gameObject.id);
-                            }
-                            _a.label = 7;
-                        case 7: return [2];
+                        }
                     }
-                });
+                    else if (changed.type === eva_js.OBSERVER_TYPE.REMOVE) {
+                        this.remove(changed.gameObject.id);
+                    }
+                }
             });
-        };
-        SpriteAnimation.prototype.add = function (_a) {
-            var frames = _a.frames, id = _a.id, component = _a.component;
-            var animate = new rendererAdapter.SpriteAnimation({ frames: frames });
+        }
+        add({ frames, id, component }) {
+            const animate = new rendererAdapter.SpriteAnimation({ frames });
             this.animates[id] = animate;
             this.containerManager
                 .getContainer(id)
                 .addChildAt(animate.animatedSprite, 0);
-            animate.animatedSprite.onComplete = function () {
+            animate.animatedSprite.onComplete = () => {
                 component.emit('complete');
             };
-            animate.animatedSprite.onFrameChange = function () {
+            animate.animatedSprite.onFrameChange = () => {
                 component.emit('frameChange');
             };
-            animate.animatedSprite.onLoop = function () {
+            animate.animatedSprite.onLoop = () => {
                 component.emit('loop');
             };
             component.animate = this.animates[id];
@@ -610,33 +581,32 @@
             if (this.autoPlay[id]) {
                 animate.animatedSprite.play();
             }
-        };
-        SpriteAnimation.prototype.change = function (_a) {
-            var frames = _a.frames, id = _a.id, component = _a.component;
+        }
+        change({ frames, id, component }) {
             this.remove(id, true);
-            this.add({ frames: frames, id: id, component: component });
-        };
-        SpriteAnimation.prototype.remove = function (id, isChange) {
-            var animate = this.animates[id];
+            this.add({ frames, id, component });
+        }
+        remove(id, isChange) {
+            const animate = this.animates[id];
             this.autoPlay[id] = animate.animatedSprite.playing;
             this.containerManager.getContainer(id).removeChild(animate.animatedSprite);
-            animate.animatedSprite.destroy();
+            animate.animatedSprite.destroy(true);
             delete this.animates[id];
             if (!isChange) {
                 delete this.autoPlay[id];
             }
-        };
-        SpriteAnimation.systemName = 'SpriteAnimation';
-        SpriteAnimation = __decorate([
-            eva_js.decorators.componentObserver({
-                SpriteAnimation: ['speed', 'resource'],
-            })
-        ], SpriteAnimation);
-        return SpriteAnimation;
-    }(pluginRenderer.Renderer));
+        }
+    };
+    SpriteAnimation.systemName = 'SpriteAnimation';
+    SpriteAnimation = __decorate([
+        eva_js.decorators.componentObserver({
+            SpriteAnimation: ['speed', 'resource'],
+        })
+    ], SpriteAnimation);
+    var SpriteAnimation$1 = SpriteAnimation;
 
-    exports.SpriteAnimation = SpriteAnimation$1;
-    exports.SpriteAnimationSystem = SpriteAnimation;
+    exports.SpriteAnimation = SpriteAnimation$2;
+    exports.SpriteAnimationSystem = SpriteAnimation$1;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

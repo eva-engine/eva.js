@@ -1,5 +1,5 @@
-import {GameObject, Transform, Component, Scene} from '../lib';
-import {TestComponent} from '../../plugin-renderer-test';
+import { GameObject, Transform, Component, Scene } from '../lib';
+import { TestComponent } from '../../plugin-renderer-test';
 
 describe('GameObject', () => {
   it('create game object with name', () => {
@@ -13,7 +13,7 @@ describe('GameObject', () => {
 
     const transform = gameObj.transform;
     expect(transform.gameObject).toStrictEqual(gameObj);
-    expect(transform.size).toMatchObject({width: 0, height: 0});
+    expect(transform.size).toMatchObject({ width: 0, height: 0 });
   });
 
   it('create game object with empty name', () => {
@@ -31,13 +31,13 @@ describe('GameObject', () => {
 
   it('create game object with transform', () => {
     const gameObj = new GameObject('gameObj', {
-      size: {width: 200, height: 200},
-      position: {x: 10, y: 10},
+      size: { width: 200, height: 200 },
+      position: { x: 10, y: 10 },
     });
     const transform = gameObj.transform;
     expect(transform).toBeInstanceOf(Transform);
-    expect(transform.size).toMatchObject({width: 200, height: 200});
-    expect(transform.position).toMatchObject({x: 10, y: 10});
+    expect(transform.size).toMatchObject({ width: 200, height: 200 });
+    expect(transform.position).toMatchObject({ x: 10, y: 10 });
   });
 
   it('append new child gameObject', () => {
@@ -69,7 +69,7 @@ describe('GameObject', () => {
 
   it('should throw error when child not instanceof GameObject', () => {
     const parent = new GameObject('parent');
-    const child = {transform: {}} as any;
+    const child = { transform: {} } as any;
     expect(() => {
       parent.addChild(child);
     }).toThrow('addChild only receive GameObject');
@@ -244,9 +244,6 @@ describe('GameObject', () => {
 
     const comp2 = gameObj.getComponent(Transform);
     expect(comp2.name).toBe('Transform');
-
-    const comp3 = gameObj.getComponent(gameObj.transform);
-    expect(comp3.name).toBe('Transform');
 
     expect(gameObj.getComponent('TestComponent')).toBeUndefined();
   });

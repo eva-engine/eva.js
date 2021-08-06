@@ -1,3 +1,4 @@
-import TilingSprite, {TilingSpriteParams} from './component';
+import TilingSprite from './component';
+import type { TilingSpriteParams } from './component';
 import TilingSpriteSystem from './system';
-export {TilingSprite, TilingSpriteSystem, TilingSpriteParams};
+export { TilingSprite, TilingSpriteSystem, TilingSpriteParams };

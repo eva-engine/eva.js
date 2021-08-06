@@ -7,7 +7,7 @@ import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Sprite } from '@eva/renderer-adapter';
 
-export declare class Img extends Component {
+export declare class Img extends Component<ImgParams> {
     static componentName: string;
     resource: string;
     init(obj?: ImgParams): void;

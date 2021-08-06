@@ -30,8 +30,8 @@ export default class Renderer extends System {
    */
   containerManager: ContainerManager;
   rendererManager: RendererManager;
-  constructor() {
-    super();
+  constructor(params = {}) {
+    super(params);
     // @ts-ignore
     this.observerInfo = this.constructor.observerInfo;
   }
@@ -51,7 +51,7 @@ export default class Renderer extends System {
   rendererUpdate?(gameObject: GameObject): void;
   update() {
     const changes = this.componentObserver.clear();
-    for (let changed of changes) {
+    for (const changed of changes) {
       this.componentChanged(changed);
     }
   }

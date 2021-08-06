@@ -48,7 +48,7 @@ export default class Lottie extends Component {
   }
 
   play(
-    params: Array<number> = [],
+    params: number[] = [],
     expandOpts: IExpandOpts = {
       repeats: 0
     }

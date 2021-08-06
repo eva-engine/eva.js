@@ -7,7 +7,7 @@ import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Sprite as Sprite_2 } from '@eva/renderer-adapter';
 
-export declare class Sprite extends Component {
+export declare class Sprite extends Component<SpriteParams> {
     static componentName: string;
     resource: string;
     spriteName: string;

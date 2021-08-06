@@ -33,7 +33,7 @@ export declare class Renderer extends System {
     observerInfo: PureObserverInfo;
     containerManager: ContainerManager;
     rendererManager: RendererManager;
-    constructor();
+    constructor(params?: {});
     init?(arg?: any): void;
     componentChanged?(changed: ComponentChanged): void;
     rendererUpdate?(gameObject: GameObject): void;
@@ -77,6 +77,7 @@ export declare class RendererSystem extends System {
     update(): void;
     lateUpdate(e: any): void;
     onDestroy(): void;
+    resize(width: any, height: any): void;
 }
 
 declare class Transform_2 extends EventEmitter {

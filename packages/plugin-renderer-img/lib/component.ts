@@ -1,11 +1,11 @@
 import { type } from '@eva/inspector-decorator';
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 
 export interface ImgParams {
   resource: string;
 }
 
-export default class Img extends Component {
+export default class Img extends Component<ImgParams> {
   static componentName: string = 'Img';
   @type('string') resource: string = '';
   init(obj?: ImgParams) {

@@ -1,4 +1,4 @@
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
 
 export interface SpriteParams {
@@ -6,7 +6,7 @@ export interface SpriteParams {
   spriteName: string;
 }
 
-export default class Sprite extends Component {
+export default class Sprite extends Component<SpriteParams> {
   static componentName: string = 'Sprite';
   @type('string') resource: string = '';
   @type('string') spriteName: string = '';

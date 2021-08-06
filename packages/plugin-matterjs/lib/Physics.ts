@@ -7,7 +7,7 @@ export enum PhysicsType {
 }
 
 
-export class Physics extends Component {
+export class Physics extends Component<PhysicsType> {
   static componentName: string = 'Physics';
   private bodyParams: any;
   public body: any;

@@ -7,7 +7,7 @@ export interface TilingSpriteParams {
   tilePosition: {x: number; y: number};
 }
 
-export default class TilingSprite extends Component {
+export default class TilingSprite extends Component<TilingSpriteParams> {
   static componentName: string = 'TilingSprite';
   @type('string') resource: string = '';
   @type('vector2') @step(0.1) tileScale: TilingSpriteParams['tileScale'] = {

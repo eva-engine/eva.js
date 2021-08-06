@@ -3,7 +3,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": "dist/types",
-    "target": "es5",
+    "target": "es2016",
     "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
@@ -19,9 +19,10 @@
     "noImplicitReturns": false,
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
     "lib": [
       "esnext",
-      "dom"
+      "dom",
     ],
     "types": [
       "jest",
@@ -34,14 +35,78 @@
       "@eva/eva.js": [
         "packages/eva.js/lib"
       ],
+      "@eva/miniprogram-pixi": [
+        "packages/miniprogram-pixi/lib"
+      ],
+      "@eva/plugin-a11y": [
+        "packages/plugin-a11y/lib"
+      ],
+      "@eva/plugin-evax": [
+        "packages/plugin-evax/lib"
+      ],
+      "@eva/plugin-matterjs": [
+        "packages/plugin-matterjs/lib"
+      ],
+      "@eva/plugin-renderer": [
+        "packages/plugin-renderer/lib"
+      ],
+      "@eva/plugin-renderer-dragonbone": [
+        "packages/plugin-renderer-dragonbone/lib"
+      ],
+      "@eva/plugin-renderer-event": [
+        "packages/plugin-renderer-event/lib"
+      ],
+      "@eva/plugin-renderer-graphics": [
+        "packages/plugin-renderer-graphics/lib"
+      ],
+      "@eva/plugin-renderer-img": [
+        "packages/plugin-renderer-img/lib"
+      ],
+      "@eva/plugin-renderer-lottie": [
+        "packages/plugin-renderer-lottie/lib"
+      ],
+      "@eva/plugin-renderer-mask": [
+        "packages/plugin-renderer-mask/lib"
+      ],
+      "@eva/plugin-renderer-nine-patch": [
+        "packages/plugin-renderer-nine-patch/lib"
+      ],
+      "@eva/plugin-renderer-render": [
+        "packages/plugin-renderer-render/lib"
+      ],
+      "@eva/plugin-renderer-spine": [
+        "packages/plugin-renderer-spine/lib"
+      ],
+      "@eva/plugin-renderer-sprite": [
+        "packages/plugin-renderer-sprite/lib"
+      ],
+      "@eva/plugin-renderer-sprite-animation": [
+        "packages/plugin-renderer-sprite-animation/lib"
+      ],
+      "@eva/plugin-renderer-text": [
+        "packages/plugin-renderer-text/lib"
+      ],
+      "@eva/plugin-renderer-tiling-sprite": [
+        "packages/plugin-renderer-tiling-sprite/lib"
+      ],
+      "@eva/plugin-sound": [
+        "packages/plugin-sound/lib"
+      ],
+      "@eva/plugin-stats": [
+        "packages/plugin-stats/lib"
+      ],
+      "@eva/plugin-transition": [
+        "packages/plugin-transition/lib"
+      ],
       "@eva/*": [
         "packages/*/lib"
-      ]
+      ],
     }
   },
   "include": [
     "packages/global.d.ts",
     "packages/*/lib",
-    "packages/*/__tests__"
-  ]
+    "packages/*/__tests__",
+    "vite-test"
+  ],
 }

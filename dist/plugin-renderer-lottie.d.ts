@@ -27,7 +27,7 @@ declare interface IOptions {
     height?: number;
 }
 
-export declare class Lottie extends Component {
+export declare class Lottie extends Component<IOptions> {
     slot: {
         [key: string]: string;
     };
@@ -47,7 +47,7 @@ export declare class Lottie extends Component {
         [name: string]: any;
     };
     constructor(options: IOptions);
-    play(params?: Array<number>, expandOpts?: IExpandOpts): void;
+    play(params?: number[], expandOpts?: IExpandOpts): void;
     playParamsHandle(params: any): any[];
     onTap(name: any, callback: any): void;
 }

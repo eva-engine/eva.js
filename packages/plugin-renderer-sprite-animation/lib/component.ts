@@ -8,7 +8,7 @@ export interface SpriteAnimationParams {
   speed: number;
 }
 
-export default class SpriteAnimation extends Component {
+export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   static componentName: string = 'SpriteAnimation';
   @type('string') resource: string = '';
   @type('boolean') autoPlay: boolean = true;

@@ -97,7 +97,10 @@ function createConfig(format, output, plugins = []) {
     process.exit(1);
   }
 
+  output.exports = 'auto';
   output.sourcemap = !!process.env.SOURCE_MAP;
+  output.externalLiveBindings = false;
+
   const shouldEmitDeclaration = process.env.TYPES != null && !hasTypesChecked;
 
   const tsPlugin = typescript({
@@ -116,14 +119,22 @@ function createConfig(format, output, plugins = []) {
   });
   hasTypesChecked = true;
 
-  const nodePlugins =
-    format !== 'cjs' && format !== 'esm'
-      ? [
-          require('@rollup/plugin-commonjs')({sourceMap: false}),
-          require('rollup-plugin-polyfill-node')(),
-          require('@rollup/plugin-node-resolve').nodeResolve(),
-        ]
-      : [];
+  let nodePlugins = [];
+  if (format === 'umd') {
+    nodePlugins = [
+      require('@rollup/plugin-node-resolve').nodeResolve(),
+      require('rollup-plugin-polyfill-node')(),
+      require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
+    ];
+  }
+
+  let external = [];
+  if (format === 'esm' || format === 'cjs') {
+    external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
+  } else {
+    const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => dep.startsWith('@eva'));
+    external = ['pixi.js', ...evaDependencies];
+  }
 
   return {
     input: entryFile,
@@ -136,22 +147,15 @@ function createConfig(format, output, plugins = []) {
         '@eva/renderer-adapter': 'EVA.rendererAdapter',
       },
     },
-    external: [
-      'pixi.js',
-      '@eva/eva.js',
-      '@eva/plugin-renderer',
-      '@eva/renderer-adapter',
-      '@eva/miniprogram-pixi',
-      '@eva/miniprogram-adapter',
-    ],
+    external,
     plugins: [
       json({preferConst: true}),
-      tsPlugin,
       replace({
         __TEST__: false,
         __DEV__: process.env.NODE_ENV === 'development',
       }),
       ...nodePlugins,
+      tsPlugin,
       ...plugins,
     ],
     onwarn: (msg, warn) => {

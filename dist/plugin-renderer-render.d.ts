@@ -6,7 +6,7 @@ import { Renderer } from '@eva/plugin-renderer';
 import { RendererManager } from '@eva/plugin-renderer';
 import { RendererSystem } from '@eva/plugin-renderer';
 
-export declare class Render extends Component {
+export declare class Render extends Component<RenderParams> {
     static componentName: string;
     sortDirty: boolean;
     visible: boolean;
