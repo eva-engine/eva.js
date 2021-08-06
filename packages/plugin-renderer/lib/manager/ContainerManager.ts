@@ -11,7 +11,7 @@ export default class ContainerManager {
     return this.containerMap[name];
   }
   removeContainer(name: number) {
-    this.containerMap[name]?.destroy(true)
+    this.containerMap[name]?.destroy({children: true})
     delete this.containerMap[name];
   }
   updateTransform({name, transform}: {name: number; transform: Transform}) {
