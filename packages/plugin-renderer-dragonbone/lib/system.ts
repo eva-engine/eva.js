@@ -85,7 +85,7 @@ export default class DragonBone extends Renderer {
     if (this.isRemovedMap.get(component)) {
       this.isRemovedMap.delete(component);
       return
-    };
+    }
     const armature = new DragonBoneEngine({
       armatureName: component.armatureName,
     });
@@ -120,7 +120,7 @@ export default class DragonBone extends Renderer {
       .getContainer(changed.gameObject.id)
       .removeChild(armature.armature);
     armature.armature.removeAllListeners();
-    armature.armature.destroy(true);
+    armature.armature.destroy({ children: true });
     const component = changed.component as DragonBoneComponent;
     component.armature = null;
     delete this.armatures[changed.gameObject.id];

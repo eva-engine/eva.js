@@ -32,7 +32,7 @@ export default class Graphics extends Renderer {
       this.containerManager
         .getContainer(changed.gameObject.id)
         .removeChild((changed.component as GraphicsComponent).graphics);
-      (changed.component as GraphicsComponent).graphics.destroy(true)
+      (changed.component as GraphicsComponent).graphics.destroy({ children: true })
     }
   }
 }

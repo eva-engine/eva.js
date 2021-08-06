@@ -3,7 +3,7 @@ import {Component, decorators} from '@eva/eva.js';
 
 export interface TextParams {
   text: string;
-  style: {
+  style?: {
     align?: string;
     breakWords?: boolean;
     dropShadow?: boolean;
