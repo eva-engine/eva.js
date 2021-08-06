@@ -9229,8 +9229,6 @@
     let texCache = {};
     function cacheImage(data) {
         const oldImg = data.image;
-        const newImg = data.image.cloneNode();
-        data.image = newImg;
         return {
             tex: pixi_js.Texture.from(oldImg),
             count: 0,

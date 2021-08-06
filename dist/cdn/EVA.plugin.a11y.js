@@ -2251,7 +2251,7 @@
         }
         removeContainer(name) {
             var _a;
-            (_a = this.containerMap[name]) === null || _a === void 0 ? void 0 : _a.destroy(true);
+            (_a = this.containerMap[name]) === null || _a === void 0 ? void 0 : _a.destroy({ children: true });
             delete this.containerMap[name];
         }
         updateTransform({ name, transform }) {

@@ -104,9 +104,9 @@
                 newFrames[newKey] = frames[key];
             }
             for (const key in animations) {
-                let spriteList = [];
+                const spriteList = [];
                 if (animations[key] && animations[key].length >= 0) {
-                    for (let spriteName of animations[key]) {
+                    for (const spriteName of animations[key]) {
                         const newSpriteName = name + resourceKeySplit + spriteName;
                         spriteList.push(newSpriteName);
                     }
@@ -124,7 +124,7 @@
     eva_js.resource.registerDestroy(eva_js.RESOURCE_TYPE.SPRITE, ({ instance }) => {
         if (!instance)
             return;
-        for (let key in instance) {
+        for (const key in instance) {
             instance[key].destroy(true);
         }
     });
@@ -176,7 +176,7 @@
                         this.containerManager
                             .getContainer(changed.gameObject.id)
                             .removeChild(sprite.sprite);
-                        sprite.sprite.destroy(true);
+                        sprite.sprite.destroy({ children: true });
                         delete this.sprites[changed.gameObject.id];
                     }
                 }

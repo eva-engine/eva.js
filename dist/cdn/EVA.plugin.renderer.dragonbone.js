@@ -19335,7 +19335,7 @@
                 .getContainer(changed.gameObject.id)
                 .removeChild(armature.armature);
             armature.armature.removeAllListeners();
-            armature.armature.destroy(true);
+            armature.armature.destroy({ children: true });
             const component = changed.component;
             component.armature = null;
             delete this.armatures[changed.gameObject.id];

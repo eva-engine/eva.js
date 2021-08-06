@@ -16,7 +16,7 @@ export { Text_2 as Text }
 
 export declare interface TextParams {
     text: string;
-    style: {
+    style?: {
         align?: string;
         breakWords?: boolean;
         dropShadow?: boolean;

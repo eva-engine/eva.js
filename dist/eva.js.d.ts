@@ -282,7 +282,7 @@ declare interface SrcBase {
     type: string;
     url?: string;
     data?: any;
-    texture?: TextureBase[];
+    texture?: TextureBase[] | TextureBase;
 }
 
 export declare const STRATEGY: {
@@ -313,7 +313,6 @@ declare type SystemType = typeof System;
 
 declare interface TextureBase {
     type: string;
-    internalFormat: string | number;
     url: string;
 }
 
