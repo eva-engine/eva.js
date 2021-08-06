@@ -42,7 +42,7 @@ export default class Text extends Renderer {
       this.containerManager
         .getContainer(changed.gameObject.id)
         .removeChild(this.texts[changed.gameObject.id].text);
-        this.texts[changed.gameObject.id].text.destroy(true)
+        this.texts[changed.gameObject.id].text.destroy({ children: true })
       delete this.texts[changed.gameObject.id];
     } else {
       this.change(changed);
