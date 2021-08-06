@@ -1,5 +1,5 @@
 import {Component} from '@eva/eva.js';
-import {type} from '@eva/inspector-decorator';
+import {type, step} from '@eva/inspector-decorator';
 import {uuid} from './utils';
 
 export interface A11yParams {
@@ -33,7 +33,7 @@ export default class A11y extends Component {
   /**
    * 延时加载时间（millisecond）
    */
-  @type('number') delay: number;
+  @type('number') @step(1) delay: number;
 
   /**
    * role 属性

@@ -87,9 +87,6 @@
             this.events = events || {};
         };
         EvaXComponent.componentName = 'EvaX';
-        __decorate([
-            eva_js.decorators.IDEProp
-        ], EvaXComponent.prototype, "events", void 0);
         return EvaXComponent;
     }(eva_js.Component));
 

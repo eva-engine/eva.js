@@ -1,4 +1,4 @@
-import {type} from '@eva/inspector-decorator';
+import {type, step} from '@eva/inspector-decorator';
 import Component from './Component';
 
 /**
@@ -75,13 +75,13 @@ class Transform extends Component {
     this.rotation = params.rotation || this.rotation;
   }
 
-  @type('vector2') position: Vector2 = {x: 0, y: 0};
-  @type('size') size: Size2 = {width: 0, height: 0};
-  @type('vector2') origin: Vector2 = {x: 0, y: 0};
-  @type('vector2') anchor: Vector2 = {x: 0, y: 0};
-  @type('vector2') scale: Vector2 = {x: 1, y: 1};
-  @type('vector2') skew: Vector2 = {x: 0, y: 0};
-  @type('number') rotation: number = 0;
+  @type('vector2') @step(1) position: Vector2 = {x: 0, y: 0};
+  @type('size') @step(1) size: Size2 = {width: 0, height: 0};
+  @type('vector2') @step(0.1) origin: Vector2 = {x: 0, y: 0};
+  @type('vector2') @step(0.1) anchor: Vector2 = {x: 0, y: 0};
+  @type('vector2') @step(0.1) scale: Vector2 = {x: 1, y: 1};
+  @type('vector2') @step(0.1) skew: Vector2 = {x: 0, y: 0};
+  @type('number') @step(0.1) rotation: number = 0;
 
   set parent(val: Transform) {
     if (val) {

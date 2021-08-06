@@ -15,6 +15,17 @@
     <script src="/dist/cdn/EVA.plugin.renderer.js"></script>
     <script src="/dist/cdn/EVA.plugin.renderer.ninePatch.js"></script>
     <script>
+      function type(type) {
+        return function (target, propertyKey) {
+          console.log(propertyKey, type);
+          if (!target.constructor.IDEProps) {
+            target.constructor.IDEProps = [];
+          }
+          target.constructor.IDEProps.push({key: propertyKey, type: type});
+        };
+      }
+    </script>
+    <script>
       const {Game, GameObject, resource, RESOURCE_TYPE} = EVA;
       const {RendererSystem} = EVA.plugin.renderer;
       const {NinePatch, NinePatchSystem} = EVA.plugin.renderer.ninePatch;
