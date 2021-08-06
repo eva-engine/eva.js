@@ -4,7 +4,7 @@ import { type } from '@eva/inspector-decorator';
 
 export interface TextParams {
   text: string;
-  style: {
+  style?: {
     align?: string;
     breakWords?: boolean;
     dropShadow?: boolean;

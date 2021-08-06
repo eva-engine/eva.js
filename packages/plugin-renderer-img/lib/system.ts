@@ -12,31 +12,31 @@ import {
   RendererSystem,
   Renderer,
 } from '@eva/plugin-renderer';
-import {Sprite} from '@eva/renderer-adapter';
-import {Texture} from 'pixi.js';
+import { Sprite } from '@eva/renderer-adapter';
+import { Texture } from 'pixi.js';
 import ImgComponent from './component';
 
-resource.registerInstance(RESOURCE_TYPE.IMAGE, ({data = {}}) => {
-  const {image} = data;
+resource.registerInstance(RESOURCE_TYPE.IMAGE, ({ data = {} }) => {
+  const { image } = data;
   if (image) {
     const texture = Texture.from(image);
     return texture;
   }
   return;
 });
-resource.registerDestroy(RESOURCE_TYPE.IMAGE, ({instance}) => {
+resource.registerDestroy(RESOURCE_TYPE.IMAGE, ({ instance }) => {
   if (instance) {
     (instance as Texture).destroy(true);
   }
 });
 
 @decorators.componentObserver({
-  Img: [{prop: ['resource'], deep: false}],
+  Img: [{ prop: ['resource'], deep: false }],
 })
 export default class Img extends Renderer {
   static systemName = 'Img';
   name: string = 'Img';
-  imgs: {[propName: number]: Sprite} = {};
+  imgs: { [propName: number]: Sprite } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
@@ -45,7 +45,7 @@ export default class Img extends Renderer {
     this.renderSystem.rendererManager.register(this);
   }
   rendererUpdate(gameObject: GameObject) {
-    const {width, height} = gameObject.transform.size;
+    const { width, height } = gameObject.transform.size;
     if (this.imgs[gameObject.id]) {
       this.imgs[gameObject.id].sprite.width = width;
       this.imgs[gameObject.id].sprite.height = height;
@@ -56,7 +56,7 @@ export default class Img extends Renderer {
       const component: ImgComponent = changed.component as ImgComponent;
       if (changed.type === OBSERVER_TYPE.ADD) {
         const sprite = new Sprite(null);
-        resource.getResource(component.resource).then(({instance}) => {
+        resource.getResource(component.resource).then(({ instance }) => {
           if (!instance) {
             console.error(
               `GameObject:${changed.gameObject.name}'s Img resource load error`,
@@ -69,7 +69,7 @@ export default class Img extends Renderer {
           .getContainer(changed.gameObject.id)
           .addChildAt(sprite.sprite, 0);
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
-        const {instance} = await resource.getResource(component.resource);
+        const { instance } = await resource.getResource(component.resource);
         if (!instance) {
           console.error(
             `GameObject:${changed.gameObject.name}'s Img resource load error`,
@@ -81,7 +81,7 @@ export default class Img extends Renderer {
         this.containerManager
           .getContainer(changed.gameObject.id)
           .removeChild(sprite.sprite);
-          sprite.sprite.destroy(true)
+        sprite.sprite.destroy({ children: true })
         delete this.imgs[changed.gameObject.id];
       }
     }
