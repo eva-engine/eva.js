@@ -22,7 +22,7 @@
     "isolatedModules": true,
     "lib": [
       "esnext",
-      "dom",
+      "dom"
     ],
     "types": [
       "jest",
@@ -100,7 +100,7 @@
       ],
       "@eva/*": [
         "packages/*/lib"
-      ],
+      ]
     }
   },
   "include": [
