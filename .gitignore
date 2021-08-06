@@ -29,3 +29,6 @@ coverage
 temp/
 api/
 stats.html
+
+examples/spine38.html
+examples/loader.html

@@ -12,15 +12,17 @@ import GraphicsComponent from './component';
 })
 export default class Graphics extends Renderer {
   static systemName = 'Graphics';
-  name: string = 'Graphics';
 
+  name = 'Graphics';
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
+
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
   }
+
   async componentChanged(changed: ComponentChanged) {
     if (changed.type === OBSERVER_TYPE.ADD) {
       this.containerManager
