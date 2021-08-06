@@ -2696,10 +2696,12 @@
     var Renderer$2 = Renderer$1;
 
     class Renderer extends eva_js.System {
-        constructor(params = {}) {
+        constructor(params) {
             super(params);
             this.observerInfo = this.constructor.observerInfo;
         }
+        componentChanged(_changed) { }
+        rendererUpdate(_gameObject) { }
         update() {
             const changes = this.componentObserver.clear();
             for (const changed of changes) {
