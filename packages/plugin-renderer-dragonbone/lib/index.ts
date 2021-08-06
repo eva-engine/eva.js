@@ -1,4 +1,4 @@
 import DragonBone from './component';
-import type { DragonBoneParams } from './component';
+export type { DragonBoneParams } from './component';
 import DragonBoneSystem from './system';
-export { DragonBone, DragonBoneSystem, DragonBoneParams };
+export { DragonBone, DragonBoneSystem };

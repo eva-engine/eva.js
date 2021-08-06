@@ -405,7 +405,7 @@ export async function init(canvas) {
     graphics.beginFill(color, 1);
     graphics.drawRect(0, 0, gameObject.transform.size.width, gameObject.transform.size.height);
     graphics.endFill();
-    const py = gameObject.addComponent(
+    gameObject.addComponent(
       new Physics({
         type: PhysicsType.RECTANGLE,
         bodyOptions: {

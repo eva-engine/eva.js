@@ -34,7 +34,7 @@ enum ElementType {
 /**
  * 无障碍遮罩层样式
  */
-interface A11yMaskStyle {
+export interface A11yMaskStyle {
   width: number;
   height: number;
   background: string;
@@ -48,7 +48,7 @@ interface A11yMaskStyle {
 /**
  * 点击事件位置
  */
-interface EventPosition {
+export interface EventPosition {
   x: number;
   y: number;
 }
@@ -60,6 +60,4 @@ export {
   PointerEvents,
   MaskBackground,
   ElementType,
-  EventPosition,
-  A11yMaskStyle,
 };

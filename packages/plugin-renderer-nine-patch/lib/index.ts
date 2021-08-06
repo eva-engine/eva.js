@@ -1,4 +1,4 @@
 import NinePatch from './component';
-import type { NinePatchParams } from './component';
+export type { NinePatchParams } from './component';
 import NinePatchSystem from './system';
-export { NinePatch, NinePatchSystem, NinePatchParams };
+export { NinePatch, NinePatchSystem };

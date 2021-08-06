@@ -7,11 +7,6 @@ export default defineConfig({
     port: 8083,
     host: '0.0.0.0',
   },
-  build: {
-    target: 'es5',
-    outDir: './vite-test/dist',
-    emptyOutDir: true
-  },
   publicDir: './public/',
   base: './',
   root: './vite-test',

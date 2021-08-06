@@ -216,7 +216,7 @@ export async function init(canvas) {
       },
       anchor: { x: 0, y: 1 },
     });
-    const img = image.addComponent(
+    image.addComponent(
       new Img({
         resource: 'heart',
       }),
@@ -271,6 +271,7 @@ export async function init(canvas) {
         y: 0.5,
       },
     });
+    //@ts-ignore
     const spine = new Spine({ resource: 'anim', animationName: 'idle' });
     gameObject.addComponent(spine);
     spine.on('complete', e => {
@@ -293,10 +294,18 @@ export async function init(canvas) {
       name: 'tree',
       type: RESOURCE_TYPE.DRAGONBONE,
       src: {
-        ske: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
-        tex: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
-        image:
-          '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
+        ske: {
+          url: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
+          type: 'json'
+        },
+        tex: {
+          url: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
+          type: 'json'
+        },
+        image: {
+          url: '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
+          type: 'png'
+        },
       },
     },
     {
@@ -332,8 +341,11 @@ export async function init(canvas) {
       name: 'heart',
       type: RESOURCE_TYPE.IMAGE,
       src: {
-        image:
-          '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+        image: {
+          url: '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+          type: 'png'
+        }
+        ,
       },
       preload: false,
     },
@@ -365,7 +377,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
