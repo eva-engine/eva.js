@@ -128,3 +128,51 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
   [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x10_KHR]: 1.28 * 0.125,
   [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x12_KHR]: 0.89 * 0.125,
 };
+
+export const INTERNAL_FORMATS_TO_EXTENSION_NAME: { [key: number]: string } = {
+  // WEBGL_compressed_texture_s3tc
+  [INTERNAL_FORMATS.COMPRESSED_RGB_S3TC_DXT1_EXT]: 'WEBGL_compressed_texture_s3tc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT]: 'WEBGL_compressed_texture_s3tc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT]: 'WEBGL_compressed_texture_s3tc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT]: 'WEBGL_compressed_texture_s3tc',
+
+  // WEBGL_compressed_texture_s3tc
+  [INTERNAL_FORMATS.COMPRESSED_SRGB_S3TC_DXT1_EXT]: 'WEBGL_compressed_texture_s3tc_srgb',
+  [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT]: 'WEBGL_compressed_texture_s3tc_srgb',
+  [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT]: 'WEBGL_compressed_texture_s3tc_srgb',
+  [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT]: 'WEBGL_compressed_texture_s3tc_srgb',
+
+  // WEBGL_compressed_texture_etc
+  [INTERNAL_FORMATS.COMPRESSED_R11_EAC]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_SIGNED_R11_EAC]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_RG11_EAC]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_SIGNED_RG11_EAC]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_RGB8_ETC2]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA8_ETC2_EAC]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_SRGB8_ETC2]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2]: 'WEBGL_compressed_texture_etc',
+  [INTERNAL_FORMATS.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2]: 'WEBGL_compressed_texture_etc',
+
+  // WEBGL_compressed_texture_pvrtc
+  [INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_4BPPV1_IMG]: 'WEBGL_compressed_texture_pvrtc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG]: 'WEBGL_compressed_texture_pvrtc',
+  [INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG]: 'WEBGL_compressed_texture_pvrtc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG]: 'WEBGL_compressed_texture_pvrtc',
+
+  // WEBGL_compressed_texture_etc1
+  [INTERNAL_FORMATS.COMPRESSED_RGB_ETC1_WEBGL]: 'WEBGL_compressed_texture_etc1',
+
+  // WEBGL_compressed_texture_atc
+  [INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL]: 'WEBGL_compressed_texture_atc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL]: 'WEBGL_compressed_texture_atc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL]: 'WEBGL_compressed_texture_atc',
+
+  // astc
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 'WEBGL_compressed_texture_astc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x5_KHR]: 'WEBGL_compressed_texture_astc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x6_KHR]: 'WEBGL_compressed_texture_astc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x8_KHR]: 'WEBGL_compressed_texture_astc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x10_KHR]: 'WEBGL_compressed_texture_astc',
+  [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x12_KHR]: 'WEBGL_compressed_texture_astc',
+}

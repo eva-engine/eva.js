@@ -1,3 +1,4 @@
+import { INTERNAL_FORMATS_TO_EXTENSION_NAME } from './../const';
 /**
  * Inspired by PIXI.KTXLoader
  */
@@ -17,6 +18,20 @@ export class CompressedTextureResource {
   levels: number
   upload(gl: WebGLRenderingContext) {
     const { levels } = this;
+
+
+    // Before use compressed texture, must call getExtension early !
+    // Now we don't keep the compressed texture type is supported !
+    let name = INTERNAL_FORMATS_TO_EXTENSION_NAME[this.internalFormat];
+    if (!gl[name]) {
+      gl[name] = true;
+      if (name === 'WEBGL_compressed_texture_pvrtc') {
+        gl.getExtension(name) || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc');
+      } else {
+        gl.getExtension(name);
+      }
+    }
+
     // Loop through each mip level of COMPRESSED texture data provided and upload it to the given texture.
     for (var i = 0; i < this.levels; ++i) {
       let { levelWidth, levelHeight, levelBuffer } = this.levelBuffers[i];
