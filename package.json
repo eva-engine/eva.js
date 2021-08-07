@@ -16,7 +16,7 @@
     "ci": "lerna bootstrap && npm run cov",
     "cov": "jest --json > node_modules/.tap.json",
     "api": "api-documenter markdown -i temp -o docs/api",
-    "vite": "npx vite ./vite-test -c ./vite.config.ts"
+    "vite": "npx vite ./examples -c ./vite.config.ts"
   },
   "keywords": [
     "game",
@@ -81,26 +81,11 @@
     "tslib": "^1.9.3",
     "typedoc": "^0.15.0",
     "typescript": "^3.6.4",
+    "vconsole": "^3.9.1",
     "vite": "2.4.3",
     "zlib": "^1.0.5"
   },
   "engines": {
     "node": ">=14.14.0"
-  },
-  "ci": {
-    "type": "aoneci",
-    "version": "14.14.0",
-    "docker": false,
-    "autoBadges": true,
-    "coverage": true
-  },
-  "dependencies": {
-    "@tweenjs/tween.js": "^18.6.4",
-    "core-js": "^3.16.0",
-    "eventemitter3": "^4.0.7",
-    "ios-version": "^1.0.1",
-    "lodash": "^4.17.21",
-    "pixi.js": "^4.8.7",
-    "resource-loader": "^4.0.0-rc4"
   }
 }

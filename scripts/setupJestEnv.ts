@@ -15,7 +15,7 @@ expect.extend({
           `expected "${received}" to have been warned` +
           (msgs.length
             ? `.\n\nActual messages:\n\n - ${msgs}`
-            : ` but no warning was recorded.`)
+            : 'but no warning was recorded.')
       }
     }
   },
@@ -69,7 +69,7 @@ const asserted: Set<string> = new Set()
 beforeEach(() => {
   asserted.clear()
   warn = jest.spyOn(console, 'warn')
-  warn.mockImplementation(() => {})
+  warn.mockImplementation(() => { })
 })
 
 afterEach(() => {
@@ -90,3 +90,7 @@ afterEach(() => {
     )
   }
 })
+
+// dont remove this line, cause of typescript TS1208 error.
+// https://github.com/Microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json#L662
+export { };

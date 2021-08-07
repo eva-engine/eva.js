@@ -227,7 +227,7 @@ export declare enum RESOURCE_TYPE {
     'VIDEO' = "VIDEO"
 }
 
-declare interface ResourceBase {
+export declare interface ResourceBase {
     name?: string;
     type?: RESOURCE_TYPE;
     src?: {
