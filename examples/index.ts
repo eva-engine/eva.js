@@ -1,45 +1,40 @@
 import VConsole from 'vconsole';
 
-declare const canvas: HTMLCanvasElement;
-
 type ExampleModule = () => Promise<{
   name: string;
   init: (canvas: HTMLCanvasElement) => void;
 }>;
-
+// @ts-ignore
 const modules: Record<string, ExampleModule> = import.meta.glob('./src/*.ts');
 
-// const moduleEntries = Object.entries(modules);
-const path = location.hash.replace('#', '');
-
-if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.length < 1) {
-  try {
-    new VConsole();
-  } catch (e) {
-    alert(e.message);
-  }
-}
-
-window.onhashchange = e => {
+window.addEventListener('hashchange', () => {
   location.reload();
-};
+})
 
+const path = location.hash.replace('#', '');
 if (modules[path]) {
   (async () => {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'canvas';
+    document.body.appendChild(canvas);
     const module = await modules[path]();
     document.title = module.name;
     module.init(canvas);
   })();
+  if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.length < 1) {
+    new VConsole();
+  }
 } else {
-  canvas.remove();
+  const ul = document.createElement('ul');
   Object.keys(modules).forEach(url => {
-    let btn = document.createElement('div');
-    btn.className = 'link';
-    btn.innerText = url.split('/').pop().split('.ts')[0];
-    btn.onclick = () => {
-      location.hash = url;
-    };
-    document.body.appendChild(btn);
-    document.body.appendChild(document.createElement('br'));
-  });
+    const li = document.createElement('li');
+    ul.appendChild(li);
+    const link = document.createElement('a');
+    li.appendChild(link);
+    const pathname = url.split('/').pop().split('.ts')[0];
+    link.href = `#${url}`
+    link.innerText = pathname;
+    link.addEventListener('click', () => location.hash = url);
+  })
+  document.body.appendChild(ul);
 }

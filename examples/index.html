@@ -5,43 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eva.js Examples</title>
+    <script>
+      const __TEST__ = true;
+      window.global = window;
+    </script>
     <style>
+      html {
+        height: 100vh;
+        overflow: hidden;
+      }
       body {
-        margin: 0;
+        width: 100vw;
+        height: 100vh;
       }
-      div.link {
-        position: relative;
-        display: inline-block;
-        margin: 0.15em 4em;
-        text-decoration: underline;
-        color: blueviolet;
-        font-size: 16px;
-      }
-      div.link:hover {
-        color: #0055cc;
-        cursor: pointer;
-      }
-      div.link::before {
-        position: absolute;
-        display: block;
-        left: -1em;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        content: '';
-        width: 0.4em;
-        height: 0.4em;
-        background-color: #000;
-        border-radius: 50%;
+      #canvas {
+        width: 100vw;
       }
     </style>
   </head>
   <body>
-    <script>
-      const __TEST__ = true;
-      const global = window;
-    </script>
-    <canvas id="canvas" style="width: 100%"></canvas>
     <script type="module" src="./index.ts"></script>
   </body>
 </html>

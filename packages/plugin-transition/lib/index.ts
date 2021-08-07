@@ -1,3 +1,2 @@
-import Transition from './component';
-import TransitionSystem from './system';
-export {Transition, TransitionSystem};
+export { default as Transition } from './component';
+export { default as TransitionSystem } from './system';
