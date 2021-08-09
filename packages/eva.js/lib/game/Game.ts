@@ -57,9 +57,7 @@ const triggerStart = (obj: System | Component) => {
 const getAllGameObjects = game => {
   const mainSceneGameObjects = game?.scene?.gameObjects || [];
 
-  const gameObjectsArray = game?.multiScenes.map(
-    ({ gameObjects }) => gameObjects,
-  );
+  const gameObjectsArray = game?.multiScenes.map(({ gameObjects }) => gameObjects);
   let otherSceneGameObjects = [];
   for (const gameObjects of gameObjectsArray) {
     otherSceneGameObjects = [...otherSceneGameObjects, ...gameObjects];
@@ -74,10 +72,7 @@ const gameObjectLoop = (e, gameObjects = []) => {
         triggerStart(component);
         component.update && component.update(e);
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name} ${component.name} update error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name} ${component.name} update error`, e);
       }
     }
   }
@@ -86,10 +81,7 @@ const gameObjectLoop = (e, gameObjects = []) => {
       try {
         component.lateUpdate && component.lateUpdate(e);
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name} ${component.name} lateUpdate error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name} ${component.name} lateUpdate error`, e);
       }
     }
   }
@@ -101,10 +93,7 @@ const gameObjectResume = gameObjects => {
       try {
         component.onResume && component.onResume();
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name}, ${component.name}, onResume error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name}, ${component.name}, onResume error`, e);
       }
     }
   }
@@ -116,10 +105,7 @@ const gameObjectPause = gameObjects => {
       try {
         component.onPause && component.onPause();
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name}, ${component.name}, onResume error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name}, ${component.name}, onResume error`, e);
       }
     }
   }
@@ -145,12 +131,7 @@ class Game extends EventEmitter {
   /** Systems alled to this game */
   systems: System[] = [];
 
-  constructor({
-    systems,
-    frameRate = 60,
-    autoStart = true,
-    needScene = true,
-  }: GameParams = {}) {
+  constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
 
     this.ticker = new Ticker({ autoStart: false, frameRate });
@@ -172,8 +153,8 @@ class Game extends EventEmitter {
   }
 
   /**
-  * Get scene on this game
-  */
+   * Get scene on this game
+   */
   get scene() {
     return this._scene;
   }
@@ -195,10 +176,7 @@ class Game extends EventEmitter {
    * @typeParam T - system which extends base `System` class
    * @typeparam U - type of system class
    */
-  addSystem<T extends System, U extends SystemType>(
-    S: T | U,
-    obj?: any,
-  ): T | InstanceType<U> {
+  addSystem<T extends System, U extends SystemType>(S: T | U, obj?: any): T | InstanceType<U> {
     let system;
     if (S instanceof Function) {
       system = new S(obj);
@@ -375,11 +353,7 @@ class Game extends EventEmitter {
     this.multiScenes = null;
   }
 
-  loadScene({
-    scene,
-    mode = LOAD_SCENE_MODE.SINGLE,
-    params = {},
-  }: LoadSceneParams) {
+  loadScene({ scene, mode = LOAD_SCENE_MODE.SINGLE, params = {} }: LoadSceneParams) {
     if (!scene) {
       return;
     }

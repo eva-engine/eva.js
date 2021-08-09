@@ -55,11 +55,7 @@ class GameObject {
    * @readonly
    */
   get parent(): GameObject {
-    return (
-      this.transform &&
-      this.transform.parent &&
-      this.transform.parent.gameObject
-    );
+    return this.transform && this.transform.parent && this.transform.parent.gameObject;
   }
 
   /**
@@ -118,11 +114,7 @@ class GameObject {
    * @param gameObject - child gameobject
    */
   removeChild(gameObject: GameObject): GameObject {
-    if (
-      !(gameObject instanceof GameObject) ||
-      !gameObject.parent ||
-      gameObject.parent !== this
-    ) {
+    if (!(gameObject instanceof GameObject) || !gameObject.parent || gameObject.parent !== this) {
       return gameObject;
     }
 
@@ -139,10 +131,7 @@ class GameObject {
    */
   addComponent<T extends Component<ComponentParams>>(C: T): T;
   addComponent<T extends Component<ComponentParams>>(C: ComponentConstructor<T>, obj?: ComponentParams): T;
-  addComponent<T extends Component<ComponentParams>>(
-    C: T | ComponentConstructor<T>,
-    obj?: ComponentParams,
-  ): T {
+  addComponent<T extends Component<ComponentParams>>(C: T | ComponentConstructor<T>, obj?: ComponentParams): T {
     const componentName = getComponentName(C);
     if (this._componentCache[componentName]) return;
 
@@ -152,14 +141,10 @@ class GameObject {
     } else if (C instanceof Component) {
       component = C;
     } else {
-      throw new Error(
-        'addComponent recieve Component and Component Constructor',
-      );
+      throw new Error('addComponent recieve Component and Component Constructor');
     }
     if (component.gameObject) {
-      throw new Error(
-        `component has been added on gameObject ${component.gameObject.name}`,
-      );
+      throw new Error(`component has been added on gameObject ${component.gameObject.name}`);
     }
 
     component.gameObject = this;
@@ -185,9 +170,7 @@ class GameObject {
   removeComponent<T extends Component<ComponentParams>>(c: string): T;
   removeComponent<T extends Component<ComponentParams>>(c: T): T;
   removeComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
-  removeComponent<T extends Component<ComponentParams>>(
-    c: string | T | ComponentConstructor<T>,
-  ): T {
+  removeComponent<T extends Component<ComponentParams>>(c: string | T | ComponentConstructor<T>): T {
     let componentName: string;
     if (typeof c === 'string') {
       componentName = c;
@@ -198,7 +181,7 @@ class GameObject {
     }
 
     if (componentName === 'Transform') {
-      throw new Error('Transform can\'t be removed');
+      throw new Error("Transform can't be removed");
     }
 
     return this._removeComponent(componentName);
@@ -224,9 +207,7 @@ class GameObject {
    */
   getComponent<T extends Component<ComponentParams>>(c: ComponentConstructor<T>): T;
   getComponent<T extends Component>(c: string): T;
-  getComponent<T extends Component>(
-    c: string | ComponentConstructor<T>,
-  ): T {
+  getComponent<T extends Component>(c: string | ComponentConstructor<T>): T {
     let componentName: string;
     if (typeof c === 'string') {
       componentName = c;

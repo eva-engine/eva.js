@@ -1,16 +1,6 @@
-import {
-  decorators,
-  resource,
-  ComponentChanged,
-  OBSERVER_TYPE,
-} from '@eva/eva.js';
-import {
-  Renderer,
-  RendererManager,
-  ContainerManager,
-  RendererSystem,
-} from '@eva/plugin-renderer';
-import {Sprite as SpriteEngine, Graphics} from '@eva/renderer-adapter';
+import { decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { Renderer, RendererManager, ContainerManager, RendererSystem } from '@eva/plugin-renderer';
+import { Sprite as SpriteEngine, Graphics } from '@eva/renderer-adapter';
 import MaskComponent from './component';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
@@ -41,13 +31,13 @@ enum MASK_TYPE {
 }
 
 @decorators.componentObserver({
-  Mask: ['type', {prop: ['style'], deep: true}, 'resource', 'spriteName'],
+  Mask: ['type', { prop: ['style'], deep: true }, 'resource', 'spriteName'],
 })
 export default class Mask extends Renderer {
   static systemName = 'Mask';
   name: string = 'Mask';
-  changedCache: {[propName: number]: boolean} = {};
-  maskSpriteCache: {[propName: number]: SpriteEngine} = {};
+  changedCache: { [propName: number]: boolean } = {};
+  maskSpriteCache: { [propName: number]: SpriteEngine } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
@@ -107,9 +97,7 @@ export default class Mask extends Renderer {
         break;
     }
     if (!mask) {
-      throw new Error(
-        'no have mask instance, check your mask params: ' + component.type,
-      );
+      throw new Error('no have mask instance, check your mask params: ' + component.type);
     }
     const container = this.containerManager.getContainer(changed.gameObject.id);
     container.mask = mask;
@@ -118,9 +106,9 @@ export default class Mask extends Renderer {
   remove(changed: ComponentChanged) {
     const container = this.containerManager.getContainer(changed.gameObject.id);
     container.removeChild(container.mask);
-    container.mask.destroy({ children: true })
+    container.mask.destroy({ children: true });
     container.mask = null;
-    delete this.maskSpriteCache[changed.component.gameObject.id]
+    delete this.maskSpriteCache[changed.component.gameObject.id];
   }
   change(changed: ComponentChanged) {
     if (this.changedCache[changed.gameObject.id]) return;
@@ -175,18 +163,14 @@ export default class Mask extends Renderer {
     return sprite.sprite;
   }
   changeSpriteStyle(component: MaskComponent) {
-    const sprite = this.maskSpriteCache[
-      component.gameObject.id
-    ] as SpriteEngine;
+    const sprite = this.maskSpriteCache[component.gameObject.id] as SpriteEngine;
     sprite.sprite.width = component.style.width;
     sprite.sprite.height = component.style.height;
     sprite.sprite.position.x = component.style.x;
     sprite.sprite.position.y = component.style.y;
   }
   changeSprite(component: MaskComponent) {
-    const sprite = this.maskSpriteCache[
-      component.gameObject.id
-    ] as SpriteEngine;
+    const sprite = this.maskSpriteCache[component.gameObject.id] as SpriteEngine;
     this.setSprite(component, sprite);
   }
   async setSprite(component: MaskComponent, sprite) {

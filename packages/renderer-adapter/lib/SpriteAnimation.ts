@@ -1,8 +1,8 @@
-import {extras} from 'pixi.js';
+import { extras } from 'pixi.js';
 
 export default class SpriteAnimation {
   animatedSprite: extras.AnimatedSprite;
-  constructor({frames}) {
+  constructor({ frames }) {
     this.animatedSprite = new extras.AnimatedSprite(frames);
   }
   play() {

@@ -69,7 +69,7 @@ describe('resource management', () => {
     res.on(LOAD_EVENT.COMPLETE, () => {
       expect(checkResourceSpy).toHaveBeenCalledTimes(1);
       done();
-    })
+    });
     res.loadConfig([imageRes]);
   });
 
@@ -79,24 +79,24 @@ describe('resource management', () => {
   });
 
   it('preload without resource', done => {
-    res.on(LOAD_EVENT.COMPLETE, (loader) => {
+    res.on(LOAD_EVENT.COMPLETE, loader => {
       expect(loader.resourceTotal).toBe(0);
-      done()
-    })
+      done();
+    });
     res.preload();
   });
 
   it('preload with resources', done => {
     const progressSpy = jest.fn();
     res.on(LOAD_EVENT.PROGRESS, progressSpy);
-    res.on(LOAD_EVENT.COMPLETE, (loader) => {
+    res.on(LOAD_EVENT.COMPLETE, loader => {
       expect(progressSpy).toBeCalledTimes(2);
       expect(loader.resourceTotal).toBe(2);
       done();
-    })
+    });
     res.addResource([imageRes, imageRes2]);
     res.preload();
-  })
+  });
 
   /**
    * 连续触发两次 preload，会导致 resourceManager 的 progress 属性被覆盖
@@ -105,10 +105,7 @@ describe('resource management', () => {
     res.loadConfig([imageRes]);
     res.loadConfig([imageRes2]);
 
-    const [image, dragonBone] = await Promise.all([
-      res.getResource(imageRes.name),
-      res.getResource(imageRes2.name),
-    ]);
+    const [image, dragonBone] = await Promise.all([res.getResource(imageRes.name), res.getResource(imageRes2.name)]);
 
     expect(image).toMatchObject({});
     expect(dragonBone).toMatchObject({});
@@ -171,7 +168,7 @@ describe('resource management', () => {
     res.on(LOAD_EVENT.COMPLETE, () => {
       expect(imageInstanceCallback).toHaveBeenCalled();
       done();
-    })
+    });
     res.loadConfig([imageRes]);
   });
 
