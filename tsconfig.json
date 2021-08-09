@@ -3,7 +3,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": "dist/types",
-    "target": "es2016",
+    "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
