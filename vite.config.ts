@@ -1,5 +1,5 @@
-import { resolve } from "path";
-import { defineConfig } from "vite";
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   server: {
@@ -9,13 +9,15 @@ export default defineConfig({
   },
   publicDir: './public/',
   base: './',
-  root: './vite-test',
+  root: './examples',
   resolve: {
     alias: [
       {
         find: /@eva\/(.*)/,
-        replacement: resolve(__dirname, './packages/$1/lib')
-      }
-    ]
-  }
-})
+        replacement: (() => {
+          return resolve(__dirname, './packages/$1/lib');
+        })(),
+      },
+    ],
+  },
+});

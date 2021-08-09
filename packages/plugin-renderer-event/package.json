@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-event",
-  "version": "1.1.0-beta.2",
+  "version": "1.1.0",
   "description": "@eva/plugin-renderer-event",
   "main": "index.js",
   "module": "dist/plugin-renderer-event.esm.js",
@@ -18,8 +18,8 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/plugin-renderer": "1.1.0-beta.2",
-    "@eva/eva.js": "1.1.0-beta.2",
+    "@eva/plugin-renderer": "1.1.0",
+    "@eva/eva.js": "1.1.0",
     "pixi.js": "^4.8.7"
   }
 }

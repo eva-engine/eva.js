@@ -1,7 +1,7 @@
-const POSITION = 'absolute';
-const ZINDEX = 3;
+export const POSITION = 'absolute';
+export const ZINDEX = 3;
 
-enum A11yActivate {
+export enum A11yActivate {
   ENABLE = 0,
   DISABLE = 1,
   CHECK = 2,
@@ -10,7 +10,7 @@ enum A11yActivate {
 /**
  * 无障碍 DOM 的指针事件
  */
-enum PointerEvents {
+export enum PointerEvents {
   NONE = 'none', // 元素不会成为鼠标事件的target，会被穿透
   AUTO = 'auto', // 默认值正常
 }
@@ -18,7 +18,7 @@ enum PointerEvents {
 /**
  * 无障碍 DOM 层的样式
  */
-enum MaskBackground {
+export enum MaskBackground {
   DEBUG = 'rgba(255,0,0,0.5)',
   NONE = 'transparent',
 }
@@ -26,7 +26,7 @@ enum MaskBackground {
 /**
  * 无障碍 DOM 的类型
  */
-enum ElementType {
+export enum ElementType {
   BUTTON = 'button',
   DIV = 'div',
 }
@@ -52,12 +52,3 @@ export interface EventPosition {
   x: number;
   y: number;
 }
-
-export {
-  POSITION,
-  ZINDEX,
-  A11yActivate,
-  PointerEvents,
-  MaskBackground,
-  ElementType,
-};

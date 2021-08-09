@@ -1,4 +1,3 @@
 export type { ImgParams } from './component';
-import Img from './component';
-import ImgSystem from './system';
-export { Img, ImgSystem };
+export { default as Img } from './component';
+export { default as ImgSystem } from './system';
