@@ -153,7 +153,7 @@ class Sound extends Component<SoundParams> {
     this.state = 'loaded';
     this.buffer = buffer;
     this.duration = this.buffer.duration;
-    this.actionQueue.forEach((action) => action());
+    this.actionQueue.forEach(action => action());
     this.actionQueue.length = 0;
   }
 

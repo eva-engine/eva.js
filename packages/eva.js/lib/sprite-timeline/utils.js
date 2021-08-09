@@ -15,9 +15,9 @@ export function createNowTime(syncLocker = true) {
    */
 export function formatDelay(delay) {
   if (typeof delay === 'number') {
-    delay = {delay};
+    delay = { delay };
   } else if ('entropy' in delay) {
-    delay = {delay: delay.entropy, isEntropy: true};
+    delay = { delay: delay.entropy, isEntropy: true };
   }
   return delay;
 }

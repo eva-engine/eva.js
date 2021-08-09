@@ -1,4 +1,4 @@
-import {Texture as PIXITexture, Sprite as PIXISprite} from 'pixi.js';
+import { Texture as PIXITexture, Sprite as PIXISprite } from 'pixi.js';
 
 export default class Sprite {
   _image: HTMLImageElement | PIXITexture = null;

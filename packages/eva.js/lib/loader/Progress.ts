@@ -29,8 +29,7 @@ export default class Progress extends EE {
 
   onProgress(param: EventParam) {
     this.resourceLoadedCount++;
-    this.progress =
-      Math.floor((this.resourceLoadedCount / this.resourceTotal) * 100) / 100;
+    this.progress = Math.floor((this.resourceLoadedCount / this.resourceTotal) * 100) / 100;
     if (param.success) {
       this.resource.emit(LOAD_EVENT.LOADED, this, param);
     } else {

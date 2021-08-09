@@ -1,6 +1,6 @@
-import {Texture} from 'pixi.js';
+import { Texture } from 'pixi.js';
 
-let texCache: {[name: string]: {tex: Texture; count: number}} = {};
+let texCache: { [name: string]: { tex: Texture; count: number } } = {};
 
 function cacheImage(data: any) {
   const oldImg = data.image;

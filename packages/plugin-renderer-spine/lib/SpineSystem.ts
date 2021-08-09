@@ -1,14 +1,9 @@
-import {DisplayObject} from 'pixi.js';
-import {decorators, ComponentChanged, OBSERVER_TYPE} from '@eva/eva.js';
-import {
-  Renderer,
-  RendererSystem,
-  RendererManager,
-  ContainerManager,
-} from '@eva/plugin-renderer';
+import { DisplayObject } from 'pixi.js';
+import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import Spine from './Spine';
 import pixispine from './pixi-spine.js';
-import getSpineData, {releaseSpineData} from './SpineData';
+import getSpineData, { releaseSpineData } from './SpineData';
 const MaxRetryCount = 20;
 
 @decorators.componentObserver({
@@ -102,9 +97,7 @@ export default class SpineSystem extends Renderer {
       return;
     }
     this.remove(changed);
-    const container = this.renderSystem.containerManager.getContainer(
-      changed.gameObject.id,
-    );
+    const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
     if (!container) {
       // console.warn('添加spine的container不存在');
       return;
@@ -129,25 +122,25 @@ export default class SpineSystem extends Renderer {
       }
     }
     // @ts-ignore
-    component.emit('loaded', {resource: component.resource});
+    component.emit('loaded', { resource: component.resource });
     armature.state.addListener({
       // @ts-ignore
       start: (track, event) => {
-        component.emit('start', {track, name: track.animation.name});
+        component.emit('start', { track, name: track.animation.name });
       },
       // @ts-ignore
       complete: (track, event) => {
-        component.emit('complete', {track, name: track.animation.name});
+        component.emit('complete', { track, name: track.animation.name });
       },
       // @ts-ignore
       interrupt: (track, event) => {
-        component.emit('interrupt', {track, name: track.animation.name});
+        component.emit('interrupt', { track, name: track.animation.name });
       },
       end: (
         track, // @ts-ignore
         event,
       ) => {
-        component.emit('end', {track, name: track.animation.name});
+        component.emit('end', { track, name: track.animation.name });
       },
       event: (track, event) => {
         // @ts-ignore
@@ -164,9 +157,7 @@ export default class SpineSystem extends Renderer {
     clearTimeout(component.addHandler);
     const armature = this.armatures[changed.gameObject.id];
 
-    const container = this.renderSystem.containerManager.getContainer(
-      changed.gameObject.id,
-    );
+    const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
     if (container && armature) {
       container.removeChild(armature);
     } else {
@@ -174,7 +165,7 @@ export default class SpineSystem extends Renderer {
     }
 
     if (component.armature) {
-      component.armature.destroy({children: true});
+      component.armature.destroy({ children: true });
 
       if (component.usingResource) {
         releaseSpineData(component.usingResource);

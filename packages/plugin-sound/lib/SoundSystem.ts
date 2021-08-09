@@ -1,10 +1,4 @@
-import {
-  System,
-  decorators,
-  ComponentChanged,
-  OBSERVER_TYPE,
-  resource,
-} from '@eva/eva.js';
+import { System, decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 import SoundComponent from './Sound';
 
 interface SoundSystemParams {
@@ -74,7 +68,7 @@ class SoundSystem extends System {
    */
   resumeAll() {
     const handleResume = () => {
-      this.pausedComponents.forEach((component) => {
+      this.pausedComponents.forEach(component => {
         component.play();
       });
       // 清理之前缓存的暂停列表
@@ -87,7 +81,7 @@ class SoundSystem extends System {
    * 暂停所有正在播放的音频
    */
   pauseAll() {
-    this.components.forEach((component) => {
+    this.components.forEach(component => {
       if (component.playing) {
         this.pausedComponents.push(component);
         component.pause();
@@ -100,7 +94,7 @@ class SoundSystem extends System {
    * 停止所有正在播放的音频
    */
   stopAll() {
-    this.components.forEach((component) => {
+    this.components.forEach(component => {
       if (component.playing) {
         component.stop();
       }
@@ -155,7 +149,7 @@ class SoundSystem extends System {
    * Called while the system be destroyed.
    */
   onDestroy() {
-    this.components.forEach((component) => {
+    this.components.forEach(component => {
       component.onDestroy();
     });
     this.components = [];
@@ -178,8 +172,7 @@ class SoundSystem extends System {
 
   private setupAudioContext() {
     try {
-      const AudioContext =
-        window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       this.ctx = new AudioContext();
     } catch (error) {
       console.error(error);
@@ -192,13 +185,8 @@ class SoundSystem extends System {
       return;
     }
     this.gainNode =
-      typeof this.ctx.createGain === 'undefined'
-        ? (this.ctx as any).createGainNode()
-        : this.ctx.createGain();
-    this.gainNode.gain.setValueAtTime(
-      this.muted ? 0 : this.volume,
-      this.ctx.currentTime
-    );
+      typeof this.ctx.createGain === 'undefined' ? (this.ctx as any).createGainNode() : this.ctx.createGain();
+    this.gainNode.gain.setValueAtTime(this.muted ? 0 : this.volume, this.ctx.currentTime);
     this.gainNode.connect(this.ctx.destination);
     this.unlockAudio();
   }
@@ -232,10 +220,7 @@ class SoundSystem extends System {
 
       const audio = await resource.getResource(config.resource);
       if (!this.audioBufferCache[audio.name]) {
-        this.audioBufferCache[audio.name] = await this.decodeAudioData(
-          audio.data.audio,
-          audio.name,
-        );
+        this.audioBufferCache[audio.name] = await this.decodeAudioData(audio.data.audio, audio.name);
       }
       if (this.audioBufferCache[audio.name]) {
         component.systemContext = this.ctx;
@@ -262,8 +247,7 @@ class SoundSystem extends System {
         if (this.decodeAudioPromiseMap[name]) {
           delete this.decodeAudioPromiseMap[name];
         }
-        reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0
-          }`));
+        reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
       };
       const success = (decodedData: AudioBuffer) => {
         if (this.decodeAudioPromiseMap[name]) {

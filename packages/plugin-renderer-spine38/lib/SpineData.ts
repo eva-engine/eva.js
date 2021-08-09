@@ -1,11 +1,6 @@
-import {resource} from '@eva/eva.js';
+import { resource } from '@eva/eva.js';
 import pixispine from './pixi-spine.js';
-import {
-  cleanTextures,
-  getTexture,
-  releaseTexture,
-  retainTexture,
-} from './TexCache';
+import { cleanTextures, getTexture, releaseTexture, retainTexture } from './TexCache';
 let dataMap: any = {};
 
 function createSpineData(name, imgName, data, scale) {
@@ -22,13 +17,9 @@ function createSpineData(name, imgName, data, scale) {
     spineAtlas => {
       if (spineAtlas) {
         // @ts-ignore
-        const attachmentLoader = new pixispine.core.AtlasAttachmentLoader(
-          spineAtlas,
-        );
+        const attachmentLoader = new pixispine.core.AtlasAttachmentLoader(spineAtlas);
         // @ts-ignore
-        const spineJsonParser = new pixispine.core.SkeletonJson(
-          attachmentLoader,
-        );
+        const spineJsonParser = new pixispine.core.SkeletonJson(attachmentLoader);
         if (scale) {
           spineJsonParser.scale = scale;
         }
@@ -36,7 +27,7 @@ function createSpineData(name, imgName, data, scale) {
       }
     },
   );
-  const obj = {spineData, ref: 0, imgName: imgName};
+  const obj = { spineData, ref: 0, imgName: imgName };
   dataMap[name] = obj;
   return obj;
 }

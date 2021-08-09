@@ -1,18 +1,6 @@
 import { Texture, ticker } from 'pixi.js';
-import {
-  decorators,
-  resource,
-  ComponentChanged,
-  RESOURCE_TYPE,
-  OBSERVER_TYPE,
-  Component
-} from '@eva/eva.js';
-import {
-  Renderer,
-  RendererSystem,
-  RendererManager,
-  ContainerManager,
-} from '@eva/plugin-renderer';
+import { decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSERVER_TYPE, Component } from '@eva/eva.js';
+import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import DragonBoneEngine from './engine';
 import DragonBoneComponent from './component';
 import dragonBones from './db';
@@ -38,7 +26,7 @@ resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data, name }) => {
 resource.registerDestroy(RESOURCE_TYPE.DRAGONBONE, ({ name }) => {
   factory.removeDragonBonesData(name);
   factory.removeTextureAtlasData(name);
-})
+});
 
 @decorators.componentObserver({
   DragonBone: ['armatureName'],
@@ -55,15 +43,10 @@ export default class DragonBone extends Renderer {
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
-    ticker.shared.add(
-      dragonBones.PixiFactory._clockHandler,
-      dragonBones.PixiFactory,
-    );
+    ticker.shared.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
   }
   async componentChanged(changed: ComponentChanged) {
-    this.autoPlay[
-      changed.gameObject.id
-    ] = (changed.component as DragonBoneComponent).autoPlay;
+    this.autoPlay[changed.gameObject.id] = (changed.component as DragonBoneComponent).autoPlay;
     if (changed.componentName === 'DragonBone') {
       if (changed.type === OBSERVER_TYPE.ADD) {
         this.add(changed);
@@ -84,15 +67,13 @@ export default class DragonBone extends Renderer {
     await resource.getResource(component.resource);
     if (this.isRemovedMap.get(component)) {
       this.isRemovedMap.delete(component);
-      return
+      return;
     }
     const armature = new DragonBoneEngine({
       armatureName: component.armatureName,
     });
     this.armatures[changed.gameObject.id] = armature;
-    this.renderSystem.containerManager
-      .getContainer(changed.gameObject.id)
-      .addChildAt(armature.armature, 0);
+    this.renderSystem.containerManager.getContainer(changed.gameObject.id).addChildAt(armature.armature, 0);
     component.armature = armature;
     for (const key in events) {
       armature.armature.on(events[key], e => {
@@ -114,11 +95,8 @@ export default class DragonBone extends Renderer {
       this.isRemovedMap.set(changed.component, true);
       return;
     }
-    this.autoPlay[changed.gameObject.id] =
-      armature.armature.animation.isPlaying;
-    this.renderSystem.containerManager
-      .getContainer(changed.gameObject.id)
-      .removeChild(armature.armature);
+    this.autoPlay[changed.gameObject.id] = armature.armature.animation.isPlaying;
+    this.renderSystem.containerManager.getContainer(changed.gameObject.id).removeChild(armature.armature);
     armature.armature.removeAllListeners();
     armature.armature.destroy({ children: true });
     const component = changed.component as DragonBoneComponent;

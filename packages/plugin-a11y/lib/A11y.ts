@@ -1,5 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
-import {uuid} from './utils';
+import { Component, decorators } from '@eva/eva.js';
+import { uuid } from './utils';
 
 export interface A11yParams {
   hint: string;
@@ -82,15 +82,7 @@ export default class A11y extends Component<A11yParams> {
   constructor(param: A11yParams) {
     super();
     Object.assign(this, param);
-    const {
-      hint = '',
-      event,
-      delay = 0,
-      attr = {},
-      role = '',
-      props = {},
-      state = {},
-    } = param;
+    const { hint = '', event, delay = 0, attr = {}, role = '', props = {}, state = {} } = param;
     this.hint = hint;
     this.event = event;
     this.delay = delay;

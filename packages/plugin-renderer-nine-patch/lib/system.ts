@@ -1,36 +1,17 @@
-import {
-  GameObject,
-  decorators,
-  resource,
-  ComponentChanged,
-  RESOURCE_TYPE,
-  OBSERVER_TYPE,
-} from '@eva/eva.js';
-import {
-  RendererManager,
-  ContainerManager,
-  RendererSystem,
-  Renderer,
-} from '@eva/plugin-renderer';
-import {NinePatch as NinePatchSprite} from '@eva/renderer-adapter';
+import { GameObject, decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSERVER_TYPE } from '@eva/eva.js';
+import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
+import { NinePatch as NinePatchSprite } from '@eva/renderer-adapter';
 import NinePatchComponent from './component';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
 
 @decorators.componentObserver({
-  NinePatch: [
-    'resource',
-    'spriteName',
-    'leftWidth',
-    'topHeight',
-    'rightWidth',
-    'bottomHeight',
-  ],
+  NinePatch: ['resource', 'spriteName', 'leftWidth', 'topHeight', 'rightWidth', 'bottomHeight'],
 })
 export default class NinePatch extends Renderer {
   static systemName: string = 'NinePatch';
   name: string = 'NinePatch';
-  ninePatch: {[propName: number]: any} = {};
+  ninePatch: { [propName: number]: any } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
@@ -39,7 +20,7 @@ export default class NinePatch extends Renderer {
     this.renderSystem.rendererManager.register(this);
   }
   rendererUpdate(gameObject: GameObject) {
-    const {width, height} = gameObject.transform.size;
+    const { width, height } = gameObject.transform.size;
     if (this.ninePatch[gameObject.id]) {
       this.ninePatch[gameObject.id].width = width;
       this.ninePatch[gameObject.id].height = height;
@@ -59,11 +40,9 @@ export default class NinePatch extends Renderer {
   }
   async add(changed) {
     const component = changed.component as NinePatchComponent;
-    const {type, data} = await resource.getResource(component.resource);
+    const { type, data } = await resource.getResource(component.resource);
     if (!data) {
-      throw new Error(
-        `GameObject:${changed.gameObject.name}'s NinePatch resource load error`,
-      );
+      throw new Error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
     }
     let img: any;
     if (type === RESOURCE_TYPE.SPRITE) {
@@ -71,14 +50,8 @@ export default class NinePatch extends Renderer {
     } else {
       img = data.image;
     }
-    const {leftWidth, topHeight, rightWidth, bottomHeight} = component;
-    const np = new NinePatchSprite(
-      img,
-      leftWidth,
-      topHeight,
-      rightWidth,
-      bottomHeight,
-    );
+    const { leftWidth, topHeight, rightWidth, bottomHeight } = component;
+    const np = new NinePatchSprite(img, leftWidth, topHeight, rightWidth, bottomHeight);
 
     this.ninePatch[changed.gameObject.id] = np;
     component.ninePatch = np;
@@ -90,9 +63,7 @@ export default class NinePatch extends Renderer {
   remove(changed) {
     const sprite = this.ninePatch[changed.gameObject.id];
     if (sprite) {
-      this.containerManager
-        .getContainer(changed.gameObject.id)
-        .removeChild(sprite);
+      this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite);
       delete this.ninePatch[changed.gameObject.id];
       sprite.destroy({ children: true });
     }

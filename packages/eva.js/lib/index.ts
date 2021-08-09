@@ -1,8 +1,5 @@
 import Component, { UpdateParams as _UpdateParams } from './core/Component';
-import {
-  ObserverType,
-  PureObserverInfo as _PureObserverInfo,
-} from './core/observer';
+import { ObserverType, PureObserverInfo as _PureObserverInfo } from './core/observer';
 import GameObject from './core/GameObject';
 import System from './core/System';
 import Transform, { TransformParams as _TransformParams } from './core/Transform';

@@ -1,17 +1,5 @@
-import {
-  GameObject,
-  decorators,
-  resource,
-  ComponentChanged,
-  RESOURCE_TYPE,
-  OBSERVER_TYPE,
-} from '@eva/eva.js';
-import {
-  RendererManager,
-  ContainerManager,
-  RendererSystem,
-  Renderer,
-} from '@eva/plugin-renderer';
+import { GameObject, decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSERVER_TYPE } from '@eva/eva.js';
+import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { Sprite } from '@eva/renderer-adapter';
 import { Texture } from 'pixi.js';
 import ImgComponent from './component';
@@ -58,30 +46,22 @@ export default class Img extends Renderer {
         const sprite = new Sprite(null);
         resource.getResource(component.resource).then(({ instance }) => {
           if (!instance) {
-            console.error(
-              `GameObject:${changed.gameObject.name}'s Img resource load error`,
-            );
+            console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
           }
           sprite.image = instance;
         });
         this.imgs[changed.gameObject.id] = sprite;
-        this.containerManager
-          .getContainer(changed.gameObject.id)
-          .addChildAt(sprite.sprite, 0);
+        this.containerManager.getContainer(changed.gameObject.id).addChildAt(sprite.sprite, 0);
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
         const { instance } = await resource.getResource(component.resource);
         if (!instance) {
-          console.error(
-            `GameObject:${changed.gameObject.name}'s Img resource load error`,
-          );
+          console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
         }
         this.imgs[changed.gameObject.id].image = instance;
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         const sprite = this.imgs[changed.gameObject.id];
-        this.containerManager
-          .getContainer(changed.gameObject.id)
-          .removeChild(sprite.sprite);
-        sprite.sprite.destroy({ children: true })
+        this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.sprite);
+        sprite.sprite.destroy({ children: true });
         delete this.imgs[changed.gameObject.id];
       }
     }

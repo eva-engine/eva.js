@@ -42,7 +42,7 @@ const main = function () {
     /******/
     /******/ /******/ __webpack_require__.d = function (exports, name, getter) {
       /******/ if (!__webpack_require__.o(exports, name)) {
-        /******/ Object.defineProperty(exports, name, {enumerable: true, get: getter});
+        /******/ Object.defineProperty(exports, name, { enumerable: true, get: getter });
         /******/
       }
       /******/
@@ -50,10 +50,10 @@ const main = function () {
     /******/
     /******/ /******/ __webpack_require__.r = function (exports) {
       /******/ if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-        /******/ Object.defineProperty(exports, Symbol.toStringTag, {value: 'Module'});
+        /******/ Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
         /******/
       }
-      /******/ Object.defineProperty(exports, '__esModule', {value: true});
+      /******/ Object.defineProperty(exports, '__esModule', { value: true });
       /******/
     }; // create a fake namespace object // mode & 1: value is a module id, require it // mode & 2: merge all properties of value into the ns // mode & 4: return value when already ns object // mode & 8|1: behave like require
     /******/
@@ -63,7 +63,7 @@ const main = function () {
       /******/ if (mode & 4 && typeof value === 'object' && value && value.__esModule) return value;
       /******/ var ns = Object.create(null);
       /******/ __webpack_require__.r(ns);
-      /******/ Object.defineProperty(ns, 'default', {enumerable: true, value: value});
+      /******/ Object.defineProperty(ns, 'default', { enumerable: true, value: value });
       /******/ if (mode & 2 && typeof value != 'string')
         for (var key in value)
           __webpack_require__.d(
@@ -655,8 +655,8 @@ const main = function () {
            */
           Bounds.create = function (vertices) {
             var bounds = {
-              min: {x: 0, y: 0},
-              max: {x: 0, y: 0},
+              min: { x: 0, y: 0 },
+              max: { x: 0, y: 0 },
             };
 
             if (vertices) Bounds.update(bounds, vertices);
@@ -788,7 +788,7 @@ const main = function () {
            * @return {vector} A new vector
            */
           Vector.create = function (x, y) {
-            return {x: x || 0, y: y || 0};
+            return { x: x || 0, y: y || 0 };
           };
 
           /**
@@ -798,7 +798,7 @@ const main = function () {
            * @return {vector} A new cloned vector
            */
           Vector.clone = function (vector) {
-            return {x: vector.x, y: vector.y};
+            return { x: vector.x, y: vector.y };
           };
 
           /**
@@ -866,8 +866,8 @@ const main = function () {
            */
           Vector.normalise = function (vector) {
             var magnitude = Vector.magnitude(vector);
-            if (magnitude === 0) return {x: 0, y: 0};
-            return {x: vector.x / magnitude, y: vector.y / magnitude};
+            if (magnitude === 0) return { x: 0, y: 0 };
+            return { x: vector.x / magnitude, y: vector.y / magnitude };
           };
 
           /**
@@ -944,7 +944,7 @@ const main = function () {
            * @return {vector} A new vector multiplied by scalar
            */
           Vector.mult = function (vector, scalar) {
-            return {x: vector.x * scalar, y: vector.y * scalar};
+            return { x: vector.x * scalar, y: vector.y * scalar };
           };
 
           /**
@@ -955,7 +955,7 @@ const main = function () {
            * @return {vector} A new vector divided by scalar
            */
           Vector.div = function (vector, scalar) {
-            return {x: vector.x / scalar, y: vector.y / scalar};
+            return { x: vector.x / scalar, y: vector.y / scalar };
           };
 
           /**
@@ -967,7 +967,7 @@ const main = function () {
            */
           Vector.perp = function (vector, negate) {
             negate = negate === true ? -1 : 1;
-            return {x: negate * -vector.y, y: negate * vector.x};
+            return { x: negate * -vector.y, y: negate * vector.x };
           };
 
           /**
@@ -977,7 +977,7 @@ const main = function () {
            * @return {vector} The negated vector
            */
           Vector.neg = function (vector) {
-            return {x: -vector.x, y: -vector.y};
+            return { x: -vector.x, y: -vector.y };
           };
 
           /**
@@ -1079,7 +1079,7 @@ const main = function () {
               points = [];
 
             path.replace(pathPattern, function (match, x, y) {
-              points.push({x: parseFloat(x), y: parseFloat(y)});
+              points.push({ x: parseFloat(x), y: parseFloat(y) });
             });
 
             return Vertices.create(points, body);
@@ -1093,7 +1093,7 @@ const main = function () {
            */
           Vertices.centre = function (vertices) {
             var area = Vertices.area(vertices, true),
-              centre = {x: 0, y: 0},
+              centre = { x: 0, y: 0 },
               cross,
               temp,
               j;
@@ -1115,7 +1115,7 @@ const main = function () {
            * @return {vector} The average point
            */
           Vertices.mean = function (vertices) {
-            var average = {x: 0, y: 0};
+            var average = { x: 0, y: 0 };
 
             for (var i = 0; i < vertices.length; i++) {
               average.x += vertices[i].x;
@@ -1654,7 +1654,7 @@ const main = function () {
           Composite.add = function (composite, object) {
             var objects = [].concat(object);
 
-            Events.trigger(composite, 'beforeAdd', {object: object});
+            Events.trigger(composite, 'beforeAdd', { object: object });
 
             for (var i = 0; i < objects.length; i++) {
               var obj = objects[i];
@@ -1681,7 +1681,7 @@ const main = function () {
               }
             }
 
-            Events.trigger(composite, 'afterAdd', {object: object});
+            Events.trigger(composite, 'afterAdd', { object: object });
 
             return composite;
           };
@@ -1699,7 +1699,7 @@ const main = function () {
           Composite.remove = function (composite, object, deep) {
             var objects = [].concat(object);
 
-            Events.trigger(composite, 'beforeRemove', {object: object});
+            Events.trigger(composite, 'beforeRemove', { object: object });
 
             for (var i = 0; i < objects.length; i++) {
               var obj = objects[i];
@@ -1720,7 +1720,7 @@ const main = function () {
               }
             }
 
-            Events.trigger(composite, 'afterRemove', {object: object});
+            Events.trigger(composite, 'afterRemove', { object: object });
 
             return composite;
           };
@@ -2306,15 +2306,15 @@ const main = function () {
               plugin: {},
               angle: 0,
               vertices: Vertices.fromPath('L 0 0 L 40 0 L 40 40 L 0 40'),
-              position: {x: 0, y: 0},
-              force: {x: 0, y: 0},
+              position: { x: 0, y: 0 },
+              force: { x: 0, y: 0 },
               torque: 0,
-              positionImpulse: {x: 0, y: 0},
-              constraintImpulse: {x: 0, y: 0, angle: 0},
+              positionImpulse: { x: 0, y: 0 },
+              constraintImpulse: { x: 0, y: 0, angle: 0 },
               totalContacts: 0,
               speed: 0,
               angularSpeed: 0,
-              velocity: {x: 0, y: 0},
+              velocity: { x: 0, y: 0 },
               angularVelocity: 0,
               isSensor: false,
               isStatic: false,
@@ -2841,9 +2841,9 @@ const main = function () {
               Body.setMass(part, body.density * part.area);
 
               // update inertia (requires vertices to be at origin)
-              Vertices.translate(part.vertices, {x: -part.position.x, y: -part.position.y});
+              Vertices.translate(part.vertices, { x: -part.position.x, y: -part.position.y });
               Body.setInertia(part, Body._inertiaScale * Vertices.inertia(part.vertices, part.mass));
-              Vertices.translate(part.vertices, {x: part.position.x, y: part.position.y});
+              Vertices.translate(part.vertices, { x: part.position.x, y: part.position.y });
 
               if (i > 0) {
                 totalArea += part.area;
@@ -2948,7 +2948,7 @@ const main = function () {
           Body.applyForce = function (body, position, force) {
             body.force.x += force.x;
             body.force.y += force.y;
-            var offset = {x: position.x - body.position.x, y: position.y - body.position.y};
+            var offset = { x: position.x - body.position.x, y: position.y - body.position.y };
             body.torque += offset.x * force.y - offset.y * force.x;
           };
 
@@ -2968,7 +2968,7 @@ const main = function () {
               mass: 0,
               area: 0,
               inertia: 0,
-              centre: {x: 0, y: 0},
+              centre: { x: 0, y: 0 },
             };
 
             // sum the properties of all compound parts of the parent body
@@ -3665,8 +3665,8 @@ const main = function () {
             var constraint = options;
 
             // if bodies defined but no points, use body centre
-            if (constraint.bodyA && !constraint.pointA) constraint.pointA = {x: 0, y: 0};
-            if (constraint.bodyB && !constraint.pointB) constraint.pointB = {x: 0, y: 0};
+            if (constraint.bodyA && !constraint.pointA) constraint.pointA = { x: 0, y: 0 };
+            if (constraint.bodyB && !constraint.pointB) constraint.pointB = { x: 0, y: 0 };
 
             // calculate static length using initial world space points
             var initialPointA = constraint.bodyA
@@ -4435,8 +4435,8 @@ const main = function () {
 
             // find bounds of all objects
             var bounds = {
-              min: {x: Infinity, y: Infinity},
-              max: {x: -Infinity, y: -Infinity},
+              min: { x: Infinity, y: Infinity },
+              max: { x: -Infinity, y: -Infinity },
             };
 
             for (var i = 0; i < objects.length; i += 1) {
@@ -6253,7 +6253,7 @@ const main = function () {
               // reuse collision object
               collision = previousCollision;
             } else {
-              collision = {collided: false, bodyA: bodyA, bodyB: bodyB};
+              collision = { collided: false, bodyA: bodyA, bodyB: bodyB };
             }
 
             if (previousCollision && canReusePrevCol) {
@@ -6366,7 +6366,7 @@ const main = function () {
           SAT._overlapAxes = function (verticesA, verticesB, axes) {
             var projectionA = Vector._temp[0],
               projectionB = Vector._temp[1],
-              result = {overlap: Number.MAX_VALUE},
+              result = { overlap: Number.MAX_VALUE },
               overlap,
               axis;
 
@@ -6503,12 +6503,12 @@ const main = function () {
             }
 
             mouse.element = element || document.body;
-            mouse.absolute = {x: 0, y: 0};
-            mouse.position = {x: 0, y: 0};
-            mouse.mousedownPosition = {x: 0, y: 0};
-            mouse.mouseupPosition = {x: 0, y: 0};
-            mouse.offset = {x: 0, y: 0};
-            mouse.scale = {x: 1, y: 1};
+            mouse.absolute = { x: 0, y: 0 };
+            mouse.position = { x: 0, y: 0 };
+            mouse.mousedownPosition = { x: 0, y: 0 };
+            mouse.mouseupPosition = { x: 0, y: 0 };
+            mouse.offset = { x: 0, y: 0 };
+            mouse.scale = { x: 1, y: 1 };
             mouse.wheelDelta = 0;
             mouse.button = -1;
             mouse.pixelRatio = parseInt(mouse.element.getAttribute('data-pixel-ratio'), 10) || 1;
@@ -6786,7 +6786,7 @@ const main = function () {
 
             var rectangle = {
               label: 'Rectangle Body',
-              position: {x: x, y: y},
+              position: { x: x, y: y },
               vertices: Vertices.fromPath('L 0 0 L ' + width + ' 0 L ' + width + ' ' + height + ' L 0 ' + height),
             };
 
@@ -6837,7 +6837,7 @@ const main = function () {
 
             var trapezoid = {
               label: 'Trapezoid Body',
-              position: {x: x, y: y},
+              position: { x: x, y: y },
               vertices: Vertices.fromPath(verticesPath),
             };
 
@@ -6917,7 +6917,7 @@ const main = function () {
 
             var polygon = {
               label: 'Polygon Body',
-              position: {x: x, y: y},
+              position: { x: x, y: y },
               vertices: Vertices.fromPath(path),
             };
 
@@ -7006,7 +7006,7 @@ const main = function () {
                 }
 
                 parts.push({
-                  position: {x: x, y: y},
+                  position: { x: x, y: y },
                   vertices: vertices,
                 });
               } else {
@@ -7086,8 +7086,8 @@ const main = function () {
 
             if (parts.length > 1) {
               // create the parent body to be returned, that contains generated compound parts
-              body = Body.create(Common.extend({parts: parts.slice(0)}, options));
-              Body.setPosition(body, {x: x, y: y});
+              body = Body.create(Common.extend({ parts: parts.slice(0) }, options));
+              Body.setPosition(body, { x: x, y: y });
 
               return body;
             } else {
@@ -7565,8 +7565,8 @@ const main = function () {
                 scale: 0.001,
               },
               bounds: {
-                min: {x: -Infinity, y: -Infinity},
-                max: {x: Infinity, y: Infinity},
+                min: { x: -Infinity, y: -Infinity },
+                max: { x: Infinity, y: Infinity },
               },
             };
 
@@ -8289,7 +8289,7 @@ const main = function () {
             engine.world = options.world || World.create(engine.world);
             engine.pairs = Pairs.create();
             engine.broadphase = engine.broadphase.controller.create(engine.broadphase);
-            engine.metrics = engine.metrics || {extended: false};
+            engine.metrics = engine.metrics || { extended: false };
 
             // @if DEBUG
             engine.metrics = Metrics.create(engine.metrics);
@@ -8390,7 +8390,7 @@ const main = function () {
 
             // trigger collision events
             if (pairs.collisionStart.length > 0)
-              Events.trigger(engine, 'collisionStart', {pairs: pairs.collisionStart});
+              Events.trigger(engine, 'collisionStart', { pairs: pairs.collisionStart });
 
             // iteratively resolve position between collisions
             Resolver.preSolvePosition(pairs.list);
@@ -8414,9 +8414,9 @@ const main = function () {
 
             // trigger collision events
             if (pairs.collisionActive.length > 0)
-              Events.trigger(engine, 'collisionActive', {pairs: pairs.collisionActive});
+              Events.trigger(engine, 'collisionActive', { pairs: pairs.collisionActive });
 
-            if (pairs.collisionEnd.length > 0) Events.trigger(engine, 'collisionEnd', {pairs: pairs.collisionEnd});
+            if (pairs.collisionEnd.length > 0) Events.trigger(engine, 'collisionEnd', { pairs: pairs.collisionEnd });
 
             // @if DEBUG
             // update metrics log
@@ -9015,7 +9015,7 @@ const main = function () {
               rayLength = Vector.magnitude(Vector.sub(startPoint, endPoint)),
               rayX = (endPoint.x + startPoint.x) * 0.5,
               rayY = (endPoint.y + startPoint.y) * 0.5,
-              ray = Bodies.rectangle(rayX, rayY, rayLength, rayWidth, {angle: rayAngle}),
+              ray = Bodies.rectangle(rayX, rayY, rayLength, rayWidth, { angle: rayAngle }),
               collisions = Query.collides(ray, bodies);
 
             for (var i = 0; i < collisions.length; i += 1) {
@@ -9142,7 +9142,7 @@ const main = function () {
             var constraint = Constraint.create({
               label: 'Mouse Constraint',
               pointA: mouse.position,
-              pointB: {x: 0, y: 0},
+              pointB: { x: 0, y: 0 },
               length: 0.01,
               stiffness: 0.1,
               angularStiffness: 1,
@@ -9208,7 +9208,7 @@ const main = function () {
                         constraint.angleB = body.angle;
 
                         Sleeping.set(body, false);
-                        Events.trigger(mouseConstraint, 'startdrag', {mouse: mouse, body: body});
+                        Events.trigger(mouseConstraint, 'startdrag', { mouse: mouse, body: body });
 
                         break;
                       }
@@ -9223,7 +9223,7 @@ const main = function () {
               constraint.bodyB = mouseConstraint.body = null;
               constraint.pointB = null;
 
-              if (body) Events.trigger(mouseConstraint, 'enddrag', {mouse: mouse, body: body});
+              if (body) Events.trigger(mouseConstraint, 'enddrag', { mouse: mouse, body: body });
             }
           };
 
@@ -9237,11 +9237,11 @@ const main = function () {
             var mouse = mouseConstraint.mouse,
               mouseEvents = mouse.sourceEvents;
 
-            if (mouseEvents.mousemove) Events.trigger(mouseConstraint, 'mousemove', {mouse: mouse});
+            if (mouseEvents.mousemove) Events.trigger(mouseConstraint, 'mousemove', { mouse: mouse });
 
-            if (mouseEvents.mousedown) Events.trigger(mouseConstraint, 'mousedown', {mouse: mouse});
+            if (mouseEvents.mousedown) Events.trigger(mouseConstraint, 'mousedown', { mouse: mouse });
 
-            if (mouseEvents.mouseup) Events.trigger(mouseConstraint, 'mouseup', {mouse: mouse});
+            if (mouseEvents.mouseup) Events.trigger(mouseConstraint, 'mouseup', { mouse: mouse });
 
             // reset the mouse state ready for the next step
             Mouse.clearSourceEvents(mouse);
@@ -9729,7 +9729,7 @@ const main = function () {
            * @return {composite} A new composite containing objects created in the callback
            */
           Composites.stack = function (xx, yy, columns, rows, columnGap, rowGap, callback) {
-            var stack = Composite.create({label: 'Stack'}),
+            var stack = Composite.create({ label: 'Stack' }),
               x = xx,
               y = yy,
               lastBody,
@@ -9747,7 +9747,7 @@ const main = function () {
 
                   if (bodyHeight > maxHeight) maxHeight = bodyHeight;
 
-                  Body.translate(body, {x: bodyWidth * 0.5, y: bodyHeight * 0.5});
+                  Body.translate(body, { x: bodyWidth * 0.5, y: bodyHeight * 0.5 });
 
                   x = body.bounds.max.x + columnGap;
 
@@ -9791,9 +9791,9 @@ const main = function () {
 
               var defaults = {
                 bodyA: bodyA,
-                pointA: {x: bodyAWidth * xOffsetA, y: bodyAHeight * yOffsetA},
+                pointA: { x: bodyAWidth * xOffsetA, y: bodyAHeight * yOffsetA },
                 bodyB: bodyB,
-                pointB: {x: bodyBWidth * xOffsetB, y: bodyBHeight * yOffsetB},
+                pointB: { x: bodyBWidth * xOffsetB, y: bodyBHeight * yOffsetB },
               };
 
               var constraint = Common.extend(defaults, options);
@@ -9830,7 +9830,7 @@ const main = function () {
                 bodyB = bodies[col + row * columns];
                 Composite.addConstraint(
                   composite,
-                  Constraint.create(Common.extend({bodyA: bodyA, bodyB: bodyB}, options)),
+                  Constraint.create(Common.extend({ bodyA: bodyA, bodyB: bodyB }, options)),
                 );
               }
 
@@ -9840,14 +9840,14 @@ const main = function () {
                   bodyB = bodies[col + row * columns];
                   Composite.addConstraint(
                     composite,
-                    Constraint.create(Common.extend({bodyA: bodyA, bodyB: bodyB}, options)),
+                    Constraint.create(Common.extend({ bodyA: bodyA, bodyB: bodyB }, options)),
                   );
 
                   if (crossBrace && col > 0) {
                     bodyC = bodies[col - 1 + (row - 1) * columns];
                     Composite.addConstraint(
                       composite,
-                      Constraint.create(Common.extend({bodyA: bodyC, bodyB: bodyB}, options)),
+                      Constraint.create(Common.extend({ bodyA: bodyC, bodyB: bodyB }, options)),
                     );
                   }
 
@@ -9855,7 +9855,7 @@ const main = function () {
                     bodyC = bodies[col + 1 + (row - 1) * columns];
                     Composite.addConstraint(
                       composite,
-                      Constraint.create(Common.extend({bodyA: bodyC, bodyB: bodyB}, options)),
+                      Constraint.create(Common.extend({ bodyA: bodyC, bodyB: bodyB }, options)),
                     );
                   }
                 }
@@ -9904,7 +9904,7 @@ const main = function () {
 
                 // retroactively fix the first body's position, since width was unknown
                 if (i === 1) {
-                  Body.translate(lastBody, {x: (column + (columns % 2 === 1 ? 1 : -1)) * lastBodyWidth, y: 0});
+                  Body.translate(lastBody, { x: (column + (columns % 2 === 1 ? 1 : -1)) * lastBodyWidth, y: 0 });
                 }
 
                 var xOffset = lastBody ? column * lastBodyWidth : 0;
@@ -9925,7 +9925,7 @@ const main = function () {
            * @return {composite} A new composite newtonsCradle body
            */
           Composites.newtonsCradle = function (xx, yy, number, size, length) {
-            var newtonsCradle = Composite.create({label: 'Newtons Cradle'});
+            var newtonsCradle = Composite.create({ label: 'Newtons Cradle' });
 
             for (var i = 0; i < number; i++) {
               var separation = 1.9,
@@ -9936,7 +9936,7 @@ const main = function () {
                   frictionAir: 0.0001,
                   slop: 1,
                 }),
-                constraint = Constraint.create({pointA: {x: xx + i * (size * separation), y: yy}, bodyB: circle});
+                constraint = Constraint.create({ pointA: { x: xx + i * (size * separation), y: yy }, bodyB: circle });
 
               Composite.addBody(newtonsCradle, circle);
               Composite.addConstraint(newtonsCradle, constraint);
@@ -9962,7 +9962,7 @@ const main = function () {
               wheelBOffset = width * 0.5 - wheelBase,
               wheelYOffset = 0;
 
-            var car = Composite.create({label: 'Car'}),
+            var car = Composite.create({ label: 'Car' }),
               body = Bodies.rectangle(xx, yy, width, height, {
                 collisionFilter: {
                   group: group,
@@ -9989,7 +9989,7 @@ const main = function () {
 
             var axelA = Constraint.create({
               bodyB: body,
-              pointB: {x: wheelAOffset, y: wheelYOffset},
+              pointB: { x: wheelAOffset, y: wheelYOffset },
               bodyA: wheelA,
               stiffness: 1,
               length: 0,
@@ -9997,7 +9997,7 @@ const main = function () {
 
             var axelB = Constraint.create({
               bodyB: body,
-              pointB: {x: wheelBOffset, y: wheelYOffset},
+              pointB: { x: wheelBOffset, y: wheelYOffset },
               bodyA: wheelB,
               stiffness: 1,
               length: 0,
@@ -10039,9 +10039,9 @@ const main = function () {
             particleOptions,
             constraintOptions,
           ) {
-            particleOptions = Common.extend({inertia: Infinity}, particleOptions);
+            particleOptions = Common.extend({ inertia: Infinity }, particleOptions);
             constraintOptions = Common.extend(
-              {stiffness: 0.2, render: {type: 'line', anchors: false}},
+              { stiffness: 0.2, render: { type: 'line', anchors: false } },
               constraintOptions,
             );
 

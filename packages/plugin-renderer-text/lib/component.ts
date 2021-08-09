@@ -1,5 +1,5 @@
-import {TextStyle} from 'pixi.js';
-import {Component, decorators} from '@eva/eva.js';
+import { TextStyle } from 'pixi.js';
+import { Component, decorators } from '@eva/eva.js';
 
 export interface TextParams {
   text: string;
@@ -12,13 +12,7 @@ export interface TextParams {
     dropShadowBlur?: number;
     dropShadowColor?: string | number;
     dropShadowDistance?: number;
-    fill?:
-      | string
-      | string[]
-      | number
-      | number[]
-      | CanvasGradient
-      | CanvasPattern;
+    fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
     fillGradientType?: number;
     fillGradientStops?: number[];
     fontFamily?: string | string[];

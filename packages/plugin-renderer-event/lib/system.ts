@@ -1,6 +1,6 @@
-import {Renderer, RendererSystem, RendererManager, ContainerManager} from '@eva/plugin-renderer';
-import {decorators, ComponentChanged, OBSERVER_TYPE} from '@eva/eva.js';
-import {Circle, Ellipse, Polygon, RoundedRectangle, Rectangle} from 'pixi.js';
+import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
+import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { Circle, Ellipse, Polygon, RoundedRectangle, Rectangle } from 'pixi.js';
 import EventComponent from './component';
 
 const hitAreaFunc = {
@@ -20,7 +20,7 @@ const propertyForHitArea = {
 };
 
 @decorators.componentObserver({
-  Event: [{prop: ['hitArea'], deep: true}],
+  Event: [{ prop: ['hitArea'], deep: true }],
 })
 export default class Event extends Renderer {
   static systemName = 'Event';
@@ -28,7 +28,7 @@ export default class Event extends Renderer {
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
-  init({moveWhenInside = false} = {}) {
+  init({ moveWhenInside = false } = {}) {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
     try {
@@ -168,7 +168,7 @@ export default class Event extends Renderer {
     }
   }
   addHitArea(changed: ComponentChanged, container, hitArea) {
-    const {type, style} = hitArea;
+    const { type, style } = hitArea;
     if (!hitAreaFunc[type]) {
       console.error(`${changed.gameObject.name}'s hitArea type is not defined`);
       return;

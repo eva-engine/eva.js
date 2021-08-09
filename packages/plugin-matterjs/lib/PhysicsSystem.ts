@@ -23,7 +23,7 @@ export default class PhysicsSystem extends System {
    *
    * Called while the System installed, if game is not begain, it will be called while begain. use to pre operation, init data.
    */
-  awake() { }
+  awake() {}
 
   /**
    * System 被安装后，所有的 awake 执行完后
@@ -67,7 +67,7 @@ export default class PhysicsSystem extends System {
    *
    * Like update, called all of gameobject update.
    */
-  lateUpdate() { }
+  lateUpdate() {}
   /**
    * 游戏开始和游戏暂停后开始播放的时候调用。
    *
@@ -90,5 +90,5 @@ export default class PhysicsSystem extends System {
    * System 被销毁的时候调用。
    * Called while the system be destroyed.
    */
-  onDestroy() { }
+  onDestroy() {}
 }

@@ -1,4 +1,4 @@
 import PhysicsSystem from './PhysicsSystem';
-import {Physics, PhysicsType} from './Physics';
+import { Physics, PhysicsType } from './Physics';
 
-export {Physics, PhysicsSystem, PhysicsType};
+export { Physics, PhysicsSystem, PhysicsType };

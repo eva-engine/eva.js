@@ -39,16 +39,11 @@ class ComponentObserver {
    */
   add({ component, prop, type, componentName }: ObserverEventParams) {
     if (type === ObserverType.REMOVE) {
-      this.events = this.events.filter(
-        changed => changed.component !== component,
-      );
+      this.events = this.events.filter(changed => changed.component !== component);
     }
 
     const index = this.events.findIndex(
-      changed =>
-        changed.component === component &&
-        isEqual(changed.prop, prop) &&
-        changed.type === type,
+      changed => changed.component === component && isEqual(changed.prop, prop) && changed.type === type,
     );
     if (index > -1) {
       this.events.splice(index, 1);

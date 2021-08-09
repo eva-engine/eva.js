@@ -1,6 +1,6 @@
 import { IDEProp } from '../decorators/ide';
 import Component from './Component';
-import type { ComponentParams } from './Component'
+import type { ComponentParams } from './Component';
 
 /**
  * Two dimensional vector

@@ -1,7 +1,7 @@
-import {mocked} from 'ts-jest/utils';
-import {Game, Scene, GameObject, System} from '../lib';
+import { mocked } from 'ts-jest/utils';
+import { Game, Scene, GameObject, System } from '../lib';
 import Ticker from '../lib/game/Ticker';
-import {TestSystem, Test2System, TestComponent} from '@eva/plugin-renderer-test';
+import { TestSystem, Test2System, TestComponent } from '@eva/plugin-renderer-test';
 
 const MockTicker = mocked(Ticker, true);
 const mockTickerAdd = jest.fn();
@@ -75,7 +75,6 @@ describe('Game', () => {
     expect(game.systems.length).toBe(2);
     expect(game.systems[0]).toBeInstanceOf(TestSystem);
     expect(game.systems[1]).toBeInstanceOf(Test2System);
-
   });
 
   it('add system twice', () => {
@@ -126,7 +125,7 @@ describe('Game', () => {
     game.addSystem(testSys);
     expect(game.systems.length).toBe(1);
     game.removeSystem(testSys);
-    expect(game.systems.length).toBe(0);  
+    expect(game.systems.length).toBe(0);
   });
 
   it('when throug in anything else', () => {
@@ -162,14 +161,14 @@ describe('Game', () => {
   });
 
   it('pause when pausing', () => {
-    const game = new Game({autoStart: false});
+    const game = new Game({ autoStart: false });
     game.pause();
     expect(mockTickerPause).not.toBeCalled();
     expect(game.playing).toBeFalsy();
   });
 
   it('start', () => {
-    const game = new Game({autoStart: false});
+    const game = new Game({ autoStart: false });
     game.addSystem(TestSystem);
     game.addSystem(Test2System);
     game.start();
@@ -185,7 +184,7 @@ describe('Game', () => {
   });
 
   it('resume', () => {
-    const game = new Game({autoStart: false});
+    const game = new Game({ autoStart: false });
     game.addSystem(TestSystem);
     game.addSystem(Test2System);
     game.resume();
@@ -232,7 +231,7 @@ describe('Game', () => {
   });
 
   it('trigger pause without scene', () => {
-    const game = new Game({needScene: false, systems: [new TestSystem(), new Test2System()]});
+    const game = new Game({ needScene: false, systems: [new TestSystem(), new Test2System()] });
     game.triggerPause();
   });
 
@@ -255,7 +254,7 @@ describe('Game', () => {
   });
 
   it('init ticker without scene', () => {
-    new Game({needScene: false});
+    new Game({ needScene: false });
     const fn = mockTickerAdd.mock.calls[0][0];
     fn();
     expect(mockTickerAdd).toBeCalled();

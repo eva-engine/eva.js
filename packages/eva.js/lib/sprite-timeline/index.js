@@ -1,4 +1,4 @@
-import {createNowTime, formatDelay} from './utils';
+import { createNowTime, formatDelay } from './utils';
 
 const _nowtime = createNowTime();
 
@@ -76,7 +76,7 @@ class Timeline {
     return this[_timeMark][this[_timeMark].length - 1];
   }
 
-  markTime({time = this.currentTime, entropy = this.entropy, playbackRate = this.playbackRate} = {}) {
+  markTime({ time = this.currentTime, entropy = this.entropy, playbackRate = this.playbackRate } = {}) {
     const timeMark = {
       globalTime: this.globalTime,
       localTime: time,
@@ -88,7 +88,7 @@ class Timeline {
   }
 
   get currentTime() {
-    const {localTime, globalTime} = this.lastTimeMark;
+    const { localTime, globalTime } = this.lastTimeMark;
     return localTime + (this.globalTime - globalTime) * this.playbackRate;
   }
 
@@ -97,11 +97,11 @@ class Timeline {
       to = time,
       timers = this[_timers];
 
-    this.markTime({time});
+    this.markTime({ time });
     Array.from(Object.entries(timers)).forEach(([id, timer]) => {
       if (!timers.has(id)) return; // Need check because it maybe clearTimeout by former handler().
-      const {isEntropy, delay, heading} = timer.time,
-        {handler, startTime} = timer;
+      const { isEntropy, delay, heading } = timer.time,
+        { handler, startTime } = timer;
 
       if (!isEntropy) {
         const endTime = startTime + delay;
@@ -127,7 +127,7 @@ class Timeline {
   // while the entropy remain to go forwards.
   // Both of the initial values is set to -originTime
   get entropy() {
-    const {entropy, globalEntropy} = this.lastTimeMark;
+    const { entropy, globalEntropy } = this.lastTimeMark;
     return entropy + Math.abs((this.globalEntropy - globalEntropy) * this.playbackRate);
   }
 
@@ -152,7 +152,7 @@ class Timeline {
       const idx = this.seekTimeMark(entropy);
       this[_timeMark].length = idx + 1;
     }
-    this.markTime({entropy});
+    this.markTime({ entropy });
     this.updateTimers();
   }
 
@@ -164,7 +164,7 @@ class Timeline {
     const idx = this.seekTimeMark(seekEntropy),
       timeMark = this[_timeMark][idx];
 
-    const {entropy, playbackRate, globalTime} = timeMark;
+    const { entropy, playbackRate, globalTime } = timeMark;
 
     return globalTime + (seekEntropy - entropy) / Math.abs(playbackRate);
   }
@@ -173,7 +173,7 @@ class Timeline {
     const idx = this.seekTimeMark(seekEntropy),
       timeMark = this[_timeMark][idx];
 
-    const {localTime, entropy, playbackRate} = timeMark;
+    const { localTime, entropy, playbackRate } = timeMark;
 
     if (playbackRate > 0) {
       return localTime + (seekEntropy - entropy);
@@ -217,7 +217,7 @@ class Timeline {
 
   set playbackRate(rate) {
     if (rate !== this.playbackRate) {
-      this.markTime({playbackRate: rate});
+      this.markTime({ playbackRate: rate });
       this[_playbackRate] = rate;
       this.updateTimers();
     }
@@ -270,11 +270,11 @@ class Timeline {
     setTimeout(func, {entropy: 100})
     setTimeout(func, 100})
    */
-  setTimeout(handler, time = {delay: 0}) {
+  setTimeout(handler, time = { delay: 0 }) {
     return this[_setTimer](handler, time);
   }
 
-  setInterval(handler, time = {delay: 0}) {
+  setInterval(handler, time = { delay: 0 }) {
     const that = this;
     const id = this[_setTimer](function step() {
       // reset timer before handler cause we may clearTimeout in handler()
@@ -324,7 +324,7 @@ class Timeline {
       // eslint-disable-line no-restricted-globals
       delay = Math.ceil(delay);
       if (globalTimeout !== setTimeout) {
-        delay = {delay, heading};
+        delay = { delay, heading };
       }
       timerID = globalTimeout(() => {
         this[_timers].delete(id);

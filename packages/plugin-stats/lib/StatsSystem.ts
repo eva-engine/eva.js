@@ -1,4 +1,4 @@
-import {System} from '@eva/eva.js';
+import { System } from '@eva/eva.js';
 import StatsComponent from './StatsComponent';
 import Stats from './Stats';
 
@@ -18,7 +18,7 @@ export default class StatsSystem extends System {
   stats;
   style;
   component: StatsComponent;
-  init(param: StatsParams = {show: true}) {
+  init(param: StatsParams = { show: true }) {
     this.show = param.show;
     this.style = param.style;
   }

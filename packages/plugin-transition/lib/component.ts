@@ -12,7 +12,7 @@ interface AnimationStruct {
   }[];
 }
 interface TransitionParams {
-  group: Record<string, AnimationStruct[]>
+  group: Record<string, AnimationStruct[]>;
 }
 export default class Transition extends Component<TransitionParams> {
   static componentName: string = 'Transition';

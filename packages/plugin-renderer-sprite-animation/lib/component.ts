@@ -1,5 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
-import {SpriteAnimation as SpriteAnimationEngine} from '@eva/renderer-adapter';
+import { Component, decorators } from '@eva/eva.js';
+import { SpriteAnimation as SpriteAnimationEngine } from '@eva/renderer-adapter';
 
 export interface SpriteAnimationParams {
   resource: string;

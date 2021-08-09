@@ -1,6 +1,6 @@
-import {decorators, System} from '../lib';
+import { decorators, System } from '../lib';
 
-const {IDEProp, componentObserver} = decorators;
+const { IDEProp, componentObserver } = decorators;
 
 describe('decorators', () => {
   it('ide decorator should collect props', () => {
@@ -19,8 +19,8 @@ describe('decorators', () => {
       Transform: [
         'size',
         ['style', 'color'],
-        {prop: 'position', deep: false},
-        {prop: ['transform', 'translate'], deep: true},
+        { prop: 'position', deep: false },
+        { prop: ['transform', 'translate'], deep: true },
       ],
     })
     class Test extends System {}

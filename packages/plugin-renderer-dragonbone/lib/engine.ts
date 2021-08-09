@@ -3,7 +3,7 @@ import dragonBones from './db';
 export default class DragonBone {
   armature;
   factory = dragonBones.PixiFactory.factory;
-  constructor({armatureName}) {
+  constructor({ armatureName }) {
     this.armature = this.factory.buildArmatureDisplay(armatureName);
   }
   play(name, time) {

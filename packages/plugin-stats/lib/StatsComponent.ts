@@ -1,4 +1,4 @@
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 
 export default class StatsComponent extends Component {
   static componentName: string = 'Stats';

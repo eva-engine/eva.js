@@ -2,16 +2,16 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-const Stats = function(style) {
-  style = {...{width: 20, height: 12, x: 0, y: 0}, ...style};
-  const {width, height, x, y} = style;
+const Stats = function (style) {
+  style = { ...{ width: 20, height: 12, x: 0, y: 0 }, ...style };
+  const { width, height, x, y } = style;
   let mode = 0;
 
   const container = document.createElement('div');
   container.style.cssText = `position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000;width: ${width}vw;height: ${height}vw;left: ${x}vw;top: ${y}vw;`;
   container.addEventListener(
     'click',
-    function(event) {
+    function (event) {
       event.preventDefault();
       showPanel(++mode % container.children.length);
     },
@@ -54,11 +54,11 @@ const Stats = function(style) {
     addPanel: addPanel,
     showPanel: showPanel,
 
-    begin: function(time) {
+    begin: function (time) {
       beginTime = time || (performance || Date).now();
     },
 
-    end: function() {
+    end: function () {
       frames++;
 
       const time = (performance || Date).now();
@@ -74,17 +74,14 @@ const Stats = function(style) {
         if (memPanel) {
           // @ts-ignore
           const memory = performance.memory;
-          memPanel.update(
-            memory.usedJSHeapSize / 1048576,
-            memory.jsHeapSizeLimit / 1048576,
-          );
+          memPanel.update(memory.usedJSHeapSize / 1048576, memory.jsHeapSizeLimit / 1048576);
         }
       }
 
       return time;
     },
 
-    update: function() {
+    update: function () {
       beginTime = this.end();
     },
 
@@ -95,7 +92,7 @@ const Stats = function(style) {
   };
 };
 
-Stats.Panel = function(name, fg, bg) {
+Stats.Panel = function (name, fg, bg) {
   let min = Infinity,
     max = 0;
   const round = Math.round;
@@ -133,7 +130,7 @@ Stats.Panel = function(name, fg, bg) {
   return {
     dom: canvas,
 
-    update: function(value, maxValue) {
+    update: function (value, maxValue) {
       min = Math.min(min, value);
       max = Math.max(max, value);
 
@@ -141,11 +138,7 @@ Stats.Panel = function(name, fg, bg) {
       context.globalAlpha = 1;
       context.fillRect(0, 0, WIDTH, GRAPH_Y);
       context.fillStyle = fg;
-      context.fillText(
-        round(value) + ' ' + name + ' (' + round(min) + '-' + round(max) + ')',
-        TEXT_X,
-        TEXT_Y,
-      );
+      context.fillText(round(value) + ' ' + name + ' (' + round(min) + '-' + round(max) + ')', TEXT_X, TEXT_Y);
 
       context.drawImage(
         canvas,
@@ -163,12 +156,7 @@ Stats.Panel = function(name, fg, bg) {
 
       context.fillStyle = bg;
       context.globalAlpha = 0.9;
-      context.fillRect(
-        GRAPH_X + GRAPH_WIDTH - PR,
-        GRAPH_Y,
-        PR,
-        round((1 - value / maxValue) * GRAPH_HEIGHT),
-      );
+      context.fillRect(GRAPH_X + GRAPH_WIDTH - PR, GRAPH_Y, PR, round((1 - value / maxValue) * GRAPH_HEIGHT));
     },
   };
 };

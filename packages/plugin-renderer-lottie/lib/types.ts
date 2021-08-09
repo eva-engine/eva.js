@@ -3,12 +3,12 @@ export interface IExpandOpts {
   infinite?: boolean;
   slot?: Array<{
     name: string;
-    type: 'TEXT' | 'IMAGE'
+    type: 'TEXT' | 'IMAGE';
     value: string;
     style: {
       [key: string]: any;
     };
-  }>
+  }>;
 }
 
 export interface IOptions {
