@@ -1,6 +1,5 @@
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
-
+import {resolve} from 'path';
+import {defineConfig} from 'vite';
 export default defineConfig({
   server: {
     open: true,
@@ -13,10 +12,8 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /@eva\/(.*)/,
-        replacement: (() => {
-          return resolve(__dirname, './packages/$1/lib');
-        })(),
+        find: /@eva\/([pmer])(.*)/,
+        replacement: resolve(__dirname, './packages/$1$2/lib'),
       },
     ],
   },
