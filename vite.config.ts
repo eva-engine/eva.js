@@ -1,9 +1,9 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import { readdirSync, statSync } from "fs";
+import { readdirSync, statSync } from 'fs';
 
+const alias = [];
 const paths = readdirSync('./packages');
-let alias = [];
 for (const path of paths) {
   if (statSync(resolve('./packages', path)).isDirectory()) {
     alias.push({
