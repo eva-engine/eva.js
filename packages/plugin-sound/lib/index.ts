@@ -1,4 +1,2 @@
-import SoundSystem from './SoundSystem';
-import Sound from './Sound';
-
-export { Sound, SoundSystem };
+export { default as SoundSystem } from './SoundSystem';
+export { default as Sound } from './Sound';

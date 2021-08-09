@@ -1,7 +1,9 @@
+import Stats from './StatsComponent';
 import StatsSystem from './StatsSystem';
-import StatsComponent from './StatsComponent';
+
 export default {
-  Components: [StatsComponent],
+  Components: [Stats],
   Systems: [StatsSystem],
 };
-export {StatsComponent as Stats, StatsSystem};
+
+export { Stats, StatsSystem };
