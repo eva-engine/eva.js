@@ -18,6 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.1.0-alpha.1"
+    "@eva/eva.js": "1.1.0-alpha.1",
+    "poly-decomp": "^0.3.0"
   }
 }

@@ -1,8 +1,2 @@
-import LottieSystem from "./LottieSystem";
-import Lottie from './Lottie'
-
-
-export {
-  Lottie, 
-  LottieSystem
-}
+export { default as LottieSystem } from './LottieSystem';
+export { default as Lottie } from './Lottie';

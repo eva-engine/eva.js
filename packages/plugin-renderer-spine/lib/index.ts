@@ -1,4 +1,3 @@
-import SpineSystem from './SpineSystem';
-import type { SpineParams } from './Spine';
-import Spine from './Spine';
-export { Spine, SpineSystem, SpineParams };
+export { default as SpineSystem } from './SpineSystem';
+export { default as Spine } from './Spine';
+export type { SpineParams } from './Spine';

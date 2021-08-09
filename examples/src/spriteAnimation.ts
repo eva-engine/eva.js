@@ -1,10 +1,9 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { SpriteAnimationSystem, SpriteAnimation } from "@eva/plugin-renderer-sprite-animation";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { SpriteAnimationSystem, SpriteAnimation } from '@eva/plugin-renderer-sprite-animation';
 
 export const name = 'spriteAnimation';
 export async function init(canvas) {
-
   resource.addResource([
     {
       name: 'fruit',
@@ -35,30 +34,29 @@ export async function init(canvas) {
   });
 
   const cut = new GameObject('cut', {
-    position: {x: 225, y: 400},
-    size: {width: 300, height: 200},
-    origin: {x: 0, y: 0},
+    position: { x: 225, y: 400 },
+    size: { width: 300, height: 200 },
+    origin: { x: 0, y: 0 },
   });
 
   const frame = cut.addComponent(
     new SpriteAnimation({
       resource: 'fruit',
       speed: 100,
-      autoPlay:true,
+      autoPlay: true,
     }),
   );
 
   frame.play(4);
-  frame.on('onComplete', () =>{
-    console.log('onComplete')
-  })
-  frame.on('onLoop', () =>{
-    console.log('onLoop')
-  })
-  frame.on('onFrameChange', () =>{
-    console.log('onFrameChange')
-  })
-
+  frame.on('onComplete', () => {
+    console.log('onComplete');
+  });
+  frame.on('onLoop', () => {
+    console.log('onLoop');
+  });
+  frame.on('onFrameChange', () => {
+    console.log('onFrameChange');
+  });
 
   game.scene.addChild(cut);
 }

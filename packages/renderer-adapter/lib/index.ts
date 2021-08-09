@@ -1,19 +1,8 @@
-import Application from './Application';
-import Container from './Container';
-import Graphics from './Graphics';
-import NinePatch from './NinePatch';
-import Sprite from './Sprite';
-import SpriteAnimation from './SpriteAnimation';
-import Text from './Text';
-import TilingSprite from './TilingSprite';
-
-export {
-  Application,
-  Container,
-  Graphics,
-  NinePatch,
-  Sprite,
-  SpriteAnimation,
-  Text,
-  TilingSprite,
-};
+export { default as Application } from './Application';
+export { default as Container } from './Container';
+export { default as Graphics } from './Graphics';
+export { default as NinePatch } from './NinePatch';
+export { default as Sprite } from './Sprite';
+export { default as SpriteAnimation } from './SpriteAnimation';
+export { default as Text } from './Text';
+export { default as TilingSprite } from './TilingSprite';

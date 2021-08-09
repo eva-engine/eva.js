@@ -151,7 +151,7 @@ function checkAllSizes(targets) {
 function checkSize(target) {
   const pkgDir = path.resolve(`packages/${target}`);
   const pkg = require(`${pkgDir}/package.json`);
-  checkFileSize(`packages/dist/cdn/${pkg.bundle}.js`);
+  checkFileSize(`${pkgDir}/dist/${pkg.bundle}.js`);
 }
 
 function checkFileSize(filePath) {

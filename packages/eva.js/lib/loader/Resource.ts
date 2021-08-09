@@ -30,7 +30,7 @@ interface SrcBase {
 }
 
 /** Eva resource base */
-interface ResourceBase {
+export interface ResourceBase {
   name?: string;
   type?: RESOURCE_TYPE;
   src?: {

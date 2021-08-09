@@ -1,6 +1,6 @@
 # How to use vite to develop Eva.js
 
-For an development example, You just need create an ts module file in dir ./vite-test/ts. This module must export a function named 'init' which accepts an param whose type is HTMLCanvasElement. By the way, this module also export an string named 'name' as new page's title.
+For an development example, You just need create an ts module file in dir ./examples/ts. This module must export a function named 'init' which accepts an param whose type is HTMLCanvasElement. By the way, this module also export an string named 'name' as new page's title.
 
 Example:
 

@@ -3,9 +3,6 @@ import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
 import {terser} from 'rollup-plugin-terser';
-import serve from 'rollup-plugin-serve';
-import livereload from 'rollup-plugin-livereload';
-import copy from 'rollup-plugin-copy';
 import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
@@ -36,7 +33,7 @@ const outputConfigs = {
   },
   umd: {
     name: pkg.bundle,
-    file: path.resolve(evajsCDNDir, `${pkg.bundle}.js`),
+    file: resolve(`dist/${pkg.bundle}.js`),
     format: 'umd',
   },
   miniprogram: {
@@ -58,16 +55,8 @@ if (!process.env.PROD_ONLY) {
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
-    if (format === 'esm') {
-      packageConfigs.push(createEsmDevelopConfig(format));
-    }
-
-    if (format === 'cjs') {
-      packageConfigs.push(createCjsDevelopConfig(format));
-    }
-
-    if (format === 'umd' && pkg.bundle) {
-      packageConfigs.push(createUmdDevelopConfig(format));
+    if (format === 'esm' || format === 'cjs' || (format === 'umd' && pkg.bundle)) {
+      packageConfigs.push(createConfig(format, outputConfigs[format]));
     }
   });
 }
@@ -169,13 +158,6 @@ function createConfig(format, output, plugins = []) {
   };
 }
 
-function createCjsDevelopConfig(format) {
-  return createConfig(format, {
-    file: outputConfigs[format].file,
-    format: outputConfigs[format].format,
-  });
-}
-
 function createCjsProductionConfig(format) {
   return createConfig(
     format,
@@ -193,42 +175,9 @@ function createCjsProductionConfig(format) {
   );
 }
 
-function createEsmDevelopConfig(format) {
-  return createConfig(format, {
-    file: outputConfigs[format].file,
-    format: outputConfigs[format].format,
-  });
-}
-
-function createUmdDevelopConfig(format) {
-  let plugins = [
-    copy({
-      targets: [{src: outputConfigs[format].file, dest: resolve(`dist`)}],
-      hook: 'writeBundle',
-      copyOnce: true,
-    }),
-  ];
-
-  if (process.env.ROLLUP_WATCH) {
-    plugins.push(
-      ...[
-        serve({
-          open: true,
-          contentBase: [exampleDir, rootDir],
-          host: 'localhost',
-          port: 8080,
-        }),
-        livereload(evajsCDNDir),
-      ],
-    );
-  }
-
-  return createConfig(format, outputConfigs[format], plugins);
-}
-
 function createMinifiedConfig(format) {
   const {file, name} = outputConfigs[format];
-  const destFilename = file.replace('dist/cdn', 'dist/cdn/min').replace(/\.js$/, '.min.js');
+  const destFilename = file.replace(/\.js$/, '.min.js');
   return createConfig(
     format,
     {
@@ -242,11 +191,6 @@ function createMinifiedConfig(format) {
         mangle: true,
         output: {comments: false},
         compress: true,
-      }),
-      copy({
-        targets: [{src: destFilename, dest: resolve(`dist`)}],
-        hook: 'writeBundle',
-        copyOnce: true,
       }),
     ],
   );

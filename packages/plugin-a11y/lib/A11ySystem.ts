@@ -1,24 +1,10 @@
-import {
-  System,
-  decorators,
-  ComponentChanged,
-  Transform,
-  GameObject,
-  OBSERVER_TYPE,
-} from '@eva/eva.js';
+import { System, decorators, ComponentChanged, Transform, GameObject, OBSERVER_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
 import EE from 'eventemitter3';
+
 import A11y from './A11y';
-import {setStyle, setTransform} from './utils';
-import {
-  POSITION,
-  ZINDEX,
-  PointerEvents,
-  MaskBackground,
-  EventPosition,
-  A11yMaskStyle,
-  A11yActivate,
-} from './constant';
-import {RendererSystem} from '@eva/plugin-renderer';
+import { setStyle, setTransform } from './utils';
+import { POSITION, ZINDEX, PointerEvents, MaskBackground, EventPosition, A11yMaskStyle, A11yActivate } from './constant';
 
 interface SystemParam {
   debug?: boolean;
@@ -27,17 +13,7 @@ interface SystemParam {
   checkA11yOpen?: () => Promise<boolean>;
 }
 
-const notAttr = [
-  'hint',
-  'event',
-  'delay',
-  'attr',
-  'role',
-  'props',
-  'state',
-  'a11yId',
-  'name',
-];
+const notAttr = ['hint', 'event', 'delay', 'attr', 'role', 'props', 'state', 'a11yId', 'name'];
 
 const getEventFunc = function (event, gameObject, e) {
   ['touchstart', 'touchend', 'tap'].forEach(name => {
@@ -87,8 +63,8 @@ export default class A11ySystem extends System {
    * dom 延迟放置
    */
   delay: number;
-  cache: Map<String, HTMLElement> = new Map();
-  eventCache: Map<String, Function> = new Map();
+  cache: Map<string, HTMLElement> = new Map();
+  eventCache: Map<string, Function> = new Map();
   /**
    *
    * @param opt
@@ -134,11 +110,7 @@ export default class A11ySystem extends System {
   }
 
   async init(opt: SystemParam = {}) {
-    const {
-      activate = A11yActivate.CHECK,
-      delay = 100,
-      checkA11yOpen = () => Promise.resolve(false),
-    } = opt;
+    const { activate = A11yActivate.CHECK, delay = 100, checkA11yOpen = () => Promise.resolve(false) } = opt;
     this.delay = delay;
     switch (activate) {
       case A11yActivate.CHECK:
@@ -170,8 +142,8 @@ export default class A11ySystem extends System {
     }
   }
   setRatio() {
-    const {width, height} = this.getCanvasBoundingClientRect();
-    const {renderWidth, renderHeight} = this.getRenderRect();
+    const { width, height } = this.getCanvasBoundingClientRect();
+    const { renderWidth, renderHeight } = this.getRenderRect();
     this._ratioX = width / renderWidth;
     this._ratioY = height / renderHeight;
     if (width || height) {
@@ -183,20 +155,19 @@ export default class A11ySystem extends System {
   }
   getRenderRect() {
     // @ts-ignore
-    const {params} =
-      this.game.getSystem(RendererSystem) || ({width: 300, height: 300} as any);
-    const {height: renderHeight, width: renderWidth} = params;
-    return {renderWidth, renderHeight};
+    const { params } = this.game.getSystem(RendererSystem) || ({ width: 300, height: 300 } as any);
+    const { height: renderHeight, width: renderWidth } = params;
+    return { renderWidth, renderHeight };
   }
   getCanvasBoundingClientRect() {
     // 渲染画布相对于视口的实际宽高以及位置，实际的像素
-    const {width, height, left, top} = this.game.canvas.getBoundingClientRect();
-    return {width, height, left, top};
+    const { width, height, left, top } = this.game.canvas.getBoundingClientRect();
+    return { width, height, left, top };
   }
   initDiv() {
-    const {pageXOffset, pageYOffset} = window;
+    const { pageXOffset, pageYOffset } = window;
 
-    const {width, height, left, top} = this.getCanvasBoundingClientRect();
+    const { width, height, left, top } = this.getCanvasBoundingClientRect();
     // 父容器位置
     const style: A11yMaskStyle = {
       width,
@@ -214,10 +185,10 @@ export default class A11ySystem extends System {
       'click',
       e => {
         const currentTarget = e.currentTarget as HTMLDivElement;
-        const {left, top} = currentTarget.getBoundingClientRect();
+        const { left, top } = currentTarget.getBoundingClientRect();
         const x = (e.pageX - left) / this.ratioX;
         const y = (e.pageY - top) / this.ratioY;
-        this.eventPosition = {x, y};
+        this.eventPosition = { x, y };
       },
       true,
     );
@@ -234,13 +205,11 @@ export default class A11ySystem extends System {
     for (const changed of changes) {
       switch (changed.type) {
         case OBSERVER_TYPE.ADD:
-          changed.componentName === 'Event' &&
-            this.addEvent(changed.gameObject);
+          changed.componentName === 'Event' && this.addEvent(changed.gameObject);
           changed.componentName === 'A11y' && this.add(changed);
           break;
         case OBSERVER_TYPE.CHANGE:
-          changed.componentName === 'Transform' &&
-            this.transformChange(changed);
+          changed.componentName === 'Transform' && this.transformChange(changed);
           break;
         case OBSERVER_TYPE.REMOVE:
           changed.componentName === 'Event' && this.removeEvent(changed);
@@ -252,7 +221,7 @@ export default class A11ySystem extends System {
   remove(changed: ComponentChanged) {
     const component = changed.component as A11y;
     if (!component) return;
-    const {a11yId} = component;
+    const { a11yId } = component;
     const element = this.div.querySelector(`#${a11yId}`);
     element && this.div.removeChild(element);
     this.cache.delete(a11yId);
@@ -265,11 +234,11 @@ export default class A11ySystem extends System {
   add(changed: ComponentChanged) {
     if (!this.activate) return;
     const component = changed.component as A11y;
-    const {gameObject} = changed;
-    const {delay, a11yId: id} = component;
-    let {event} = component;
+    const { gameObject } = changed;
+    const { delay, a11yId: id } = component;
+    let { event } = component;
     if (!gameObject) return;
-    const {transform} = gameObject;
+    const { transform } = gameObject;
     if (!transform) return;
     const element = document.createElement('div');
     this.cache.set(id, element);
@@ -291,10 +260,10 @@ export default class A11ySystem extends System {
   // 监听 scene 改变
   transformChange(changed: ComponentChanged) {
     const component = changed.component as Transform;
-    const {gameObject} = changed;
+    const { gameObject } = changed;
     const a11yComponent = gameObject.getComponent(A11y) as A11y;
     if (!a11yComponent) return;
-    const {a11yId} = a11yComponent;
+    const { a11yId } = a11yComponent;
     if (!component.inScene) {
       // 监听 scene 删除游戏对象
       const dom = this.div.querySelector(`#${a11yId}`);
@@ -335,12 +304,12 @@ export default class A11ySystem extends System {
   }
 
   removeEvent(changed: ComponentChanged) {
-    const {gameObject} = changed;
+    const { gameObject } = changed;
     const a11y = gameObject.getComponent(A11y) as A11y;
     if (!a11y) return;
     const event = changed.component;
     if (!event) return;
-    const {a11yId} = a11y;
+    const { a11yId } = a11y;
     const func = this.eventCache.get(a11yId) as any;
     const element = this.cache.get(a11yId);
     element && element.removeEventListener('click', func);
@@ -353,7 +322,7 @@ export default class A11ySystem extends System {
    * @param interactive 是否可交互
    */
   setA11yAttr(element: HTMLElement, component: A11y) {
-    const {hint, props = {}, state = {}, role, a11yId: id} = component;
+    const { hint, props = {}, state = {}, role, a11yId: id } = component;
     const realRole = role || 'text';
     element.setAttribute('role', realRole);
     element.setAttribute('aria-label', hint);
@@ -369,12 +338,8 @@ export default class A11ySystem extends System {
       element.setAttribute(key, state[key]);
     }
 
-    for (let key of Object.keys(component)) {
-      if (
-        typeof component[key] === 'string' &&
-        notAttr.indexOf(key) === -1 &&
-        key.indexOf('_') !== 1
-      ) {
+    for (const key of Object.keys(component)) {
+      if (typeof component[key] === 'string' && notAttr.indexOf(key) === -1 && key.indexOf('_') !== 1) {
         element.setAttribute(key, component[key]);
       }
     }
@@ -389,7 +354,7 @@ export default class A11ySystem extends System {
     // 相对画布定位
     // const { x: anchorX, y: anchorY } = transform.anchor
     // 游戏对象的宽高
-    const {width, height} = transform.size;
+    const { width, height } = transform.size;
     // position
     // const { x: positionX, y: positionY } = transform.position
     // 设置无障碍 DOM 的样式，龙骨动画默认 2px
