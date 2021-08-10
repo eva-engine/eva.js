@@ -3,14 +3,7 @@ import isObject from 'lodash-es/isObject';
 
 const _defineCache = new Map();
 
-export function defineProperty(
-  key,
-  deep,
-  store,
-  originKey,
-  originStore,
-  callback,
-) {
+export function defineProperty(key, deep, store, originKey, originStore, callback) {
   if (!_defineCache.has(store)) {
     _defineCache.set(store, []);
   }

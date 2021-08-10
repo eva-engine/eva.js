@@ -34,9 +34,7 @@ export type ComponentType = typeof Component;
  * assert(getComponentName(new Transform()) === 'Transform')
  * ```
  */
-export function getComponentName<T extends Component<ComponentParams>>(
-  component: T | ComponentConstructor<T>,
-): string {
+export function getComponentName<T extends Component<ComponentParams>>(component: T | ComponentConstructor<T>): string {
   if (component instanceof Component) {
     return component.name;
   } else if (component instanceof Function) {
@@ -45,11 +43,11 @@ export function getComponentName<T extends Component<ComponentParams>>(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ComponentParams { }
+export interface ComponentParams {}
 
 export interface ComponentConstructor<T extends Component<ComponentParams>> {
   componentName: string;
-  new(params?: ComponentParams): T;
+  new (params?: ComponentParams): T;
 }
 
 /**

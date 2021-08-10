@@ -70,10 +70,10 @@ XhrLoadStrategy.setExtensionXhrType('json', XhrResponseType.Json);
 XhrLoadStrategy.setExtensionXhrType('tex', XhrResponseType.Json);
 XhrLoadStrategy.setExtensionXhrType('ske', XhrResponseType.Json);
 
-XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer)
-XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer)
-XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer)
-XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer)
+XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer);
+XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer);
+XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer);
+XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer);
 
 export const STRATEGY: { [type: string]: new (...args: any[]) => AbstractLoadStrategy } = {
   png: ImageLoadStrategy,
@@ -207,7 +207,7 @@ class Resource extends EE {
       }
     }
     delete this.promiseMap[name];
-    resource.data = {}
+    resource.data = {};
     resource.complete = false;
     resource.instance = undefined;
   }

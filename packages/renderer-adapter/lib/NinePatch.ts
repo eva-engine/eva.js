@@ -1,4 +1,4 @@
-import {Texture, mesh} from 'pixi.js';
+import { Texture, mesh } from 'pixi.js';
 
 export default class NinePatch extends mesh.NineSlicePlane {
   constructor(img, leftWidth, topHeight, rightWidth, bottomHeight) {

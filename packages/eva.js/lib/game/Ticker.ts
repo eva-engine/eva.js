@@ -9,7 +9,7 @@ interface TickerOptions {
 /** Default Ticker Options */
 const defaultOptions: Partial<TickerOptions> = {
   autoStart: true,
-  frameRate: 60
+  frameRate: 60,
 };
 
 /**
@@ -93,7 +93,7 @@ class Ticker {
         time: currentTime,
         currentTime: currentTime,
         frameCount: ++this._frameCount,
-        fps: Math.round(1000 / deltaTime)
+        fps: Math.round(1000 / deltaTime),
       };
 
       for (const func of this._tickers) {

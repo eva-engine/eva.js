@@ -24,17 +24,11 @@ class RendererManager {
       for (const renderer of this.renderers) {
         const props = renderer.observerInfo[changed.componentName];
         if (props) {
-          if (
-            [OBSERVER_TYPE.ADD, OBSERVER_TYPE.REMOVE].indexOf(changed.type) > -1
-          ) {
+          if ([OBSERVER_TYPE.ADD, OBSERVER_TYPE.REMOVE].indexOf(changed.type) > -1) {
             try {
               renderer.componentChanged && renderer.componentChanged(changed);
             } catch (e) {
-              console.error(
-                `gameObject: ${changed.gameObject.name}, ${changed.componentName} is error.`,
-                changed,
-                e,
-              );
+              console.error(`gameObject: ${changed.gameObject.name}, ${changed.componentName} is error.`, changed, e);
             }
             continue;
           }
@@ -48,8 +42,9 @@ class RendererManager {
               renderer.componentChanged && renderer.componentChanged(changed);
             } catch (e) {
               console.error(
-                `gameObject: ${changed.gameObject && changed.gameObject.name
-                }, ${changed.componentName} is componentChanged error.`,
+                `gameObject: ${changed.gameObject && changed.gameObject.name}, ${
+                  changed.componentName
+                } is componentChanged error.`,
                 changed,
                 e,
               );
@@ -69,10 +64,7 @@ class RendererManager {
           try {
             renderer.rendererUpdate && renderer.rendererUpdate(gameObject);
           } catch (e) {
-            console.info(
-              `gameObject: ${gameObject.name}, ${component.name} is update error`,
-              e,
-            );
+            console.info(`gameObject: ${gameObject.name}, ${component.name} is update error`, e);
           }
         }
       }

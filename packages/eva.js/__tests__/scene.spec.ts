@@ -1,4 +1,4 @@
-import {Scene, Transform, GameObject} from '../lib';
+import { Scene, Transform, GameObject } from '../lib';
 
 describe('Scene', () => {
   it('create scene', () => {

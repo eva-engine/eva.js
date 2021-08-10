@@ -1,4 +1,4 @@
-import {Texture as PIXITexture, extras} from 'pixi.js';
+import { Texture as PIXITexture, extras } from 'pixi.js';
 const PIXITilingSprite = extras.TilingSprite;
 
 export default class TilingSprite {

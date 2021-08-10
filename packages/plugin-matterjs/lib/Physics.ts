@@ -3,9 +3,8 @@ import Matter from './matter';
 export enum PhysicsType {
   RECTANGLE = 'rectangle',
   CIRCLE = 'circle',
-  POLYGON = 'polygon'
+  POLYGON = 'polygon',
 }
-
 
 export class Physics extends Component<PhysicsType> {
   static componentName: string = 'Physics';
