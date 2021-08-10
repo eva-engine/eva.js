@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "../",
     "baseUrl": ".",
     "outDir": "dist/types",
     "target": "es2016",
@@ -30,19 +30,17 @@
     ],
     "paths": {
       "@eva/miniprogram-*": [
-        "packages/eva-miniprogram-*/lib"
+        "../packages/eva-miniprogram-*/lib"
       ],
       "@eva/miniprogram-pixi": [
-        "packages/miniprogram-pixi/lib"
+        "../packages/miniprogram-pixi/lib"
       ],
       "@eva/*": [
-        "packages/*/lib"
+        "../packages/*/lib"
       ]
     }
   },
   "include": [
-    "packages/global.d.ts",
-    "packages/*/lib",
-    "packages/*/__tests__"
+    "./"
   ]
 }
