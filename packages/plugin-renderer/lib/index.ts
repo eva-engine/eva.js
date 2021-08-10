@@ -3,8 +3,9 @@ import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Renderer from './Renderer';
 export * from "./compressedTexture/const";
-export * from "./compressedTexture";
+import { registerCompressedTexture } from "./compressedTexture";
 
+registerCompressedTexture();
 export {
   RendererManager,
   ContainerManager,

@@ -3,7 +3,7 @@
  */
 function __WEBPACK_EXTERNAL_MODULE__27__() {
   try {
-    // return require('poly-decomp');
+    return require('poly-decomp');
   } catch (e) {}
 }
 
