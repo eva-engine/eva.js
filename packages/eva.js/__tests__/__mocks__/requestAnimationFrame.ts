@@ -29,9 +29,5 @@ class RequestAnimationFrameMockSession {
 
 export const requestAnimationFrameMock = new RequestAnimationFrameMockSession();
 
-window.requestAnimationFrame = requestAnimationFrameMock.requestAnimationFrame.bind(
-  requestAnimationFrameMock,
-);
-window.cancelAnimationFrame = requestAnimationFrameMock.cancelAnimationFrame.bind(
-  requestAnimationFrameMock,
-);
+window.requestAnimationFrame = requestAnimationFrameMock.requestAnimationFrame.bind(requestAnimationFrameMock);
+window.cancelAnimationFrame = requestAnimationFrameMock.cancelAnimationFrame.bind(requestAnimationFrameMock);

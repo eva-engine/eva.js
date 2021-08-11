@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {
-  GameObject,
-  Game,
-  PureObserverInfo,
-  ComponentChanged,
-  System,
-} from '@eva/eva.js';
+import { GameObject, Game, PureObserverInfo, ComponentChanged, System } from '@eva/eva.js';
 import ContainerManager from './manager/ContainerManager';
 import RendererManager from './manager/RendererManager';
 
@@ -50,7 +44,7 @@ export default class Renderer extends System {
    *
    * called while the observed component props change.
    */
-  componentChanged(_changed: ComponentChanged) { }
+  componentChanged(_changed: ComponentChanged) {}
 
   /**
    * 每帧调用
@@ -58,7 +52,7 @@ export default class Renderer extends System {
    * called by every loop
    * @param _gameObject gameObject
    */
-  rendererUpdate(_gameObject: GameObject) { }
+  rendererUpdate(_gameObject: GameObject) {}
 
   update() {
     const changes = this.componentObserver.clear();

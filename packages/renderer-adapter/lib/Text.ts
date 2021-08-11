@@ -1,4 +1,4 @@
-import {Text as PIXIText} from 'pixi.js';
+import { Text as PIXIText } from 'pixi.js';
 
 export default class Text extends PIXIText {
   text: string;

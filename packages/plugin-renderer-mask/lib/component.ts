@@ -1,4 +1,4 @@
-import {Component, decorators} from '@eva/eva.js';
+import { Component, decorators } from '@eva/eva.js';
 
 export enum MASK_TYPE {
   Circle = 'Circle',

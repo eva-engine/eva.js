@@ -3,7 +3,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": "dist/types",
-    "target": "es2016",
+    "target": "es5",
     "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
@@ -43,7 +43,6 @@
   "include": [
     "packages/global.d.ts",
     "packages/*/lib",
-    "packages/*/__tests__",
-    "examples"
+    "packages/*/__tests__"
   ]
 }

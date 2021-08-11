@@ -11,21 +11,21 @@ export default class Test extends System {
     ],
   };
 
-  init() { }
+  init() {}
 
-  awake() { }
+  awake() {}
 
-  start() { }
+  start() {}
 
-  onResume() { }
+  onResume() {}
 
-  onPause() { }
+  onPause() {}
 
-  onDestroy() { }
+  onDestroy() {}
 
-  update() { }
+  update() {}
 
-  lateUpdate() { }
+  lateUpdate() {}
 
-  destroy() { }
+  destroy() {}
 }

@@ -1,6 +1,5 @@
 import { Component } from '../../eva.js/lib';
-import type { ComponentParams, Transform } from '../../eva.js/lib'
-
+import type { ComponentParams, Transform } from '../../eva.js/lib';
 
 export default class Test extends Component<ComponentParams> {
   static componentName = 'Test';
@@ -11,14 +10,13 @@ export default class Test extends Component<ComponentParams> {
   geomerty = { data: undefined };
   transform: Transform;
 
+  start() {}
 
-  start() { }
+  onResume() {}
 
-  onResume() { }
+  update() {}
 
-  update() { }
+  onPause() {}
 
-  onPause() { }
-
-  lateUpdate() { }
+  lateUpdate() {}
 }

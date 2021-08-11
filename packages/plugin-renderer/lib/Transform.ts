@@ -1,12 +1,5 @@
-import {
-  Transform as Trans,
-  decorators,
-  ComponentChanged,
-  OBSERVER_TYPE,
-  Scene,
-  LOAD_SCENE_MODE
-} from '@eva/eva.js';
-import EventEmitter from 'eventemitter3'
+import { Transform as Trans, decorators, ComponentChanged, OBSERVER_TYPE, Scene, LOAD_SCENE_MODE } from '@eva/eva.js';
+import EventEmitter from 'eventemitter3';
 import { Application, Container } from '@eva/renderer-adapter';
 import Render from './System';
 import ContainerManager from './manager/ContainerManager';
@@ -80,26 +73,18 @@ export default class Transform extends EventEmitter {
   change(changed: ComponentChanged) {
     const transform = changed.component as Trans;
     if (transform.parent) {
-      const parentContainer = this.containerManager.getContainer(
-        transform.parent.gameObject.id,
-      );
-      parentContainer.addChild(
-        this.containerManager.getContainer(changed.gameObject.id),
-      );
+      const parentContainer = this.containerManager.getContainer(transform.parent.gameObject.id);
+      parentContainer.addChild(this.containerManager.getContainer(changed.gameObject.id));
 
       const render =
         changed.gameObject.transform.parent &&
-        (changed.gameObject.transform.parent.gameObject.getComponent(
-          'Render',
-        ) as any);
+        (changed.gameObject.transform.parent.gameObject.getComponent('Render') as any);
       if (render) {
         render.sortDirty = true;
       }
     } else {
-      const container = this.containerManager.getContainer(
-        changed.gameObject.id,
-      );
-      delete transform.worldTransform
+      const container = this.containerManager.getContainer(changed.gameObject.id);
+      delete transform.worldTransform;
       container.parent && container.parent.removeChild(container);
     }
   }
