@@ -1,4 +1,5 @@
-import { Component, GameObject } from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
+import type { GameObject } from "@eva/eva.js";
 
 export enum HIT_AREA_TYPE {
   Circle = 'Circle',
