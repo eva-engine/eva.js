@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../",
+    "target": "es6",
+    "paths": {
+      "@eva/miniprogram-*": [
+        "./packages/eva-miniprogram-*/lib"
+      ],
+      "@eva/miniprogram-pixi": [
+        "./packages/miniprogram-pixi/lib"
+      ],
+      "@eva/*": [
+        "./packages/*/lib"
+      ]
+    }
+  },
+  "include": [
+    "../packages/global.d.ts",
+    "../packages/*/lib",
+    "./"
+  ]
+}
