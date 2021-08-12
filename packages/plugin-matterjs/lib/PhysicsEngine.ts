@@ -107,10 +107,13 @@ export default class PhysicsEngine {
   private initMouse() {
     if (this.options.mouse && this.options.mouse.open) {
       const mouse = Matter.Mouse.create(this.game.canvas);
-      this.mouseConstraint = Matter.MouseConstraint.create(this.engine, {
-        mouse: mouse,
-        constraint: this.options.mouse.constraint,
-      });
+      let options = this.options.mouse.constraint ? {
+        mouse,
+        constraint: this.options.mouse.constraint
+      } : {
+        mouse
+      };
+      this.mouseConstraint = Matter.MouseConstraint.create(this.engine, options);
       this.World.add(this.engine.world, this.mouseConstraint);
     }
   }

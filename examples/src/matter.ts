@@ -215,6 +215,9 @@ export async function init(canvas) {
               y: 5, // 重力
             },
           },
+          mouse:{
+            open:true
+          }
         }),
         new TextSystem(),
         new ImgSystem(),
