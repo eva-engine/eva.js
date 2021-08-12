@@ -1,15 +1,5 @@
-import {
-  GameObject,
-  decorators,
-  ComponentChanged,
-  OBSERVER_TYPE,
-} from '@eva/eva.js';
-import {
-  RendererManager,
-  ContainerManager,
-  RendererSystem,
-  Renderer,
-} from '@eva/plugin-renderer';
+import { GameObject, decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 
 import RenderComponent from './component';
 
@@ -32,9 +22,7 @@ export default class Render extends Renderer {
     container.alpha = component.alpha;
     container.visible = component.visible;
     if (component.sortDirty && component.sortableChildren) {
-      const gameObjects = gameObject.transform.children.map(
-        ({gameObject}) => gameObject,
-      );
+      const gameObjects = gameObject.transform.children.map(({ gameObject }) => gameObject);
       const children = gameObjects
         .sort((a, b) => {
           const aRender = a.getComponent('Render') as RenderComponent;
@@ -50,22 +38,15 @@ export default class Render extends Renderer {
         .map(gameObject => {
           return this.containerManager.getContainer(gameObject.id);
         });
-      const oldChildren = this.containerManager.getContainer(
-        component.gameObject.id,
-      ).children;
-      const elements = oldChildren.filter(
-        c => children.indexOf(c as any) === -1,
-      );
+      const oldChildren = this.containerManager.getContainer(component.gameObject.id).children;
+      const elements = oldChildren.filter(c => children.indexOf(c as any) === -1);
       oldChildren.length = 0;
       oldChildren.push(...elements, ...children);
       component.sortDirty = false;
     }
   }
   componentChanged(changed: ComponentChanged) {
-    if (
-      changed.type === OBSERVER_TYPE.ADD ||
-      changed.type === OBSERVER_TYPE.REMOVE
-    ) {
+    if (changed.type === OBSERVER_TYPE.ADD || changed.type === OBSERVER_TYPE.REMOVE) {
       this.add(changed);
     }
     if (changed.type === OBSERVER_TYPE.CHANGE) {
@@ -81,25 +62,19 @@ export default class Render extends Renderer {
     }
   }
   change(changed: ComponentChanged) {
-    if (
-      changed.component.name === 'Render' &&
-      changed.prop.prop[0] === 'zIndex'
-    ) {
+    if (changed.component.name === 'Render' && changed.prop.prop[0] === 'zIndex') {
       this.setDirty(changed);
     }
   }
   remove(changed: ComponentChanged) {
     if (changed.component.name === 'Render') {
-      const container = this.containerManager.getContainer(
-        changed.gameObject.id,
-      );
+      const container = this.containerManager.getContainer(changed.gameObject.id);
       container.alpha = 1;
     }
   }
   setDirty(changed: ComponentChanged) {
     const parentRender =
-      changed.gameObject.parent &&
-      (changed.gameObject.parent.getComponent('Render') as RenderComponent);
+      changed.gameObject.parent && (changed.gameObject.parent.getComponent('Render') as RenderComponent);
     if (parentRender) {
       parentRender.sortDirty = true;
     }

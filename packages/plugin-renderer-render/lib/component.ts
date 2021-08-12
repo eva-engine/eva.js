@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import {Component} from '@eva/eva.js';
 import {type, step} from '@eva/inspector-decorator';
+=======
+import { Component, decorators } from '@eva/eva.js';
+>>>>>>> origin/dev
 export interface RenderParams {
   alpha?: number;
   zIndex?: number;

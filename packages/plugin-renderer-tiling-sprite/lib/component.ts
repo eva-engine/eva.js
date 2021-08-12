@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import {Component} from '@eva/eva.js';
 import {type, step} from '@eva/inspector-decorator';
+=======
+import { Component, decorators } from '@eva/eva.js';
+>>>>>>> origin/dev
 
 export interface TilingSpriteParams {
   resource: string;
-  tileScale: {x: number; y: number};
-  tilePosition: {x: number; y: number};
+  tileScale: { x: number; y: number };
+  tilePosition: { x: number; y: number };
 }
 
 export default class TilingSprite extends Component<TilingSpriteParams> {

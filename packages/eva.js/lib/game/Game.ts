@@ -57,7 +57,7 @@ const triggerStart = (obj: System | Component) => {
 const getAllGameObjects = game => {
   const mainSceneGameObjects = game?.scene?.gameObjects || [];
 
-  const gameObjectsArray = game?.multiScenes.map(({gameObjects}) => gameObjects);
+  const gameObjectsArray = game?.multiScenes.map(({ gameObjects }) => gameObjects);
   let otherSceneGameObjects = [];
   for (const gameObjects of gameObjectsArray) {
     otherSceneGameObjects = [...otherSceneGameObjects, ...gameObjects];
@@ -131,7 +131,7 @@ class Game extends EventEmitter {
   /** Systems alled to this game */
   systems: System[] = [];
 
-  constructor({systems, frameRate = 60, autoStart = true, needScene = true}: GameParams = {}) {
+  constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
     if (window.__EVA_INSPECTOR_ENV__) {
       setTimeout(() => {
@@ -360,7 +360,7 @@ class Game extends EventEmitter {
     this.multiScenes = null;
   }
 
-  loadScene({scene, mode = LOAD_SCENE_MODE.SINGLE, params = {}}: LoadSceneParams) {
+  loadScene({ scene, mode = LOAD_SCENE_MODE.SINGLE, params = {} }: LoadSceneParams) {
     if (!scene) {
       return;
     }

@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import {TextStyle} from 'pixi.js';
 import {Component, decorators} from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
+=======
+import { TextStyle } from 'pixi.js';
+import { Component, decorators } from '@eva/eva.js';
+>>>>>>> origin/dev
 
 export interface TextParams {
   text: string;
@@ -13,13 +18,7 @@ export interface TextParams {
     dropShadowBlur?: number;
     dropShadowColor?: string | number;
     dropShadowDistance?: number;
-    fill?:
-      | string
-      | string[]
-      | number
-      | number[]
-      | CanvasGradient
-      | CanvasPattern;
+    fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
     fillGradientType?: number;
     fillGradientStops?: number[];
     fontFamily?: string | string[];

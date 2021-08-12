@@ -20,8 +20,8 @@ describe('decorators', () => {
       Transform: [
         'size',
         ['style', 'color'],
-        {prop: 'position', deep: false},
-        {prop: ['transform', 'translate'], deep: true},
+        { prop: 'position', deep: false },
+        { prop: ['transform', 'translate'], deep: true },
       ],
     })
     class Test extends System {}

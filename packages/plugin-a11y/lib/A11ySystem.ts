@@ -4,7 +4,15 @@ import EE from 'eventemitter3';
 
 import A11y from './A11y';
 import { setStyle, setTransform } from './utils';
-import { POSITION, ZINDEX, PointerEvents, MaskBackground, EventPosition, A11yMaskStyle, A11yActivate } from './constant';
+import {
+  POSITION,
+  ZINDEX,
+  PointerEvents,
+  MaskBackground,
+  EventPosition,
+  A11yMaskStyle,
+  A11yActivate,
+} from './constant';
 
 interface SystemParam {
   debug?: boolean;

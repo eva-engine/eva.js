@@ -26,9 +26,7 @@ export default class DragonBone extends Component<DragonBoneParams> {
   init(obj?: DragonBoneParams) {
     if (!obj) return;
     if (!obj.armatureName) {
-      throw new Error(
-        `The dragonBone component on ${this.gameObject.name}, armatureName is required!`,
-      );
+      throw new Error(`The dragonBone component on ${this.gameObject.name}, armatureName is required!`);
     }
     Object.assign(this, obj);
     if (this.autoPlay) {

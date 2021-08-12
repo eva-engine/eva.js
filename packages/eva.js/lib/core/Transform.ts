@@ -1,6 +1,6 @@
 import {type, step} from '@eva/inspector-decorator';
 import Component from './Component';
-import type { ComponentParams } from './Component'
+import type { ComponentParams } from './Component';
 
 /**
  * Two dimensional vector

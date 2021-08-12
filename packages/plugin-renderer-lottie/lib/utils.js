@@ -1,6 +1,6 @@
 import iOSVersion from 'ios-version';
 
-const {major} = iOSVersion(window.navigator.userAgent) || {};
+const { major } = iOSVersion(window.navigator.userAgent) || {};
 
 /**
  * dataURL 转成 blob
@@ -18,7 +18,7 @@ function dataURL2blob(dataURL) {
   let data = [intArray];
   let result;
   try {
-    result = new Blob(data, {type: mime});
+    result = new Blob(data, { type: mime });
   } catch (error) {
     console.log(error);
   }

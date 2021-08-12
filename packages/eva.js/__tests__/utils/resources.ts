@@ -1,4 +1,4 @@
-import {RESOURCE_TYPE} from '../../lib';
+import { ResourceBase, RESOURCE_TYPE } from '../../lib';
 
 export interface EVAResourceParams {
   name: string;
@@ -12,14 +12,14 @@ export interface EVAResourceParams {
   data: Record<string, any>;
 }
 
-type EVAResourceObject = Record<string, any>;
+type EVAResourceObject = ResourceBase;
 
 export class EVADataRes {
   static from(options: Partial<EVAResourceParams>): EVAResourceObject {
-    const {name, data} = options;
+    const { name, data } = options;
     return {
       name,
-      type: 'data',
+      type: 'data' as any,
       src: {
         vertex: {
           type: 'data',
@@ -32,7 +32,7 @@ export class EVADataRes {
 
 export class EVADragonBone {
   static from(options: Partial<EVAResourceParams>): EVAResourceObject {
-    const {name, preload, image, imageType = 'png', ske, tex} = options;
+    const { name, preload, image, imageType = 'png', ske, tex } = options;
     return {
       name,
       type: RESOURCE_TYPE.DRAGONBONE,
@@ -57,7 +57,7 @@ export class EVADragonBone {
 
 export class EVAImage {
   static from(options: Partial<EVAResourceParams>): EVAResourceObject {
-    const {name, image, preload, imageType = 'png'} = options;
+    const { name, image, preload, imageType = 'png' } = options;
     return {
       name,
       preload,
@@ -74,7 +74,7 @@ export class EVAImage {
 
 export class EVASprite {
   static from(options: Partial<EVAResourceParams>): EVAResourceObject {
-    const {name, image, json, preload, imageType = 'png'} = options;
+    const { name, image, json, preload, imageType = 'png' } = options;
     return {
       name,
       preload,
@@ -95,7 +95,7 @@ export class EVASprite {
 
 export class EVASpriteAnimation {
   static from(options: Partial<EVAResourceParams>): EVAResourceObject {
-    const {name, image, json, preload, imageType = 'png'} = options;
+    const { name, image, json, preload, imageType = 'png' } = options;
     return {
       name,
       preload,

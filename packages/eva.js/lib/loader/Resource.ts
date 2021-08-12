@@ -31,9 +31,9 @@ interface SrcBase {
 
 /** Eva resource base */
 export interface ResourceBase {
-  name?: string;
-  type?: RESOURCE_TYPE;
-  src?: {
+  name: string;
+  type: RESOURCE_TYPE;
+  src: {
     json?: SrcBase;
     image?: SrcBase;
     tex?: SrcBase;
@@ -64,10 +64,10 @@ XhrLoadStrategy.setExtensionXhrType('json', XhrResponseType.Json);
 XhrLoadStrategy.setExtensionXhrType('tex', XhrResponseType.Json);
 XhrLoadStrategy.setExtensionXhrType('ske', XhrResponseType.Json);
 
-XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer)
-XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer)
-XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer)
-XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer)
+XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer);
+XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer);
+XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer);
+XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer);
 
 const STRATEGY = {
   png: ImageLoadStrategy,
@@ -78,7 +78,7 @@ const STRATEGY = {
   tex: XhrLoadStrategy,
   ske: XhrLoadStrategy,
   audio: XhrLoadStrategy,
-  video: VideoLoadStrategy
+  video: VideoLoadStrategy,
 };
 
 type ResourceName = string;
@@ -147,7 +147,7 @@ class Resource extends EE {
   /** Start preload */
   public preload(): void {
     const names = Object.values(this.resourcesMap)
-      .filter(({ preload }) => preload)
+      .filter(({ preload, complete }) => preload && !complete)
       .map(({ name }) => name);
     this.progress = new Progress({
       resource: this,
@@ -185,7 +185,7 @@ class Resource extends EE {
       }
     }
     delete this.promiseMap[name];
-    resource.data = {}
+    resource.data = {};
     resource.complete = false;
     resource.instance = undefined;
   }
