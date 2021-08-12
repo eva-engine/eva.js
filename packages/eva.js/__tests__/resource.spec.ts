@@ -1,27 +1,30 @@
 import Resource, { RESOURCE_TYPE, LOAD_EVENT } from '../lib/loader/Resource';
 import { EVADataRes, EVAImage } from './utils/resources';
 
-const imageRes = EVAImage.from({
-  name: 'image',
-  preload: true,
-  image: 'https://gw.alicdn.com/tfs/TB1dAN1BbY1gK0jSZTEXXXDQVXa-512-512.png',
-});
+let imageRes;
 
-const imageRes2 = EVAImage.from({
-  name: 'image2',
-  preload: true,
-  image: 'https://gw.alicdn.com/tfs/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
-});
+let imageRes2;
 
-const dataRes = EVADataRes.from({
-  name: 'vertex',
-  data: {},
-});
+let dataRes;
 
 describe('resource management', () => {
   let res: Resource;
   beforeEach(() => {
     res = new Resource();
+    imageRes = EVAImage.from({
+      name: 'image',
+      preload: true,
+      image: 'https://gw.alicdn.com/tfs/TB1dAN1BbY1gK0jSZTEXXXDQVXa-512-512.png',
+    });
+    imageRes2 = EVAImage.from({
+      name: 'image2',
+      preload: true,
+      image: 'https://gw.alicdn.com/tfs/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
+    });
+    dataRes = EVADataRes.from({
+      name: 'vertex',
+      data: {},
+    });
   });
 
   it('constructor', () => {
