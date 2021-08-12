@@ -1411,9 +1411,9 @@ var pixi_spine;
   (function (core) {
     var AnimationState = (function () {
       function AnimationState(data) {
-        this.tracks = new Array();
-        this.events = new Array();
-        this.listeners = new Array();
+        this.tracks = [];
+        this.events = [];
+        this.listeners = [];
         this.queue = new EventQueue(this);
         this.propertyIDs = new core.IntSet();
         this.animationsChanged = false;
@@ -2012,9 +2012,9 @@ var pixi_spine;
     var TrackEntry = (function () {
       function TrackEntry() {
         this.mixBlend = core.MixBlend.replace;
-        this.timelineMode = new Array();
-        this.timelineHoldMix = new Array();
-        this.timelinesRotation = new Array();
+        this.timelineMode = [];
+        this.timelineHoldMix = [];
+        this.timelinesRotation = [];
       }
       TrackEntry.prototype.reset = function () {
         this.next = null;
@@ -2129,7 +2129,7 @@ var pixi_spine;
         if (!EventQueue.deprecatedWarning1) {
           EventQueue.deprecatedWarning1 = true;
           console.warn(
-            "Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'",
+            'Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. \'state.addListener({ complete: function(track, event) { } })\'',
           );
         }
         return true;
@@ -2319,7 +2319,7 @@ var pixi_spine;
     var Bone = (function () {
       function Bone(data, skeleton, parent) {
         this.matrix = new PIXI.Matrix();
-        this.children = new Array();
+        this.children = [];
         this.x = 0;
         this.y = 0;
         this.rotation = 0;
@@ -2694,7 +2694,7 @@ var pixi_spine;
         this.bendDirection = data.bendDirection;
         this.compress = data.compress;
         this.stretch = data.stretch;
-        this.bones = new Array();
+        this.bones = [];
         for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
         this.target = skeleton.findBone(data.target.name);
       }
@@ -2930,7 +2930,7 @@ var pixi_spine;
     var IkConstraintData = (function () {
       function IkConstraintData(name) {
         this.order = 0;
-        this.bones = new Array();
+        this.bones = [];
         this.bendDirection = 1;
         this.compress = false;
         this.stretch = false;
@@ -2953,16 +2953,16 @@ var pixi_spine;
         this.spacing = 0;
         this.rotateMix = 0;
         this.translateMix = 0;
-        this.spaces = new Array();
-        this.positions = new Array();
-        this.world = new Array();
-        this.curves = new Array();
-        this.lengths = new Array();
-        this.segments = new Array();
+        this.spaces = [];
+        this.positions = [];
+        this.world = [];
+        this.curves = [];
+        this.lengths = [];
+        this.segments = [];
         if (data == null) throw new Error('data cannot be null.');
         if (skeleton == null) throw new Error('skeleton cannot be null.');
         this.data = data;
-        this.bones = new Array();
+        this.bones = [];
         for (var i = 0, n = data.bones.length; i < n; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
         this.target = skeleton.findSlot(data.target.name);
         this.position = data.position;
@@ -3368,7 +3368,7 @@ var pixi_spine;
     var PathConstraintData = (function () {
       function PathConstraintData(name) {
         this.order = 0;
-        this.bones = new Array();
+        this.bones = [];
         this.name = name;
       }
       return PathConstraintData;
@@ -3399,8 +3399,8 @@ var pixi_spine;
   (function (core) {
     var Skeleton = (function () {
       function Skeleton(data) {
-        this._updateCache = new Array();
-        this.updateCacheReset = new Array();
+        this._updateCache = [];
+        this.updateCacheReset = [];
         this.time = 0;
         this.scaleX = 1;
         this.scaleY = 1;
@@ -3408,7 +3408,7 @@ var pixi_spine;
         this.y = 0;
         if (data == null) throw new Error('data cannot be null.');
         this.data = data;
-        this.bones = new Array();
+        this.bones = [];
         for (var i = 0; i < data.bones.length; i++) {
           var boneData = data.bones[i];
           var bone = void 0;
@@ -3420,8 +3420,8 @@ var pixi_spine;
           }
           this.bones.push(bone);
         }
-        this.slots = new Array();
-        this.drawOrder = new Array();
+        this.slots = [];
+        this.drawOrder = [];
         for (var i = 0; i < data.slots.length; i++) {
           var slotData = data.slots[i];
           var bone = this.bones[slotData.boneData.index];
@@ -3429,17 +3429,17 @@ var pixi_spine;
           this.slots.push(slot);
           this.drawOrder.push(slot);
         }
-        this.ikConstraints = new Array();
+        this.ikConstraints = [];
         for (var i = 0; i < data.ikConstraints.length; i++) {
           var ikConstraintData = data.ikConstraints[i];
           this.ikConstraints.push(new core.IkConstraint(ikConstraintData, this));
         }
-        this.transformConstraints = new Array();
+        this.transformConstraints = [];
         for (var i = 0; i < data.transformConstraints.length; i++) {
           var transformConstraintData = data.transformConstraints[i];
           this.transformConstraints.push(new core.TransformConstraint(transformConstraintData, this));
         }
-        this.pathConstraints = new Array();
+        this.pathConstraints = [];
         for (var i = 0; i < data.pathConstraints.length; i++) {
           var pathConstraintData = data.pathConstraints[i];
           this.pathConstraints.push(new core.PathConstraint(pathConstraintData, this));
@@ -3823,8 +3823,8 @@ var pixi_spine;
         this.minY = 0;
         this.maxX = 0;
         this.maxY = 0;
-        this.boundingBoxes = new Array();
-        this.polygons = new Array();
+        this.boundingBoxes = [];
+        this.polygons = [];
         this.polygonPool = new core.Pool(function () {
           return core.Utils.newFloatArray(16);
         });
@@ -3991,11 +3991,11 @@ var pixi_spine;
     var SkeletonClipping = (function () {
       function SkeletonClipping() {
         this.triangulator = new core.Triangulator();
-        this.clippingPolygon = new Array();
-        this.clipOutput = new Array();
-        this.clippedVertices = new Array();
-        this.clippedTriangles = new Array();
-        this.scratch = new Array();
+        this.clippingPolygon = [];
+        this.clipOutput = [];
+        this.clippedVertices = [];
+        this.clippedTriangles = [];
+        this.scratch = [];
       }
       SkeletonClipping.prototype.clipStart = function (slot, clip) {
         if (this.clipAttachment != null) return 0;
@@ -4298,14 +4298,14 @@ var pixi_spine;
   (function (core) {
     var SkeletonData = (function () {
       function SkeletonData() {
-        this.bones = new Array();
-        this.slots = new Array();
-        this.skins = new Array();
-        this.events = new Array();
-        this.animations = new Array();
-        this.ikConstraints = new Array();
-        this.transformConstraints = new Array();
-        this.pathConstraints = new Array();
+        this.bones = [];
+        this.slots = [];
+        this.skins = [];
+        this.events = [];
+        this.animations = [];
+        this.ikConstraints = [];
+        this.transformConstraints = [];
+        this.pathConstraints = [];
         this.fps = 0;
       }
       SkeletonData.prototype.findBone = function (boneName) {
@@ -4411,7 +4411,7 @@ var pixi_spine;
     var SkeletonJson = (function () {
       function SkeletonJson(attachmentLoader) {
         this.scale = 1;
-        this.linkedMeshes = new Array();
+        this.linkedMeshes = [];
         this.attachmentLoader = attachmentLoader;
       }
       SkeletonJson.prototype.readSkeletonData = function (json) {
@@ -4702,8 +4702,8 @@ var pixi_spine;
           attachment.vertices = scaledVertices;
           return;
         }
-        var weights = new Array();
-        var bones = new Array();
+        var weights = [];
+        var bones = [];
         for (var i = 0, n = vertices.length; i < n; ) {
           var boneCount = vertices[i++];
           bones.push(boneCount);
@@ -4719,7 +4719,7 @@ var pixi_spine;
       };
       SkeletonJson.prototype.readAnimation = function (map, name, skeletonData) {
         var scale = this.scale;
-        var timelines = new Array();
+        var timelines = [];
         var duration = 0;
         if (map.slots) {
           for (var slotName in map.slots) {
@@ -5122,7 +5122,7 @@ var pixi_spine;
   (function (core) {
     var Skin = (function () {
       function Skin(name) {
-        this.attachments = new Array();
+        this.attachments = [];
         if (name == null) throw new Error('name cannot be null.');
         this.name = name;
       }
@@ -5167,7 +5167,7 @@ var pixi_spine;
   (function (core) {
     var Slot = (function () {
       function Slot(data, bone) {
-        this.attachmentVertices = new Array();
+        this.attachmentVertices = [];
         if (data == null) throw new Error('data cannot be null.');
         if (bone == null) throw new Error('bone cannot be null.');
         this.data = data;
@@ -5441,8 +5441,8 @@ var pixi_spine;
   (function (core) {
     var TextureAtlas = (function () {
       function TextureAtlas(atlasText, textureLoader, callback) {
-        this.pages = new Array();
-        this.regions = new Array();
+        this.pages = [];
+        this.regions = [];
         if (atlasText) {
           this.addSpineAtlas(atlasText, textureLoader, callback);
         }
@@ -5690,7 +5690,7 @@ var pixi_spine;
         this.translateMix = data.translateMix;
         this.scaleMix = data.scaleMix;
         this.shearMix = data.shearMix;
-        this.bones = new Array();
+        this.bones = [];
         for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
         this.target = skeleton.findBone(data.target.name);
       }
@@ -5930,7 +5930,7 @@ var pixi_spine;
     var TransformConstraintData = (function () {
       function TransformConstraintData(name) {
         this.order = 0;
-        this.bones = new Array();
+        this.bones = [];
         this.rotateMix = 0;
         this.translateMix = 0;
         this.scaleMix = 0;
@@ -5957,16 +5957,16 @@ var pixi_spine;
   (function (core) {
     var Triangulator = (function () {
       function Triangulator() {
-        this.convexPolygons = new Array();
-        this.convexPolygonsIndices = new Array();
-        this.indicesArray = new Array();
-        this.isConcaveArray = new Array();
-        this.triangles = new Array();
+        this.convexPolygons = [];
+        this.convexPolygonsIndices = [];
+        this.indicesArray = [];
+        this.isConcaveArray = [];
+        this.triangles = [];
         this.polygonPool = new core.Pool(function () {
-          return new Array();
+          return [];
         });
         this.polygonIndicesPool = new core.Pool(function () {
-          return new Array();
+          return [];
         });
       }
       Triangulator.prototype.triangulate = function (verticesArray) {
@@ -6190,7 +6190,7 @@ var pixi_spine;
   (function (core) {
     var IntSet = (function () {
       function IntSet() {
-        this.array = new Array();
+        this.array = [];
       }
       IntSet.prototype.add = function (value) {
         var contains = this.contains(value);
@@ -6429,7 +6429,7 @@ var pixi_spine;
     core.DebugUtils = DebugUtils;
     var Pool = (function () {
       function Pool(instantiator) {
-        this.items = new Array();
+        this.items = [];
         this.instantiator = instantiator;
       }
       Pool.prototype.obtain = function () {
