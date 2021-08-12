@@ -1,4 +1,4 @@
-import { RESOURCE_TYPE } from '../../lib';
+import { ResourceBase, RESOURCE_TYPE } from '../../lib';
 
 export interface EVAResourceParams {
   name: string;
@@ -12,14 +12,14 @@ export interface EVAResourceParams {
   data: Record<string, any>;
 }
 
-type EVAResourceObject = Record<string, any>;
+type EVAResourceObject = ResourceBase;
 
 export class EVADataRes {
   static from(options: Partial<EVAResourceParams>): EVAResourceObject {
     const { name, data } = options;
     return {
       name,
-      type: 'data',
+      type: 'data' as any,
       src: {
         vertex: {
           type: 'data',
