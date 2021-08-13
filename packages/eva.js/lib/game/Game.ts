@@ -133,14 +133,14 @@ class Game extends EventEmitter {
 
   constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
-    if (window.__EVA_INSPECTOR_ENV__) {
-      setTimeout(() => {
-        window.__EVA_GAME_INSTANCE__ = this;
-        const e = document.createEvent('MessageEvent');
-        e.initEvent('getGame');
-        document.dispatchEvent(e);
-      }, 0);
-    }
+    // if (window.__EVA_INSPECTOR_ENV__) {
+    //   setTimeout(() => {
+    //     window.__EVA_GAME_INSTANCE__ = this;
+    //     const e = document.createEvent('MessageEvent');
+    //     e.initEvent('getGame');
+    //     document.dispatchEvent(e);
+    //   }, 0);
+    // }
     this.ticker = new Ticker({autoStart: false, frameRate});
     this.initTicker();
 
@@ -374,6 +374,9 @@ class Game extends EventEmitter {
         break;
     }
     this.emit('sceneChanged', {scene, mode, params});
+    if(window.__EVA_INSPECTOR_ENV__){
+      window.__EVA_GAME_INSTANCE__ = this;
+    }
   }
 }
 

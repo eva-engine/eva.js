@@ -4,7 +4,6 @@
  * @param propertyKey - property name
  */
 export function IDEProp(target, propertyKey) {
-  // console.log(propertyKey, type);
   if (!target.constructor.IDEProps) {
     target.constructor.IDEProps = [];
   }
