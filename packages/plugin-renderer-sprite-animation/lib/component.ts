@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 import {Component} from '@eva/eva.js';
 import {type, step} from '@eva/inspector-decorator';
 import {SpriteAnimation as SpriteAnimationEngine} from '@eva/renderer-adapter';
-=======
-import { Component, decorators } from '@eva/eva.js';
-import { SpriteAnimation as SpriteAnimationEngine } from '@eva/renderer-adapter';
->>>>>>> origin/dev
 
 export interface SpriteAnimationParams {
   resource: string;

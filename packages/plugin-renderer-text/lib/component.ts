@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import {TextStyle} from 'pixi.js';
-import {Component, decorators} from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
-=======
 import { TextStyle } from 'pixi.js';
-import { Component, decorators } from '@eva/eva.js';
->>>>>>> origin/dev
+import { Component } from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
 export interface TextParams {
   text: string;

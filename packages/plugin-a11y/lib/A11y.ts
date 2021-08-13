@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 import {Component} from '@eva/eva.js';
 import {type, step} from '@eva/inspector-decorator';
 import {uuid} from './utils';
-=======
-import { Component, decorators } from '@eva/eva.js';
-import { uuid } from './utils';
->>>>>>> origin/dev
 
 export interface A11yParams {
   hint: string;
@@ -88,11 +83,7 @@ export default class A11y extends Component<A11yParams> {
   constructor(param: A11yParams) {
     super();
     Object.assign(this, param);
-<<<<<<< HEAD
-    const {hint = '', event, delay = 0, attr = {}, role = '', props = {}, state = {}} = param;
-=======
     const { hint = '', event, delay = 0, attr = {}, role = '', props = {}, state = {} } = param;
->>>>>>> origin/dev
     this.hint = hint;
     this.event = event;
     this.delay = delay;
