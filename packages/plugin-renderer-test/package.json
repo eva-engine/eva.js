@@ -21,6 +21,6 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@eva/inspector-decorator": "1.1.2-mini.0"
+    "@eva/inspector-decorator": "^0.0.4"
   }
 }
