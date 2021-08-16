@@ -147,7 +147,7 @@ function updateDeps(pkg, depType, version) {
   const deps = pkg[depType];
   if (!deps) return;
   Object.keys(deps).forEach(dep => {
-    if (dep.startsWith('@eva/')) {
+    if (dep.startsWith('@eva/') && packages.indexOf(dep.substring(5)) > -1) {
       console.log(chalk.yellow(`${pkg.name} -> ${depType} -> ${dep}@${version}`));
       deps[dep] = `${version}`;
     }
