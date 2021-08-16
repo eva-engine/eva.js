@@ -1,5 +1,6 @@
-import { IDEProp } from '../decorators/ide';
+import {type, step} from '@eva/inspector-decorator';
 import Component from './Component';
+import type { ComponentParams } from './Component';
 
 /**
  * Two dimensional vector
@@ -35,17 +36,18 @@ export interface TransformMatrix {
 /**
  * Transform propterty
  */
-export interface TransformParams {
+export interface TransformParams extends ComponentParams {
   position?: Vector2;
   size?: Size2;
   origin?: Vector2;
   anchor?: Vector2;
   scale?: Vector2;
+  skew?: Vector2;
   rotation?: number;
 }
 
 /** Basic component for gameObject, See {@link TransformParams}  */
-class Transform extends Component {
+class Transform extends Component<TransformParams> {
   /**
    * component's name
    * @readonly
@@ -75,13 +77,13 @@ class Transform extends Component {
     this.rotation = params.rotation || this.rotation;
   }
 
-  @IDEProp position: Vector2 = { x: 0, y: 0 };
-  @IDEProp size: Size2 = { width: 0, height: 0 };
-  @IDEProp origin: Vector2 = { x: 0, y: 0 };
-  @IDEProp anchor: Vector2 = { x: 0, y: 0 };
-  @IDEProp scale: Vector2 = { x: 1, y: 1 };
-  @IDEProp skew: Vector2 = { x: 0, y: 0 };
-  @IDEProp rotation: number = 0;
+  @type('vector2') @step(1) position: Vector2 = {x: 0, y: 0};
+  @type('size') @step(1) size: Size2 = {width: 0, height: 0};
+  @type('vector2') @step(0.1) origin: Vector2 = {x: 0, y: 0};
+  @type('vector2') @step(0.1) anchor: Vector2 = {x: 0, y: 0};
+  @type('vector2') @step(0.1) scale: Vector2 = {x: 1, y: 1};
+  @type('vector2') @step(0.1) skew: Vector2 = {x: 0, y: 0};
+  @type('number') @step(0.1) rotation: number = 0;
 
   set parent(val: Transform) {
     if (val) {

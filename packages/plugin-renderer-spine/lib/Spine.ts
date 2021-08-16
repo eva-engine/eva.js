@@ -1,4 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
+import {Component} from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
 export interface SpineParams {
   resource: string;
@@ -6,16 +7,16 @@ export interface SpineParams {
   autoPlay: boolean;
 }
 
-export default class Spine extends Component {
+export default class Spine extends Component<SpineParams> {
   static componentName: string = 'Spine';
 
-  @decorators.IDEProp
+  @type('string')
   resource: string = '';
 
-  @decorators.IDEProp
+  @type('string')
   animationName: string = '';
 
-  @decorators.IDEProp
+  @type('boolean')
   autoPlay: boolean = true;
 
   usingResource: string;

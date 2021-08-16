@@ -1,32 +1,32 @@
-import DragonboneEngine from './engine';
-import {Component, decorators} from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
-export interface DragonBoneParams {
+import DragonboneEngine from './engine';
+import { Component, ComponentParams } from '@eva/eva.js';
+
+export interface DragonBoneParams extends ComponentParams {
   resource: string;
   armatureName: string;
-  animationName: string;
-  autoPlay: boolean;
+  animationName?: string;
+  autoPlay?: boolean;
 }
 
-export default class DragonBone extends Component {
+export default class DragonBone extends Component<DragonBoneParams> {
   static componentName: string = 'DragonBone';
   private _armature: DragonboneEngine;
   private waitPlay: boolean = false;
   private waitStop: boolean = false;
-  private waitPlayInfo: {animationName: string; times?: number} = {
+  private waitPlayInfo: { animationName: string; times?: number } = {
     animationName: null,
   };
-  @decorators.IDEProp resource: string = '';
-  @decorators.IDEProp armatureName: string = '';
-  @decorators.IDEProp animationName: string = '';
-  @decorators.IDEProp autoPlay: boolean = true;
+  @type('string') resource: string = '';
+  @type('string') armatureName: string = '';
+  @type('string') animationName: string = '';
+  @type('boolean') autoPlay: boolean = true;
 
   init(obj?: DragonBoneParams) {
     if (!obj) return;
     if (!obj.armatureName) {
-      throw new Error(
-        `The dragonBone component on ${this.gameObject.name}, armatureName is required!`,
-      );
+      throw new Error(`The dragonBone component on ${this.gameObject.name}, armatureName is required!`);
     }
     Object.assign(this, obj);
     if (this.autoPlay) {
@@ -37,7 +37,7 @@ export default class DragonBone extends Component {
   play(name?: string, times?: number) {
     if (name) this.animationName = name;
     if (!this.armature) {
-      this.waitPlayInfo = {animationName: name, times};
+      this.waitPlayInfo = { animationName: name, times };
       this.waitPlay = true;
     } else {
       this.armature.play(this.animationName, times);
@@ -45,7 +45,7 @@ export default class DragonBone extends Component {
   }
   stop(name?: string) {
     if (!this.armature) {
-      this.waitPlayInfo = {animationName: name};
+      this.waitPlayInfo = { animationName: name };
       this.waitStop = true;
     } else {
       this.armature.stop(name);
@@ -55,7 +55,7 @@ export default class DragonBone extends Component {
   set armature(val) {
     this._armature = val;
     if (!val) return;
-    const {animationName, times} = this.waitPlayInfo;
+    const { animationName, times } = this.waitPlayInfo;
     this.waitPlay && this.play(animationName, times);
     this.waitStop && this.stop(animationName);
     this.waitPlay = false;

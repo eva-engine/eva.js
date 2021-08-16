@@ -5,4 +5,4 @@ export default {
   Systems: [EvaXSystem],
 };
 
-export {EvaXComponent as EvaX, EvaXSystem};
+export { EvaXComponent as EvaX, EvaXSystem };

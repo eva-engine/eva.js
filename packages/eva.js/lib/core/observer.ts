@@ -1,8 +1,7 @@
-import isEqual from 'lodash-es/isEqual';
-import isObject from 'lodash-es/isObject';
+import { isEqual, isObject } from 'lodash-es';
 import Component from './Component';
 import System from './System';
-import { ObserverEvent } from './ComponentObserver';
+import type { ObserverEvent } from './ComponentObserver';
 
 /** Observer event type */
 export enum ObserverType {
@@ -129,13 +128,7 @@ function removeObjectCache(component: Component) {
  * @param {pureObserverProp} param0.prop - pure observer prop
  * @param {ObserverType} param0.type - observer type
  */
-function addObserver({
-  systemName,
-  componentName,
-  component,
-  prop,
-  type,
-}: ObserverEvent) {
+function addObserver({ systemName, componentName, component, prop, type }: ObserverEvent) {
   systemInstance[systemName].componentObserver.add({
     component,
     prop,
@@ -198,9 +191,7 @@ function defineProperty({
     return;
   }
   if (!(key in obj)) {
-    console.error(
-      `prop ${key} not in component: ${componentName}, Can not observer`,
-    );
+    console.error(`prop ${key} not in component: ${componentName}, Can not observer`);
     return;
   }
 
@@ -277,10 +268,7 @@ export function initObserver(Systems: typeof System[] | typeof System) {
  * @param {Component} component
  * @param {string} componentName - default value is `component.name`, it will be deprecated
  */
-export function observer(
-  component: Component,
-  componentName: string = component.name,
-) {
+export function observer(component: Component, componentName: string = component.name) {
   if (!componentName || !componentProps[componentName]) {
     return;
   }
@@ -310,10 +298,7 @@ export function observer(
  * @param component
  * @param componentName - default value is `component.name`, it will be deprecated
  */
-export function observerAdded(
-  component: Component,
-  componentName: string = component.name,
-) {
+export function observerAdded(component: Component, componentName: string = component.name) {
   for (const systemName in observerInfos) {
     const observerInfo = observerInfos[systemName] || {};
     const info = observerInfo[componentName];
@@ -332,10 +317,7 @@ export function observerAdded(
  * @param component
  * @param componentName - default value is `component.name`, it will be deprecated
  */
-export function observerRemoved(
-  component: Component,
-  componentName: string = component.name,
-) {
+export function observerRemoved(component: Component, componentName: string = component.name) {
   for (const systemName in observerInfos) {
     const observerInfo = observerInfos[systemName] || {};
     const info = observerInfo[componentName];

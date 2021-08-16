@@ -1,8 +1,8 @@
 import Ticker from './Ticker';
 import Scene from './Scene';
-import System, { SystemType } from '../core/System';
+import System, {SystemType} from '../core/System';
 import Component from '../core/Component';
-import { setSystemObserver, initObserver } from '../core/observer';
+import {setSystemObserver, initObserver} from '../core/observer';
 import EventEmitter from 'eventemitter3';
 
 /** eva plugin struct */
@@ -39,6 +39,8 @@ interface LoadSceneParams {
 const triggerStart = (obj: System | Component) => {
   if (!(obj instanceof System) && !(obj instanceof Component)) return;
   if (obj.started) return;
+  obj.started = true;
+
   try {
     obj.start && obj.start();
   } catch (e) {
@@ -50,15 +52,12 @@ const triggerStart = (obj: System | Component) => {
       console.error(`${obj.constructor.systemName} start error`, e);
     }
   }
-  obj.started = true;
 };
 
 const getAllGameObjects = game => {
   const mainSceneGameObjects = game?.scene?.gameObjects || [];
 
-  const gameObjectsArray = game?.multiScenes.map(
-    ({ gameObjects }) => gameObjects,
-  );
+  const gameObjectsArray = game?.multiScenes.map(({ gameObjects }) => gameObjects);
   let otherSceneGameObjects = [];
   for (const gameObjects of gameObjectsArray) {
     otherSceneGameObjects = [...otherSceneGameObjects, ...gameObjects];
@@ -73,10 +72,7 @@ const gameObjectLoop = (e, gameObjects = []) => {
         triggerStart(component);
         component.update && component.update(e);
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name} ${component.name} update error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name} ${component.name} update error`, e);
       }
     }
   }
@@ -85,10 +81,7 @@ const gameObjectLoop = (e, gameObjects = []) => {
       try {
         component.lateUpdate && component.lateUpdate(e);
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name} ${component.name} lateUpdate error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name} ${component.name} lateUpdate error`, e);
       }
     }
   }
@@ -100,24 +93,19 @@ const gameObjectResume = gameObjects => {
       try {
         component.onResume && component.onResume();
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name}, ${component.name}, onResume error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name}, ${component.name}, onResume error`, e);
       }
     }
   }
 };
+
 const gameObjectPause = gameObjects => {
   for (const gameObject of gameObjects) {
     for (const component of gameObject.components) {
       try {
         component.onPause && component.onPause();
       } catch (e) {
-        console.error(
-          `gameObject: ${gameObject.name}, ${component.name}, onResume error`,
-          e,
-        );
+        console.error(`gameObject: ${gameObject.name}, ${component.name}, onResume error`, e);
       }
     }
   }
@@ -136,24 +124,19 @@ class Game extends EventEmitter {
   multiScenes: Scene[] = [];
 
   /**
-   * Timeline for game
+   * Ticker
    */
   ticker: Ticker;
 
   /** Systems alled to this game */
   systems: System[] = [];
 
-  constructor({
-    autoStart = true,
-    frameRate = 120,
-    systems,
-    needScene = true,
-  }: GameParams = {}) {
+  constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
-    this.ticker = new Ticker({
-      autoStart: false,
-      frameRate,
-    });
+    if(window.__EVA_INSPECTOR_ENV__){
+      window.__EVA_GAME_INSTANCE__ = this;
+    }
+    this.ticker = new Ticker({autoStart: false, frameRate});
     this.initTicker();
 
     if (systems && systems.length) {
@@ -161,6 +144,7 @@ class Game extends EventEmitter {
         this.addSystem(system);
       }
     }
+
     if (needScene) {
       this.loadScene(new Scene('scene'));
     }
@@ -171,8 +155,8 @@ class Game extends EventEmitter {
   }
 
   /**
-  * Get scene on this game
-  */
+   * Get scene on this game
+   */
   get scene() {
     return this._scene;
   }
@@ -194,10 +178,7 @@ class Game extends EventEmitter {
    * @typeParam T - system which extends base `System` class
    * @typeparam U - type of system class
    */
-  addSystem<T extends System, U extends SystemType>(
-    S: T | U,
-    obj?: any,
-  ): T | InstanceType<U> {
+  addSystem<T extends System, U extends SystemType>(S: T | U, obj?: any): T | InstanceType<U> {
     let system;
     if (S instanceof Function) {
       system = new S(obj);
@@ -272,9 +253,7 @@ class Game extends EventEmitter {
 
   /** Pause game */
   pause() {
-    if (this.playing === false) {
-      return;
-    }
+    if (!this.playing) return;
     this.playing = false;
     this.ticker.pause();
     this.triggerPause();
@@ -282,22 +261,18 @@ class Game extends EventEmitter {
 
   /** Start game */
   start() {
-    if (this.playing === true) {
-      return;
-    }
-    this.ticker.start();
+    if (this.playing) return;
     this.playing = true;
     this.started = true;
+    this.ticker.start();
   }
 
   /** Resume game */
   resume() {
-    if (this.playing === true) {
-      return;
-    }
+    if (this.playing) return;
+    this.playing = true;
     this.ticker.start();
     this.triggerResume();
-    this.playing = true;
   }
 
   /**
@@ -362,9 +337,10 @@ class Game extends EventEmitter {
   // TODO: call system destroy method
   /** remove all system on this game */
   destroySystems() {
-    for (const system of this.systems) {
+    for (const system of [...this.systems]) {
       this.removeSystem(system);
     }
+    this.systems.length = 0;
   }
 
   /** Destroy game instance */
@@ -379,11 +355,7 @@ class Game extends EventEmitter {
     this.multiScenes = null;
   }
 
-  loadScene({
-    scene,
-    mode = LOAD_SCENE_MODE.SINGLE,
-    params = {},
-  }: LoadSceneParams) {
+  loadScene({ scene, mode = LOAD_SCENE_MODE.SINGLE, params = {} }: LoadSceneParams) {
     if (!scene) {
       return;
     }
@@ -396,7 +368,7 @@ class Game extends EventEmitter {
         this.multiScenes.push(scene);
         break;
     }
-    this.emit('sceneChanged', { scene, mode, params });
+    this.emit('sceneChanged', {scene, mode, params});
   }
 }
 

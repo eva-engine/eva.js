@@ -1,27 +1,30 @@
 import Resource, { RESOURCE_TYPE, LOAD_EVENT } from '../lib/loader/Resource';
 import { EVADataRes, EVAImage } from './utils/resources';
 
-const imageRes = EVAImage.from({
-  name: 'image',
-  preload: true,
-  image: 'https://gw.alicdn.com/tfs/TB1dAN1BbY1gK0jSZTEXXXDQVXa-512-512.png',
-});
+let imageRes;
 
-const imageRes2 = EVAImage.from({
-  name: 'image2',
-  preload: true,
-  image: 'https://gw.alicdn.com/tfs/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
-});
+let imageRes2;
 
-const dataRes = EVADataRes.from({
-  name: 'vertex',
-  data: {},
-});
+let dataRes;
 
 describe('resource management', () => {
   let res: Resource;
   beforeEach(() => {
     res = new Resource();
+    imageRes = EVAImage.from({
+      name: 'image',
+      preload: true,
+      image: 'https://gw.alicdn.com/tfs/TB1dAN1BbY1gK0jSZTEXXXDQVXa-512-512.png',
+    });
+    imageRes2 = EVAImage.from({
+      name: 'image2',
+      preload: true,
+      image: 'https://gw.alicdn.com/tfs/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
+    });
+    dataRes = EVADataRes.from({
+      name: 'vertex',
+      data: {},
+    });
   });
 
   it('constructor', () => {
@@ -69,7 +72,7 @@ describe('resource management', () => {
     res.on(LOAD_EVENT.COMPLETE, () => {
       expect(checkResourceSpy).toHaveBeenCalledTimes(1);
       done();
-    })
+    });
     res.loadConfig([imageRes]);
   });
 
@@ -79,24 +82,24 @@ describe('resource management', () => {
   });
 
   it('preload without resource', done => {
-    res.on(LOAD_EVENT.COMPLETE, (loader) => {
+    res.on(LOAD_EVENT.COMPLETE, loader => {
       expect(loader.resourceTotal).toBe(0);
-      done()
-    })
+      done();
+    });
     res.preload();
   });
 
   it('preload with resources', done => {
     const progressSpy = jest.fn();
     res.on(LOAD_EVENT.PROGRESS, progressSpy);
-    res.on(LOAD_EVENT.COMPLETE, (loader) => {
+    res.on(LOAD_EVENT.COMPLETE, loader => {
       expect(progressSpy).toBeCalledTimes(2);
       expect(loader.resourceTotal).toBe(2);
       done();
-    })
+    });
     res.addResource([imageRes, imageRes2]);
     res.preload();
-  })
+  });
 
   /**
    * 连续触发两次 preload，会导致 resourceManager 的 progress 属性被覆盖
@@ -105,10 +108,7 @@ describe('resource management', () => {
     res.loadConfig([imageRes]);
     res.loadConfig([imageRes2]);
 
-    const [image, dragonBone] = await Promise.all([
-      res.getResource(imageRes.name),
-      res.getResource(imageRes2.name),
-    ]);
+    const [image, dragonBone] = await Promise.all([res.getResource(imageRes.name), res.getResource(imageRes2.name)]);
 
     expect(image).toMatchObject({});
     expect(dragonBone).toMatchObject({});
@@ -171,7 +171,7 @@ describe('resource management', () => {
     res.on(LOAD_EVENT.COMPLETE, () => {
       expect(imageInstanceCallback).toHaveBeenCalled();
       done();
-    })
+    });
     res.loadConfig([imageRes]);
   });
 

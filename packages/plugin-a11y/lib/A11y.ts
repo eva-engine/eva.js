@@ -1,4 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
+import {Component} from '@eva/eva.js';
+import {type, step} from '@eva/inspector-decorator';
 import {uuid} from './utils';
 
 export interface A11yParams {
@@ -13,31 +14,31 @@ export interface A11yParams {
   [propName: string]: string | object | number;
 }
 
-export default class A11y extends Component {
+export default class A11y extends Component<A11yParams> {
   static componentName: string = 'A11y';
 
   /**
    * 是否可交互
    */
-  @decorators.IDEProp interactive: boolean;
+  @type('boolean') interactive: boolean;
   /**
    * 无障碍标签朗读内容
    */
-  @decorators.IDEProp hint: string;
+  @type('string') hint: string;
   /**
    * 弃用，将根据Event组件自动添加
    * 事件对象
    */
-  @decorators.IDEProp event: Component;
+  event: Component;
   /**
    * 延时加载时间（millisecond）
    */
-  @decorators.IDEProp delay: number;
+  @type('number') @step(1) delay: number;
 
   /**
    * role 属性
    */
-  @decorators.IDEProp role: string;
+  @type('string') role: string;
 
   /**
    * 弃用，将属性写在component上
@@ -45,7 +46,7 @@ export default class A11y extends Component {
    * @example
    * aria-valuemin = "0"
    */
-  @decorators.IDEProp props: object;
+  props: object;
 
   /**
    * 弃用，将属性写在component上
@@ -53,18 +54,18 @@ export default class A11y extends Component {
    * @example
    * aria-hidden = "true"
    */
-  @decorators.IDEProp state: object;
+  state: object;
 
   /**
    * 弃用，将属性写在component上
    * 传入自定义属性
    */
-  @decorators.IDEProp attr: object;
+  attr: object;
 
   /**
    * 辅助Dom id 自动生成
    */
-  @decorators.IDEProp a11yId: string;
+  @type('string') a11yId: string;
 
   /**
    * 无障碍组件构造函数
@@ -82,15 +83,7 @@ export default class A11y extends Component {
   constructor(param: A11yParams) {
     super();
     Object.assign(this, param);
-    const {
-      hint = '',
-      event,
-      delay = 0,
-      attr = {},
-      role = '',
-      props = {},
-      state = {},
-    } = param;
+    const { hint = '', event, delay = 0, attr = {}, role = '', props = {}, state = {} } = param;
     this.hint = hint;
     this.event = event;
     this.delay = delay;

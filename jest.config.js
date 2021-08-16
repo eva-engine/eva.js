@@ -22,6 +22,7 @@ module.exports = {
   transform: {
     '^.+\\.(ts|js)?$': 'ts-jest',
   },
+  transformIgnorePatterns: [],
   watchPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',

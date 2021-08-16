@@ -11,7 +11,7 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "removeComments": false,
+    "removeComments": true,
     "noEmitHelpers": true,
     "importHelpers": true,
     "sourceMap": false,
@@ -19,6 +19,7 @@
     "noImplicitReturns": false,
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
     "lib": [
       "esnext",
       "dom"
@@ -31,8 +32,8 @@
       "@eva/miniprogram-*": [
         "packages/eva-miniprogram-*/lib"
       ],
-      "@eva/eva.js": [
-        "packages/eva.js/lib"
+      "@eva/miniprogram-pixi": [
+        "packages/miniprogram-pixi/lib"
       ],
       "@eva/*": [
         "packages/*/lib"

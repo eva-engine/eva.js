@@ -1,5 +1,5 @@
-import {TestSystem, TestComponent} from '@eva/plugin-renderer-test';
-import {GameObject, Transform} from '../lib';
+import { TestSystem, TestComponent } from '@eva/plugin-renderer-test';
+import { GameObject, Transform } from '../lib';
 import {
   initObserver,
   setSystemObserver,
@@ -30,14 +30,9 @@ describe('observer', () => {
   it('initObserver successfully', () => {
     initObserver([TestSystem]);
 
-    const {
-      componentProps,
-      systemInstance,
-      observerInfos,
-    } = testUtils.getLocal();
+    const { componentProps, systemInstance, observerInfos } = testUtils.getLocal();
 
-    const observerKeyCount = Object.keys(TestSystem.observerInfo['Test'])
-      .length;
+    const observerKeyCount = Object.keys(TestSystem.observerInfo['Test']).length;
     expect(componentProps['Test'].length).toBe(observerKeyCount);
     expect(systemInstance['Test']).toStrictEqual(system);
     expect(observerInfos['Test']).toStrictEqual(TestSystem.observerInfo);
@@ -52,7 +47,7 @@ describe('observer', () => {
     observer(testComp, testComp.name);
 
     expect(testComp['_size']).toEqual([10, 10]);
-    expect(testComp['_style']).toMatchObject({color: 'rgba(255, 255, 255)'});
+    expect(testComp['_style']).toMatchObject({ color: 'rgba(255, 255, 255)' });
     expect(system.componentObserver.add).toHaveBeenCalledTimes(1);
 
     const size = [20, 20];
@@ -77,11 +72,11 @@ describe('observer', () => {
     const gameObj = new GameObject('gameObj');
     gameObj.addComponent(testComp);
 
-    TestSystem.observerInfo['Test'].push({prop: ['transform'], deep: false});
+    TestSystem.observerInfo['Test'].push({ prop: ['transform'], deep: false });
     initObserver(TestSystem);
     observer(testComp, testComp.name);
 
-    const {componentProps} = testUtils.getLocal();
+    const { componentProps } = testUtils.getLocal();
     expect(componentProps['Test']).toContainEqual({
       prop: ['transform'],
       deep: false,
@@ -103,7 +98,7 @@ describe('observer', () => {
   });
 
   it('should throw error when component not instanceof Component', () => {
-    let comp: any = {name: 'Test', size: [15, 15]};
+    const comp: any = { name: 'Test', size: [15, 15] };
     expect(() => {
       observer(comp);
     }).toThrow('component param must be an instance of Component');
@@ -124,7 +119,7 @@ describe('observer', () => {
   });
 
   it('the component represented by componentName does not exist', () => {
-    let testComp = new TestComponent();
+    const testComp = new TestComponent();
     observer(testComp, 'any');
     expect(testComp['_size']).toBeUndefined();
   });
@@ -174,12 +169,10 @@ describe('observer', () => {
       const testComp = new TestComponent();
       gameObj.addComponent(testComp);
 
-      const {objectCache} = testUtils.getLocal();
+      const { objectCache } = testUtils.getLocal();
       expect(objectCache[gameObj.id]).toHaveProperty('Test_size');
       expect(objectCache[gameObj.id]).toHaveProperty('Test_style');
-      expect(objectCache[gameObj.id]).toHaveProperty(
-        'Test_geomerty,data,vertex',
-      );
+      expect(objectCache[gameObj.id]).toHaveProperty('Test_geomerty,data,vertex');
 
       observerRemoved(testComp);
       expect(objectCache[gameObj.id]).toBeUndefined();

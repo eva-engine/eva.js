@@ -1,3 +1,3 @@
-import Event, {HIT_AREA_TYPE, EventParams} from './component';
-import EventSystem from './system';
-export {Event, EventSystem, HIT_AREA_TYPE, EventParams};
+export { default as EventSystem } from './system';
+export { default as Event, HIT_AREA_TYPE } from './component';
+export type { EventParams } from './component';

@@ -25,9 +25,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const execa = require('execa');
-const {gzipSync} = require('zlib');
-const {compress} = require('brotli');
-const {targets: allTargets, fuzzyMatchTarget} = require('./utils');
+const { gzipSync } = require('zlib');
+const { compress } = require('brotli');
+const { targets: allTargets, fuzzyMatchTarget } = require('./utils');
 
 const args = require('minimist')(process.argv.slice(2));
 const targets = args._;
@@ -77,32 +77,37 @@ async function build(target) {
   }
 
   const env = (pkg.buildOptions && pkg.buildOptions.env) || (devOnly ? 'development' : 'production');
-  await execa(
-    'rollup',
-    [
-      '-c',
-      '--environment',
+
+  try {
+    await execa(
+      'rollup',
       [
-        `COMMIT:${commit}`,
-        `NODE_ENV:${env}`,
-        `TARGET:${target}`,
-        formats ? `FORMATS:${formats}` : '',
-        buildTypes ? 'TYPES:true' : '',
-        prodOnly ? 'PROD_ONLY:true' : '',
-        sourceMap ? 'SOURCE_MAP:true' : '',
-      ]
-        .filter(Boolean)
-        .join(','),
-    ],
-    {stdio: 'inherit'},
-  );
+        '-c',
+        '--environment',
+        [
+          `COMMIT:${commit}`,
+          `NODE_ENV:${env}`,
+          `TARGET:${target}`,
+          formats ? `FORMATS:${formats}` : '',
+          buildTypes ? 'TYPES:true' : '',
+          prodOnly ? 'PROD_ONLY:true' : '',
+          sourceMap ? 'SOURCE_MAP:true' : '',
+        ]
+          .filter(Boolean)
+          .join(','),
+      ],
+      { stdio: 'inherit' },
+    );
+  } catch (err) {
+    console.error(err);
+  }
 
   if (buildTypes && pkg.types) {
     console.log();
     console.log(chalk.bold(chalk.yellow(`Rolling up type definitions for ${target}...`)));
 
     // build types
-    const {Extractor, ExtractorConfig} = require('@microsoft/api-extractor');
+    const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
 
     const extractorConfigPath = path.resolve(pkgDir, 'api-extractor.json');
     const extractorConfig = ExtractorConfig.loadFileAndPrepare(extractorConfigPath);
@@ -128,7 +133,8 @@ async function build(target) {
       console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));
     } else {
       console.error(
-        `API Extractor completed with ${extractorResult.errorCount} errors` + ` and ${extractorResult.warningCount} warnings`,
+        `API Extractor completed with ${extractorResult.errorCount} errors` +
+          ` and ${extractorResult.warningCount} warnings`,
       );
       process.exitCode = 1;
     }
@@ -151,7 +157,7 @@ function checkAllSizes(targets) {
 function checkSize(target) {
   const pkgDir = path.resolve(`packages/${target}`);
   const pkg = require(`${pkgDir}/package.json`);
-  checkFileSize(`packages/dist/cdn/${pkg.bundle}.js`);
+  checkFileSize(`${pkgDir}/dist/${pkg.bundle}.js`);
 }
 
 function checkFileSize(filePath) {
@@ -165,6 +171,8 @@ function checkFileSize(filePath) {
   const compressed = compress(file);
   const compressedSize = (compressed.length / 1024).toFixed(2) + 'kb';
   console.log(
-    `${chalk.gray(chalk.bold(path.basename(filePath)))} min:${minSize} / gzip:${gzippedSize} / brotli:${compressedSize}`,
+    `${chalk.gray(
+      chalk.bold(path.basename(filePath)),
+    )} min:${minSize} / gzip:${gzippedSize} / brotli:${compressedSize}`,
   );
 }

@@ -1,14 +1,15 @@
+import { type } from '@eva/inspector-decorator'
 import {decorators, System} from '../lib';
 
-const {IDEProp, componentObserver} = decorators;
+const {componentObserver} = decorators;
 
 describe('decorators', () => {
   it('ide decorator should collect props', () => {
     class Test {
-      static IDEProps: Array<string> = [];
+      static IDEProps: string[] = [];
 
-      @IDEProp public name: string = 'Test';
-      @IDEProp public size: Array<number> = [10, 10];
+      @type('string') public name: string = 'Test';
+      @type('size') public size: number[] = [10, 10];
     }
     expect(Test.IDEProps.length).toBe(2);
     expect(Test.IDEProps).toEqual(['name', 'size']);
@@ -19,8 +20,8 @@ describe('decorators', () => {
       Transform: [
         'size',
         ['style', 'color'],
-        {prop: 'position', deep: false},
-        {prop: ['transform', 'translate'], deep: true},
+        { prop: 'position', deep: false },
+        { prop: ['transform', 'translate'], deep: true },
       ],
     })
     class Test extends System {}

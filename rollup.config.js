@@ -4,8 +4,6 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
 import {terser} from 'rollup-plugin-terser';
 import {miniprogramPlugins1, miniprogramPlugins2} from './rollup.miniprogram.plugin';
 import serve from 'rollup-plugin-serve';
@@ -24,6 +22,7 @@ const entryFile = resolve('lib/index.ts');
 const pkg = require(resolve(`package.json`));
 const packageOptions = pkg.buildOptions || {};
 
+const rootDir = path.resolve(__dirname);
 const exampleDir = path.resolve(__dirname, 'examples');
 const evajsCDNDir = path.resolve(__dirname, 'dist/cdn');
 
@@ -38,7 +37,7 @@ const outputConfigs = {
   },
   umd: {
     name: pkg.bundle,
-    file: path.resolve(evajsCDNDir, `${pkg.bundle}.js`),
+    file: resolve(`dist/${pkg.bundle}.js`),
     format: 'umd',
   },
   miniprogram: {
@@ -60,16 +59,8 @@ if (!process.env.PROD_ONLY) {
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
-    if (format === 'esm') {
-      packageConfigs.push(createEsmDevelopConfig(format));
-    }
-
-    if (format === 'cjs') {
-      packageConfigs.push(createCjsDevelopConfig(format));
-    }
-
-    if (format === 'umd' && pkg.bundle) {
-      packageConfigs.push(createUmdDevelopConfig(format));
+    if (format === 'esm' || format === 'cjs' || (format === 'umd' && pkg.bundle)) {
+      packageConfigs.push(createConfig(format, outputConfigs[format]));
     }
   });
 }
@@ -99,7 +90,10 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
     process.exit(1);
   }
 
+  output.exports = 'auto';
   output.sourcemap = !!process.env.SOURCE_MAP;
+  output.externalLiveBindings = false;
+
   const shouldEmitDeclaration = process.env.TYPES != null && !hasTypesChecked;
 
   const tsPlugin = typescript({
@@ -118,6 +112,23 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
   });
   hasTypesChecked = true;
 
+  let nodePlugins = [];
+  if (format === 'umd') {
+    nodePlugins = [
+      require('@rollup/plugin-node-resolve').nodeResolve(),
+      require('rollup-plugin-polyfill-node')(),
+      require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
+    ];
+  }
+
+  let external = [];
+  if (format === 'esm' || format === 'cjs') {
+    external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
+  } else {
+    const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => dep.startsWith('@eva'));
+    external = ['pixi.js', ...evaDependencies];
+  }
+
   return {
     input: entryFile,
     output: {
@@ -129,24 +140,17 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
         '@eva/renderer-adapter': 'EVA.rendererAdapter',
       },
     },
-    external: [
-      'pixi.js',
-      '@eva/eva.js',
-      '@eva/plugin-renderer',
-      '@eva/renderer-adapter',
-    ],
+    external,
     plugins: [
       ...plugins1,
-      globals(),
-      builtins(),
       json({preferConst: true}),
-      commonjs(),
-      tsPlugin,
-      ...plugins2,
       replace({
-        __DEV__: process.env.NODE_ENV === 'development',
         __TEST__: false,
+        __DEV__: process.env.NODE_ENV === 'development',
       }),
+      ...nodePlugins,
+      tsPlugin,
+      ...plugins2
     ],
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
@@ -157,46 +161,6 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
       moduleSideEffects: false,
     },
   };
-}
-
-function createCjsDevelopConfig(format) {
-  return createConfig(format, {
-    file: outputConfigs[format].file,
-    format: outputConfigs[format].format,
-  });
-}
-
-function createEsmDevelopConfig(format) {
-  return createConfig(format, {
-    file: outputConfigs[format].file,
-    format: outputConfigs[format].format,
-  });
-}
-
-function createUmdDevelopConfig(format) {
-  let plugins = [
-    nodeResolve({
-      browser: true,
-      mainFields: ['jsnext', 'esnext', 'module', 'main'],
-      rootDir: packageDir,
-    }),
-  ];
-
-  if (process.env.ROLLUP_WATCH) {
-    plugins.push(
-      ...[
-        serve({
-          open: true,
-          contentBase: [exampleDir, evajsCDNDir],
-          host: 'localhost',
-          port: 8080,
-        }),
-        livereload(evajsCDNDir),
-      ],
-    );
-  }
-
-  return createConfig(format, outputConfigs[format], plugins);
 }
 
 function createCjsProductionConfig(format) {
@@ -210,7 +174,6 @@ function createCjsProductionConfig(format) {
       terser({
         toplevel: true,
         mangle: true,
-        output: {comments: false},
         compress: true,
       }),
     ],
@@ -219,20 +182,15 @@ function createCjsProductionConfig(format) {
 
 function createMinifiedConfig(format) {
   const {file, name} = outputConfigs[format];
+  const destFilename = file.replace(/\.js$/, '.min.js');
   return createConfig(
     format,
     {
       name,
       format,
-      file: file.replace('dist/cdn', 'dist/cdn/min').replace(/\.js$/, '.min.js'),
+      file: destFilename,
     },
     [
-      nodeResolve({
-        browser: true,
-        mainFields: ['jsnext', 'esnext', 'module', 'main'],
-        rootDir: packageDir,
-        preferBuiltins: true,
-      }),
       terser({
         toplevel: true,
         mangle: true,

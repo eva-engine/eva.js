@@ -20,6 +20,7 @@ selenium-debug.log
 /_*
 
 # Distribution
+dist/
 coverage/
 types/
 packages/**/dist/
@@ -29,3 +30,6 @@ coverage
 temp/
 api/
 stats.html
+
+examples/spine38.html
+examples/loader.html

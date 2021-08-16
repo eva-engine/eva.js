@@ -1,15 +1,25 @@
-import {System, decorators, Game, LOAD_SCENE_MODE} from '@eva/eva.js';
-import {Application} from '@eva/renderer-adapter';
+import { System, decorators, Game, LOAD_SCENE_MODE } from '@eva/eva.js';
+import { Application } from '@eva/renderer-adapter';
 import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
-import {ticker} from 'pixi.js';
+import { ticker } from 'pixi.js';
 
 export enum RENDERER_TYPE {
   UNKNOWN = 0,
   WEBGL = 1,
   CANVAS = 2,
 }
+
+const disableScroll = renderer => {
+  renderer.plugins.interaction.autoPreventDefault = true;
+  renderer.view.style.touchAction = 'none';
+};
+
+const enableScroll = renderer => {
+  renderer.plugins.interaction.autoPreventDefault = false;
+  renderer.view.style.touchAction = 'auto';
+};
 
 @decorators.componentObserver({
   Transform: ['_parent'],
@@ -38,14 +48,14 @@ export default class Renderer extends System {
       containerManager: this.containerManager,
     });
 
-    this.game.on('sceneChanged', ({scene, mode, params}) => {
+    this.game.on('sceneChanged', ({ scene, mode, params }) => {
       let application;
       switch (mode) {
         case LOAD_SCENE_MODE.SINGLE:
           application = this.application;
           break;
         case LOAD_SCENE_MODE.MULTI_CANVAS:
-          application = this.createMultiApplication({params});
+          application = this.createMultiApplication({ params });
           break;
       }
       scene.canvas = application.view;
@@ -68,7 +78,7 @@ export default class Renderer extends System {
     }
   }
 
-  createMultiApplication({params}) {
+  createMultiApplication({ params }) {
     const app = this.createApplication(params);
     this.multiApps.push(app);
     return app;
@@ -81,17 +91,31 @@ export default class Renderer extends System {
     }
     ticker.shared.autoStart = false;
     ticker.shared.stop();
-    const app = new Application({sharedTicker: true, ...params});
-    if (params.preventScroll !== false) {
-      app.renderer.plugins.interaction.autoPreventDefault = false;
-      app.renderer.view.style.touchAction = 'auto';
+    const app = new Application({ sharedTicker: true, ...params });
+    /**
+     * Fix https://github.com/eva-engine/eva.js/issues/30
+     * PreventScroll is legacy, because it has bug.
+     */
+    if (params.preventScroll !== undefined) {
+      console.warn(
+        'PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game',
+      );
+      params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+    }
+
+    if (params.enableScroll !== undefined) {
+      params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
+    }
+
+    if (params.preventScroll === undefined && params.enableScroll === undefined) {
+      enableScroll(app.renderer);
     }
     return app;
   }
 
-  update(e) {
+  update() {
     const changes = this.componentObserver.clear();
-    for (let changed of changes) {
+    for (const changed of changes) {
       this.transform.componentChanged(changed);
     }
 
@@ -102,15 +126,14 @@ export default class Renderer extends System {
       });
       this.rendererManager.update(gameObject);
     }
-
-    this.application.ticker.update(e.time);
   }
-  lateUpdate() {
+  lateUpdate(e) {
     this.transform.update();
+    this.application.ticker.update(e.time);
   }
   onDestroy() {
     this.application.destroy();
-    for (let app of this.multiApps) {
+    for (const app of this.multiApps) {
       app && app.destroy();
     }
     this.transform.destroy();
@@ -121,5 +144,10 @@ export default class Renderer extends System {
     this.application = null;
     this.game = null;
     this.multiApps = null;
+  }
+  resize(width, height) {
+    this.params.width = width;
+    this.params.height = height;
+    this.application.renderer.resize(width, height);
   }
 }

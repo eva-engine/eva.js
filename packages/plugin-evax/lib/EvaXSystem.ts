@@ -1,5 +1,5 @@
 import { System, decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
-import EventEmitter from 'eventemitter3'
+import EventEmitter from 'eventemitter3';
 import EvaXComponent from './EvaXComponent';
 import { defineProperty, updateStore } from './utils';
 
@@ -42,14 +42,7 @@ export default class EvaXSystem extends System {
       return;
     }
     const realKey = key.split('.').slice(1).join('.');
-    defineProperty(
-      realKey,
-      deep,
-      this.store,
-      key,
-      this.store,
-      (key, oldStore) => this.changeCallback(key, oldStore),
-    );
+    defineProperty(realKey, deep, this.store, key, this.store, (key, oldStore) => this.changeCallback(key, oldStore));
   }
   update() {
     const changes = this.componentObserver.clear();
@@ -106,5 +99,5 @@ export default class EvaXSystem extends System {
   emit(eventName, ...args) {
     return this.ee.emit(eventName, ...args);
   }
-  onDestroy() { }
+  onDestroy() {}
 }

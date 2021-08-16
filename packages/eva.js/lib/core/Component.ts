@@ -12,6 +12,9 @@ export interface UpdateParams {
   /** current timestamp */
   time: number;
 
+  /** current timestamp */
+  currentTime: number;
+
   /** fps at current frame */
   fps: number;
 }
@@ -31,9 +34,7 @@ export type ComponentType = typeof Component;
  * assert(getComponentName(new Transform()) === 'Transform')
  * ```
  */
-export function getComponentName<T extends Component, U extends ComponentType>(
-  component: T | U,
-): string {
+export function getComponentName<T extends Component<ComponentParams>>(component: T | ComponentConstructor<T>): string {
   if (component instanceof Component) {
     return component.name;
   } else if (component instanceof Function) {
@@ -41,11 +42,19 @@ export function getComponentName<T extends Component, U extends ComponentType>(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ComponentParams {}
+
+export interface ComponentConstructor<T extends Component<ComponentParams>> {
+  componentName: string;
+  new (params?: ComponentParams): T;
+}
+
 /**
  * Component contain raw data apply to gameObject and how it interacts with the world
  * @public
  */
-class Component extends EventEmitter {
+class Component<T extends ComponentParams = {}> extends EventEmitter {
   /** Name of this component */
   static componentName: string;
 
@@ -67,9 +76,9 @@ class Component extends EventEmitter {
   gameObject: GameObject;
 
   /** Default paramaters for this component */
-  __componentDefaultParams: string;
+  __componentDefaultParams: T;
 
-  constructor(params?: any) {
+  constructor(params?: T) {
     super();
     // @ts-ignore
     this.name = this.constructor.componentName;
@@ -81,7 +90,7 @@ class Component extends EventEmitter {
    * @param params - optional initial parameters
    * @override
    */
-  init?(params?: any): void;
+  init?(params?: T): void;
 
   /**
    * Called when component is added to a gameObject

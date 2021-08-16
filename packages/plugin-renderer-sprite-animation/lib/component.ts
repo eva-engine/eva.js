@@ -1,4 +1,5 @@
-import {Component, decorators} from '@eva/eva.js';
+import {Component} from '@eva/eva.js';
+import {type, step} from '@eva/inspector-decorator';
 import {SpriteAnimation as SpriteAnimationEngine} from '@eva/renderer-adapter';
 
 export interface SpriteAnimationParams {
@@ -7,22 +8,35 @@ export interface SpriteAnimationParams {
   speed: number;
 }
 
-export default class SpriteAnimation extends Component {
+export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   static componentName: string = 'SpriteAnimation';
-  @decorators.IDEProp resource: string = '';
-  @decorators.IDEProp autoPlay: boolean = true;
-  @decorators.IDEProp speed: number = 100;
+  @type('string') resource: string = '';
+  @type('boolean') autoPlay: boolean = true;
+  @type('number') @step(10) speed: number = 100;
   _animate: SpriteAnimationEngine;
   private waitPlay: boolean = false;
   private waitStop: boolean = false;
+  private times: number = Infinity;
+  private count: number = 0;
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
+    this.on('loop', () => {
+      if (++this.count >= this.times) {
+        this.animate.stop();
+        this.emit('complete');
+      }
+    });
   }
-  play() {
+  play(times = Infinity) {
+    if (times === 0) {
+      return;
+    }
+    this.times = times;
     if (!this.animate) {
       this.waitPlay = true;
     } else {
       this.animate.play();
+      this.count = 0;
     }
   }
   stop() {
@@ -36,7 +50,7 @@ export default class SpriteAnimation extends Component {
     this._animate = val;
     if (this.waitPlay) {
       this.waitPlay = false;
-      this.play();
+      this.play(this.times);
     }
     if (this.waitStop) {
       this.waitStop = false;
@@ -45,5 +59,11 @@ export default class SpriteAnimation extends Component {
   }
   get animate() {
     return this._animate;
+  }
+  gotoAndPlay(frameNumber) {
+    this.animate.gotoAndPlay(frameNumber);
+  }
+  gotoAndStop(frameNumber) {
+    this.animate.gotoAndStop(frameNumber);
   }
 }

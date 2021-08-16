@@ -1,9 +1,10 @@
-import {TextStyle} from 'pixi.js';
-import {Component, decorators} from '@eva/eva.js';
+import { TextStyle } from 'pixi.js';
+import { Component } from '@eva/eva.js';
+import { type } from '@eva/inspector-decorator';
 
 export interface TextParams {
   text: string;
-  style: {
+  style?: {
     align?: string;
     breakWords?: boolean;
     dropShadow?: boolean;
@@ -12,13 +13,7 @@ export interface TextParams {
     dropShadowBlur?: number;
     dropShadowColor?: string | number;
     dropShadowDistance?: number;
-    fill?:
-      | string
-      | string[]
-      | number
-      | number[]
-      | CanvasGradient
-      | CanvasPattern;
+    fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
     fillGradientType?: number;
     fillGradientStops?: number[];
     fontFamily?: string | string[];
@@ -42,10 +37,11 @@ export interface TextParams {
   };
 }
 
-export default class Text extends Component {
+export default class Text extends Component<TextParams> {
   static componentName: string = 'Text';
-  @decorators.IDEProp text: string = '';
-  @decorators.IDEProp style: TextParams['style'] = {};
+  @type('string') text: string = '';
+  // @decorators.IDEProp 复杂编辑后续添加
+  style: TextParams['style'] = {};
   init(obj?: TextParams) {
     const style = new TextStyle({
       fontSize: 20,

@@ -1,25 +1,43 @@
+import { OBSERVER_TYPE, decorators, ComponentChanged, resource } from '@eva/eva.js';
+import { Renderer, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import {
-  OBSERVER_TYPE,
-  decorators,
-  ComponentChanged,
-  resource
-} from '@eva/eva.js';
-import {
-  Renderer,
-  RendererManager,
-  ContainerManager,
-} from '@eva/plugin-renderer';
-import lottiePixi from '@ali/lottie-pixi';
+  AnimationManager,
+  DisplayRegister,
+  LoaderRegister,
+  CompElement,
+  PathLottie,
+  SolidElement,
+  SpriteElement,
+  Container,
+  LoadTexture,
+  LoadJson,
+} from './lottie-pixi';
 import { imageHandle } from './utils';
-import Lottie from './Lottie'
+import Lottie from './Lottie';
 
-const { AnimationManager } = lottiePixi;
+function loadTexture(assets, options) {
+  return new LoadTexture(assets, options);
+}
+
+function loadJson(path) {
+  return new LoadJson(path);
+}
+
+LoaderRegister.registerLoaderByType(LoaderRegister.Type.Texture, loadTexture);
+LoaderRegister.registerLoaderByType(LoaderRegister.Type.Ajax, loadJson);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Null, CompElement);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Path, PathLottie);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Shape, CompElement);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Solid, SolidElement);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Sprite, SpriteElement);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Component, CompElement);
+DisplayRegister.registerDisplayByType(DisplayRegister.Type.Container, Container);
 
 @decorators.componentObserver({
-  Lottie: []
+  Lottie: [],
 })
 export default class LottieSystem extends Renderer {
-  static systemName = 'LottieSystem'
+  static systemName = 'LottieSystem';
   public manager: any;
   public app: any;
   public renderSystem;
@@ -33,8 +51,8 @@ export default class LottieSystem extends Renderer {
     'complete',
     'loopComplete',
     'enterFrame',
-    'update'
-  ]
+    'update',
+  ];
 
   /**
    * System 初始化用，可以配置参数，游戏未开始
@@ -43,7 +61,7 @@ export default class LottieSystem extends Renderer {
    * @param param init params
    */
   init() {
-    this.renderSystem = this.game.systems.find((s: any) => (s.application))
+    this.renderSystem = this.game.systems.find((s: any) => s.application);
     this.app = this.renderSystem.application;
   }
 
@@ -60,11 +78,9 @@ export default class LottieSystem extends Renderer {
   async add(changed: ComponentChanged) {
     this.manager = new AnimationManager(this.app);
     const component = changed.component as Lottie;
-    const container = this.renderSystem.containerManager.getContainer(
-      changed.gameObject.id,
-    );
+    const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
     if (!container) return;
-    const { resource: rn, ...otherOpts } = component.options
+    const { resource: rn, ...otherOpts } = component.options;
     const { data } = await resource.getResource(rn);
     const json = { ...(data.json || {}) };
     const assets = json.assets || [];
@@ -73,23 +89,22 @@ export default class LottieSystem extends Renderer {
     });
     const anim = this.manager.parseAnimation({
       keyframes: json,
-      ...otherOpts
-    })
+      ...otherOpts,
+    });
     component.anim = anim;
-    container.addChildAt(anim.group, 0)
+    container.addChildAt(anim.group, 0);
     this.managerLife.forEach(eventName => {
-      anim.on(eventName, e => component.emit(eventName, e))
-    })
+      anim.on(eventName, e => component.emit(eventName, e));
+    });
     if (anim.isImagesLoaded) component.emit('success', {});
   }
 
   remove(changed: ComponentChanged) {
     const component = changed.component as Lottie;
-    const container = this.renderSystem.containerManager.getContainer(
-      changed.gameObject.id,
-    );
+    const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
     if (container) {
       container.removeChild(component.anim.group);
+      component.anim.group.destory(true);
     }
     component.anim = null;
   }

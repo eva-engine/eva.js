@@ -1,5 +1,5 @@
 import Ticker from '../lib/game/Ticker';
-import {requestAnimationFrameMock} from './__mocks__/requestAnimationFrame';
+import { requestAnimationFrameMock } from './__mocks__/requestAnimationFrame';
 
 function sleep(timeout = 100) {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -12,7 +12,7 @@ describe('Ticker', () => {
   });
 
   it('add raf callback to ticker', async () => {
-    ticker = new Ticker({autoStart: false, frameRate: 60});
+    ticker = new Ticker({ autoStart: false, frameRate: 60 });
     const callback1 = jest.fn();
     ticker.add(callback1);
 
@@ -26,7 +26,7 @@ describe('Ticker', () => {
   });
 
   it('add null callback to ticker', async () => {
-    ticker = new Ticker({autoStart: false, frameRate: 60});
+    ticker = new Ticker({ autoStart: false, frameRate: 60 });
     ticker.add(null);
     ticker.start();
 
@@ -53,7 +53,7 @@ describe('Ticker', () => {
   });
 
   it('remove raf callback', async () => {
-    ticker = new Ticker({autoStart: false, frameRate: 60});
+    ticker = new Ticker({ autoStart: false, frameRate: 60 });
     const callback = jest.fn();
     ticker.add(callback);
 
@@ -79,39 +79,6 @@ describe('Ticker', () => {
     ticker.pause();
     await sleep(30);
     expect(requestAnimationFrameMock.queue.size).toBe(1);
-  });
-
-  it('active ticker when ticker pausing', async () => {
-    ticker = new Ticker({autoStart: false, frameRate: 60});
-    ticker.active();
-    await sleep(17);
-    expect(requestAnimationFrameMock.queue.size).toBe(1);
-  });
-
-  it('active ticker when ticker background', async () => {
-    ticker = new Ticker({autoStart: false, frameRate: 60});
-    ticker.background();
-    await sleep(17);
-    expect(requestAnimationFrameMock.queue.size).toBe(0);
-
-    ticker.active();
-    await sleep(17);
-    expect(requestAnimationFrameMock.queue.size).toBe(0);
-  });
-
-  it('background ticker when ticker started', async () => {
-    ticker = new Ticker({autoStart: false, frameRate: 60});
-    ticker.start();
-    await sleep(17);
-    expect(requestAnimationFrameMock.queue.size).toBe(1);
-
-    ticker.background();
-    await sleep(17);
-    expect(requestAnimationFrameMock.queue.size).toBe(1);
-
-    ticker.active();
-    await sleep(17);
-    expect(requestAnimationFrameMock.queue.size).toBe(2);
   });
 
   afterEach(() => {

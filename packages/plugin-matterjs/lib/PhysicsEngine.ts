@@ -1,6 +1,6 @@
 import Matter from './matter';
 import BodiesFactory from './BodiesFactory';
-import {Component, Game} from '@eva/eva.js';
+import { Component, Game } from '@eva/eva.js';
 export default class PhysicsEngine {
   private Engine: any;
   private World: any;
@@ -94,7 +94,7 @@ export default class PhysicsEngine {
         const pairs: any[] = event.pairs || [];
         for (let i = 0; i < pairs.length; i++) {
           const pair = pairs[i];
-          const {bodyA, bodyB} = pair;
+          const { bodyA, bodyB } = pair;
           const componentA: Component = bodyA.component;
           const componentB: Component = bodyB.component;
           componentA.emit(eventName, componentB.gameObject, componentA.gameObject);
@@ -107,10 +107,13 @@ export default class PhysicsEngine {
   private initMouse() {
     if (this.options.mouse && this.options.mouse.open) {
       const mouse = Matter.Mouse.create(this.game.canvas);
-      this.mouseConstraint = Matter.MouseConstraint.create(this.engine, {
-        mouse: mouse,
-        constraint: this.options.mouse.constraint,
-      });
+      let options = this.options.mouse.constraint ? {
+        mouse,
+        constraint: this.options.mouse.constraint
+      } : {
+        mouse
+      };
+      this.mouseConstraint = Matter.MouseConstraint.create(this.engine, options);
       this.World.add(this.engine.world, this.mouseConstraint);
     }
   }

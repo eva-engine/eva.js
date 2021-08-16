@@ -1,10 +1,11 @@
 {
   "name": "@eva/renderer-adapter",
-  "version": "1.0.3-mini.6",
+  "version": "1.1.2-alpha.0",
   "description": "@eva/renderer-adapter",
   "main": "index.js",
   "module": "dist/renderer-adapter.esm.js",
   "bundle": "EVA.rendererAdapter",
+  "unpkg": "dist/EVA.rendererAdapter.min.js",
   "files": [
     "index.js",
     "dist"

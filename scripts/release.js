@@ -110,8 +110,8 @@ async function main() {
     await publishPackage(pkg, targetVersion, runIfNotDry);
   }
 
-  // push to Gitlab
-  step('\nPushing to Gitlab...');
+  // push to GitHub
+  step('\nPushing to GitHub...');
   await runIfNotDry('git', ['tag', `v${targetVersion}`]);
   await runIfNotDry('git', ['push', 'origin', `refs/tags/v${targetVersion}`]);
   await runIfNotDry('git', ['push']);
@@ -149,7 +149,7 @@ function updateDeps(pkg, depType, version) {
   Object.keys(deps).forEach(dep => {
     if (dep.startsWith('@eva/')) {
       console.log(chalk.yellow(`${pkg.name} -> ${depType} -> ${dep}@${version}`));
-      deps[dep] = `^${version}`;
+      deps[dep] = `${version}`;
     }
   });
 }
