@@ -111,18 +111,6 @@ const gameObjectPause = gameObjects => {
   }
 };
 
-// function defineProperty(obj, key, val, attributes) {
-//   let value = val;
-//   Object.defineProperty(obj, key, {
-//     value,
-//     get() { return value; },
-//     set: attributes.set.bind(this),
-//     writable: true,
-//     enumerable: true,
-//     configurable: true,
-//   });
-// }
-
 class Game extends EventEmitter {
   _scene: Scene;
   canvas: HTMLCanvasElement;
