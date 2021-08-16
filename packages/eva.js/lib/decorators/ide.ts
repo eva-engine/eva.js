@@ -9,3 +9,4 @@ export function IDEProp(target, propertyKey) {
   }
   target.constructor.IDEProps.push(propertyKey);
 }
+

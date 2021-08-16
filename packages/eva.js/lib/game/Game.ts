@@ -1,8 +1,8 @@
 import Ticker from './Ticker';
 import Scene from './Scene';
-import System, { SystemType } from '../core/System';
+import System, {SystemType} from '../core/System';
 import Component from '../core/Component';
-import { setSystemObserver, initObserver } from '../core/observer';
+import {setSystemObserver, initObserver} from '../core/observer';
 import EventEmitter from 'eventemitter3';
 
 /** eva plugin struct */
@@ -133,8 +133,10 @@ class Game extends EventEmitter {
 
   constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
-
-    this.ticker = new Ticker({ autoStart: false, frameRate });
+    if(window.__EVA_INSPECTOR_ENV__){
+      window.__EVA_GAME_INSTANCE__ = this;
+    }
+    this.ticker = new Ticker({autoStart: false, frameRate});
     this.initTicker();
 
     if (systems && systems.length) {
@@ -366,7 +368,7 @@ class Game extends EventEmitter {
         this.multiScenes.push(scene);
         break;
     }
-    this.emit('sceneChanged', { scene, mode, params });
+    this.emit('sceneChanged', {scene, mode, params});
   }
 }
 
