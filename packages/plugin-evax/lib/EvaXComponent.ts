@@ -1,4 +1,4 @@
-import { Component, decorators } from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import EvaXSystem from './EvaXSystem';
 
 interface Events {

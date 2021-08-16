@@ -37,9 +37,6 @@ for (let name in adapterArray) {
 }
 
 export const miniprogramPlugins1 = [
-  nodeResolve({
-    resolveOnly: ['resource-loader', 'type-signals', 'parse-uri', 'tslib']
-  }),
   modify({
     find: /@eva\/([\w\.\/-]*)/g,
     replace: (match, moduleName) => {

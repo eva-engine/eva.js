@@ -1,13 +1,9 @@
 import path from 'path';
-import commonjs from '@rollup/plugin-commonjs';
-import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
 import {terser} from 'rollup-plugin-terser';
 import {miniprogramPlugins1, miniprogramPlugins2} from './rollup.miniprogram.plugin';
-import serve from 'rollup-plugin-serve';
-import livereload from 'rollup-plugin-livereload';
 
 if (!process.env.TARGET) {
   throw new Error('TARGET package must be specified via --environment flag.');
@@ -119,12 +115,19 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
       require('rollup-plugin-polyfill-node')(),
       require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
     ];
+  } else if (format === 'miniprogram') {
+    nodePlugins = [
+      require('@rollup/plugin-node-resolve').nodeResolve({
+        resolveOnly: ['resource-loader', 'type-signals', 'parse-uri']
+      }),
+      require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
+    ]
   }
 
   let external = [];
   if (format === 'esm' || format === 'cjs') {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
-  } else {
+  } else if (format === 'umd') {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => dep.startsWith('@eva'));
     external = ['pixi.js', ...evaDependencies];
   }
