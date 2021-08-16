@@ -33,7 +33,7 @@ export default class Transition extends Component<TransitionParams> {
     }
   }
 
-  play(name: string, iteration: number) {
+  play(name: string, iteration?: number) {
     if (!name) {
       name = Object.keys(this.group)[0];
     }
