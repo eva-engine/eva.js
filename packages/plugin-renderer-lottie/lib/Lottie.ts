@@ -1,4 +1,4 @@
-import { Component, decorators } from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import { IExpandOpts, IOptions } from './types';
 import { Sprite, Text, TextStyle, Graphics } from 'pixi.js';
 
@@ -6,9 +6,9 @@ interface ExtendOptions extends IOptions {
   autoStart: boolean;
 }
 
-export default class Lottie extends Component<IOptions> {
-  @decorators.IDEProp
-  slot: { [key: string]: string };
+export default class Lottie extends Component {
+  // @decorators.IDEProp 复杂编辑后续添加
+  slot: { [key: string]: string }
 
   static componentName: string = 'Lottie';
   public static application: any;
