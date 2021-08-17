@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve } from "path";
 import { defineConfig } from 'vite';
 import { readdirSync, statSync } from 'fs';
 
@@ -8,7 +8,7 @@ paths.forEach(path => {
   if (statSync(resolve('./packages', path)).isDirectory()) {
     alias.push({
       find: `@eva/${path}`,
-      replacement: resolve(__dirname, `./packages/${path}/lib`)
+      replacement: resolve(__dirname, `../packages/${path}/lib`)
     })
   }
 });

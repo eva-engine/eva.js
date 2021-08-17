@@ -35,3 +35,4 @@ stats.html
 vite-test/dist
 examples/spine38.html
 examples/loader.html
+package-lock.json

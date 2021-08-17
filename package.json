@@ -4,7 +4,7 @@
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
-    "dev": "vite ./examples -c ./vite.config.ts",
+    "dev": "vite ./examples -c ./examples/vite.config.ts",
     "build": "node ./scripts/build.js",
     "buildDev": "npm run build -- -a -d -f umd",
     "buildProd": "npm run build -- -a -p -f cjs-esm-umd",

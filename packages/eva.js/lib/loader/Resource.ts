@@ -37,9 +37,9 @@ interface TextureBase {
 
 /** Eva resource base */
 export interface ResourceBase {
-  name?: string;
-  type?: RESOURCE_TYPE;
-  src?: {
+  name: string;
+  type: RESOURCE_TYPE;
+  src: {
     json?: SrcBase;
     image?: SrcBase;
     tex?: SrcBase;
@@ -169,7 +169,7 @@ class Resource extends EE {
   /** Start preload */
   public preload(): void {
     const names = Object.values(this.resourcesMap)
-      .filter(({ preload }) => preload)
+      .filter(({ preload, complete }) => preload && !complete)
       .map(({ name }) => name);
     this.progress = new Progress({
       resource: this,
