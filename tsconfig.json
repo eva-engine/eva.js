@@ -3,8 +3,8 @@
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": "dist/types",
-    "target": "es5",
-    "module": "esnext",
+    "target": "ES5",
+    "module": "ES6",
     "moduleResolution": "node",
     "allowJs": true,
     "noUnusedLocals": true,
@@ -30,13 +30,16 @@
     ],
     "paths": {
       "@eva/miniprogram-*": [
-        "packages/eva-miniprogram-*/lib"
+        "packages/miniprogram-*/lib"
       ],
-      "@eva/miniprogram-pixi": [
-        "packages/miniprogram-pixi/lib"
+      "@eva/plugin-*": [
+        "packages/plugin-*/lib"
       ],
-      "@eva/*": [
-        "packages/*/lib"
+      "@eva/eva.js": [
+        "packages/eva.js/lib"
+      ],
+      "@eva/renderer-adapter": [
+        "packages/renderer-adapter/lib"
       ]
     }
   },
