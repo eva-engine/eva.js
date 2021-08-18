@@ -1,10 +1,26 @@
 import { System, decorators, OBSERVER_TYPE } from '@eva/eva.js';
 import PhysicsEngine from './PhysicsEngine';
 
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Object ? DeepPartial<T[P]> : T[P];
+}
+
+export interface PhysicsSystemParams {
+  resolution?: number
+  fps?: number
+  isTest?: boolean
+  element?: HTMLElement
+  mouse?: {
+    open: boolean
+    constraint?:Matter.Constraint
+  }
+  world: DeepPartial<Matter.IWorldDefinition>
+}
+
 @decorators.componentObserver({
   Physics: [{ prop: ['bodyParams'], deep: true }],
 })
-export default class PhysicsSystem extends System {
+export default class PhysicsSystem extends System<PhysicsSystemParams> {
   static systemName = 'PhysicsSystem';
   private engine: PhysicsEngine;
 
@@ -14,16 +30,16 @@ export default class PhysicsSystem extends System {
    * System init, set params, game is not begain
    * @param param init params
    */
-  init(param?: any) {
+  init(param?: PhysicsSystemParams) {
     this.engine = new PhysicsEngine(this.game, param);
-    this.game.canvas.setAttribute('data-pixel-ratio', param.resolution || '1');
+    this.game.canvas.setAttribute('data-pixel-ratio', (param.resolution || '1') as string);
   }
   /**
    * System 被安装的时候，如果游戏还没有开始，那么会在游戏开始的时候调用。用于前置操作，初始化数据等。
    *
    * Called while the System installed, if game is not begain, it will be called while begain. use to pre operation, init data.
    */
-  awake() {}
+  awake() { }
 
   /**
    * System 被安装后，所有的 awake 执行完后
@@ -67,7 +83,7 @@ export default class PhysicsSystem extends System {
    *
    * Like update, called all of gameobject update.
    */
-  lateUpdate() {}
+  lateUpdate() { }
   /**
    * 游戏开始和游戏暂停后开始播放的时候调用。
    *
@@ -90,5 +106,5 @@ export default class PhysicsSystem extends System {
    * System 被销毁的时候调用。
    * Called while the system be destroyed.
    */
-  onDestroy() {}
+  onDestroy() { }
 }

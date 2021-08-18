@@ -55,12 +55,13 @@ export default class TilingSprite extends Renderer {
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         const sprite = this.imgs[changed.gameObject.id];
         this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.tilingSprite);
-        sprite.tilingSprite.destory(true);
+        sprite.tilingSprite.destroy(true);
         delete this.imgs[changed.gameObject.id];
       }
     }
   }
   setProp(id: number, component: TilingSpriteComponent) {
+    // bug possible
     this.imgs[id].tilingSprite.tilePosition = component.tilePosition as any;
     this.imgs[id].tilingSprite.tileScale = component.tileScale as any;
   }

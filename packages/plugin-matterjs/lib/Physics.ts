@@ -6,16 +6,29 @@ export enum PhysicsType {
   POLYGON = 'polygon',
 }
 
-export class Physics extends Component<PhysicsType> {
-  static componentName: string = 'Physics';
-  private bodyParams: any;
-  public body: any;
-  private PhysicsEngine: any;
-  constructor(params: any) {
-    super(params);
+export interface PhysicsParams {
+  type?: PhysicsType
+  bodyOptions?: {
+    isStatic?: boolean,
+    restitution?: number,
+    density?: number,
+  },
+  position?: {
+    x?: number
+    y?: number
   }
+  sides?: number
+  radius?: number
+  stopRotation?: boolean
+}
 
-  init(params: any) {
+export class Physics extends Component<PhysicsParams> {
+  static componentName: string = 'Physics';
+  public bodyParams: PhysicsParams;
+  public body: Matter.Body;
+  private PhysicsEngine: Matter.Engine;
+
+  init(params: PhysicsParams) {
     this.bodyParams = params;
   }
 
@@ -34,3 +47,4 @@ export class Physics extends Component<PhysicsType> {
     Matter.World.remove(this.PhysicsEngine.world, this.body, true);
   }
 }
+new Physics()

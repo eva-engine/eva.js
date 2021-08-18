@@ -1,9 +1,10 @@
 import Ticker from './Ticker';
 import Scene from './Scene';
-import System, {SystemType} from '../core/System';
+import System, { SystemType, SystemConstructor } from '../core/System';
 import Component from '../core/Component';
-import {setSystemObserver, initObserver} from '../core/observer';
+import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
+import type { RendererSystemParams } from 'packages/plugin-renderer/lib/System';
 
 /** eva plugin struct */
 export interface PluginStruct {
@@ -33,7 +34,7 @@ export enum LOAD_SCENE_MODE {
 interface LoadSceneParams {
   scene: Scene;
   mode?: LOAD_SCENE_MODE;
-  params?: any;
+  params?: RendererSystemParams;
 }
 
 const triggerStart = (obj: System | Component) => {
@@ -133,10 +134,10 @@ class Game extends EventEmitter {
 
   constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
-    if(window.__EVA_INSPECTOR_ENV__){
+    if (window.__EVA_INSPECTOR_ENV__) {
       window.__EVA_GAME_INSTANCE__ = this;
     }
-    this.ticker = new Ticker({autoStart: false, frameRate});
+    this.ticker = new Ticker({ autoStart: false, frameRate });
     this.initTicker();
 
     if (systems && systems.length) {
@@ -241,14 +242,14 @@ class Game extends EventEmitter {
    * @param S - system class or system name
    * @returns system instance
    */
-  getSystem(S: SystemType | string): System {
+  getSystem<T extends System>(S: SystemConstructor<T> | string): T {
     return this.systems.find(system => {
       if (typeof S === 'string') {
         return system.name === S;
       } else {
         return system instanceof S;
       }
-    });
+    }) as T;
   }
 
   /** Pause game */
@@ -368,7 +369,7 @@ class Game extends EventEmitter {
         this.multiScenes.push(scene);
         break;
     }
-    this.emit('sceneChanged', {scene, mode, params});
+    this.emit('sceneChanged', { scene, mode, params });
   }
 }
 

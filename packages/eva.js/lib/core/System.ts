@@ -3,11 +3,15 @@ import { UpdateParams } from './Component';
 import ComponentObserver from './ComponentObserver';
 import Game from '../game/Game';
 
+export interface SystemConstructor<T extends System> {
+  systemName: string;
+  new(params?: any): T;
+}
 /**
  * Each System runs continuously and performs global actions on every Entity that possesses a Component of the same aspect as that System.
  * @public
  */
-class System {
+class System<T extends {} = {}> {
   /** System name */
   static systemName: string;
   name: string;
@@ -36,9 +40,9 @@ class System {
   started = false;
 
   /** Default paramaters for this system */
-  __systemDefaultParams: any;
+  __systemDefaultParams: T;
 
-  constructor(params?: any) {
+  constructor(params?: T) {
     this.componentObserver = new ComponentObserver();
     this.__systemDefaultParams = params;
     // @ts-ignore
@@ -54,7 +58,7 @@ class System {
    * @param param - optional params
    * @override
    */
-  init?(param?: any): void;
+  init?(param?: T): void;
 
   /**
    * Calleen system installed
