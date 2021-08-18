@@ -47,4 +47,3 @@ export class Physics extends Component<PhysicsParams> {
     Matter.World.remove(this.PhysicsEngine.world, this.body, true);
   }
 }
-new Physics()
