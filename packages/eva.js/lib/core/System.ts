@@ -3,8 +3,9 @@ import { UpdateParams } from './Component';
 import ComponentObserver from './ComponentObserver';
 import Game from '../game/Game';
 
-export interface SystemConstructor<T extends System> {
+export interface SystemConstructor<T extends System = System> {
   systemName: string;
+  observerInfo: PureObserverInfo
   new(params?: any): T;
 }
 /**
