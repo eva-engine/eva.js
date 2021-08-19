@@ -12,7 +12,6 @@ for (const path of paths) {
     })
   }
 }
-
 export default defineConfig({
   server: {
     open: true,
