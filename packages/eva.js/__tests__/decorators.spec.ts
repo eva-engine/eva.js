@@ -6,13 +6,21 @@ const {componentObserver} = decorators;
 describe('decorators', () => {
   it('ide decorator should collect props', () => {
     class Test {
-      static IDEProps: string[] = [];
+      static IDEProps: any = {};
 
       @type('string') public name: string = 'Test';
       @type('size') public size: number[] = [10, 10];
     }
-    expect(Test.IDEProps.length).toBe(2);
-    expect(Test.IDEProps).toEqual(['name', 'size']);
+    expect(Test.IDEProps).toEqual({
+      name: {
+        key: 'name',
+        type: 'string'
+      },
+      size: {
+        key: 'size',
+        type: 'size'
+      }
+    });
   });
 
   it('class use component observer decorator', () => {
