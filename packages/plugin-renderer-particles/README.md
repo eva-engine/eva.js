@@ -1,11 +1,6 @@
-# `plugin-renderer-particles`
+# @eva/plugin-renderer-particles
 
-> TODO: description
+More Introduction
 
-## Usage
-
-```
-const pluginRendererParticles = require('plugin-renderer-particles');
-
-// TODO: DEMONSTRATE API
-```
+- [EN](https://eva.js.org)
+- [中文](https://eva-engine.gitee.io)
