@@ -1,6 +1,7 @@
 import Ticker from './Ticker';
 import Scene from './Scene';
-import System, { SystemType, SystemConstructor } from '../core/System';
+import type { SystemConstructor } from '../core/System';
+import System from '../core/System';
 import Component from '../core/Component';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
@@ -171,7 +172,7 @@ class Game extends EventEmitter {
   }
 
   addSystem<T extends System>(S: T): T;
-  addSystem<T extends SystemType>(S: T, obj?: any): InstanceType<T>;
+  addSystem<T extends System>(S: SystemConstructor<T>, obj?: ConstructorParameters<SystemConstructor<T>>): T;
 
   /**
    * Add system
@@ -179,7 +180,7 @@ class Game extends EventEmitter {
    * @typeParam T - system which extends base `System` class
    * @typeparam U - type of system class
    */
-  addSystem<T extends System, U extends SystemType>(S: T | U, obj?: any): T | InstanceType<U> {
+  addSystem<T extends System>(S: T | SystemConstructor<T>, obj?: ConstructorParameters<SystemConstructor<T>>): T {
     let system;
     if (S instanceof Function) {
       system = new S(obj);
@@ -219,7 +220,7 @@ class Game extends EventEmitter {
    * Remove system from this game
    * @param system - one of system instance / system Class or system name
    */
-  removeSystem(system: System | SystemType | string) {
+  removeSystem<S extends System>(system: S | SystemConstructor<S> | string) {
     if (!system) return;
 
     let index = -1;

@@ -2,6 +2,7 @@ import { GameObject, decorators, resource, ComponentChanged, OBSERVER_TYPE } fro
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import TilingSpriteComponent from './component';
 import { TilingSprite as TilingSpriteEngine } from '@eva/renderer-adapter';
+import type { Point } from 'pixi.js';
 
 @decorators.componentObserver({
   TilingSprite: [
@@ -62,7 +63,7 @@ export default class TilingSprite extends Renderer {
   }
   setProp(id: number, component: TilingSpriteComponent) {
     // bug possible
-    this.imgs[id].tilingSprite.tilePosition = component.tilePosition as any;
-    this.imgs[id].tilingSprite.tileScale = component.tileScale as any;
+    this.imgs[id].tilingSprite.tilePosition = component.tilePosition as Point;
+    this.imgs[id].tilingSprite.tileScale = component.tileScale as Point;
   }
 }

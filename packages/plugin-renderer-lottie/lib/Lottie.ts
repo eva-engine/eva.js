@@ -16,7 +16,7 @@ export default class Lottie extends Component {
   public options: ExtendOptions;
   public loadStatus: boolean = false;
   public firstPlay: () => void | null = null;
-  public slotCache: { [key: string]: any };
+  // public slotCache: { [key: string]: any };
   public prevSlot: { [name: string]: any } = {};
   public currentSlot: { [name: string]: any } = {};
 

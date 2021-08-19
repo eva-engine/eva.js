@@ -121,5 +121,4 @@ class System<T extends {} = {}> {
   }
 }
 
-export type SystemType = typeof System;
 export default System;
