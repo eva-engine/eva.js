@@ -2,7 +2,8 @@ import {
   decorators,
   OBSERVER_TYPE,
   ComponentChanged,
-  resource
+  resource,
+  RESOURCE_TYPE
 } from '@eva/eva.js';
 
 import {
@@ -15,7 +16,7 @@ import { Texture } from 'pixi.js';
 import ParticleComponent from './component';
 
 
-resource.registerInstance('Particles', ({ data }) => {
+resource.registerInstance(RESOURCE_TYPE.PARTICLES, ({ data }) => {
   try {
     const textures = []
     for (const key in data) {

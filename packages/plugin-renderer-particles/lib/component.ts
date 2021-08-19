@@ -5,7 +5,7 @@ import {
   ParticleUtils,
   PathParticle,
   AnimatedParticle
-} from 'pixi-particles'
+} from './pixi-particles.js'
 
 import { Container } from '@eva/renderer-adapter';
 
@@ -18,7 +18,7 @@ interface ParticleParams {
 
 export default class ParticleComponent extends Component<ParticleParams> {
   static componentName: string = 'ParticleComponent';
-  emitter: Emitter;
+  emitter: any;
   updateHook: any;
   stage: any;
   colorStep: any;

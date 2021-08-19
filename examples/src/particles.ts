@@ -6,7 +6,7 @@ export async function init(canvas) {
   resource.addResource([
     {
       name: 'bubbles',
-      type: RESOURCE_TYPE['Particles'] || 'Particles',
+      type: RESOURCE_TYPE.PARTICLES,
       src: {
         img_0: {
           type: 'png',

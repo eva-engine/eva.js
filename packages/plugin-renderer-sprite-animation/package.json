@@ -22,6 +22,6 @@
     "@eva/plugin-renderer": "1.1.2-alpha.0",
     "@eva/renderer-adapter": "1.1.2-alpha.0",
     "@eva/eva.js": "1.1.2-alpha.0",
-    "pixi.js": "^4.8.7"
+    "pixi.js": "^4.8.9"
   }
 }

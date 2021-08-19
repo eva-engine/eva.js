@@ -21,6 +21,6 @@
     "@eva/eva.js": "1.1.2-alpha.0",
     "@eva/plugin-renderer": "1.1.2-alpha.0",
     "ios-version": "^1.0.1",
-    "pixi.js": "^4.8.7"
+    "pixi.js": "^4.8.9"
   }
 }
