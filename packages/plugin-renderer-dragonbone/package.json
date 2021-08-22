@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-dragonbone",
-  "version": "1.1.2-alpha.1",
+  "version": "1.1.2-alpha.2",
   "description": "@eva/plugin-renderer-dragonbone",
   "main": "index.js",
   "module": "dist/plugin-renderer-dragonbone.esm.js",
@@ -19,8 +19,8 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.4",
-    "@eva/plugin-renderer": "1.1.2-alpha.1",
-    "@eva/eva.js": "1.1.2-alpha.1",
+    "@eva/plugin-renderer": "1.1.2-alpha.2",
+    "@eva/eva.js": "1.1.2-alpha.2",
     "pixi.js": "^4.8.7"
   }
 }
