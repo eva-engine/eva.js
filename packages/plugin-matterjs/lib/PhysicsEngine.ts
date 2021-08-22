@@ -1,6 +1,7 @@
 import Matter from './matter';
 import BodiesFactory from './BodiesFactory';
 import { Component, Game } from '@eva/eva.js';
+import type { Physics } from './Physics';
 export default class PhysicsEngine {
   private Engine: any;
   private World: any;
@@ -82,6 +83,13 @@ export default class PhysicsEngine {
     component.mouseConstraint = this.mouseConstraint;
     component.World = this.World;
     body.component = component;
+  }
+
+  public change(component: Physics) {
+    const newBody = this.createBodies(component);
+    this.World.remove(this.engine.world, component.body, true);
+    this.World.add(this.engine.world, [newBody]);
+    component.body = newBody;
   }
 
   private createBodies(params): any {
