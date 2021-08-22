@@ -30,7 +30,7 @@ export default class PhysicsEngine {
     this.bodyEvents = ['tick', 'beforeUpdate', 'afterUpdate', 'beforeRender', 'afterRender', 'afterTick'];
     this.options = options;
     this.runner = this.Runner.create({
-      fps: this.options.fps || 70,
+      fps: this.options.fps || 60,
     });
   }
 
@@ -38,11 +38,11 @@ export default class PhysicsEngine {
     this.engine = this.Engine.create();
     const world = this.World.create(this.options.world);
     this.engine.world = world;
-
     if (this.options.isTest) {
       const render = this.Render.create({
         element: this.options.element,
         engine: this.engine,
+        canvas: this.options.canvas ?? document.createElement('canvas'),
         options: {
           width: this.game.canvas.width / this.options.resolution,
           height: this.game.canvas.height / this.options.resolution,

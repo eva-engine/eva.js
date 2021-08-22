@@ -22,7 +22,18 @@ export const init = async (canvas: HTMLCanvasElement) => {
   Object.assign(div.style, {
     position: 'absolute',
     top: '0',
+    width: '100vw',
+    height: '100vh'
   });
+
+  const canvas2 = document.createElement('canvas');
+  div.appendChild(canvas2);
+  Object.assign(canvas2.style, {
+    width: '100vw',
+    height: '100vh',
+    opacity: .5
+  });
+
   const game = new Game({
     systems: [
       new RendererSystem({
@@ -34,9 +45,11 @@ export const init = async (canvas: HTMLCanvasElement) => {
       new PhysicsSystem({
         isTest: true,
         element: div,
+        canvas: canvas2,
+        resolution: 1,
         world: {
           gravity: {
-            y: .1, // 重力
+            y: .3, // 重力
           },
         },
         mouse: {
@@ -53,6 +66,10 @@ export const init = async (canvas: HTMLCanvasElement) => {
     size: {
       width: 250,
       height: 250
+    },
+    origin: {
+      x: .5,
+      y: .5
     }
   });
 
@@ -65,11 +82,24 @@ export const init = async (canvas: HTMLCanvasElement) => {
   gameObject.addComponent(new Physics({
     type: PhysicsType.CIRCLE,
     bodyOptions,
-    radius: 250,
+    radius: 125,
   }))
   gameObject.addComponent(new Img({
     resource: 'img'
   }));
 
   game.scene.addChild(gameObject);
+
+
+  //@ts-ignore
+  window.transform = gameObject.getComponent('Transform');
+  setTimeout(() => {
+    gameObject.remove();
+  }, 2000);
+  setTimeout(() => {
+    game.scene.addChild(gameObject);
+  }, 4000);
+  setTimeout(() => {
+    gameObject.destroy();
+  }, 6000)
 }
