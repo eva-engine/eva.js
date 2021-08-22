@@ -1,8 +1,10 @@
 import { System, decorators, OBSERVER_TYPE } from '@eva/eva.js';
 import PhysicsEngine from './PhysicsEngine';
+import { Physics } from './Physics';
 
 @decorators.componentObserver({
   Physics: [{ prop: ['bodyParams'], deep: true }],
+  Transform: ['_parent'],
 })
 export default class PhysicsSystem extends System {
   static systemName = 'PhysicsSystem';
@@ -23,7 +25,7 @@ export default class PhysicsSystem extends System {
    *
    * Called while the System installed, if game is not begain, it will be called while begain. use to pre operation, init data.
    */
-  awake() {}
+  awake() { }
 
   /**
    * System 被安装后，所有的 awake 执行完后
@@ -41,7 +43,7 @@ export default class PhysicsSystem extends System {
   update() {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
-      if (changed && changed.componentName === 'Physics') {
+      if (changed) {
         this.componentChanged(changed);
       }
     }
@@ -49,16 +51,33 @@ export default class PhysicsSystem extends System {
   }
 
   componentChanged(changed) {
-    switch (changed.type) {
-      case OBSERVER_TYPE.ADD: {
-        this.engine.add(changed.component);
-        break;
+    if (changed.component instanceof Physics) {
+      switch (changed.type) {
+        case OBSERVER_TYPE.ADD: {
+          changed.gameObject.getComponent('Transform') && this.engine.add(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.CHANGE: {
+          this.engine.change(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.REMOVE: {
+          break;
+        }
       }
-      case OBSERVER_TYPE.CHANGE: {
-        break;
-      }
-      case OBSERVER_TYPE.REMOVE: {
-        break;
+    } else {
+      switch (changed.type) {
+        case OBSERVER_TYPE.CHANGE: {
+          if (changed.component.parent) {
+            let physics = changed.gameObject.getComponent(Physics) as Physics;
+            if (physics && !physics.body) {
+              this.engine.add(physics);
+            }
+          } else {
+            let physics = changed.gameObject.getComponent(Physics);
+            physics && this.engine.remove(physics);
+          }
+        }
       }
     }
   }
@@ -67,7 +86,7 @@ export default class PhysicsSystem extends System {
    *
    * Like update, called all of gameobject update.
    */
-  lateUpdate() {}
+  lateUpdate() { }
   /**
    * 游戏开始和游戏暂停后开始播放的时候调用。
    *
@@ -90,5 +109,5 @@ export default class PhysicsSystem extends System {
    * System 被销毁的时候调用。
    * Called while the system be destroyed.
    */
-  onDestroy() {}
+  onDestroy() { }
 }
