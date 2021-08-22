@@ -147,12 +147,10 @@ export class KTXTextureResource extends CompressedTextureResource {
       // Uncompressed texture format
       if (TYPES_TO_BYTES_PER_COMPONENT[glType]) {
         imagePixelByteSize = TYPES_TO_BYTES_PER_COMPONENT[glType] * FORMATS_TO_COMPONENTS[glFormat];
-      }
-      else {
+      } else {
         imagePixelByteSize = TYPES_TO_BYTES_PER_PIXEL[glType];
       }
-    }
-    else {
+    } else {
       imagePixelByteSize = INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[glInternalFormat];
     }
 
