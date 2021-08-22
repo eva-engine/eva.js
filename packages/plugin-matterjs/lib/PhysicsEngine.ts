@@ -28,15 +28,16 @@ export default class PhysicsEngine {
     this.collisionEvents = ['collisionStart', 'collisionActive', 'collisionEnd'];
     this.bodyEvents = ['tick', 'beforeUpdate', 'afterUpdate', 'beforeRender', 'afterRender', 'afterTick'];
     this.options = options;
+    this.runner = this.Runner.create({
+      fps: this.options.fps || 70,
+    });
   }
 
   public start() {
     this.engine = this.Engine.create();
     const world = this.World.create(this.options.world);
     this.engine.world = world;
-    this.runner = this.Runner.create({
-      fps: this.options.fps || 70,
-    });
+
     if (this.options.isTest) {
       const render = this.Render.create({
         element: this.options.element,
@@ -111,8 +112,8 @@ export default class PhysicsEngine {
         mouse,
         constraint: this.options.mouse.constraint
       } : {
-        mouse
-      };
+          mouse
+        };
       this.mouseConstraint = Matter.MouseConstraint.create(this.engine, options);
       this.World.add(this.engine.world, this.mouseConstraint);
     }
