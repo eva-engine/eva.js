@@ -205,10 +205,11 @@ export async function init(canvas) {
           height: gameHeight,
           resolution: window.devicePixelRatio / 2,
         }),
+        new ImgSystem(),
         new GraphicsSystem(),
         new PhysicsSystem({
           resolution: window.devicePixelRatio / 2, // 保持RendererSystem的resolution一致
-          isTest: true, // 是否开启调试模式
+          isTest: false, // 是否开启调试模式
           element: document.getElementById('container'), // 调试模式下canvas节点的挂载点
           world: {
             gravity: {
@@ -220,7 +221,6 @@ export async function init(canvas) {
           }
         }),
         new TextSystem(),
-        new ImgSystem(),
         new EventSystem(),
       ],
     });
