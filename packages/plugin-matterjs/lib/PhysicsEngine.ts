@@ -91,6 +91,10 @@ export default class PhysicsEngine {
     this.World.add(this.engine.world, [newBody]);
     component.body = newBody;
   }
+  public remove(component: Physics) {
+    this.World.remove(this.engine.world, component.body, true);
+    component.body = undefined;
+  }
 
   private createBodies(params): any {
     const body = this.bodiesFatoty.create(params);

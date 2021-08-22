@@ -1,8 +1,10 @@
 import { System, decorators, OBSERVER_TYPE } from '@eva/eva.js';
 import PhysicsEngine from './PhysicsEngine';
+import { Physics } from './Physics';
 
 @decorators.componentObserver({
   Physics: [{ prop: ['bodyParams'], deep: true }],
+  Transform: ['_parent']
 })
 export default class PhysicsSystem extends System {
   static systemName = 'PhysicsSystem';
@@ -49,17 +51,31 @@ export default class PhysicsSystem extends System {
   }
 
   componentChanged(changed) {
-    switch (changed.type) {
-      case OBSERVER_TYPE.ADD: {
-        this.engine.add(changed.component);
-        break;
+    if (changed.component instanceof Physics) {
+      switch (changed.type) {
+        case OBSERVER_TYPE.ADD: {
+          changed.gameObject.getComponent('Transform') && this.engine.add(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.CHANGE: {
+          this.engine.change(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.REMOVE: {
+          break;
+        }
       }
-      case OBSERVER_TYPE.CHANGE: {
-        this.engine.change(changed.component);
-        break;
-      }
-      case OBSERVER_TYPE.REMOVE: {
-        break;
+    } else {
+      switch (changed.type) {
+        case OBSERVER_TYPE.ADD: {
+          changed.gameObject.getComponent('Physice') && this.engine.add(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.REMOVE: {
+          let physics = changed.gameObject.getComponent('Physice');
+          physics && this.engine.remove(physics);
+          break;
+        }
       }
     }
   }
