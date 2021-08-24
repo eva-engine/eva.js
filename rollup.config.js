@@ -1,3 +1,4 @@
+import fs from 'fs'
 import path from 'path';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
@@ -21,6 +22,8 @@ const packageOptions = pkg.buildOptions || {};
 const rootDir = path.resolve(__dirname);
 const exampleDir = path.resolve(__dirname, 'examples');
 const evajsCDNDir = path.resolve(__dirname, 'dist/cdn');
+
+const packages = fs.readdirSync(path.resolve(__dirname, 'packages')).filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const outputConfigs = {
   esm: {
@@ -121,7 +124,9 @@ function createConfig(format, output, plugins = []) {
   if (format === 'esm' || format === 'cjs') {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
-    const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => dep.startsWith('@eva'));
+    const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
+      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1
+    });
     external = ['pixi.js', ...evaDependencies];
   }
 
