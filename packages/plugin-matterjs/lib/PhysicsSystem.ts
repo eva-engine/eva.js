@@ -1,7 +1,7 @@
 import { System, decorators, OBSERVER_TYPE, Transform } from '@eva/eva.js';
+import type { ComponentChanged } from "@eva/eva.js";
 import PhysicsEngine from './PhysicsEngine';
 import { Physics } from './Physics';
-import type { ObserverEvent } from 'packages/eva.js/lib/core/ComponentObserver';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Object ? DeepPartial<T[P]> : T[P];
@@ -69,7 +69,7 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
     this.engine.update(e);
   }
 
-  componentChanged(changed: ObserverEvent) {
+  componentChanged(changed: ComponentChanged) {
     if (changed.component instanceof Physics) {
       switch (changed.type) {
         case OBSERVER_TYPE.ADD: {
