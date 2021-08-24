@@ -5,7 +5,6 @@ export enum PhysicsType {
   CIRCLE = 'circle',
   POLYGON = 'polygon',
 }
-
 export interface PhysicsParams {
   type?: PhysicsType
   bodyOptions?: {

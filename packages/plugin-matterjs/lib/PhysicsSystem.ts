@@ -1,5 +1,6 @@
 import { System, decorators, OBSERVER_TYPE } from '@eva/eva.js';
 import PhysicsEngine from './PhysicsEngine';
+import { Physics } from './Physics';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Object ? DeepPartial<T[P]> : T[P];
@@ -10,15 +11,17 @@ export interface PhysicsSystemParams {
   fps?: number
   isTest?: boolean
   element?: HTMLElement
+  canvas?: HTMLCanvasElement
   mouse?: {
     open: boolean
-    constraint?:Matter.Constraint
+    constraint?: Matter.Constraint
   }
   world: DeepPartial<Matter.IWorldDefinition>
 }
 
 @decorators.componentObserver({
   Physics: [{ prop: ['bodyParams'], deep: true }],
+  Transform: ['_parent'],
 })
 export default class PhysicsSystem extends System<PhysicsSystemParams> {
   static systemName = 'PhysicsSystem';
@@ -57,7 +60,7 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
   update() {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
-      if (changed && changed.componentName === 'Physics') {
+      if (changed) {
         this.componentChanged(changed);
       }
     }
@@ -65,16 +68,33 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
   }
 
   componentChanged(changed) {
-    switch (changed.type) {
-      case OBSERVER_TYPE.ADD: {
-        this.engine.add(changed.component);
-        break;
+    if (changed.component instanceof Physics) {
+      switch (changed.type) {
+        case OBSERVER_TYPE.ADD: {
+          changed.gameObject.getComponent('Transform') && this.engine.add(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.CHANGE: {
+          this.engine.change(changed.component);
+          break;
+        }
+        case OBSERVER_TYPE.REMOVE: {
+          break;
+        }
       }
-      case OBSERVER_TYPE.CHANGE: {
-        break;
-      }
-      case OBSERVER_TYPE.REMOVE: {
-        break;
+    } else {
+      switch (changed.type) {
+        case OBSERVER_TYPE.CHANGE: {
+          if (changed.component.parent) {
+            let physics = changed.gameObject.getComponent(Physics) as Physics;
+            if (physics && !physics.body) {
+              this.engine.add(physics);
+            }
+          } else {
+            let physics = changed.gameObject.getComponent(Physics);
+            physics && this.engine.remove(physics);
+          }
+        }
       }
     }
   }
