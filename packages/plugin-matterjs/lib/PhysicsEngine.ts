@@ -70,8 +70,6 @@ export default class PhysicsEngine {
   lastTime = 0
   public update(e) {
     if (!this.options.isTest) {
-      let a = e.currentTime - this.lastTime;
-      this.lastTime = e.currentTime;
       // @ts-ignore
       this.Runner.tick(this.runner, this.engine, e.currentTime);
     }

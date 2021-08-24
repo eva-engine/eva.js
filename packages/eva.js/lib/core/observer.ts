@@ -1,6 +1,7 @@
 import { isEqual, isObject } from 'lodash-es';
 import Component from './Component';
-import System, { SystemConstructor } from './System';
+import System from './System';
+import type { SystemConstructor } from './System';
 import type { ObserverEvent } from './ComponentObserver';
 
 /** Observer event type */
