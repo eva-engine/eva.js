@@ -1,6 +1,7 @@
 import { Component } from '@eva/eva.js';
 import { IExpandOpts, IOptions } from './types';
 import { Sprite, Text, TextStyle, Graphics } from 'pixi.js';
+import type { AnimationGroup } from './lottie-core';
 
 interface ExtendOptions extends IOptions {
   autoStart: boolean;
@@ -11,12 +12,11 @@ export default class Lottie extends Component {
   slot: { [key: string]: string }
 
   static componentName: string = 'Lottie';
-  public static application: any;
-  public anim: any;
+  public anim: AnimationGroup;
   public options: ExtendOptions;
   public loadStatus: boolean = false;
   public firstPlay: () => void | null = null;
-  public slotCache: { [key: string]: any };
+  // public slotCache: { [key: string]: any };
   public prevSlot: { [name: string]: any } = {};
   public currentSlot: { [name: string]: any } = {};
 

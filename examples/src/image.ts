@@ -16,7 +16,6 @@ export async function init(canvas) {
       preload: true,
     },
   ]);
-
   const game = new Game({
     systems: [
       new RendererSystem({
