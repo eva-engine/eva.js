@@ -38,6 +38,8 @@ export default class PhysicsEngine {
     this.options = options;
     this.runner = this.Runner.create({
       fps: this.options.fps || 60,
+      // Eva.js设置fps30也可能导致deltaTime为16，导致经过matterjs采样后的一段时间的delta都是很低
+      deltaSampleSize: this.options.deltaSampleSize || 1
     });
   }
 
@@ -65,10 +67,13 @@ export default class PhysicsEngine {
     this.initCollisionEvents();
     this.initBodyEvents();
   }
-  public update() {
+  lastTime = 0
+  public update(e) {
     if (!this.options.isTest) {
+      let a = e.currentTime - this.lastTime;
+      this.lastTime = e.currentTime;
       // @ts-ignore
-      this.Runner.tick(this.runner, this.engine);
+      this.Runner.tick(this.runner, this.engine, e.currentTime);
     }
   }
 

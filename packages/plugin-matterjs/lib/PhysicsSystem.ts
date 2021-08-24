@@ -12,6 +12,7 @@ export interface PhysicsSystemParams {
   isTest?: boolean
   element?: HTMLElement
   canvas?: HTMLCanvasElement
+  deltaSampleSize?: number
   mouse?: {
     open: boolean
     constraint?: Matter.Constraint
@@ -57,21 +58,23 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
    *
    * Called by every loop, can do some operation, change some property or other component property.
    */
-  update() {
+  update(e) {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
       if (changed) {
         this.componentChanged(changed);
       }
     }
-    this.engine.update();
+    this.engine.update(e);
   }
 
   componentChanged(changed) {
     if (changed.component instanceof Physics) {
       switch (changed.type) {
         case OBSERVER_TYPE.ADD: {
-          changed.gameObject.getComponent('Transform') && this.engine.add(changed.component);
+          if (changed.gameObject.getComponent('Transform') && !changed.gameObject.getComponent(Physics).body) {
+            this.engine.add(changed.component);
+          }
           break;
         }
         case OBSERVER_TYPE.CHANGE: {
