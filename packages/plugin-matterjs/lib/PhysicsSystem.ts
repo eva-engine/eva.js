@@ -72,7 +72,7 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
     if (changed.component instanceof Physics) {
       switch (changed.type) {
         case OBSERVER_TYPE.ADD: {
-          if (changed.gameObject.getComponent('Transform') && !changed.gameObject.getComponent(Physics).body) {
+          if (changed.gameObject.transform.parent && !changed.gameObject.getComponent(Physics).body) {
             this.engine.add(changed.component);
           }
           break;
