@@ -56,7 +56,9 @@ export default class TilingSprite extends Renderer {
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         const sprite = this.imgs[changed.gameObject.id];
         this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.tilingSprite);
-        sprite.tilingSprite.destroy(true);
+        sprite.tilingSprite.destroy({
+          children: true
+        });
         delete this.imgs[changed.gameObject.id];
       }
     }
