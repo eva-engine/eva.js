@@ -7,7 +7,7 @@ export default class Sprite {
     this._image = image;
     if (image) {
       if (image instanceof HTMLImageElement) {
-        this.sprite = PIXISprite.from(image as any);
+        this.sprite = PIXISprite.from(image);
       } else if (image instanceof PIXITexture) {
         this.sprite = new PIXISprite(image);
       }

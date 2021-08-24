@@ -2,6 +2,7 @@ import { GameObject, decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSE
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { NinePatch as NinePatchSprite } from '@eva/renderer-adapter';
 import NinePatchComponent from './component';
+import type { Texture } from 'pixi.js';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
 
@@ -11,7 +12,7 @@ const resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite sys
 export default class NinePatch extends Renderer {
   static systemName: string = 'NinePatch';
   name: string = 'NinePatch';
-  ninePatch: { [propName: number]: any } = {};
+  ninePatch: { [propName: number]: NinePatchSprite } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
@@ -44,7 +45,7 @@ export default class NinePatch extends Renderer {
     if (!data) {
       throw new Error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
     }
-    let img: any;
+    let img: Parameters<(typeof Texture)['from']>[0];
     if (type === RESOURCE_TYPE.SPRITE) {
       img = component.resource + resourceKeySplit + component.spriteName;
     } else {

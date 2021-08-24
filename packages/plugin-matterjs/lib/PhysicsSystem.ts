@@ -1,12 +1,31 @@
-import { System, decorators, OBSERVER_TYPE } from '@eva/eva.js';
+import { System, decorators, OBSERVER_TYPE, Transform } from '@eva/eva.js';
+import type { ComponentChanged } from "@eva/eva.js";
 import PhysicsEngine from './PhysicsEngine';
 import { Physics } from './Physics';
+
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Object ? DeepPartial<T[P]> : T[P];
+}
+
+export interface PhysicsSystemParams {
+  resolution?: number
+  fps?: number
+  isTest?: boolean
+  element?: HTMLElement
+  canvas?: HTMLCanvasElement
+  deltaSampleSize?: number
+  mouse?: {
+    open: boolean
+    constraint?: Matter.Constraint
+  }
+  world: DeepPartial<Matter.IWorldDefinition>
+}
 
 @decorators.componentObserver({
   Physics: [{ prop: ['bodyParams'], deep: true }],
   Transform: ['_parent'],
 })
-export default class PhysicsSystem extends System {
+export default class PhysicsSystem extends System<PhysicsSystemParams> {
   static systemName = 'PhysicsSystem';
   private engine: PhysicsEngine;
 
@@ -16,9 +35,9 @@ export default class PhysicsSystem extends System {
    * System init, set params, game is not begain
    * @param param init params
    */
-  init(param?: any) {
+  init(param?: PhysicsSystemParams) {
     this.engine = new PhysicsEngine(this.game, param);
-    this.game.canvas.setAttribute('data-pixel-ratio', param.resolution || '1');
+    this.game.canvas.setAttribute('data-pixel-ratio', (param.resolution || '1') as string);
   }
   /**
    * System 被安装的时候，如果游戏还没有开始，那么会在游戏开始的时候调用。用于前置操作，初始化数据等。
@@ -40,21 +59,23 @@ export default class PhysicsSystem extends System {
    *
    * Called by every loop, can do some operation, change some property or other component property.
    */
-  update() {
+  update(e) {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
       if (changed) {
         this.componentChanged(changed);
       }
     }
-    this.engine.update();
+    this.engine.update(e);
   }
 
-  componentChanged(changed) {
+  componentChanged(changed: ComponentChanged) {
     if (changed.component instanceof Physics) {
       switch (changed.type) {
         case OBSERVER_TYPE.ADD: {
-          changed.gameObject.getComponent('Transform') && this.engine.add(changed.component);
+          if (changed.gameObject.transform.parent && !changed.gameObject.getComponent(Physics).body) {
+            this.engine.add(changed.component);
+          }
           break;
         }
         case OBSERVER_TYPE.CHANGE: {
@@ -68,7 +89,7 @@ export default class PhysicsSystem extends System {
     } else {
       switch (changed.type) {
         case OBSERVER_TYPE.CHANGE: {
-          if (changed.component.parent) {
+          if ((changed.component as Transform).parent) {
             let physics = changed.gameObject.getComponent(Physics) as Physics;
             if (physics && !physics.body) {
               this.engine.add(physics);

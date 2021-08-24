@@ -23,6 +23,7 @@ export type { PureObserverInfo } from './core/observer';
 export type { UpdateParams, ComponentParams } from './core/Component';
 export type { ObserverInfo } from './decorators/system';
 export type { ResourceBase } from './loader/Resource';
+export type { SystemConstructor } from "./core/System";
 
 export {
   Game,

@@ -3,10 +3,16 @@ import EventEmitter from 'eventemitter3';
 import EvaXComponent from './EvaXComponent';
 import { defineProperty, updateStore } from './utils';
 
+export interface EvaXSystemParams {
+  store: {
+    [key: string]: any
+  }
+}
+
 @decorators.componentObserver({
   EvaX: [],
 })
-export default class EvaXSystem extends System {
+export default class EvaXSystem extends System<EvaXSystemParams> {
   static systemName = 'EvaX';
   public store: any;
   private ee: EventEmitter;
@@ -99,5 +105,5 @@ export default class EvaXSystem extends System {
   emit(eventName, ...args) {
     return this.ee.emit(eventName, ...args);
   }
-  onDestroy() {}
+  onDestroy() { }
 }

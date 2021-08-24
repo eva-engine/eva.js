@@ -1,4 +1,5 @@
-import { System, decorators, ComponentChanged, Transform, GameObject, OBSERVER_TYPE } from '@eva/eva.js';
+import { System, decorators, ComponentChanged, Transform, OBSERVER_TYPE } from '@eva/eva.js';
+import type { GameObject } from "@eva/eva.js"
 import { RendererSystem } from '@eva/plugin-renderer';
 import EE from 'eventemitter3';
 
@@ -23,7 +24,7 @@ interface SystemParam {
 
 const notAttr = ['hint', 'event', 'delay', 'attr', 'role', 'props', 'state', 'a11yId', 'name'];
 
-const getEventFunc = function (event, gameObject, e) {
+const getEventFunc = function (event: EE, gameObject: GameObject, e: MouseEvent) {
   ['touchstart', 'touchend', 'tap'].forEach(name => {
     event.emit(name, {
       stopPropagation: () => e.stopPropagation(),
@@ -72,7 +73,7 @@ export default class A11ySystem extends System {
    */
   delay: number;
   cache: Map<string, HTMLElement> = new Map();
-  eventCache: Map<string, Function> = new Map();
+  eventCache: Map<string, (e: MouseEvent) => void> = new Map();
   /**
    *
    * @param opt
@@ -163,7 +164,7 @@ export default class A11ySystem extends System {
   }
   getRenderRect() {
     // @ts-ignore
-    const { params } = this.game.getSystem(RendererSystem) || ({ width: 300, height: 300 } as any);
+    const { params } = this.game.getSystem(RendererSystem) || ({ width: 300, height: 300 } as RendererSystem);
     const { height: renderHeight, width: renderWidth } = params;
     return { renderWidth, renderHeight };
   }
@@ -297,7 +298,7 @@ export default class A11ySystem extends System {
     if (!event) {
       return;
     }
-    const func = getEventFunc.bind(this, event, gameObject);
+    const func = getEventFunc.bind(this, event, gameObject) as (e: MouseEvent) => void;
     this.eventCache.set(id, func);
     element.addEventListener('click', func);
   }
@@ -318,7 +319,7 @@ export default class A11ySystem extends System {
     const event = changed.component;
     if (!event) return;
     const { a11yId } = a11y;
-    const func = this.eventCache.get(a11yId) as any;
+    const func = this.eventCache.get(a11yId);
     const element = this.cache.get(a11yId);
     element && element.removeEventListener('click', func);
   }

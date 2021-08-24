@@ -43,7 +43,7 @@ class Ticker {
   // private _activeWithPause: boolean;
 
   /** Main ticker method handle */
-  private _ticker: (time?: any) => void;
+  private _ticker: (time?: number) => void;
 
   /** Represents the status of the Ticker, If ticker has started, the value is true */
   private _started: boolean;

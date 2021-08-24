@@ -4,7 +4,7 @@ const PIXITilingSprite = extras.TilingSprite;
 export default class TilingSprite {
   _image: HTMLImageElement | PIXITexture = null;
   // public tilingSprite: PIXI.extras.TilingSprite;
-  public tilingSprite: any;
+  public tilingSprite: extras.TilingSprite;
   constructor(image: HTMLImageElement | PIXITexture) {
     this._image = image;
     if (image) {

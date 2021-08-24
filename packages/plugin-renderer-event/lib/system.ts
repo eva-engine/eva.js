@@ -19,16 +19,20 @@ const propertyForHitArea = {
   Polygon: ['paths'],
 };
 
+export interface EventSystemParams {
+  moveWhenInside?: boolean
+}
+
 @decorators.componentObserver({
   Event: [{ prop: ['hitArea'], deep: true }],
 })
-export default class Event extends Renderer {
+export default class Event extends Renderer<EventSystemParams> {
   static systemName = 'Event';
   name: string = 'Event';
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
-  init({ moveWhenInside = false } = {}) {
+  init({ moveWhenInside = false }: EventSystemParams = {}) {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
     try {

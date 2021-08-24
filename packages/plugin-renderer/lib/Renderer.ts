@@ -4,7 +4,7 @@ import { GameObject, Game, PureObserverInfo, ComponentChanged, System } from '@e
 import ContainerManager from './manager/ContainerManager';
 import RendererManager from './manager/RendererManager';
 
-export default class Renderer extends System {
+export default class Renderer<T extends {} = {}> extends System<T> {
   /**
    * Renderer name
    */
@@ -31,7 +31,7 @@ export default class Renderer extends System {
   containerManager: ContainerManager;
   rendererManager: RendererManager;
 
-  constructor(params?: any) {
+  constructor(params?: T) {
     super(params);
     // @ts-ignore
     this.observerInfo = this.constructor.observerInfo;
@@ -44,7 +44,7 @@ export default class Renderer extends System {
    *
    * called while the observed component props change.
    */
-  componentChanged(_changed: ComponentChanged) {}
+  componentChanged(_changed: ComponentChanged) { }
 
   /**
    * 每帧调用
@@ -52,7 +52,7 @@ export default class Renderer extends System {
    * called by every loop
    * @param _gameObject gameObject
    */
-  rendererUpdate(_gameObject: GameObject) {}
+  rendererUpdate(_gameObject: GameObject) { }
 
   update() {
     const changes = this.componentObserver.clear();

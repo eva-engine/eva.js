@@ -195,7 +195,7 @@ export async function init(canvas) {
 
     const game = new Game({
       autoStart: true,
-      frameRate: 70, // 兼容Eva自身bug, 帧率必须大于60
+      frameRate: 60,
       systems: [
         new RendererSystem({
           transparent: true,
@@ -213,11 +213,11 @@ export async function init(canvas) {
           element: document.getElementById('container'), // 调试模式下canvas节点的挂载点
           world: {
             gravity: {
-              y: 5, // 重力
+              y: 5, // 重力,
             },
           },
-          mouse:{
-            open:true
+          mouse: {
+            open: false
           }
         }),
         new TextSystem(),
@@ -347,7 +347,7 @@ export async function init(canvas) {
     });
   }
 
-  function collisionStartFn(gameObjectA, gameObjectB) {
+  function collisionStartFn(gameObjectA: GameObject, gameObjectB: GameObject) {
     if (gameObjectA && gameObjectB && gameObjectA.name === gameObjectB.name) {
       const TextCom = gradePanel.getComponent('Text');
       TextCom.text = Number(TextCom.text) + fruitRadius[gameObjectA.name].grade * 2;
@@ -408,7 +408,7 @@ export async function init(canvas) {
     graphics.beginFill(color, 1);
     graphics.drawRect(0, 0, gameObject.transform.size.width, gameObject.transform.size.height);
     graphics.endFill();
-    const py = gameObject.addComponent(
+    gameObject.addComponent(
       new Physics({
         type: PhysicsType.RECTANGLE,
         bodyOptions: {

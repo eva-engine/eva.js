@@ -1,5 +1,5 @@
 import Matter from './matter';
-import { PhysicsType } from './Physics';
+import { PhysicsType, Physics } from './Physics';
 import { GameObject } from '@eva/eva.js';
 declare interface BodyOptions {
   chamfer?: number; // 斜切角
@@ -26,12 +26,12 @@ export interface Verctor {
   y: number;
 }
 export default class BodiesFactory {
-  private Bodies: any;
+  private Bodies: typeof Matter.Bodies;
   constructor() {
     this.Bodies = Matter.Bodies;
   }
-  public create(component) {
-    let body = null;
+  public create(component: Physics): Matter.Body {
+    let body: Matter.Body = null;
     const { gameObject, bodyParams } = component;
     const coordinate = this.getCoordinate(gameObject);
     const x = bodyParams.position ? bodyParams.position.x : coordinate.x;

@@ -1,5 +1,6 @@
 import { OBSERVER_TYPE, decorators, ComponentChanged, resource } from '@eva/eva.js';
-import { Renderer, RendererManager, ContainerManager } from '@eva/plugin-renderer';
+import type { RendererManager, ContainerManager, RendererSystem } from '@eva/plugin-renderer';
+import { Renderer } from '@eva/plugin-renderer';
 import {
   AnimationManager,
   DisplayRegister,
@@ -14,6 +15,8 @@ import {
 } from './lottie-pixi';
 import { imageHandle } from './utils';
 import Lottie from './Lottie';
+import type { Application } from '@eva/renderer-adapter';
+import type { AnimationGroup } from './lottie-core';
 
 function loadTexture(assets, options) {
   return new LoadTexture(assets, options);
@@ -38,9 +41,9 @@ DisplayRegister.registerDisplayByType(DisplayRegister.Type.Container, Container)
 })
 export default class LottieSystem extends Renderer {
   static systemName = 'LottieSystem';
-  public manager: any;
-  public app: any;
-  public renderSystem;
+  public manager: AnimationManager;
+  public app: Application;
+  public renderSystem: RendererSystem;
   public rendererManager: RendererManager;
   public containerManager: ContainerManager;
   public managerLife = [
@@ -61,7 +64,7 @@ export default class LottieSystem extends Renderer {
    * @param param init params
    */
   init() {
-    this.renderSystem = this.game.systems.find((s: any) => s.application);
+    this.renderSystem = this.game.getSystem('Renderer') as RendererSystem;
     this.app = this.renderSystem.application;
   }
 
@@ -90,7 +93,7 @@ export default class LottieSystem extends Renderer {
     const anim = this.manager.parseAnimation({
       keyframes: json,
       ...otherOpts,
-    });
+    }) as AnimationGroup;
     component.anim = anim;
     container.addChildAt(anim.group, 0);
     this.managerLife.forEach(eventName => {
