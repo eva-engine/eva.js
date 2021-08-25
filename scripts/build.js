@@ -78,29 +78,25 @@ async function build(target) {
 
   const env = (pkg.buildOptions && pkg.buildOptions.env) || (devOnly ? 'development' : 'production');
 
-  try {
-    await execa(
-      'rollup',
+  await execa(
+    'rollup',
+    [
+      '-c',
+      '--environment',
       [
-        '-c',
-        '--environment',
-        [
-          `COMMIT:${commit}`,
-          `NODE_ENV:${env}`,
-          `TARGET:${target}`,
-          formats ? `FORMATS:${formats}` : '',
-          buildTypes ? 'TYPES:true' : '',
-          prodOnly ? 'PROD_ONLY:true' : '',
-          sourceMap ? 'SOURCE_MAP:true' : '',
-        ]
-          .filter(Boolean)
-          .join(','),
-      ],
-      { stdio: 'inherit' },
-    );
-  } catch (err) {
-    console.error(err);
-  }
+        `COMMIT:${commit}`,
+        `NODE_ENV:${env}`,
+        `TARGET:${target}`,
+        formats ? `FORMATS:${formats}` : '',
+        buildTypes ? 'TYPES:true' : '',
+        prodOnly ? 'PROD_ONLY:true' : '',
+        sourceMap ? 'SOURCE_MAP:true' : '',
+      ]
+        .filter(Boolean)
+        .join(','),
+    ],
+    { stdio: 'inherit' },
+  );
 
   if (buildTypes && pkg.types) {
     console.log();
