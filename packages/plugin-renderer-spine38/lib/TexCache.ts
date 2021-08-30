@@ -2,7 +2,11 @@ import { Texture } from 'pixi.js';
 
 let texCache: { [name: string]: { tex: Texture; count: number } } = {};
 
-function cacheImage(data: any) {
+interface CacheData {
+  image?: any
+}
+
+function cacheImage(data: CacheData) {
   const oldImg = data.image;
   const newImg = data.image.cloneNode();
   // newImg.src = oldImg.src;
@@ -14,7 +18,7 @@ function cacheImage(data: any) {
   };
 }
 
-export function retainTexture(name: string, data: any) {
+export function retainTexture(name: string, data: CacheData) {
   let cache = texCache[name];
   if (!cache) {
     cache = cacheImage(data);
@@ -24,7 +28,7 @@ export function retainTexture(name: string, data: any) {
   return cache.tex;
 }
 
-export function getTexture(name: string, data: any) {
+export function getTexture(name: string, data: CacheData) {
   let cache = texCache[name];
   if (!cache) {
     cache = cacheImage(data);

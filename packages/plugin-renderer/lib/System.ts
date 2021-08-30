@@ -4,6 +4,17 @@ import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
 import { ticker } from 'pixi.js';
+import type { ApplicationOptions } from 'pixi.js';
+
+export interface RendererSystemParams extends ApplicationOptions {
+  canvas?: HTMLCanvasElement
+  renderType?: number
+  /**
+   * @deprecated PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game
+   */
+  preventScroll?: boolean
+  enableScroll?: boolean
+}
 
 export enum RENDERER_TYPE {
   UNKNOWN = 0,
@@ -24,16 +35,16 @@ const enableScroll = renderer => {
 @decorators.componentObserver({
   Transform: ['_parent'],
 })
-export default class Renderer extends System {
+export default class Renderer extends System<RendererSystemParams> {
   static systemName: string = 'Renderer';
-  params: any;
+  params: RendererSystemParams;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
   application: Application;
   game: Game;
   transform: Transform;
   multiApps: Application[] = [];
-  init(params: any) {
+  init(params: RendererSystemParams) {
     this.params = params;
     this.application = this.createApplication(params);
 
@@ -78,13 +89,13 @@ export default class Renderer extends System {
     }
   }
 
-  createMultiApplication({ params }) {
+  createMultiApplication({ params }: { params: RendererSystemParams }) {
     const app = this.createApplication(params);
     this.multiApps.push(app);
     return app;
   }
 
-  createApplication(params) {
+  createApplication(params: RendererSystemParams) {
     params.view = params.canvas;
     if (params.renderType === RENDERER_TYPE.CANVAS) {
       params.forceCanvas = true;

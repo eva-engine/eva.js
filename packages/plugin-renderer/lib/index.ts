@@ -6,4 +6,5 @@ export * from "./compressedTexture/const";
 import { registerCompressedTexture } from "./compressedTexture";
 
 registerCompressedTexture();
+export type { RendererSystemParams } from "./System";
 export { RendererManager, ContainerManager, RendererSystem, RENDERER_TYPE, Renderer };

@@ -11,12 +11,11 @@ export default class Lottie extends Component {
   slot: { [key: string]: string }
 
   static componentName: string = 'Lottie';
-  public static application: any;
   public anim: any;
   public options: ExtendOptions;
   public loadStatus: boolean = false;
   public firstPlay: () => void | null = null;
-  public slotCache: { [key: string]: any };
+  // public slotCache: { [key: string]: any };
   public prevSlot: { [name: string]: any } = {};
   public currentSlot: { [name: string]: any } = {};
 

@@ -1,8 +1,8 @@
-import Component, { UpdateParams as _UpdateParams } from './core/Component';
-import { ObserverType, PureObserverInfo as _PureObserverInfo } from './core/observer';
+import Component from './core/Component';
+import { ObserverType } from './core/observer';
 import GameObject from './core/GameObject';
 import System from './core/System';
-import Transform, { TransformParams as _TransformParams } from './core/Transform';
+import Transform from './core/Transform';
 import Game, { LOAD_SCENE_MODE } from './game/Game';
 import Scene from './game/Scene';
 import { IDEProp } from './decorators/ide';
@@ -23,6 +23,7 @@ export type { PureObserverInfo } from './core/observer';
 export type { UpdateParams, ComponentParams } from './core/Component';
 export type { ObserverInfo } from './decorators/system';
 export type { ResourceBase } from './loader/Resource';
+export type { SystemConstructor } from './core/System';
 
 export {
   Game,

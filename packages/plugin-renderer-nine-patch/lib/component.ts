@@ -1,5 +1,6 @@
-import {Component} from '@eva/eva.js';
-import {type, step} from '@eva/inspector-decorator';
+import { Component } from '@eva/eva.js';
+import { type, step } from '@eva/inspector-decorator';
+import { NinePatch as NinePatchSprite } from "@eva/renderer-adapter";
 
 export interface NinePatchParams {
   resource: string;
@@ -12,7 +13,7 @@ export interface NinePatchParams {
 
 export default class NinePatch extends Component<NinePatchParams> {
   static componentName: string = 'NinePatch';
-  ninePatch: any;
+  ninePatch: NinePatchSprite;
   @type('string') resource: string = '';
   @type('string') spriteName: string = '';
 
