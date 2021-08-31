@@ -1,11 +1,8 @@
 import { Text as PIXIText } from 'pixi.js';
+import type { TextStyleOptions } from "pixi.js";
 
 export default class Text extends PIXIText {
-  text: string;
-  style: any;
-  width: number;
-  height: number;
-  constructor(text, style) {
+  constructor(text: string, style?: TextStyleOptions) {
     super(text, style);
   }
 }

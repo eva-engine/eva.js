@@ -31,9 +31,9 @@ interface SrcBase {
 
 /** Eva resource base */
 export interface ResourceBase {
-  name?: string;
-  type?: RESOURCE_TYPE;
-  src?: {
+  name: string;
+  type: RESOURCE_TYPE;
+  src: {
     json?: SrcBase;
     image?: SrcBase;
     tex?: SrcBase;
@@ -146,9 +146,13 @@ class Resource extends EE {
 
   /** Start preload */
   public preload(): void {
-    const names = Object.values(this.resourcesMap)
-      .filter(({ preload }) => preload)
-      .map(({ name }) => name);
+    const names = [];
+    for (const key in this.resourcesMap) {
+      const resource = this.resourcesMap[key];
+      if (resource.preload && !resource.complete) {
+        names.push(resource.name);
+      }
+    }
     this.progress = new Progress({
       resource: this,
       resourceTotal: names.length,

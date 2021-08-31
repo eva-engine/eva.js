@@ -1,5 +1,7 @@
+import { type } from '@eva/inspector-decorator';
+
 import DragonboneEngine from './engine';
-import { Component, decorators, ComponentParams } from '@eva/eva.js';
+import { Component, ComponentParams } from '@eva/eva.js';
 
 export interface DragonBoneParams extends ComponentParams {
   resource: string;
@@ -16,10 +18,10 @@ export default class DragonBone extends Component<DragonBoneParams> {
   private waitPlayInfo: { animationName: string; times?: number } = {
     animationName: null,
   };
-  @decorators.IDEProp resource: string = '';
-  @decorators.IDEProp armatureName: string = '';
-  @decorators.IDEProp animationName: string = '';
-  @decorators.IDEProp autoPlay: boolean = true;
+  @type('string') resource: string = '';
+  @type('string') armatureName: string = '';
+  @type('string') animationName: string = '';
+  @type('boolean') autoPlay: boolean = true;
 
   init(obj?: DragonBoneParams) {
     if (!obj) return;

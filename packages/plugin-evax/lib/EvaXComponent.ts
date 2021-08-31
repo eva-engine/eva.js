@@ -1,4 +1,4 @@
-import { Component, decorators } from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import EvaXSystem from './EvaXSystem';
 
 interface Events {
@@ -18,7 +18,8 @@ export default class EvaXComponent extends Component<EvaXParams> {
     super(gameObject);
   }
   evax: EvaXSystem;
-  @decorators.IDEProp events: Events = {};
+  // @decorators.IDEProp 复杂编辑后续添加
+  events: Events = {};
   init(option: EvaXParams = { events: {} }) {
     const { events } = option;
     this.events = events || {};
