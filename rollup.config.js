@@ -1,9 +1,10 @@
-import fs from 'fs'
+import fs from 'fs';
 import path from 'path';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
-import {terser} from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser';
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
@@ -19,11 +20,9 @@ const entryFile = resolve('lib/index.ts');
 const pkg = require(resolve(`package.json`));
 const packageOptions = pkg.buildOptions || {};
 
-const rootDir = path.resolve(__dirname);
-const exampleDir = path.resolve(__dirname, 'examples');
-const evajsCDNDir = path.resolve(__dirname, 'dist/cdn');
-
-const packages = fs.readdirSync(path.resolve(__dirname, 'packages')).filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
+const packages = fs
+  .readdirSync(path.resolve(__dirname, 'packages'))
+  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const outputConfigs = {
   esm: {
@@ -116,7 +115,7 @@ function createConfig(format, output, plugins = []) {
     nodePlugins = [
       require('@rollup/plugin-node-resolve').nodeResolve(),
       require('rollup-plugin-polyfill-node')(),
-      require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
+      require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
     ];
   }
 
@@ -125,9 +124,15 @@ function createConfig(format, output, plugins = []) {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
-      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1
+      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1;
     });
     external = ['pixi.js', ...evaDependencies];
+    output.plugins = [
+      getBabelOutputPlugin({
+        configFile: path.resolve(__dirname, 'babel.config.js'),
+        allowAllFormats: true,
+      }),
+    ];
   }
 
   return {
@@ -143,10 +148,11 @@ function createConfig(format, output, plugins = []) {
     },
     external,
     plugins: [
-      json({preferConst: true}),
+      json({ preferConst: true }),
       replace({
         __TEST__: false,
         __DEV__: process.env.NODE_ENV === 'development',
+        __VERSION__: pkg.version,
       }),
       ...nodePlugins,
       tsPlugin,
@@ -181,7 +187,7 @@ function createCjsProductionConfig(format) {
 }
 
 function createMinifiedConfig(format) {
-  const {file, name} = outputConfigs[format];
+  const { file, name } = outputConfigs[format];
   const destFilename = file.replace(/\.js$/, '.min.js');
   return createConfig(
     format,
@@ -194,7 +200,7 @@ function createMinifiedConfig(format) {
       terser({
         toplevel: true,
         mangle: true,
-        output: {comments: false},
+        output: { comments: false },
         compress: true,
       }),
     ],

@@ -16,7 +16,6 @@ import {
 import { imageHandle } from './utils';
 import Lottie from './Lottie';
 import type { Application } from '@eva/renderer-adapter';
-import type { AnimationGroup } from './lottie-core';
 
 function loadTexture(assets, options) {
   return new LoadTexture(assets, options);
@@ -41,7 +40,7 @@ DisplayRegister.registerDisplayByType(DisplayRegister.Type.Container, Container)
 })
 export default class LottieSystem extends Renderer {
   static systemName = 'LottieSystem';
-  public manager: AnimationManager;
+  public manager: any;
   public app: Application;
   public renderSystem: RendererSystem;
   public rendererManager: RendererManager;
@@ -93,7 +92,7 @@ export default class LottieSystem extends Renderer {
     const anim = this.manager.parseAnimation({
       keyframes: json,
       ...otherOpts,
-    }) as AnimationGroup;
+    }) as any;
     component.anim = anim;
     container.addChildAt(anim.group, 0);
     this.managerLife.forEach(eventName => {
