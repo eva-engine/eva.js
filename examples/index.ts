@@ -21,7 +21,7 @@ if (modules[path]) {
     document.title = module.name;
     module.init(canvas);
   })();
-  if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.length < 1) {
+  if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.length > 1) {
     new VConsole();
   }
 } else {
