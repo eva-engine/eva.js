@@ -25,7 +25,11 @@ export type { ObserverInfo } from './decorators/system';
 export type { ResourceBase } from './loader/Resource';
 export type { SystemConstructor } from './core/System';
 
+const version = '__VERSION__';
+console.log(`Eva.js version: ${version}`);
+
 export {
+  version,
   Game,
   Scene,
   GameObject,

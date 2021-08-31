@@ -152,6 +152,7 @@ function createConfig(format, output, plugins = []) {
       replace({
         __TEST__: false,
         __DEV__: process.env.NODE_ENV === 'development',
+        __VERSION__: pkg.version,
       }),
       ...nodePlugins,
       tsPlugin,
