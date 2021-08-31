@@ -125,7 +125,7 @@ class SoundSystem extends System {
    *
    * Called while the game to play when game pause.
    */
-  onPlay() {
+  onResume() {
     if (!this.autoPauseAndStart) {
       return;
     }
