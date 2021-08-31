@@ -18,6 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
+    "@types/pixi.js": "^4.8.9",
     "pixi.js": "^4.8.9"
   }
 }
