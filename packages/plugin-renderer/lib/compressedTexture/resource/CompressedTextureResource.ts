@@ -11,10 +11,12 @@ export type CompressedLevelBuffer = {
 export class CompressedTextureResource {
   width: number
   height: number
+  formerWidth: number
+  formerHeight: number
   complete: boolean
   src: string
   internalFormat: number
-  levelBuffers: CompressedLevelBuffer[]
+  levelBuffers: CompressedLevelBuffer[] = []
   levels: number
   upload(gl: WebGLRenderingContext) {
     const { levels } = this;

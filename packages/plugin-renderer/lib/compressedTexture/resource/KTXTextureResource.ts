@@ -2,9 +2,8 @@
  * Inspired by PixiJS v6
  */
 
-import { TYPES, FORMATS } from "@pixi/constants";
-import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from "../const";
-import { CompressedLevelBuffer } from "./CompressedTextureResource";
+import { INTERNAL_FORMAT_TO_BLOCK_SIZE } from "../const";
+import type { CompressedLevelBuffer } from "./CompressedTextureResource";
 import { CompressedTextureResource } from "./CompressedTextureResource";
 
 export interface KTXResource {
@@ -21,42 +20,6 @@ export interface KTXResource {
  * @ignore
  */
 const FILE_HEADER_SIZE = 64;
-
-/**
- * Maps {@link PIXI.TYPES} to the bytes taken per component, excluding those ones that are bit-fields.
- *
- * @ignore
- */
-export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
-  [TYPES.UNSIGNED_BYTE]: 1,
-  [TYPES.UNSIGNED_SHORT]: 2,
-  [TYPES.FLOAT]: 4,
-  [TYPES.HALF_FLOAT]: 8
-};
-
-/**
- * Number of components in each {@link PIXI.FORMATS}
- *
- * @ignore
- */
-export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
-  [FORMATS.RGBA]: 4,
-  [FORMATS.RGB]: 3,
-  [FORMATS.LUMINANCE]: 1,
-  [FORMATS.LUMINANCE_ALPHA]: 2,
-  [FORMATS.ALPHA]: 1
-};
-
-/**
- * Number of bytes per pixel in bit-field types in {@link PIXI.TYPES}
- *
- * @ignore
- */
-export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
-  [TYPES.UNSIGNED_SHORT_4_4_4_4]: 2,
-  [TYPES.UNSIGNED_SHORT_5_5_5_1]: 2,
-  [TYPES.UNSIGNED_SHORT_5_6_5]: 2
-};
 /**
  * Byte offsets of the KTX file header fields
  *
@@ -101,12 +64,18 @@ export class KTXTextureResource extends CompressedTextureResource {
       throw new Error('Not a valid KTX Texture');
     }
     const littleEndian = dataView.getUint32(KTX_FIELDS.ENDIANNESS, true) === ENDIANNESS;
-    const glType = dataView.getUint32(KTX_FIELDS.GL_TYPE, littleEndian);
+    // const glType = dataView.getUint32(KTX_FIELDS.GL_TYPE, littleEndian);
     // const glTypeSize = dataView.getUint32(KTX_FIELDS.GL_TYPE_SIZE, littleEndian);
-    const glFormat = dataView.getUint32(KTX_FIELDS.GL_FORMAT, littleEndian);
-    const glInternalFormat = this.internalFormat = dataView.getUint32(KTX_FIELDS.GL_INTERNAL_FORMAT, littleEndian);
-    const pixelWidth = this.width = dataView.getUint32(KTX_FIELDS.PIXEL_WIDTH, littleEndian);
-    const pixelHeight = this.height = dataView.getUint32(KTX_FIELDS.PIXEL_HEIGHT, littleEndian) || 1;// "pixelHeight = 0" -> "1"
+    // const glFormat = dataView.getUint32(KTX_FIELDS.GL_FORMAT, littleEndian);
+    this.internalFormat = dataView.getUint32(KTX_FIELDS.GL_INTERNAL_FORMAT, littleEndian);
+
+    const pixelWidth = this.formerWidth = dataView.getUint32(KTX_FIELDS.PIXEL_WIDTH, littleEndian);
+    const pixelHeight = this.formerHeight = dataView.getUint32(KTX_FIELDS.PIXEL_HEIGHT, littleEndian) || 1;// "pixelHeight = 0" -> "1"
+
+    let size = INTERNAL_FORMAT_TO_BLOCK_SIZE[this.internalFormat];
+    this.width = pixelWidth % size[0] === 0 ? pixelWidth : pixelWidth + size[0] - (pixelWidth % size[0]);
+    this.height = pixelWidth % size[1] === 0 ? pixelWidth : pixelWidth + size[1] - (pixelWidth % size[1]);
+
     const pixelDepth = dataView.getUint32(KTX_FIELDS.PIXEL_DEPTH, littleEndian) || 1;// ^^
     const numberOfArrayElements = dataView.getUint32(KTX_FIELDS.NUMBER_OF_ARRAY_ELEMENTS, littleEndian) || 1;// ^^
     const numberOfFaces = dataView.getUint32(KTX_FIELDS.NUMBER_OF_FACES, littleEndian);
@@ -117,98 +86,38 @@ export class KTXTextureResource extends CompressedTextureResource {
     // TODO: Endianness conversion
     // const platformLittleEndian = new Uint8Array((new Uint32Array([ENDIANNESS])).buffer)[0] === 0x01;
     if (pixelHeight === 0 || pixelDepth !== 1) {
-      throw new Error('Only 2D textures are supported');
+      throw new Error('Only 2D textures are supported!');
     }
     if (numberOfFaces !== 1) {
-      throw new Error('CubeTextures are not supported by KTXLoader yet!');
+      throw new Error('CubeTextures are not supported!');
     }
     if (numberOfArrayElements !== 1) {
-      // TODO: Support splitting array-textures into multiple BaseTextures
-      throw new Error('WebGL does not support array textures');
+      throw new Error('It does not support array textures!');
     }
 
-    // TODO: 8x4 blocks for 2bpp pvrtc
-    const blockWidth = 4;
-    const blockHeight = 4;
-
-    const alignedWidth = (pixelWidth + 3) & ~3;
-    const alignedHeight = (pixelHeight + 3) & ~3;
-    const imageBuffers = new Array<CompressedLevelBuffer[]>(numberOfArrayElements);
-    let imagePixels = pixelWidth * pixelHeight;
-
-    if (glType === 0) {
-      // Align to 16 pixels (4x4 blocks)
-      imagePixels = alignedWidth * alignedHeight;
-    }
-
-    let imagePixelByteSize: number;
-
-    if (glType !== 0) {
-      // Uncompressed texture format
-      if (TYPES_TO_BYTES_PER_COMPONENT[glType]) {
-        imagePixelByteSize = TYPES_TO_BYTES_PER_COMPONENT[glType] * FORMATS_TO_COMPONENTS[glFormat];
-      } else {
-        imagePixelByteSize = TYPES_TO_BYTES_PER_PIXEL[glType];
-      }
-    } else {
-      imagePixelByteSize = INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[glInternalFormat];
-    }
-
-    if (imagePixelByteSize === undefined) {
-      throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
-    }
-
-    const imageByteSize = imagePixels * imagePixelByteSize;
-    let mipByteSize = imageByteSize;
     let mipWidth = pixelWidth;
     let mipHeight = pixelHeight;
-    let alignedMipWidth = alignedWidth;
-    let alignedMipHeight = alignedHeight;
     let imageOffset = FILE_HEADER_SIZE + bytesOfKeyValueData;
 
     for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++) {
       const imageSize = dataView.getUint32(imageOffset, littleEndian);
-      let elementOffset = imageOffset + 4;
+      imageOffset += 4;
 
-      for (let arrayElement = 0; arrayElement < numberOfArrayElements; arrayElement++) {
-        // TODO: Maybe support 3D textures? :-)
-        // for (let zSlice = 0; zSlice < pixelDepth; zSlice)
-
-        let mips = imageBuffers[arrayElement];
-
-        if (!mips) {
-          mips = imageBuffers[arrayElement] = new Array(numberOfMipmapLevels);
-        }
-
-        mips[mipmapLevel] = {
-          levelID: mipmapLevel,
-          levelWidth: numberOfMipmapLevels > 1 ? mipWidth : alignedMipWidth,
-          levelHeight: numberOfMipmapLevels > 1 ? mipHeight : alignedMipHeight,
-          levelBuffer: new Uint8Array(source, elementOffset, mipByteSize)
-        };
-        elementOffset += mipByteSize;
-      }
-
-      // HINT: Aligns to 4-byte boundary after jumping imageSize (in lieu of mipPadding)
-      imageOffset += imageSize + 4;// (+4 to jump the imageSize field itself)
-      imageOffset = imageOffset % 4 !== 0 ? imageOffset + 4 - (imageOffset % 4) : imageOffset;
-
-      // Calculate mipWidth, mipHeight for _next_ iteration
+      let size = INTERNAL_FORMAT_TO_BLOCK_SIZE[this.internalFormat];
+      const levelWidth = mipWidth % size[0] === 0 ? mipWidth : mipWidth + size[0] - (mipWidth % size[0]);
+      const levelHeight = mipHeight % size[1] === 0 ? mipHeight : mipHeight + size[1] - (mipHeight % size[1]);
+      const mip: CompressedLevelBuffer = {
+        levelID: mipmapLevel,
+        levelWidth,
+        levelHeight,
+        levelBuffer: new Uint8Array(source, imageOffset, imageSize)
+      };
+      this.levelBuffers.push(mip);
+      imageOffset += imageSize;
+      imageOffset += 3 - ((imageOffset + 3) % 4);
       mipWidth = (mipWidth >> 1) || 1;
       mipHeight = (mipHeight >> 1) || 1;
-      alignedMipWidth = (mipWidth + blockWidth - 1) & ~(blockWidth - 1);
-      alignedMipHeight = (mipHeight + blockHeight - 1) & ~(blockHeight - 1);
-
-      // Each mipmap level is 4-times smaller?
-      mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
     }
-
-    // We use the levelBuffers feature of CompressedTextureResource b/c texture data is image-major, not level-major.
-    if (glType !== 0) {
-      throw new Error('TODO: Uncompressed');
-    }
-    // Now just support one element!;
-    this.levelBuffers = imageBuffers[0];
   }
 }
 function validateKTX(dataView: DataView): boolean {
