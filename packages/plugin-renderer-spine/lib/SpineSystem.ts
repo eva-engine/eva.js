@@ -1,7 +1,6 @@
-import { DisplayObject } from 'pixi.js';
 import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
-import Spine from './Spine';
+import { Container } from 'pixi.js';
 import pixispine from './pixi-spine.js';
 import getSpineData, { releaseSpineData } from './SpineData';
 const MaxRetryCount = 20;
@@ -11,7 +10,7 @@ const MaxRetryCount = 20;
 })
 export default class SpineSystem extends Renderer {
   static systemName = 'SpineSystem';
-  armatures: Record<number, DisplayObject> = {};
+  armatures: Record<number, Container> = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
@@ -58,8 +57,15 @@ export default class SpineSystem extends Renderer {
       },
       false,
     );
+    this.game.ticker.add((e) => {
+      for (let key in this.armatures) {
+        // TODO: 类型
+        // @ts-ignore
+        this.armatures[key].update(e.deltaTime * 0.001)
+        this.armatures[key].updateTransform()
+      }
+    })
   }
-
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Spine') {
       if (changed.type === OBSERVER_TYPE.ADD) {
