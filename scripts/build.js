@@ -113,24 +113,35 @@ async function build(target) {
     });
 
     if (extractorResult.succeeded) {
-      // concat additional d.ts to rolled-up dts
-      const typesDir = path.resolve(pkgDir, 'types');
-      if (await fs.exists(typesDir)) {
+
+
+      // @deprecated 曾经联合代码的功能，重设打包路径后此段代码无效
+      // // concat additional d.ts to rolled-up dts
+      // const typesDir = path.resolve(pkgDir, 'types');
+      // if (await fs.exists(typesDir)) {
+      //   const dtsPath = path.resolve(pkgDir, pkg.types);
+      //   const existing = await fs.readFile(dtsPath, 'utf-8');
+      //   const typeFiles = await fs.readdir(typesDir);
+      //   const toAdd = await Promise.all(
+      //     typeFiles.map(file => {
+      //       return fs.readFile(path.resolve(typesDir, file), 'utf-8');
+      //     }),
+      //   );
+      //   await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
+      // }
+      const enhancePath = path.resolve(pkgDir, 'global.d.ts');
+      if (await fs.exists(enhancePath)) {
         const dtsPath = path.resolve(pkgDir, pkg.types);
         const existing = await fs.readFile(dtsPath, 'utf-8');
-        const typeFiles = await fs.readdir(typesDir);
-        const toAdd = await Promise.all(
-          typeFiles.map(file => {
-            return fs.readFile(path.resolve(typesDir, file), 'utf-8');
-          }),
-        );
-        await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
+        await fs.writeFile(dtsPath, '/// <reference types="./global.d.ts"/>' + '\n' + existing);
+        await fs.copyFile(enhancePath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
       }
+
       console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));
     } else {
       console.error(
         `API Extractor completed with ${extractorResult.errorCount} errors` +
-          ` and ${extractorResult.warningCount} warnings`,
+        ` and ${extractorResult.warningCount} warnings`,
       );
       process.exitCode = 1;
     }

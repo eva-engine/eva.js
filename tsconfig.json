@@ -46,6 +46,7 @@
   "include": [
     "packages/global.d.ts",
     "packages/*/lib",
-    "packages/*/__tests__"
+    "packages/*/__tests__",
+    "packages/*/global.d.ts"
   ]
 }
