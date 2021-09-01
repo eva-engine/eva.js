@@ -36,7 +36,7 @@ export async function init(canvas: HTMLCanvasElement) {
         canvas,
         width: window.innerWidth,
         height: window.innerHeight,
-        backgroundColor: '0x003355'
+        backgroundColor: 0x003355
       }),
       //@ts-ignore
       new ImgSystem(),
