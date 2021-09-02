@@ -271,7 +271,7 @@ export async function init(canvas) {
         y: 0.5,
       },
     });
-    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle', autoPlay: true });
     gameObject.addComponent(spine);
     spine.on('complete', e => {
       console.log('动画播放结束', e.name);
@@ -332,8 +332,10 @@ export async function init(canvas) {
       name: 'heart',
       type: RESOURCE_TYPE.IMAGE,
       src: {
-        image:
-          '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+        image:{
+          type: 'png',
+          url: '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+        }
       },
       preload: false,
     },
