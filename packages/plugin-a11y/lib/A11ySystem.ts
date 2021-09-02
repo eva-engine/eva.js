@@ -163,8 +163,7 @@ export default class A11ySystem extends System {
     }
   }
   getRenderRect() {
-    // @ts-ignore
-    const { params } = this.game.getSystem(RendererSystem) || ({ width: 300, height: 300 } as RendererSystem);
+    const { params = { width: 300, height: 300 } } = this.game.getSystem(RendererSystem);
     const { height: renderHeight, width: renderWidth } = params;
     return { renderWidth, renderHeight };
   }
