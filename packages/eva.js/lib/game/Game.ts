@@ -5,7 +5,7 @@ import System from '../core/System';
 import Component from '../core/Component';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
-import type { RendererSystemParams } from 'packages/plugin-renderer/lib/System';
+
 
 /** eva plugin struct */
 export interface PluginStruct {
@@ -35,7 +35,26 @@ export enum LOAD_SCENE_MODE {
 interface LoadSceneParams {
   scene: Scene;
   mode?: LOAD_SCENE_MODE;
-  params?: RendererSystemParams;
+  params?: {
+    width?: number;
+    height?: number;
+    canvas?: HTMLCanvasElement
+    renderType?: number
+    autoStart?: boolean;
+    sharedTicker?: boolean;
+    sharedLoader?: boolean;
+    transparent?: boolean;
+    antialias?: boolean;
+    preserveDrawingBuffer?: boolean;
+    resolution?: number;
+    backgroundColor?: number;
+    clearBeforeRender?: boolean;
+    roundPixels?: boolean;
+    forceFXAA?: boolean;
+    legacy?: boolean;
+    autoResize?: boolean;
+    powerPreference?: "high-performance";
+  };
 }
 
 const triggerStart = (obj: System | Component) => {
