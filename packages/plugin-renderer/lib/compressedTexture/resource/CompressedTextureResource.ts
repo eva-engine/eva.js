@@ -35,10 +35,20 @@ export class CompressedTextureResource {
     }
 
     // Loop through each mip level of COMPRESSED texture data provided and upload it to the given texture.
-    for (var i = 0; i < this.levels; ++i) {
+    for (let i = 0; i < this.levels; ++i) {
       let { levelWidth, levelHeight, levelBuffer } = this.levelBuffers[i];
       gl.compressedTexImage2D(gl.TEXTURE_2D, i, this.internalFormat, levelWidth, levelHeight, 0, levelBuffer);
     }
+
+    // for (let i = 1; i < this.levels; ++i) {
+    //   setTimeout(() => {
+    //     let { levelWidth, levelHeight, levelBuffer } = this.levelBuffers[i];
+    //     console.log(levelWidth, levelHeight)
+    //     gl.compressedTexImage2D(gl.TEXTURE_2D, i, this.internalFormat, levelWidth, levelHeight, 0, levelBuffer);
+    //   }, i * 1000);
+    // }
+
+
 
     // We can't use gl.generateMipmaps with COMPRESSED textures, so only use
     // mipmapped filtering if the COMPRESSED texture data contained mip levels.

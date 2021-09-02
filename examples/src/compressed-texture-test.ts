@@ -63,7 +63,7 @@ export const init = async (canvas: HTMLCanvasElement) => {
         url: 'https://gw.alicdn.com/tfs/TB1V5.qk0Tfau8jSZFwXXX1mVXa-601-601.png',
         texture: {
           type,
-          url: `${baseUrl}base.${format.toLowerCase()}.ktx`
+          url: `${baseUrl}base.mipmap.${format.toLowerCase()}.ktx`
         }
       },
     },

@@ -73,8 +73,8 @@ export class KTXTextureResource extends CompressedTextureResource {
     const pixelHeight = this.formerHeight = dataView.getUint32(KTX_FIELDS.PIXEL_HEIGHT, littleEndian) || 1;// "pixelHeight = 0" -> "1"
 
     let size = INTERNAL_FORMAT_TO_BLOCK_SIZE[this.internalFormat];
-    this.width = pixelWidth % size[0] === 0 ? pixelWidth : pixelWidth + size[0] - (pixelWidth % size[0]);
-    this.height = pixelWidth % size[1] === 0 ? pixelWidth : pixelWidth + size[1] - (pixelWidth % size[1]);
+    this.width = pixelWidth % size[0] === 0 ? pixelWidth : (pixelWidth + size[0] - (pixelWidth % size[0]));
+    this.height = pixelHeight % size[1] === 0 ? pixelHeight : (pixelHeight + size[1] - (pixelHeight % size[1]));
 
     const pixelDepth = dataView.getUint32(KTX_FIELDS.PIXEL_DEPTH, littleEndian) || 1;// ^^
     const numberOfArrayElements = dataView.getUint32(KTX_FIELDS.NUMBER_OF_ARRAY_ELEMENTS, littleEndian) || 1;// ^^
@@ -106,6 +106,7 @@ export class KTXTextureResource extends CompressedTextureResource {
       let size = INTERNAL_FORMAT_TO_BLOCK_SIZE[this.internalFormat];
       const levelWidth = mipWidth % size[0] === 0 ? mipWidth : mipWidth + size[0] - (mipWidth % size[0]);
       const levelHeight = mipHeight % size[1] === 0 ? mipHeight : mipHeight + size[1] - (mipHeight % size[1]);
+
       const mip: CompressedLevelBuffer = {
         levelID: mipmapLevel,
         levelWidth,
