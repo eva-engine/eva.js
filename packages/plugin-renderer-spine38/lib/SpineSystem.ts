@@ -1,5 +1,5 @@
 import { DisplayObject } from 'pixi.js';
-import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import Spine from './Spine';
 import pixispine from './pixi-spine.js';
@@ -78,7 +78,8 @@ export default class SpineSystem extends Renderer {
   async add(changed: ComponentChanged, count?: number) {
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
-    const spineData = await getSpineData(component.resource);
+    const res = await resource.getResource(component.resource);
+    const spineData = await getSpineData(res);
     if (!spineData) {
       component.addHandler = setTimeout(() => {
         if (!component.destroied) {
@@ -112,7 +113,6 @@ export default class SpineSystem extends Renderer {
     }
 
     container.addChildAt(armature, 0);
-    component.usingResource = component.resource;
     component.armature = armature;
     if (component.autoPlay) {
       try {
@@ -152,7 +152,7 @@ export default class SpineSystem extends Renderer {
     this.remove(changed);
     this.add(changed);
   }
-  remove(changed: ComponentChanged) {
+  async remove(changed: ComponentChanged) {
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
     const armature = this.armatures[changed.gameObject.id];
@@ -166,10 +166,8 @@ export default class SpineSystem extends Renderer {
 
     if (component.armature) {
       component.armature.destroy({ children: true });
-
-      if (component.usingResource) {
-        releaseSpineData(component.usingResource);
-      }
+      const res = await resource.getResource(component.resource)
+      releaseSpineData(res.name, res.data.image.src);
     }
 
     component.armature = null;

@@ -23,6 +23,25 @@ export async function init(canvas) {
         },
 
       },
+    }, {
+      name: 'anim1',
+      type: RESOURCE_TYPE.SPINE,
+      src: {
+
+        image: {
+          type: 'png',
+          url: 'https://gw.alicdn.com/imgextra/i4/O1CN01EBvQrD28lE8W67BK9_!!6000000007972-2-tps-1271-1271.png',
+        },
+        ske: {
+          type: 'json',
+          url: 'https://pages.tmall.com/wow/eva/d40ea22bf9ade8ca3f09b0428588fd32_ske.json',
+        },
+        atlas: {
+          type: 'atlas',
+          url: 'https://pages.tmall.com/wow/eva/6cb96ffcecb5e4f5e829d2a273c8f109.atlas',
+        },
+
+      },
     },
   ]);
 
@@ -54,6 +73,7 @@ export async function init(canvas) {
   });
   //@ts-ignore
   const spine = new Spine({ resource: 'anim', animationName: 'dance' });
+  window.spine =spine
   //@ts-ignore
   gameObject.addComponent(spine);
   //@ts-ignore
