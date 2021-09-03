@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.1.6-alpha.3",
+  "version": "1.1.6",
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
@@ -47,7 +47,6 @@
     "@types/jest": "^24.9.1",
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^10.17.13",
-    "@types/pixi.js": "^4.8.7",
     "@types/webgl-ext": "^0.0.32",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
