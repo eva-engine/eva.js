@@ -26,13 +26,11 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new SpineSystem(),
     ],
     autoStart: true,
