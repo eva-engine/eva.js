@@ -54,11 +54,8 @@ export async function init(canvas) {
       y: 0.5,
     },
   });
-  //@ts-ignore
   const spine = new Spine({ resource: 'anim', animationName: 'idle' });
-  //@ts-ignore
   gameObject.addComponent(spine);
-  //@ts-ignore
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
   });
