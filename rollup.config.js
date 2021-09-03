@@ -178,9 +178,9 @@ function createCjsProductionConfig(format) {
     },
     [
       terser({
-        toplevel: true,
-        mangle: true,
-        compress: true,
+        toplevel: true, // 开启最高级压缩
+        mangle: { reserved: ['_extends'] }, // 不压缩 _extends
+        compress: true, // 压缩整体代码
       }),
     ],
   );
@@ -198,10 +198,9 @@ function createMinifiedConfig(format) {
     },
     [
       terser({
-        toplevel: true,
-        mangle: true,
-        output: { comments: false },
-        compress: true,
+        toplevel: true, // 开启最高级压缩
+        mangle: { reserved: ['_extends'] }, // 不压缩 _extends
+        compress: true, // 压缩整体代码
       }),
     ],
   );
