@@ -69,7 +69,7 @@ export function clearCache() {
 
 export function releaseSpineData(resourceName, imageSrc) {
   const data = dataMap[resourceName];
-  if (!data || !imageSrc) {
+  if (!data) {
     return;
   }
   data.ref--;
