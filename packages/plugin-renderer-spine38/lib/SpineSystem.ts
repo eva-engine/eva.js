@@ -167,7 +167,7 @@ export default class SpineSystem extends Renderer {
     if (component.armature) {
       component.armature.destroy({ children: true });
       const res = await resource.getResource(component.resource)
-      releaseSpineData(res.name, res.data.image.src);
+      releaseSpineData(res.name, res.data?.image?.src);
     }
 
     component.armature = null;
