@@ -1,7 +1,7 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { RendererSystem } from "@eva/plugin-renderer";
 import { Spine, SpineSystem } from "@eva/plugin-renderer-spine38";
-export const name = 'spine';
+export const name = 'spine38';
 export async function init(canvas) {
   resource.addResource([
     {
@@ -28,13 +28,11 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new SpineSystem(),
     ],
     autoStart: true,
@@ -47,25 +45,21 @@ export async function init(canvas) {
   };
 
   const gameObject = new GameObject('spine', {
-    position: {
-      x: 300,
-      y: 600
-    }
+    anchor: {
+      x: 0.5,
+      y: 0.5,
+    },
+    scale: {
+      x: 0.5,
+      y: 0.5,
+    },
   });
-  //@ts-ignore
   const spine = new Spine({ resource: 'anim', animationName: 'dance' });
-  //@ts-ignore
   gameObject.addComponent(spine);
-  //@ts-ignore
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
   });
   spine.play('dance', true);
   game.scene.addChild(gameObject);
-  window.spine = spine
-
-  // spine.armature.skeleton.setSkinByName('dada');
-  // window[petName+'0'] = spine;
-  // window[petName] = spine.armature;
 
 }
