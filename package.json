@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.1.7-alpha.3",
+  "version": "1.1.7",
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {

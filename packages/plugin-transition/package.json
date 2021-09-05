@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-transition",
-  "version": "1.1.7-alpha.3",
+  "version": "1.1.7",
   "description": "@eva/plugin-transition",
   "main": "index.js",
   "module": "dist/plugin-transition.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.1.7-alpha.3",
+    "@eva/eva.js": "1.1.7",
     "@tweenjs/tween.js": "^18.6.4",
     "sprite-timeline": "^1.10.2"
   }
