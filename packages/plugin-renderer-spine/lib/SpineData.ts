@@ -3,10 +3,9 @@ import pixispine from './pixi-spine.js';
 import { cleanTextures, getTexture, releaseTexture, retainTexture } from './TexCache';
 let dataMap: any = {};
 
-function createSpineData(name, imgName, data, scale) {
+function createSpineData(name, data, scale) {
   let spineData: any = null;
-  const img = getTexture(imgName, data); // Texture.from(data.image);
-  // const img = Texture.from(imgName,data.image);
+  const img = getTexture(data.image.src, data);
   // @ts-ignore
   new pixispine.core.TextureAtlas(
     (data as any).atlas,
@@ -27,12 +26,12 @@ function createSpineData(name, imgName, data, scale) {
       }
     },
   );
-  const obj = { spineData, ref: 0, imgName: imgName };
+  const obj = { spineData, ref: 0, imageSrc: data.image.src };
   dataMap[name] = obj;
   return obj;
 }
 resource.registerInstance('SPINE' as any, info => {
-  return createSpineData(info.name, info.name, info.data, (info as any).scale);
+  return createSpineData(info.name, info.data, (info as any).scale);
 });
 
 resource.registerDestroy('SPINE' as any, info => {
@@ -42,30 +41,22 @@ resource.registerDestroy('SPINE' as any, info => {
     // info.instance.img.destroy(true);
 
     // }
-    releaseTexture(info.name as string);
+    releaseTexture(info.data.image.src as string);
     info.instance = null;
   }
 });
 
-export default async function getSpineData(name: string) {
-  // const res = await resource.getResource(name);
-  // if (!res.instance) {
-  //   console.log(`加载资源${name}失败`);
-  //   return;
-  // }
-  // retainTexture(res.name as string, res.data.image);
-  // return res.instance.spineData;
-  const res = await resource.getResource(name);
-  let data = dataMap[name];
+export default async function getSpineData(res) {
+  let data = dataMap[res.name];
   if (!data) {
     if (res.complete) {
-      data = createSpineData(name, res.name, res.data, (res as any).scale);
+      data = createSpineData(res.name, res.data, (res as any).scale);
     } else if (!data) {
       return;
     }
   }
 
-  retainTexture(res.name as string, res.data);
+  retainTexture(res.data.image.src, res.data);
 
   data.ref++;
   return data.spineData;
@@ -76,24 +67,15 @@ export function clearCache() {
   dataMap = {};
 }
 
-export function releaseSpineData(name) {
-  // const res = await resource.getResource(name);
-  // if (!res) {
-  //   return;
-  // }
-  // if (!res.instance) {
-  //   console.log(`释放资源${name}失败`);
-  //   return;
-  // }
-  // releaseTexture(res.name as string);
-  const data = dataMap[name];
+export function releaseSpineData(resourceName, imageSrc) {
+  const data = dataMap[resourceName];
   if (!data) {
     return;
   }
   data.ref--;
   if (data.ref <= 0) {
-    releaseTexture(data.imgName as string);
-    delete dataMap[name];
-    resource.destroy(name);
+    releaseTexture(imageSrc);
+    delete dataMap[resourceName];
+    resource.destroy(resourceName);
   }
 }
