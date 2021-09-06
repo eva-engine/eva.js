@@ -162,9 +162,8 @@ class SoundSystem extends System {
   }
 
   async componentChanged(changed: ComponentChanged) {
-    if (changed.componentName !== 'Sound') {
-      return;
-    }
+    if (changed.componentName !== 'Sound') return;
+
     if (changed.type === OBSERVER_TYPE.ADD) {
       this.add(changed);
     }
@@ -219,7 +218,7 @@ class SoundSystem extends System {
       component.state = 'loading';
 
       const audio = await resource.getResource(config.resource);
-      if (!this.audioBufferCache[audio.name]) {
+      if (!this.audioBufferCache[audio.name] && audio?.data?.audio) {
         this.audioBufferCache[audio.name] = await this.decodeAudioData(audio.data.audio, audio.name);
       }
       if (this.audioBufferCache[audio.name]) {

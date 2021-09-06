@@ -26,13 +26,11 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new SpineSystem(),
     ],
     autoStart: true,
@@ -55,11 +53,8 @@ export async function init(canvas) {
       y: 0.5,
     },
   });
-  //@ts-ignore
   const spine = new Spine({ resource: 'anim', animationName: 'idle' });
-  //@ts-ignore
   gameObject.addComponent(spine);
-  //@ts-ignore
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
   });
