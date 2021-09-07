@@ -90,8 +90,8 @@ class Ticker {
 
       const options: UpdateParams = {
         deltaTime,
-        time: currentTime,
-        currentTime: currentTime,
+        time: frameTime,
+        currentTime: frameTime,
         frameCount: ++this._frameCount,
         fps: Math.round(1000 / deltaTime),
       };
