@@ -120,6 +120,9 @@ export default class SpineSystem extends Renderer {
     }
 
     container.addChildAt(armature, 0);
+    /** 保证第一帧显示正常 */
+    armature.update()
+    armature.updateTransform() 
     component.armature = armature;
     if (component.autoPlay) {
       try {
