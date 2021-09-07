@@ -127,6 +127,9 @@ class Ticker {
     this._started = false;
     this.timeline.playbackRate = 0;
   }
+  setPlaybackRate(rate: number) {
+    this.timeline.playbackRate = rate
+  }
 }
 
 export default Ticker;
