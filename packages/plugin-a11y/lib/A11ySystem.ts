@@ -232,7 +232,7 @@ export default class A11ySystem extends System {
     if (changed.prop.prop[0] === 'hint') {
       const dom = this.cache.get(component.a11yId)
       dom?.setAttribute('aria-label', component.hint)
-      this.setPosition(dom, changed.gameObject.transform)
+      dom && this.setPosition(dom, changed.gameObject.transform)
     }
   }
 
