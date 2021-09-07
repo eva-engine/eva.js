@@ -37,7 +37,7 @@ const getEventFunc = function (event: EE, gameObject: GameObject, e: MouseEvent)
 };
 
 @decorators.componentObserver({
-  A11y: [],
+  A11y: ['hint'],
   Transform: ['inScene'],
   Event: [],
 })
@@ -218,11 +218,21 @@ export default class A11ySystem extends System {
           break;
         case OBSERVER_TYPE.CHANGE:
           changed.componentName === 'Transform' && this.transformChange(changed);
+          changed.componentName === 'A11y' && this.change(changed);
           break;
         case OBSERVER_TYPE.REMOVE:
           changed.componentName === 'Event' && this.removeEvent(changed);
           changed.componentName === 'A11y' && this.remove(changed);
       }
+    }
+  }
+
+  change(changed: ComponentChanged) {
+    const component = changed.component as A11y
+    if (changed.prop.prop[0] === 'hint') {
+      const dom = this.cache.get(component.a11yId)
+      dom?.setAttribute('aria-label', component.hint)
+      this.setPosition(dom, changed.gameObject.transform)
     }
   }
 
