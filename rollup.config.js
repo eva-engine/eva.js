@@ -198,9 +198,9 @@ function createMinifiedConfig(format) {
     },
     [
       terser({
-        toplevel: true, // 开启最高级压缩
+        // toplevel: true, // 开启最高级压缩
         mangle: { reserved: ['_extends'] }, // 不压缩 _extends
-        compress: true, // 压缩整体代码
+        compress: true, // 压缩整体代码 
       }),
     ],
   );
@@ -209,5 +209,4 @@ function createMinifiedConfig(format) {
 function createMiniProgramConfig(format) {
   return createConfig(format, outputConfigs[format], miniProgramPlugin);
 }
-
 export default packageConfigs;
