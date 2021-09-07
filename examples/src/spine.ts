@@ -36,6 +36,7 @@ export async function init(canvas) {
     autoStart: true,
     frameRate: 60,
   });
+  window.game = game
 
   game.scene.transform.size = {
     width: 750,
