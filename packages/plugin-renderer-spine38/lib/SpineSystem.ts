@@ -58,6 +58,14 @@ export default class SpineSystem extends Renderer {
       },
       false,
     );
+    this.game.ticker.add((e) => {
+      for (let key in this.armatures) {
+        // TODO: 类型
+        // @ts-ignore
+        this.armatures[key].update(e.deltaTime * 0.001)
+        this.armatures[key].updateTransform()
+      }
+    })
   }
 
   async componentChanged(changed: ComponentChanged) {
@@ -113,6 +121,9 @@ export default class SpineSystem extends Renderer {
     }
 
     container.addChildAt(armature, 0);
+    /** 保证第一帧显示正常 */
+    armature.update()
+    armature.updateTransform() 
     component.armature = armature;
     if (component.autoPlay) {
       try {

@@ -7092,7 +7092,7 @@ var pixi_spine;
           continue;
         }
       }
-      _this.autoUpdate = true;
+      _this.autoUpdate = false;
       _this.tintRgb = new Float32Array([1, 1, 1]);
       return _this;
     }
@@ -7529,7 +7529,7 @@ var pixi_spine;
       this.tempClipContainers = null;
       _super.prototype.destroy.call(this, options);
     };
-    Spine.globalAutoUpdate = true;
+    Spine.globalAutoUpdate = false;
     Spine.globalDelayLimit = 0;
     Spine.clippingPolygon = [];
     return Spine;
