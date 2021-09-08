@@ -42,7 +42,7 @@ export default class Transition extends Component<TransitionParams> {
       this.newAnimation(name);
     }
     if (name && this.animations[name]) {
-      this.animations[name].play(iteration, this.currentTime);
+      this.animations[name].play(iteration, this.currentTime || 0);
     }
   }
 
