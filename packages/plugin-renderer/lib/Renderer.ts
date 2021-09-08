@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { GameObject, Game, PureObserverInfo, ComponentChanged, System } from '@eva/eva.js';
+import { GameObject, Game, PureObserverInfo, ComponentChanged, System, UpdateParams } from '@eva/eva.js';
 import ContainerManager from './manager/ContainerManager';
 import RendererManager from './manager/RendererManager';
 
@@ -54,7 +54,7 @@ export default class Renderer<T extends {} = {}> extends System<T> {
    */
   rendererUpdate(_gameObject: GameObject) { }
 
-  update() {
+  update(e?: UpdateParams) {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
       this.componentChanged(changed);
