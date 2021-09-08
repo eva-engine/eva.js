@@ -33,10 +33,10 @@ const outputConfigs = {
     file: resolve(`dist/${name}.cjs.js`),
     format: 'cjs',
   },
-  umd: {
+  iife: {
     name: pkg.bundle,
     file: resolve(`dist/${pkg.bundle}.js`),
-    format: 'umd',
+    format: 'iife',
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
@@ -57,7 +57,7 @@ if (!process.env.PROD_ONLY) {
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
-    if (format === 'esm' || format === 'cjs' || (format === 'umd' && pkg.bundle)) {
+    if (format === 'esm' || format === 'cjs' || (format === 'iife' && pkg.bundle)) {
       packageConfigs.push(createConfig(format, outputConfigs[format]));
     }
   });
@@ -72,7 +72,7 @@ if (process.env.NODE_ENV === 'production') {
       packageConfigs.push(createCjsProductionConfig(format));
     }
 
-    if (format === 'umd' && pkg.bundle) {
+    if (format === 'iife' && pkg.bundle) {
       packageConfigs.push(createMinifiedConfig(format));
     }
 
@@ -111,7 +111,7 @@ function createConfig(format, output, plugins = []) {
   hasTypesChecked = true;
 
   let nodePlugins = [];
-  if (format === 'umd') {
+  if (format === 'iife') {
     nodePlugins = [
       require('@rollup/plugin-node-resolve').nodeResolve(),
       require('rollup-plugin-polyfill-node')(),
@@ -198,9 +198,9 @@ function createMinifiedConfig(format) {
     },
     [
       terser({
-        toplevel: true, // 开启最高级压缩
+        // toplevel: true, // 开启最高级压缩
         mangle: { reserved: ['_extends'] }, // 不压缩 _extends
-        compress: true, // 压缩整体代码
+        compress: true, // 压缩整体代码 
       }),
     ],
   );
@@ -209,5 +209,4 @@ function createMinifiedConfig(format) {
 function createMiniProgramConfig(format) {
   return createConfig(format, outputConfigs[format], miniProgramPlugin);
 }
-
 export default packageConfigs;

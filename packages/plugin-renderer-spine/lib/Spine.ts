@@ -23,6 +23,8 @@ export default class Spine extends Component<SpineParams> {
   destroied: boolean;
   addHandler: any;
 
+  lastResource: string;
+
   init(obj?: SpineParams) {
     if (!obj) return;
 
