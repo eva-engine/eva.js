@@ -21,7 +21,7 @@ export default class Transition extends Component<TransitionParams> {
 
   tweenGroup: Group;
   group: Record<string, AnimationStruct[]> = {};
-  currentTime: number;
+  currentTime: number = 0;
 
   init({ group } = { group: {} }) {
     this.group = group;
@@ -42,7 +42,7 @@ export default class Transition extends Component<TransitionParams> {
       this.newAnimation(name);
     }
     if (name && this.animations[name]) {
-      this.animations[name].play(iteration, this.currentTime || 0);
+      this.animations[name].play(iteration, this.currentTime);
     }
   }
 
