@@ -21,7 +21,7 @@ export default class Transition extends Component<TransitionParams> {
 
   tweenGroup: Group;
   group: Record<string, AnimationStruct[]> = {};
-  currentTime: number;
+  currentTime: number = 0;
 
   init({ group } = { group: {} }) {
     this.group = group;
