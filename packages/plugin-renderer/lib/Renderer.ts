@@ -54,6 +54,7 @@ export default class Renderer<T extends {} = {}> extends System<T> {
    */
   rendererUpdate(_gameObject: GameObject) { }
 
+  // @ts-ignore
   update(e?: UpdateParams) {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
