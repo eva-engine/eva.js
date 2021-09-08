@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-stats",
-  "version": "1.1.8-alpha.4",
+  "version": "1.1.8",
   "description": "@eva/plugin-stats",
   "main": "index.js",
   "module": "dist/plugin-stats.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.1.8-alpha.4",
+    "@eva/eva.js": "1.1.8",
     "lodash-es": "^4.17.21"
   }
 }
