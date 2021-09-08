@@ -24,7 +24,7 @@ export async function init(canvas) {
         y: 0,
       },
     });
-    text.addComponent(
+    const txt = text.addComponent(
       new Text({
         text: '欢迎试用EVA互动游戏开发体系！',
         style: {
@@ -48,15 +48,18 @@ export async function init(canvas) {
         },
       }),
     );
+
+    let a11y
     setTimeout(() => {
       game.scene.addChild(text);
     }, 1000);
     setTimeout(() => {
-      text.addComponent(new A11y({ hint: 'aaaa' }));
+      a11y = text.addComponent(new A11y({ hint: 'aaaa' }));
     }, 2000);
-    // setTimeout(() => {
-    //   text.addComponent(new A11y({ hint: 'aaaa' }))
-    // }, 3000);
+    setTimeout(() => {
+      txt.text = '123'
+      a11y.hint = '123'
+    }, 3000);
     setTimeout(() => {
       game.scene.removeChild(text);
     }, 4000);
