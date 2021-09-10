@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-matterjs",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "@eva/plugin-matterjs",
   "main": "index.js",
   "module": "dist/plugin-matterjs.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.1.10",
+    "@eva/eva.js": "1.1.11",
     "@types/matter-js": "^0.17.5",
     "poly-decomp": "^0.3.0"
   }
