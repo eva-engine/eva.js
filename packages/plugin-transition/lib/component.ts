@@ -1,4 +1,4 @@
-import Animation from './animation';
+import Animation from './Animation';
 import { Component } from '@eva/eva.js';
 import { Group } from '@tweenjs/tween.js';
 
@@ -21,6 +21,8 @@ export default class Transition extends Component<TransitionParams> {
 
   tweenGroup: Group;
   group: Record<string, AnimationStruct[]> = {};
+  private currentTime: number = 0;
+  private needPlay: { name: string, iteration?: number }[] = [];
 
   init({ group } = { group: {} }) {
     this.group = group;
@@ -41,7 +43,7 @@ export default class Transition extends Component<TransitionParams> {
       this.newAnimation(name);
     }
     if (name && this.animations[name]) {
-      this.animations[name].play(iteration);
+      this.needPlay.push({ name, iteration })
     }
   }
 
@@ -77,9 +79,16 @@ export default class Transition extends Component<TransitionParams> {
     this.animations = null;
     this.removeAllListeners();
   }
-
-  update() {
-    this.tweenGroup.update();
+  update(e) {
+    this.currentTime = e.time
+    for (const key in this.animations) {
+      this.animations[key].currentTime = e.time
+    }
+    this.tweenGroup.update(e.time);
+    for (const play of this.needPlay) {
+      this.animations[play.name].play(play.iteration, this.currentTime)
+    }
+    this.needPlay.length = 0
   }
 
   newAnimation(name) {

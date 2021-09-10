@@ -19,7 +19,6 @@ export async function init(canvas) {
       preload: false,
     },
   ]);
-
   const game = new Game({
     systems: [
       new RendererSystem({
@@ -31,6 +30,7 @@ export async function init(canvas) {
       new TransitionSystem(),
     ],
   });
+  window.game = game
 
   const image = new GameObject('image', {
     size: { width: 200, height: 200 },

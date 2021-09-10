@@ -1,5 +1,5 @@
 import { DisplayObject } from 'pixi.js';
-import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { decorators, ComponentChanged, OBSERVER_TYPE, resource, UpdateParams } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import Spine from './Spine';
 import pixispine from './pixi-spine.js';
@@ -59,7 +59,15 @@ export default class SpineSystem extends Renderer {
       false,
     );
   }
-
+  update(e: UpdateParams){
+    for (let key in this.armatures) {
+      // TODO: 类型
+      // @ts-ignore
+      this.armatures[key].update(e.deltaTime * 0.001)
+      this.armatures[key].updateTransform()
+    }
+    super.update()
+  }
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Spine') {
       if (changed.type === OBSERVER_TYPE.ADD) {
@@ -78,7 +86,8 @@ export default class SpineSystem extends Renderer {
   async add(changed: ComponentChanged, count?: number) {
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
-    const spineData = await getSpineData(component.resource);
+    const res = await resource.getResource(component.resource);
+    const spineData = await getSpineData(res);
     if (!spineData) {
       component.addHandler = setTimeout(() => {
         if (!component.destroied) {
@@ -102,6 +111,7 @@ export default class SpineSystem extends Renderer {
       // console.warn('添加spine的container不存在');
       return;
     }
+    component.lastResource = component.resource
     // @ts-ignore
     const armature: any = new pixispine.Spine(spineData);
     this.armatures[changed.gameObject.id] = armature;
@@ -112,7 +122,9 @@ export default class SpineSystem extends Renderer {
     }
 
     container.addChildAt(armature, 0);
-    component.usingResource = component.resource;
+    /** 保证第一帧显示正常 */
+    armature.update()
+    armature.updateTransform()
     component.armature = armature;
     if (component.autoPlay) {
       try {
@@ -152,7 +164,7 @@ export default class SpineSystem extends Renderer {
     this.remove(changed);
     this.add(changed);
   }
-  remove(changed: ComponentChanged) {
+  async remove(changed: ComponentChanged) {
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
     const armature = this.armatures[changed.gameObject.id];
@@ -166,10 +178,8 @@ export default class SpineSystem extends Renderer {
 
     if (component.armature) {
       component.armature.destroy({ children: true });
-
-      if (component.usingResource) {
-        releaseSpineData(component.usingResource);
-      }
+      const res = await resource.getResource(component.lastResource);
+      releaseSpineData(res.name, res.data?.image?.src);
     }
 
     component.armature = null;

@@ -1,9 +1,10 @@
-import fs from 'fs'
+import fs from 'fs';
 import path from 'path';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
-import {terser} from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser';
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
@@ -19,11 +20,9 @@ const entryFile = resolve('lib/index.ts');
 const pkg = require(resolve(`package.json`));
 const packageOptions = pkg.buildOptions || {};
 
-const rootDir = path.resolve(__dirname);
-const exampleDir = path.resolve(__dirname, 'examples');
-const evajsCDNDir = path.resolve(__dirname, 'dist/cdn');
-
-const packages = fs.readdirSync(path.resolve(__dirname, 'packages')).filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
+const packages = fs
+  .readdirSync(path.resolve(__dirname, 'packages'))
+  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const outputConfigs = {
   esm: {
@@ -34,10 +33,10 @@ const outputConfigs = {
     file: resolve(`dist/${name}.cjs.js`),
     format: 'cjs',
   },
-  umd: {
+  iife: {
     name: pkg.bundle,
     file: resolve(`dist/${pkg.bundle}.js`),
-    format: 'umd',
+    format: 'iife',
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
@@ -58,7 +57,7 @@ if (!process.env.PROD_ONLY) {
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
-    if (format === 'esm' || format === 'cjs' || (format === 'umd' && pkg.bundle)) {
+    if (format === 'esm' || format === 'cjs' || (format === 'iife' && pkg.bundle)) {
       packageConfigs.push(createConfig(format, outputConfigs[format]));
     }
   });
@@ -73,7 +72,7 @@ if (process.env.NODE_ENV === 'production') {
       packageConfigs.push(createCjsProductionConfig(format));
     }
 
-    if (format === 'umd' && pkg.bundle) {
+    if (format === 'iife' && pkg.bundle) {
       packageConfigs.push(createMinifiedConfig(format));
     }
 
@@ -112,11 +111,11 @@ function createConfig(format, output, plugins = []) {
   hasTypesChecked = true;
 
   let nodePlugins = [];
-  if (format === 'umd') {
+  if (format === 'iife') {
     nodePlugins = [
       require('@rollup/plugin-node-resolve').nodeResolve(),
       require('rollup-plugin-polyfill-node')(),
-      require('@rollup/plugin-commonjs')({sourceMap: false, ignore: ['lodash-es']}),
+      require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
     ];
   }
 
@@ -125,9 +124,15 @@ function createConfig(format, output, plugins = []) {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
-      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1
+      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1;
     });
     external = ['pixi.js', ...evaDependencies];
+    output.plugins = [
+      getBabelOutputPlugin({
+        configFile: path.resolve(__dirname, 'babel.config.js'),
+        allowAllFormats: true,
+      }),
+    ];
   }
 
   return {
@@ -143,10 +148,11 @@ function createConfig(format, output, plugins = []) {
     },
     external,
     plugins: [
-      json({preferConst: true}),
+      json({ preferConst: true }),
       replace({
         __TEST__: false,
         __DEV__: process.env.NODE_ENV === 'development',
+        __VERSION__: pkg.version,
       }),
       ...nodePlugins,
       tsPlugin,
@@ -172,16 +178,16 @@ function createCjsProductionConfig(format) {
     },
     [
       terser({
-        toplevel: true,
-        mangle: true,
-        compress: true,
+        toplevel: true, // 开启最高级压缩
+        mangle: { reserved: ['_extends'] }, // 不压缩 _extends
+        compress: true, // 压缩整体代码
       }),
     ],
   );
 }
 
 function createMinifiedConfig(format) {
-  const {file, name} = outputConfigs[format];
+  const { file, name } = outputConfigs[format];
   const destFilename = file.replace(/\.js$/, '.min.js');
   return createConfig(
     format,
@@ -192,10 +198,9 @@ function createMinifiedConfig(format) {
     },
     [
       terser({
-        toplevel: true,
-        mangle: true,
-        output: {comments: false},
-        compress: true,
+        // toplevel: true, // 开启最高级压缩
+        mangle: { reserved: ['_extends'] }, // 不压缩 _extends
+        compress: true, // 压缩整体代码 
       }),
     ],
   );
@@ -204,5 +209,4 @@ function createMinifiedConfig(format) {
 function createMiniProgramConfig(format) {
   return createConfig(format, outputConfigs[format], miniProgramPlugin);
 }
-
 export default packageConfigs;

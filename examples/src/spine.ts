@@ -33,11 +33,12 @@ export async function init(canvas) {
         width: 750,
         height: 1000,
       }),
-      new SpineSystem()
+      new SpineSystem(),
     ],
     autoStart: true,
     frameRate: 60,
   });
+  window.game = game
 
   game.scene.transform.size = {
     width: 750,
@@ -53,8 +54,7 @@ export async function init(canvas) {
       y: 0.5,
     },
   });
-  //@ts-ignore
-  const spine = new Spine({ resource: 'anim', animationName: 'idle', autoPlay: true });
+  const spine = new Spine({ resource: 'anim', animationName: 'idle' });
   gameObject.addComponent(spine);
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
