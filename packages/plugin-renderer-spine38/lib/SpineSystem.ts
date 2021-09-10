@@ -1,5 +1,5 @@
 import { DisplayObject } from 'pixi.js';
-import { decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
+import { decorators, ComponentChanged, OBSERVER_TYPE, resource, UpdateParams } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import Spine from './Spine';
 import pixispine from './pixi-spine.js';
@@ -58,16 +58,16 @@ export default class SpineSystem extends Renderer {
       },
       false,
     );
-    this.game.ticker.add((e) => {
-      for (let key in this.armatures) {
-        // TODO: 类型
-        // @ts-ignore
-        this.armatures[key].update(e.deltaTime * 0.001)
-        this.armatures[key].updateTransform()
-      }
-    })
   }
-
+  update(e: UpdateParams){
+    for (let key in this.armatures) {
+      // TODO: 类型
+      // @ts-ignore
+      this.armatures[key].update(e.deltaTime * 0.001)
+      this.armatures[key].updateTransform()
+    }
+    super.update()
+  }
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Spine') {
       if (changed.type === OBSERVER_TYPE.ADD) {
@@ -111,6 +111,7 @@ export default class SpineSystem extends Renderer {
       // console.warn('添加spine的container不存在');
       return;
     }
+    component.lastResource = component.resource
     // @ts-ignore
     const armature: any = new pixispine.Spine(spineData);
     this.armatures[changed.gameObject.id] = armature;
@@ -123,7 +124,7 @@ export default class SpineSystem extends Renderer {
     container.addChildAt(armature, 0);
     /** 保证第一帧显示正常 */
     armature.update()
-    armature.updateTransform() 
+    armature.updateTransform()
     component.armature = armature;
     if (component.autoPlay) {
       try {
@@ -177,7 +178,7 @@ export default class SpineSystem extends Renderer {
 
     if (component.armature) {
       component.armature.destroy({ children: true });
-      const res = await resource.getResource(component.resource)
+      const res = await resource.getResource(component.lastResource);
       releaseSpineData(res.name, res.data?.image?.src);
     }
 
