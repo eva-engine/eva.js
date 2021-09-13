@@ -30,6 +30,8 @@ export async function init(canvas) {
     },
   ]);
 
+  window.resource = resource
+
   const soundSystem = new SoundSystem();
   const game = new Game({
     systems: [
