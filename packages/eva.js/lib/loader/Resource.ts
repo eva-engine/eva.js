@@ -27,12 +27,17 @@ interface SrcBase {
   type: string;
   url?: string;
   data?: any;
+  size?: Size2,
   texture?: TextureBase[] | TextureBase
 }
-
+interface Size2 {
+  width: number,
+  height: number,
+}
 interface TextureBase {
   type: string,
-  url: string
+  url: string,
+  size?: Size2,
 }
 
 /** Eva resource base */

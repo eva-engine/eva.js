@@ -7,6 +7,7 @@ import { Text } from '@eva/plugin-renderer-text';
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { RendererSystem } from "@eva/plugin-renderer";
 import { SpriteAnimationSystem, SpriteAnimation } from "@eva/plugin-renderer-sprite-animation";
+import { Img, ImgSystem } from '@eva/plugin-renderer-img';
 
 export const name = 'compressed-texture-animation';
 let game: Game;
@@ -20,6 +21,7 @@ export async function init(canvas: HTMLCanvasElement) {
         width: 750,
         height: 1000,
       }),
+      new ImgSystem(),
       new SpriteAnimationSystem(),
       new TextSystem(),
       new SpineSystem(),
@@ -32,6 +34,43 @@ export async function init(canvas: HTMLCanvasElement) {
   loadSpriteAnimation();
   loadSpine();
   loadDragonbone();
+  loadBackground();
+}
+async function loadBackground() {
+  resource.addResource([{
+    name: 'back',
+    type: RESOURCE_TYPE.IMAGE,
+    src: {
+      image: {
+        type: 'png',
+        url: './back.png',
+        texture: [{
+          type: 'pvrtc',
+          url: './back.pvrtc.ktx'
+        },{
+          type: 'etc',
+          url: './back.etc.ktx'
+        },{
+          type: 'astc',
+          url: './back.astc.ktx'
+        }]
+      }
+    }
+  }])
+  let go = new GameObject('image', {
+    size: {
+      width: 750,
+      height: 1000
+    }
+  })
+  go.addComponent(new Img({
+    resource: 'back'
+  }))
+  game.scene.addChild(go)
+
+
+  const res = await resource.getResource('back')
+  console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
 }
 function loadTitle(title: string, x: number, y: number) {
   let go = new GameObject('title', {
@@ -61,19 +100,63 @@ async function loadSpriteAnimation() {
       src: {
         image: {
           type: 'png',
-          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png',
+          url: 'cut',
           texture: [
             {
+              type: 'pvrtc',
+              url: './cut.pvrtc.ktx',
+              size: {
+                width: 377,
+                height: 1070
+              }
+            },
+            {
               type: 'astc',
-              url: './yanhua.astc.ktx'
+              url: './cut.astc.ktx'
             },
             {
               type: 'etc',
-              url: './yanhua.etc.ktx'
+              url: './cut.etc.ktx'
             },
             {
               type: 's3tc',
-              url: './yanhua.s3tc.ktx'
+              url: './cut.s3tc.ktx'
+            }
+          ]
+        },
+        json: {
+          type: 'json',
+          url: 'https://gw.alicdn.com/mt/TB1qCvumsyYBuNkSnfoXXcWgVXa.json',
+        },
+      },
+      preload: false,
+    }, {
+      name: 'fruit1',
+      type: RESOURCE_TYPE.SPRITE_ANIMATION,
+      src: {
+        image: {
+          type: 'png',
+          url: 'cut',
+          texture: [
+            {
+              type: 'astc',
+              url: './cut.astc.ktx'
+            },
+            {
+              type: 'etc',
+              url: './cut.etc.ktx'
+            },
+            {
+              type: 'pvrtc',
+              url: './cut.astc.ktx',
+              size: {
+                width: 377,
+                height: 1070
+              }
+            },
+            {
+              type: 's3tc',
+              url: './cut.s3tc.ktx'
             }
           ]
         },
@@ -85,25 +168,52 @@ async function loadSpriteAnimation() {
       preload: false,
     },
   ]);
-  const cut = new GameObject('cut', {
-    position: { x: 40, y: 80 },
-    size: { width: 300, height: 200 },
-    origin: { x: 0, y: 0 },
-  });
+  {
+    const cut = new GameObject('cut', {
+      position: { x: 40, y: 80 },
+      size: { width: 300, height: 200 },
+      origin: { x: 0, y: 0 },
+    });
 
-  const frame = cut.addComponent(
-    new SpriteAnimation({
-      resource: 'fruit',
-      speed: 100,
-      autoPlay: true,
-    }),
-  );
+    const frame = cut.addComponent(
+      new SpriteAnimation({
+        resource: 'fruit',
+        speed: 100,
+        autoPlay: true,
+      }),
+    );
 
-  frame.play();
+    frame.play();
 
-  game.scene.addChild(cut);
-  const res = await resource.getResource('fruit');
-  console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+    game.scene.addChild(cut);
+    const res = await resource.getResource('fruit')
+    console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+
+  }
+  {
+    const cut = new GameObject('cut', {
+      position: { x: 40, y: 280 },
+      size: { width: 300, height: 200 },
+      origin: { x: 0, y: 0 },
+    });
+
+    const frame = cut.addComponent(
+      new SpriteAnimation({
+        resource: 'fruit1',
+        speed: 100,
+        autoPlay: true,
+      }),
+    );
+
+    frame.play();
+
+    game.scene.addChild(cut);
+    const res = await resource.getResource('fruit1')
+    console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+
+  }
+  // const res = await resource.getResource('fruit');
+  // console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
 }
 
 async function loadSpine() {
@@ -122,7 +232,7 @@ async function loadSpine() {
         },
         image: {
           type: 'png',
-          url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/spine/TB1YHC8Vxz1gK0jSZSgXXavwpXa-711-711.png',
+          url: './cat.png',
           texture: [
             {
               type: 'astc',
@@ -170,15 +280,15 @@ async function loadDragonbone() {
       src: {
         image: {
           type: 'png',
-          url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/dragonbone/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
+          url: './plane.png',
           texture: [
-            {
-              type: 'astc',
-              url: './plane.astc.ktx'
-            },
             {
               type: 'etc',
               url: './plane.etc.ktx'
+            },
+            {
+              type: 'astc',
+              url: './plane.astc.ktx'
             },
             {
               type: 's3tc',

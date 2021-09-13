@@ -13,8 +13,7 @@ export function addPreProcessResourceHandler(resource) {
     const { extensions } = getAbilities();
     let target = textures.find(texture => extensions[texture.type]);
     if (target) {
-      resource.src.image.url = target.url;
-      resource.src.image.type = target.type;
+      Object.assign(resource.src.image, target);
     }
   })
 }

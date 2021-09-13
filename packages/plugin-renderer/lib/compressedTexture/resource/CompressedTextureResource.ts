@@ -11,6 +11,8 @@ export type CompressedLevelBuffer = {
 export class CompressedTextureResource {
   width: number
   height: number
+  naturalWidth: number
+  naturalHeight: number
   formerWidth: number
   formerHeight: number
   complete: boolean

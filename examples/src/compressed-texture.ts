@@ -15,15 +15,19 @@ export async function init(canvas: HTMLCanvasElement) {
           url: './person.png',
           texture: [
             {
+              type: 'astc',
+              url: './person.astc.ktx'
+            },
+            {
+              type: 'pvrtc',
+              url: './person.pvrtc.ktx'
+            }, {
               type: 'etc',
               url: './person.etc.ktx'
             }, {
-              type: 'astc',
-              url: './person.astc.ktx'
-            }, {
               type: 's3tc',
               url: './person.s3tc.ktx'
-            },]
+            }]
         },
       },
       preload: false,
@@ -34,8 +38,8 @@ export async function init(canvas: HTMLCanvasElement) {
       //@ts-ignore
       new RendererSystem({
         canvas,
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: 750,
+        height: 1000,
         backgroundColor: 0x003355
       }),
       //@ts-ignore
@@ -46,7 +50,7 @@ export async function init(canvas: HTMLCanvasElement) {
   console.log('load finish ', res.src.image.type, res.src.image.url, res.data.image);
 
   const image = new GameObject('image', {
-    size: { width: window.innerWidth, height: window.innerWidth },
+    size: { width: 924 / 2, height: 514 / 2 },
     origin: { x: 0, y: 0 },
     position: {
       x: 0,
@@ -64,4 +68,7 @@ export async function init(canvas: HTMLCanvasElement) {
     img,
   );
   game.scene.addChild(image);
+  window.image = image
+  window.resource  = resource
+  window.game = game
 }

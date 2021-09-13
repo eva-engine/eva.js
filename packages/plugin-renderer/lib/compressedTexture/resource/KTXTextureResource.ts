@@ -2,6 +2,7 @@
  * Inspired by PixiJS v6
  */
 
+import { resource } from "@eva/eva.js";
 import { INTERNAL_FORMAT_TO_BLOCK_SIZE } from "../const";
 import type { CompressedLevelBuffer } from "./CompressedTextureResource";
 import { CompressedTextureResource } from "./CompressedTextureResource";
@@ -57,8 +58,9 @@ const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0
 const ENDIANNESS = 0x04030201;
 export class KTXTextureResource extends CompressedTextureResource {
   complete = true
-  constructor(source: ArrayBuffer, public src: string) {
+  constructor(source: ArrayBuffer, config) {
     super();
+    this.src = config.url
     const dataView = new DataView(source);
     if (!validateKTX(dataView)) {
       throw new Error('Not a valid KTX Texture');
@@ -75,6 +77,15 @@ export class KTXTextureResource extends CompressedTextureResource {
     let size = INTERNAL_FORMAT_TO_BLOCK_SIZE[this.internalFormat];
     this.width = pixelWidth % size[0] === 0 ? pixelWidth : (pixelWidth + size[0] - (pixelWidth % size[0]));
     this.height = pixelHeight % size[1] === 0 ? pixelHeight : (pixelHeight + size[1] - (pixelHeight % size[1]));
+    const src = resource.resourcesMap[config.metadata.name].src[config.metadata.key]
+    const { width, height } = src?.size ?? {}
+
+
+    if (width && height) {
+      this.naturalWidth = 377
+      this.naturalHeight = 1070
+    }
+
 
     const pixelDepth = dataView.getUint32(KTX_FIELDS.PIXEL_DEPTH, littleEndian) || 1;// ^^
     const numberOfArrayElements = dataView.getUint32(KTX_FIELDS.NUMBER_OF_ARRAY_ELEMENTS, littleEndian) || 1;// ^^
