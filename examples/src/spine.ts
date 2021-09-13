@@ -24,6 +24,7 @@ export async function init(canvas) {
       preload: true
     },
   ]);
+  window.resource =resource
 
 
   const game = new Game({
@@ -44,21 +45,44 @@ export async function init(canvas) {
     width: 750,
     height: 1000,
   };
-  let gameObject = new GameObject('spine', {
-    anchor: {
-      x: 0.5,
-      y: 0.5,
-    },
-    scale: {
-      x: 0.5,
-      y: 0.5,
-    },
-  });
-  const spine = new Spine({ resource: 'anim', animationName: 'idle' });
-  gameObject.addComponent(spine);
-  spine.on('complete', e => {
-    console.log('动画播放结束', e.name);
-  });
-  spine.play('idle', true);
-  game.scene.addChild(gameObject);
+  let gameObject
+  {
+    gameObject = new GameObject('spine', {
+      anchor: {
+        x: 0.5,
+        y: 0.5,
+      },
+      scale: {
+        x: 0.5,
+        y: 0.5,
+      },
+    });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    gameObject.addComponent(spine);
+    spine.on('complete', e => {
+      console.log('动画播放结束', e.name);
+    });
+    spine.play('idle', true);
+    game.scene.addChild(gameObject);
+  }
+  setTimeout(() => {
+    gameObject.destroy()
+    let gameObject1 = new GameObject('spine', {
+      anchor: {
+        x: 0.5,
+        y: 0.5,
+      },
+      scale: {
+        x: 0.5,
+        y: 0.5,
+      },
+    });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    gameObject1.addComponent(spine);
+    spine.on('complete', e => {
+      console.log('动画播放结束', e.name);
+    });
+    spine.play('idle', true);
+    game.scene.addChild(gameObject1);
+  }, 1000)
 }
