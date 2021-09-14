@@ -23,7 +23,6 @@
     "@types/pixi.js": "^4.8.9",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
-    "pixi.js": "^4.8.7",
-    "resource-loader": "^4.0.0-rc4"
+    "pixi.js": "^4.8.7"
   }
 }

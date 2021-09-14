@@ -1,7 +1,7 @@
-import { ResourceBase, STRATEGY } from "@eva/eva.js";
+import { ResourceBase, RESOURCE_TYPE_STRATEGY, resourceLoader } from "@eva/eva.js";
 import { getAbilities } from "../ability";
 import KTXLoadStrategy from "./KTXLoadStrategy";
-import { XhrResponseType } from 'resource-loader'
+const { XhrResponseType } = resourceLoader
 export function addPreProcessResourceHandler(resource) {
   resource.addPreProcessResourceHandler(function normalizeResource(resource: ResourceBase): void {
     let textures = resource.src?.image?.texture;
@@ -18,7 +18,7 @@ export function addPreProcessResourceHandler(resource) {
   })
 }
 export function addKTXStragetyAndRegister() {
-  Object.assign(STRATEGY, {
+  Object.assign(RESOURCE_TYPE_STRATEGY, {
     astc: KTXLoadStrategy,
     etc: KTXLoadStrategy,
     pvrtc: KTXLoadStrategy,

@@ -1,7 +1,8 @@
 import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy, AbstractLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
-
+import  * as _resourceLoader  from 'resource-loader'
+export const resourceLoader = _resourceLoader
 /** Load event */
 export enum LOAD_EVENT {
   'START' = 'start',
@@ -80,7 +81,7 @@ XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer);
 XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer);
 XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer);
 
-export const STRATEGY: { [type: string]: new (...args: any[]) => AbstractLoadStrategy } = {
+export const RESOURCE_TYPE_STRATEGY: { [type: string]: new (...args: any[]) => AbstractLoadStrategy } = {
   png: ImageLoadStrategy,
   jpg: ImageLoadStrategy,
   jpeg: ImageLoadStrategy,
@@ -250,7 +251,7 @@ class Resource extends EE {
           loader.add({
             url: res.src[key].url,
             name: `${res.name}_${key}`,
-            strategy: STRATEGY[resourceType],
+            strategy: RESOURCE_TYPE_STRATEGY[resourceType],
             metadata: {
               key,
               name: res.name,
