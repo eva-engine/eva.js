@@ -9,8 +9,9 @@ export function addPreProcessResourceHandler(resource) {
     if (!Array.isArray(textures)) {
       textures = [textures];
     }
-    // When astc is supported, its all types are supported. 《MoChuan》
-    const { extensions } = getAbilities();
+
+    const { extensions } = getAbilities() ?? {};
+    if (!extensions) return
     let target = textures.find(texture => extensions[texture.type]);
     if (target) {
       Object.assign(resource.src.image, target);
