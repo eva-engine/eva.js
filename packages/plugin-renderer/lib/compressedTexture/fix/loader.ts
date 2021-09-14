@@ -2,15 +2,16 @@ import { ResourceBase, RESOURCE_TYPE_STRATEGY, resourceLoader } from "@eva/eva.j
 import { getAbilities } from "../ability";
 import KTXLoadStrategy from "./KTXLoadStrategy";
 const { XhrResponseType } = resourceLoader
-export function addPreProcessResourceHandler(resource) {
+export function addPreProcessResourceHandler(resource, gl:WebGLRenderingContext) {
   resource.addPreProcessResourceHandler(function normalizeResource(resource: ResourceBase): void {
     let textures = resource.src?.image?.texture;
+
     if (!textures) return;
     if (!Array.isArray(textures)) {
       textures = [textures];
     }
 
-    const { extensions } = getAbilities() ?? {};
+    const { extensions } = getAbilities(gl) ?? {};
     if (!extensions) return
     let target = textures.find(texture => extensions[texture.type]);
     if (target) {

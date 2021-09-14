@@ -155,9 +155,7 @@ class Resource extends EE {
         console.warn(res.name + ' was already added');
         continue;
       }
-      for (const handler of this.preProcessResourceHandlers) {
-        handler(res);
-      }
+
       this.resourcesMap[res.name] = res;
       this.resourcesMap[res.name].data = {};
     }
@@ -242,6 +240,11 @@ class Resource extends EE {
     unLoadNames.forEach(name => {
       this.promiseMap[name] = new Promise(r => (resolves[name] = r));
       const res = this.resourcesMap[name];
+
+      for (const handler of this.preProcessResourceHandlers) {
+        handler(res);
+      }
+
       for (const key in res.src) {
         const resourceType = res.src[key].type;
         if (resourceType === 'data') {

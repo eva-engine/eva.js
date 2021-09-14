@@ -3,8 +3,9 @@ import { Application } from '@eva/renderer-adapter';
 import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
-import { ticker } from 'pixi.js';
+import { ticker, WebGLRenderer } from 'pixi.js';
 import type { ApplicationOptions } from 'pixi.js';
+import { registerCompressedTexture } from './compressedTexture';
 
 export interface RendererSystemParams extends ApplicationOptions {
   canvas?: HTMLCanvasElement
@@ -76,6 +77,11 @@ export default class Renderer extends System<RendererSystemParams> {
         application,
       });
     });
+
+    if ((this.application.renderer as WebGLRenderer).gl) {
+      registerCompressedTexture((this.application.renderer as WebGLRenderer).gl);
+    }
+
   }
 
   registerObserver(observerInfo) {

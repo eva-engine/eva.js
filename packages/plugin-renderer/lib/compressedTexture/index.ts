@@ -5,9 +5,9 @@ import { TextureMixin } from "./fix/TextureMixin";
 import { BaseTextureMixin } from "./fix/BaseTextureMixin";
 import { resource } from "@eva/eva.js";
 
-export function registerCompressedTexture() {
+export function registerCompressedTexture(gl: WebGLRenderingContext) {
   // Register for load compressed texture correctly
-  addPreProcessResourceHandler(resource);
+  addPreProcessResourceHandler(resource, gl);
   addKTXStragetyAndRegister();
 
   // Change some PIXI class implement

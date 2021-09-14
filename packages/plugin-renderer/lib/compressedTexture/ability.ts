@@ -18,11 +18,8 @@ type Abilities = {
   textureFormats: { [key in keyof typeof INTERNAL_FORMATS]: number },
   formats: number[]
 }
-export function getAbilities(): Abilities {
+export function getAbilities(gl: WebGLRenderingContext): Abilities {
   if (res) return res;
-  // Auto-detect WebGL compressed-texture extensions
-  const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl');
 
   if (!gl) {
     // #if _DEBUG
