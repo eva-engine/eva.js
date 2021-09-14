@@ -1,8 +1,7 @@
 import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy, AbstractLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
-import  * as _resourceLoader  from 'resource-loader'
-export const resourceLoader = _resourceLoader
+export { resourceLoader } from './resourceLoader'
 /** Load event */
 export enum LOAD_EVENT {
   'START' = 'start',
