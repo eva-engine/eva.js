@@ -30,14 +30,14 @@ export function getAbilities(gl: WebGLRenderingContext): Abilities {
   }
 
   const extensions = {
-    s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-    s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
-    etc: gl.getExtension('WEBGL_compressed_texture_etc'),
-    etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
-    pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
-      || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
-    atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-    astc: gl.getExtension('WEBGL_compressed_texture_astc')
+    s3tc: !!gl.getExtension('WEBGL_compressed_texture_s3tc'),
+    s3tc_sRGB: !!gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
+    etc: !!gl.getExtension('WEBGL_compressed_texture_etc'),
+    etc1: !!gl.getExtension('WEBGL_compressed_texture_etc1'),
+    pvrtc: !!gl.getExtension('WEBGL_compressed_texture_pvrtc')
+      || !!gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+    atc: !!gl.getExtension('WEBGL_compressed_texture_atc'),
+    astc: !!gl.getExtension('WEBGL_compressed_texture_astc')
   };
 
   const textureFormats = {};
@@ -60,5 +60,8 @@ export function getAbilities(gl: WebGLRenderingContext): Abilities {
     textureFormats,
     formats
   }
+  try {
+    console.log('Eva.js Supported Compressed Texture Format: ' + Object.keys(extensions).filter((type) => extensions[type]).join(', '))
+  } catch (e) { }
   return res;
 }
