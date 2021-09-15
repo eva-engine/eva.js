@@ -46,7 +46,7 @@ export default class Renderer extends System<RendererSystemParams> {
   game: Game;
   transform: Transform;
   multiApps: Application[] = [];
-  suportedCompressedTextureFormatList: SuportedCompressedTexture;
+  suportedCompressedTextureFormats: SuportedCompressedTexture;
   init(params: RendererSystemParams) {
     this.params = params;
     this.application = this.createApplication(params);
@@ -82,7 +82,7 @@ export default class Renderer extends System<RendererSystemParams> {
 
     const gl = (this.application.renderer as WebGLRenderer).gl
     if ((this.application.renderer as WebGLRenderer).gl) {
-      this.suportedCompressedTextureFormatList = getSuportCompressedTextureFormats(gl)
+      this.suportedCompressedTextureFormats = getSuportCompressedTextureFormats(gl)
       registerCompressedTexture((this.application.renderer as WebGLRenderer).gl);
     }
 
