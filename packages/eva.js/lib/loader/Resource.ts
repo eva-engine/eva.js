@@ -109,7 +109,7 @@ class Resource extends EE {
   private preProcessResourceHandlers: PreProcessResourceHandler[] = []
 
   /** Resource cache  */
-  private resourcesMap: Record<ResourceName, ResourceStruct> = {};
+  public resourcesMap: Record<ResourceName, ResourceStruct> = {};
 
   /** Collection of make resource instance function */
   private makeInstanceFunctions: Record<string, ResourceProcessFn> = {};

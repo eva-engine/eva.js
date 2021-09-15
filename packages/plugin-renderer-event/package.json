@@ -20,6 +20,6 @@
   "dependencies": {
     "@eva/plugin-renderer": "1.2.0-alpha.1",
     "@eva/eva.js": "1.2.0-alpha.1",
-    "pixi.js": "^4.8.7"
+    "pixi.js": "^4.8.9"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer",
-  "version": "1.2.0-alpha.1",
+  "version": "1.1.11",
   "description": "@eva/plugin-renderer",
   "main": "index.js",
   "module": "dist/plugin-renderer.esm.js",
@@ -23,6 +23,9 @@
     "@types/pixi.js": "^4.8.9",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
-    "pixi.js": "^4.8.7"
+    "pixi.js": "^4.8.9"
+  },
+  "devDependencies": {
+    "resource-loader": "^4.0.0-rc4"
   }
 }

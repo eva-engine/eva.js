@@ -1,6 +1,5 @@
-import { resourceLoader } from '@eva/eva.js'
+import { XhrLoadStrategy } from './XhrLoadStrategy'
 import { KTXTextureResource } from '../resource/KTXTextureResource';
-const { XhrLoadStrategy } = resourceLoader;
 
 // @ts-ignore
 export default class KTXLoadStrategy extends XhrLoadStrategy {
