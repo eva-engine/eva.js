@@ -283,9 +283,7 @@ class Resource extends EE {
         }
         resolve(res);
       } catch (err) {
-        if (__DEV__) {
-          console.error(err);
-        }
+        console.error(err);
         res.complete = false;
         if (preload) {
           param.errMsg = err.message;
