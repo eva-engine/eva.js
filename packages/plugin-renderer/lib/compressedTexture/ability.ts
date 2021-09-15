@@ -1,7 +1,6 @@
 /**
  * Inspired by PixiJS v6
  */
-import { INTERNAL_FORMATS } from "./const";
 export type CompressedTextureExtensions = {
   s3tc?: WEBGL_compressed_texture_s3tc,
   s3tc_sRGB: WEBGL_compressed_texture_s3tc_srgb,
@@ -12,26 +11,35 @@ export type CompressedTextureExtensions = {
   astc: WEBGL_compressed_texture_astc
 };
 export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
-let res = undefined;
-type Abilities = {
-  extensions: Partial<CompressedTextureExtensions>,
-  textureFormats: { [key in keyof typeof INTERNAL_FORMATS]: number },
-  formats: number[]
+let result = undefined;
+export interface SuportedCompressedTexture {
+  s3tc: boolean,
+  etc: boolean,
+  etc1: boolean,
+  pvrtc: boolean,
+  atc: boolean,
+  astc: boolean,
 }
-export function getAbilities(gl: WebGLRenderingContext): Abilities {
-  if (res) return res;
+export function getSuportCompressedTextureFormats(gl: WebGLRenderingContext): SuportedCompressedTexture {
+  if (result) return result;
 
   if (!gl) {
     // #if _DEBUG
     console.warn('WebGL not available for compressed textures. Silently failing.');
     // #endif
 
-    return;
+    return {
+      s3tc: false,
+      etc: false,
+      etc1: false,
+      pvrtc: false,
+      atc: false,
+      astc: false,
+    };
   }
 
-  const extensions = {
+  result = {
     s3tc: !!gl.getExtension('WEBGL_compressed_texture_s3tc'),
-    s3tc_sRGB: !!gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
     etc: !!gl.getExtension('WEBGL_compressed_texture_etc'),
     etc1: !!gl.getExtension('WEBGL_compressed_texture_etc1'),
     pvrtc: !!gl.getExtension('WEBGL_compressed_texture_pvrtc')
@@ -40,28 +48,8 @@ export function getAbilities(gl: WebGLRenderingContext): Abilities {
     astc: !!gl.getExtension('WEBGL_compressed_texture_astc')
   };
 
-  const textureFormats = {};
-
-  // Assign all available compressed-texture formats
-  for (const extensionName in extensions) {
-    const extension = extensions[extensionName as keyof typeof extensions];
-
-    if (!extension) {
-      continue;
-    }
-
-    Object.assign(
-      textureFormats,
-      Object.getPrototypeOf(extension));
-  }
-  let formats = Object.values(textureFormats);
-  res = {
-    extensions,
-    textureFormats,
-    formats
-  }
   try {
-    console.log('Eva.js Supported Compressed Texture Format: ' + Object.keys(extensions).filter((type) => extensions[type]).join(', '))
+    console.log('Eva.js Supported Compressed Texture Format List: ' + Object.keys(result).filter((type) => result[type]).join(', '))
   } catch (e) { }
-  return res;
+  return result;
 }
