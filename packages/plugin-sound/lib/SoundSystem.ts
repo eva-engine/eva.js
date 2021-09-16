@@ -242,19 +242,31 @@ class SoundSystem extends System {
       if (!this.ctx) {
         reject(new Error('No audio support'));
       }
-      this.ctx.decodeAudioData(arraybuffer).then((decodedData: AudioBuffer) => {
+
+      const success = (decodedData: AudioBuffer) => {
+        if (this.decodeAudioPromiseMap[name]) {
+          delete this.decodeAudioPromiseMap[name];
+        }
         if (decodedData) {
           resolve(decodedData);
         } else {
           reject(new Error(`Error decoding audio ${name}`));
         }
-      }).catch((error) => {
-        reject(new Error(`${error}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
-      }).finally(() => {
+      };
+
+      const error = (err: DOMException) => {
         if (this.decodeAudioPromiseMap[name]) {
           delete this.decodeAudioPromiseMap[name];
         }
-      })
+        reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
+      };
+
+      const promise = this.ctx.decodeAudioData(arraybuffer, success, error)
+      if (promise && promise.catch) {
+        promise.catch((err) => {
+          reject(new Error(`catch ${err}, arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
+        });
+      }
     });
 
     this.decodeAudioPromiseMap[name] = promise;
