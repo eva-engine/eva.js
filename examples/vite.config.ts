@@ -2,16 +2,17 @@ import { resolve } from "path";
 import { defineConfig } from 'vite';
 import { readdirSync, statSync } from 'fs';
 
-const alias = [];
-const paths = readdirSync('./packages');
-for (const path of paths) {
+var alias = [];
+var paths = readdirSync('./packages');
+paths.forEach(path => {
   if (statSync(resolve('./packages', path)).isDirectory()) {
     alias.push({
       find: `@eva/${path}`,
       replacement: resolve(__dirname, `../packages/${path}/lib`)
     })
   }
-}
+});
+
 export default defineConfig({
   server: {
     open: true,

@@ -1,7 +1,7 @@
-import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy } from 'resource-loader';
+import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy, AbstractLoadStrategy } from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
-
+export { resourceLoader } from './resourceLoader'
 /** Load event */
 export enum LOAD_EVENT {
   'START' = 'start',
@@ -29,6 +29,17 @@ interface SrcBase {
   type: string;
   url?: string;
   data?: any;
+  size?: Size2,
+  texture?: TextureBase[] | TextureBase
+}
+interface Size2 {
+  width: number,
+  height: number,
+}
+interface TextureBase {
+  type: string,
+  url: string,
+  size?: Size2,
 }
 
 /** Eva resource base */
@@ -71,7 +82,7 @@ XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer);
 XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer);
 XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer);
 
-const STRATEGY = {
+export const RESOURCE_TYPE_STRATEGY: { [type: string]: new (...args: any[]) => AbstractLoadStrategy } = {
   png: ImageLoadStrategy,
   jpg: ImageLoadStrategy,
   jpeg: ImageLoadStrategy,
@@ -85,6 +96,8 @@ const STRATEGY = {
 
 type ResourceName = string;
 type ResourceProcessFn = (resource: ResourceStruct) => any;
+type PreProcessResourceHandler = (res: ResourceBase) => void;
+
 
 /**
  * Resource manager
@@ -95,8 +108,10 @@ class Resource extends EE {
   /** load resource timeout */
   public timeout: number = 6000;
 
+  private preProcessResourceHandlers: PreProcessResourceHandler[] = []
+
   /** Resource cache  */
-  private resourcesMap: Record<ResourceName, ResourceStruct> = {};
+  public resourcesMap: Record<ResourceName, ResourceStruct> = {};
 
   /** Collection of make resource instance function */
   private makeInstanceFunctions: Record<string, ResourceProcessFn> = {};
@@ -141,9 +156,19 @@ class Resource extends EE {
         console.warn(res.name + ' was already added');
         continue;
       }
+
       this.resourcesMap[res.name] = res;
       this.resourcesMap[res.name].data = {};
     }
+  }
+
+  /** dd resource preprocesser*/
+  public addPreProcessResourceHandler(handler: PreProcessResourceHandler) {
+    this.preProcessResourceHandlers.push(handler);
+  }
+
+  public removePreProcessResourceHandler(handler: PreProcessResourceHandler) {
+    this.preProcessResourceHandlers.splice(this.preProcessResourceHandlers.indexOf(handler), 1);
   }
 
   /** Start preload */
@@ -216,6 +241,11 @@ class Resource extends EE {
     unLoadNames.forEach(name => {
       this.promiseMap[name] = new Promise(r => (resolves[name] = r));
       const res = this.resourcesMap[name];
+
+      for (const handler of this.preProcessResourceHandlers) {
+        handler(res);
+      }
+
       for (const key in res.src) {
         const resourceType = res.src[key].type;
         if (resourceType === 'data') {
@@ -225,7 +255,7 @@ class Resource extends EE {
           loader.add({
             url: res.src[key].url,
             name: `${res.name}_${key}`,
-            strategy: STRATEGY[resourceType],
+            strategy: RESOURCE_TYPE_STRATEGY[resourceType],
             metadata: {
               key,
               name: res.name,
@@ -255,6 +285,7 @@ class Resource extends EE {
         }
         resolve(res);
       } catch (err) {
+        console.error(err);
         res.complete = false;
         if (preload) {
           param.errMsg = err.message;

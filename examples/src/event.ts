@@ -21,15 +21,15 @@ export async function init(canvas) {
 
   const game = new Game({
     systems: [
-      
+
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      
+
       new EventSystem(),
-      
+
       new ImgSystem(),
     ],
   });
@@ -43,15 +43,15 @@ export async function init(canvas) {
     },
     anchor: { x: 0.5, y: 0.5 },
   });
-  const img = image.addComponent(
-    
+  image.addComponent(
+
     new Img({
       resource: 'heart',
     }),
   );
 
   const evt = image.addComponent(
-    
+
     new Event({
       // 使用这个属性设置交互事件可以触发的区域，骨骼动画有所变差，可以临时在当前游戏对象下添加一个同类型同属性的Graphic查看具体点击位置。
       hitArea: {
@@ -70,7 +70,7 @@ export async function init(canvas) {
     console.log('touchstart');
     touched = true;
   });
-  evt.on('touchend', e => {
+  evt.on('touchend', () => {
     console.log('touchend');
     touched = false;
   });
