@@ -1,22 +1,30 @@
 import Matter from './matter';
+
 import BodiesFactory from './BodiesFactory';
 import { Component, Game } from '@eva/eva.js';
+import type { PhysicsSystemParams } from './PhysicsSystem';
+import type { Physics } from './Physics';
+
+export interface EvaBody extends Matter.Body {
+  component: Physics
+}
+
 export default class PhysicsEngine {
-  private Engine: any;
-  private World: any;
-  private engine: any;
+  private Engine: typeof Matter.Engine;
+  private World: typeof Matter.World;
+  private engine: Matter.Engine;
   private bodiesFatoty: BodiesFactory;
-  private Render: any;
+  private Render: typeof Matter.Render;
   private collisionEvents: string[];
   private bodyEvents: string[];
-  private options: any;
+  private options: PhysicsSystemParams;
   private game: Game;
-  private Runner: any;
-  private Constraint: any;
-  private mouseConstraint: any;
-  private runner: any;
+  private Runner: typeof Matter.Runner;
+  private Constraint: typeof Matter.Constraint;
+  private mouseConstraint: Matter.MouseConstraint;
+  private runner: Matter.Runner;
   public enabled: boolean = false;
-  constructor(game: Game, options: any) {
+  constructor(game: Game, options: PhysicsSystemParams) {
     this.Engine = Matter.Engine;
     this.World = Matter.World;
     this.bodiesFatoty = new BodiesFactory();
@@ -28,19 +36,22 @@ export default class PhysicsEngine {
     this.collisionEvents = ['collisionStart', 'collisionActive', 'collisionEnd'];
     this.bodyEvents = ['tick', 'beforeUpdate', 'afterUpdate', 'beforeRender', 'afterRender', 'afterTick'];
     this.options = options;
+    this.runner = this.Runner.create({
+      fps: this.options.fps || 60,
+      // Eva.js设置fps30也可能导致deltaTime为16，导致经过matterjs采样后的一段时间的delta都是很低
+      deltaSampleSize: this.options.deltaSampleSize || 1
+    });
   }
 
   public start() {
     this.engine = this.Engine.create();
-    const world = this.World.create(this.options.world);
+    const world = this.World.create(this.options.world as Matter.IWorldDefinition);
     this.engine.world = world;
-    this.runner = this.Runner.create({
-      fps: this.options.fps || 70,
-    });
     if (this.options.isTest) {
       const render = this.Render.create({
         element: this.options.element,
         engine: this.engine,
+        canvas: this.options.canvas ?? document.createElement('canvas'),
         options: {
           width: this.game.canvas.width / this.options.resolution,
           height: this.game.canvas.height / this.options.resolution,
@@ -56,9 +67,11 @@ export default class PhysicsEngine {
     this.initCollisionEvents();
     this.initBodyEvents();
   }
-  public update() {
+
+  public update(e) {
     if (!this.options.isTest) {
-      this.Runner.tick(this.runner, this.engine);
+      // @ts-ignore
+      this.Runner.tick(this.runner, this.engine, e.currentTime);
     }
   }
 
@@ -83,20 +96,31 @@ export default class PhysicsEngine {
     body.component = component;
   }
 
+  public change(component: Physics) {
+    const newBody = this.createBodies(component);
+    this.World.remove(this.engine.world, component.body, true);
+    this.World.add(this.engine.world, [newBody]);
+    component.body = newBody;
+  }
+  public remove(component: Physics) {
+    this.World.remove(this.engine.world, component.body, true);
+    component.body = undefined;
+  }
+
   private createBodies(params): any {
-    const body = this.bodiesFatoty.create(params);
+    const body = this.bodiesFatoty.create(params) as EvaBody;
     return body;
   }
 
   private initCollisionEvents() {
     this.collisionEvents.forEach(eventName => {
       Matter.Events.on(this.engine, eventName, event => {
-        const pairs: any[] = event.pairs || [];
+        const pairs: Matter.IPair[] = event.pairs || [];
         for (let i = 0; i < pairs.length; i++) {
           const pair = pairs[i];
           const { bodyA, bodyB } = pair;
-          const componentA: Component = bodyA.component;
-          const componentB: Component = bodyB.component;
+          const componentA: Component = (bodyA as EvaBody).component;
+          const componentB: Component = (bodyB as EvaBody).component;
           componentA.emit(eventName, componentB.gameObject, componentA.gameObject);
           componentB.emit(eventName, componentA.gameObject, componentB.gameObject);
         }
@@ -111,8 +135,8 @@ export default class PhysicsEngine {
         mouse,
         constraint: this.options.mouse.constraint
       } : {
-        mouse
-      };
+          mouse
+        };
       this.mouseConstraint = Matter.MouseConstraint.create(this.engine, options);
       this.World.add(this.engine.world, this.mouseConstraint);
     }

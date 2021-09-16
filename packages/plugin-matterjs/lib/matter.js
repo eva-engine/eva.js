@@ -10832,4 +10832,8 @@ const main = function () {
   );
 };
 
-export default main();
+/**
+ * @type {import('matter-js')}
+ */
+const Matter = main();
+export default Matter;

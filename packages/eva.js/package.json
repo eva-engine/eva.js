@@ -1,6 +1,6 @@
 {
   "name": "@eva/eva.js",
-  "version": "1.1.2-alpha.0",
+  "version": "1.1.11",
   "description": "@eva/eva.js",
   "main": "index.js",
   "module": "dist/eva.js.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/inspector-decorator": "^0.0.4",
+    "@eva/inspector-decorator": "^0.0.5",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
     "mini-signals": "^1.2.0",

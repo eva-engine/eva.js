@@ -3,8 +3,8 @@ import { type } from '@eva/inspector-decorator';
 
 export interface SpineParams {
   resource: string;
-  animationName: string;
-  autoPlay: boolean;
+  animationName?: string;
+  autoPlay?: boolean;
 }
 
 export default class Spine extends Component<SpineParams> {
@@ -19,10 +19,11 @@ export default class Spine extends Component<SpineParams> {
   @type('boolean')
   autoPlay: boolean = true;
 
-  usingResource: string;
   armature: any;
   destroied: boolean;
   addHandler: any;
+
+  lastResource: string;
 
   init(obj?: SpineParams) {
     if (!obj) return;

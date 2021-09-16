@@ -770,7 +770,7 @@ var pixi_spine;
         );
       };
       AttachmentTimeline.prototype.setAttachment = function (skeleton, slot, attachmentName) {
-        slot.attachment = attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName);
+        slot.setAttachment(attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
       };
       return AttachmentTimeline;
     })();
@@ -1609,7 +1609,7 @@ var pixi_spine;
           var slot = slots[i];
           if (slot.attachmentState == setupState) {
             var attachmentName = slot.data.attachmentName;
-            slot.attachment = attachmentName == null ? null : skeleton.getAttachment(slot.data.index, attachmentName);
+            slot.setAttachment(attachmentName == null ? null : skeleton.getAttachment(slot.data.index, attachmentName));
           }
         }
         this.unkeyedState += 2;
@@ -1728,7 +1728,7 @@ var pixi_spine;
         if (slot.attachmentState <= this.unkeyedState) slot.attachmentState = this.unkeyedState + AnimationState.SETUP;
       };
       AnimationState.prototype.setAttachment = function (skeleton, slot, attachmentName, attachments) {
-        slot.attachment = attachmentName == null ? null : skeleton.getAttachment(slot.data.index, attachmentName);
+        slot.setAttachment(attachmentName == null ? null : skeleton.getAttachment(slot.data.index, attachmentName));
         if (attachments) slot.attachmentState = this.unkeyedState + AnimationState.CURRENT;
       };
       AnimationState.prototype.applyRotateTimeline = function (
@@ -8457,7 +8457,7 @@ var pixi_spine;
           continue;
         }
       }
-      _this.autoUpdate = true;
+      _this.autoUpdate = false;
       _this.tintRgb = new Float32Array([1, 1, 1]);
       return _this;
     }
@@ -8911,7 +8911,7 @@ var pixi_spine;
       this.tempClipContainers = null;
       _super.prototype.destroy.call(this, options);
     };
-    Spine.globalAutoUpdate = true;
+    Spine.globalAutoUpdate = false;
     Spine.globalDelayLimit = 0;
     Spine.clippingPolygon = [];
     return Spine;

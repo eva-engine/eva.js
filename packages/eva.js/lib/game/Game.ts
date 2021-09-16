@@ -1,9 +1,11 @@
 import Ticker from './Ticker';
 import Scene from './Scene';
-import System, {SystemType} from '../core/System';
+import type { SystemConstructor } from '../core/System';
+import System from '../core/System';
 import Component from '../core/Component';
-import {setSystemObserver, initObserver} from '../core/observer';
+import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
+
 
 /** eva plugin struct */
 export interface PluginStruct {
@@ -33,7 +35,26 @@ export enum LOAD_SCENE_MODE {
 interface LoadSceneParams {
   scene: Scene;
   mode?: LOAD_SCENE_MODE;
-  params?: any;
+  params?: {
+    width?: number;
+    height?: number;
+    canvas?: HTMLCanvasElement
+    renderType?: number
+    autoStart?: boolean;
+    sharedTicker?: boolean;
+    sharedLoader?: boolean;
+    transparent?: boolean;
+    antialias?: boolean;
+    preserveDrawingBuffer?: boolean;
+    resolution?: number;
+    backgroundColor?: number;
+    clearBeforeRender?: boolean;
+    roundPixels?: boolean;
+    forceFXAA?: boolean;
+    legacy?: boolean;
+    autoResize?: boolean;
+    powerPreference?: "high-performance";
+  };
 }
 
 const triggerStart = (obj: System | Component) => {
@@ -133,10 +154,10 @@ class Game extends EventEmitter {
 
   constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     super();
-    if(window.__EVA_INSPECTOR_ENV__){
+    if (window.__EVA_INSPECTOR_ENV__) {
       window.__EVA_GAME_INSTANCE__ = this;
     }
-    this.ticker = new Ticker({autoStart: false, frameRate});
+    this.ticker = new Ticker({ autoStart: false, frameRate });
     this.initTicker();
 
     if (systems && systems.length) {
@@ -170,7 +191,7 @@ class Game extends EventEmitter {
   }
 
   addSystem<T extends System>(S: T): T;
-  addSystem<T extends SystemType>(S: T, obj?: any): InstanceType<T>;
+  addSystem<T extends System>(S: SystemConstructor<T>, obj?: ConstructorParameters<SystemConstructor<T>>): T;
 
   /**
    * Add system
@@ -178,7 +199,7 @@ class Game extends EventEmitter {
    * @typeParam T - system which extends base `System` class
    * @typeparam U - type of system class
    */
-  addSystem<T extends System, U extends SystemType>(S: T | U, obj?: any): T | InstanceType<U> {
+  addSystem<T extends System>(S: T | SystemConstructor<T>, obj?: ConstructorParameters<SystemConstructor<T>>): T {
     let system;
     if (S instanceof Function) {
       system = new S(obj);
@@ -218,7 +239,7 @@ class Game extends EventEmitter {
    * Remove system from this game
    * @param system - one of system instance / system Class or system name
    */
-  removeSystem(system: System | SystemType | string) {
+  removeSystem<S extends System>(system: S | SystemConstructor<S> | string) {
     if (!system) return;
 
     let index = -1;
@@ -241,14 +262,14 @@ class Game extends EventEmitter {
    * @param S - system class or system name
    * @returns system instance
    */
-  getSystem(S: SystemType | string): System {
+  getSystem<T extends System>(S: SystemConstructor<T> | string): T {
     return this.systems.find(system => {
       if (typeof S === 'string') {
         return system.name === S;
       } else {
         return system instanceof S;
       }
-    });
+    }) as T;
   }
 
   /** Pause game */
@@ -368,7 +389,7 @@ class Game extends EventEmitter {
         this.multiScenes.push(scene);
         break;
     }
-    this.emit('sceneChanged', {scene, mode, params});
+    this.emit('sceneChanged', { scene, mode, params });
   }
 }
 
