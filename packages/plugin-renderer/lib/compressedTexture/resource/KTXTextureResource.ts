@@ -82,8 +82,8 @@ export class KTXTextureResource extends CompressedTextureResource {
 
 
     if (width && height) {
-      this.naturalWidth = 377
-      this.naturalHeight = 1070
+      this.naturalWidth = width
+      this.naturalHeight = height
     }
 
 

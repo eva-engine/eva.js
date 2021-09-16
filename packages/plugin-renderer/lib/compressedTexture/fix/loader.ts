@@ -12,7 +12,7 @@ export function addPreProcessResourceHandler(resource, gl:WebGLRenderingContext)
     }
 
     const formats = getSuportCompressedTextureFormats(gl) ?? {};
-    if (!formats) return
+
     let target = textures.find(texture => formats[texture.type]);
     if (target) {
       Object.assign(resource.src.image, target);

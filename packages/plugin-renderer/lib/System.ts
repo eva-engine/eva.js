@@ -81,9 +81,9 @@ export default class Renderer extends System<RendererSystemParams> {
     });
 
     const gl = (this.application.renderer as WebGLRenderer).gl
-    if ((this.application.renderer as WebGLRenderer).gl) {
+    if (gl) {
       this.suportedCompressedTextureFormats = getSuportCompressedTextureFormats(gl)
-      registerCompressedTexture((this.application.renderer as WebGLRenderer).gl);
+      registerCompressedTexture(gl);
     }
 
   }
