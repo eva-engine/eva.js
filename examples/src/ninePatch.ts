@@ -22,7 +22,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
         backgroundColor: 0xffffff,
@@ -43,7 +43,7 @@ export async function init(canvas) {
       y: 0,
     },
   });
-  const ninePatch = patch.addComponent(
+  patch.addComponent(
     new NinePatch({
       resource: 'nine',
       leftWidth: 100,
@@ -66,7 +66,7 @@ export async function init(canvas) {
     },
   });
 
-  const ninePatch1 = patch1.addComponent(
+  patch1.addComponent(
     new NinePatch({
       resource: 'nine',
       leftWidth: 100,

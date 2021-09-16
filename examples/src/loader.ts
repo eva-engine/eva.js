@@ -1,7 +1,7 @@
 import { LOAD_EVENT, resource, RESOURCE_TYPE } from "@eva/eva.js"
 
 export const name = 'loader';
-export async function init(canvas) {
+export async function init() {
   resource.addResource([
     {
       name: 'imageName',
@@ -38,6 +38,7 @@ export async function init(canvas) {
     },
     {
       name: 'jsonData',
+      //@ts-ignore
       type: 'xxxx',
       src: {
         json: {
@@ -49,6 +50,7 @@ export async function init(canvas) {
     },
     {
       name: 'jsonImageData',
+      //@ts-ignore
       type: 'xxxx',
       src: {
         json: {
