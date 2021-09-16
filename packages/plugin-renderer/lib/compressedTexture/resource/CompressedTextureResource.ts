@@ -62,11 +62,9 @@ export class CompressedTextureResource {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
-    // clear cpu memory
-    this.levelBuffers.length = 0
+    // clear cpu memory, 
+    // but spritedAnimation is update texture when the texture reuse.
+    // this.levelBuffers.length = 0
 
-    // Cleaning the data to save memory. NOTE : BECAUSE OF THIS WE CANNOT CREATE TWO GL TEXTURE FROM THE SAME COMPRESSED IMAGE !
-    // if (!this.preserveSource)
-    //   this.data = null;
   }
 }
