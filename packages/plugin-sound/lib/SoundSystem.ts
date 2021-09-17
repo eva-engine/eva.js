@@ -262,7 +262,7 @@ class SoundSystem extends System {
       };
 
       const promise = this.ctx.decodeAudioData(arraybuffer, success, error)
-      if (promise && promise.catch) {
+      if (promise instanceof Promise) {
         promise.catch((err) => {
           reject(new Error(`catch ${err}, arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
         });
