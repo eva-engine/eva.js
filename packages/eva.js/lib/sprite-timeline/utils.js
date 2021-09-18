@@ -1,4 +1,4 @@
-export function createNowTime(syncLocker = true) {
+export function createNowTime() {
   let nowtime = null;
   if (Date.now) {
     nowtime = Date.now;
