@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-tiling-sprite",
-  "version": "1.2.0-alpha.3",
+  "version": "1.1.13",
   "description": "@eva/plugin-renderer-tiling-sprite",
   "main": "index.js",
   "module": "dist/plugin-renderer-tiling-sprite.esm.js",
@@ -19,9 +19,9 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "1.2.0-alpha.3",
-    "@eva/renderer-adapter": "1.2.0-alpha.3",
-    "@eva/eva.js": "1.2.0-alpha.3",
+    "@eva/plugin-renderer": "1.1.13",
+    "@eva/renderer-adapter": "1.1.13",
+    "@eva/eva.js": "1.1.13",
     "@types/pixi.js": "^4.8.9"
   }
 }
