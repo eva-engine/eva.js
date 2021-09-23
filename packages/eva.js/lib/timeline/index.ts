@@ -25,7 +25,6 @@ const defaultOptions: TimelineOptions = {
 class Timeline {
   private _timeMark: TimeMark[];
   private _playbackRate: number;
-  private _originTime: number;
   private _parent: Timeline;
   private _createTime: number;
 
@@ -57,7 +56,6 @@ class Timeline {
       this._timeMark[0].globalEntropy = this._parent.entropy;
     }
 
-    this._originTime = options.originTime;
     this._playbackRate = options.playbackRate;
   }
 
