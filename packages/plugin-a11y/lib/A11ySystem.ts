@@ -1,5 +1,5 @@
 import { System, decorators, ComponentChanged, Transform, OBSERVER_TYPE } from '@eva/eva.js';
-import type { GameObject } from "@eva/eva.js"
+import type { GameObject } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import EE from 'eventemitter3';
 
