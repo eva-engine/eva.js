@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-nine-patch",
-  "version": "1.2.0-alpha.7",
+  "version": "1.2.0-alpha.8",
   "description": "@eva/plugin-renderer-nine-patch",
   "main": "index.js",
   "module": "dist/plugin-renderer-nine-patch.esm.js",
@@ -19,9 +19,9 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "1.2.0-alpha.7",
-    "@eva/renderer-adapter": "1.2.0-alpha.7",
-    "@eva/eva.js": "1.2.0-alpha.7",
+    "@eva/plugin-renderer": "1.2.0-alpha.8",
+    "@eva/renderer-adapter": "1.2.0-alpha.8",
+    "@eva/eva.js": "1.2.0-alpha.8",
     "@types/pixi.js": "^4.8.9"
   }
 }
