@@ -20,6 +20,7 @@
   "dependencies": {
     "@eva/eva.js": "1.2.0-alpha.6",
     "@eva/inspector-decorator": "^0.0.5",
+    "@eva/plugin-renderer": "1.2.0-alpha.6",
     "eventemitter3": "^3.1.2"
   }
 }
