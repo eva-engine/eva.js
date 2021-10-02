@@ -20,6 +20,7 @@ export async function init(canvas) {
     },
     {
       name: 'successSound',
+      type: RESOURCE_TYPE.AUDIO,
       src: {
         audio: {
           type: 'audio',

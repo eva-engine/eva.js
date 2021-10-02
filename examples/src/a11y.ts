@@ -381,8 +381,7 @@ export async function init(canvas) {
       new SpineSystem(),
       new A11ySystem({
         debug: true,
-        activate: A11yActivate.CHECK,
-      }),
+        activate: A11yActivate.CHECK,      }),
     ],
     autoStart: true,
     frameRate: 60,
