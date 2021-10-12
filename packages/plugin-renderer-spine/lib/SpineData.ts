@@ -76,6 +76,5 @@ export function releaseSpineData(resourceName, imageSrc) {
   if (data.ref <= 0) {
     releaseTexture(imageSrc);
     delete dataMap[resourceName];
-    resource.destroy(resourceName);
   }
 }

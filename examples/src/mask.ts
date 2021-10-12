@@ -4,7 +4,7 @@ import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 import "@eva/plugin-renderer-sprite";
 import { Mask, MaskSystem, MASK_TYPE } from "@eva/plugin-renderer-mask";
 export const name = 'mask';
-export async function init(canavs) {
+export async function init(canvas) {
 
   resource.addResource([
     {

@@ -11,7 +11,7 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png',
+          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png'
         },
         json: {
           type: 'json',

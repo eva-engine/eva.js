@@ -31,6 +31,8 @@ temp/
 api/
 stats.html
 
+# vite
+vite-test/dist
 examples/spine38.html
 examples/loader.html
 package-lock.json

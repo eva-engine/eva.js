@@ -19,7 +19,7 @@
     "noImplicitReturns": false,
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "lib": [
       "esnext",
       "dom"

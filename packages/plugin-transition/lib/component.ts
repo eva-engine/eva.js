@@ -50,28 +50,28 @@ export default class Transition extends Component<TransitionParams> {
   stop(name) {
     if (!name) {
       for (const key in this.animations) {
-        this.animations[key].stop();
+        this.animations[key]?.stop();
       }
     } else {
-      this.animations[name].stop();
+      this.animations[name]?.stop();
     }
   }
 
   onPause() {
     for (const key in this.animations) {
-      this.animations[key].pause();
+      this.animations[key]?.pause();
     }
   }
 
   onResume() {
     for (const key in this.animations) {
-      this.animations[key].resume();
+      this.animations[key]?.resume();
     }
   }
 
   onDestroy() {
     for (const key in this.animations) {
-      this.animations[key].destroy();
+      this.animations[key]?.destroy();
     }
     this.tweenGroup.removeAll();
     this.tweenGroup = null;
@@ -86,7 +86,7 @@ export default class Transition extends Component<TransitionParams> {
     }
     this.tweenGroup.update(e.time);
     for (const play of this.needPlay) {
-      this.animations[play.name].play(play.iteration, this.currentTime)
+      this.animations[play.name]?.play(play.iteration, this.currentTime)
     }
     this.needPlay.length = 0
   }
