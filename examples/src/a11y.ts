@@ -219,7 +219,7 @@ export async function init(canvas) {
       },
       anchor: { x: 0, y: 1 },
     });
-    const img = image.addComponent(
+    image.addComponent(
       new Img({
         resource: 'heart',
       }),
@@ -296,10 +296,18 @@ export async function init(canvas) {
       name: 'tree',
       type: RESOURCE_TYPE.DRAGONBONE,
       src: {
-        ske: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
-        tex: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
-        image:
-          '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
+        ske: {
+          url: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
+          type: 'json'
+        },
+        tex: {
+          url: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
+          type: 'json'
+        },
+        image: {
+          url: '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
+          type: 'png'
+        },
       },
     },
     {
@@ -370,7 +378,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
@@ -381,8 +389,7 @@ export async function init(canvas) {
       new SpineSystem(),
       new A11ySystem({
         debug: true,
-        activate: A11yActivate.CHECK,
-      }),
+        activate: A11yActivate.CHECK,      }),
     ],
     autoStart: true,
     frameRate: 60,

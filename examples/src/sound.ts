@@ -20,6 +20,7 @@ export async function init(canvas) {
     },
     {
       name: 'successSound',
+      type: RESOURCE_TYPE.AUDIO,
       src: {
         audio: {
           type: 'audio',
@@ -36,7 +37,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('#canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
