@@ -41,7 +41,7 @@ export async function init(canvas) {
     },
     anchor: { x: 0.5, y: 0.5 },
   });
-  const img = image.addComponent(
+  image.addComponent(
     new Img({
       resource: 'heart',
     }),

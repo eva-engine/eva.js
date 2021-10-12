@@ -8,9 +8,6 @@ interface CacheData {
 
 function cacheImage(data: CacheData) {
   const oldImg = data.image;
-  const newImg = data.image.cloneNode();
-  // newImg.src = oldImg.src;
-  data.image = newImg;
 
   return {
     tex: Texture.from(oldImg),
