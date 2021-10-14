@@ -84,8 +84,11 @@ export class KTXTextureResource extends CompressedTextureResource {
     if (width && height) {
       this.naturalWidth = width
       this.naturalHeight = height
+      this.width = width
+      this.height = height
+      this.formerHeight = width
+      this.formerHeight = height
     }
-
 
     const pixelDepth = dataView.getUint32(KTX_FIELDS.PIXEL_DEPTH, littleEndian) || 1;// ^^
     const numberOfArrayElements = dataView.getUint32(KTX_FIELDS.NUMBER_OF_ARRAY_ELEMENTS, littleEndian) || 1;// ^^
