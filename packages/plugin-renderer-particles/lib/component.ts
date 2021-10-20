@@ -1,7 +1,6 @@
 import { Component, resource } from '@eva/eva.js';
 import {
   Emitter,
-  LinkedListContainer,
   ParticleUtils,
   PathParticle,
   AnimatedParticle
@@ -58,7 +57,7 @@ export default class ParticleComponent extends Component<ParticleParams> {
    */
   async setStage(stage?: Container) {
     this.stage = stage || this.stage;
-    const container = this.getContainer(0) as Container;
+    const container = new Container();
     this.stage.addChild(container);
 
     const { instance, data } = await resource.getResource(this.resource)
@@ -75,14 +74,6 @@ export default class ParticleComponent extends Component<ParticleParams> {
       this.emitter.particleConstructor = AnimatedParticle;
     }
     this.ready && this.play()
-  }
-  getContainer(parentType: number) {
-    switch (parentType) {
-      case 1:
-        return new LinkedListContainer();
-      default:
-        return new Container()
-    }
   }
   play(times: number = 1) {
     if (!this.emitter) {

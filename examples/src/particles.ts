@@ -1,6 +1,7 @@
 import { RendererSystem } from "@eva/plugin-renderer";
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { Particles, ParticleSystem } from "@eva/plugin-renderer-particles";
+import { Event, EventSystem, HIT_AREA_TYPE } from "@eva/plugin-renderer-event";
 export const name = 'image';
 export async function init(canvas) {
   resource.addResource([
@@ -29,13 +30,14 @@ export async function init(canvas) {
         height: window.innerHeight - 200,
       }),
       new ParticleSystem(),
+      new EventSystem()
     ],
   });
 
   const particlesObject = new GameObject('particlesObject', {
-    size: { width: 750, height: 1319 },
+    size: { width: 0, height: 0 },
     origin: { x: 0, y: 0 },
-    position: { x: window.innerWidth / 2, y: window.innerHeight / 3 },
+    position: { x: 0, y: 0 },
     anchor: {
       x: 0,
       y: 0,
@@ -49,4 +51,21 @@ export async function init(canvas) {
   );
   game.scene.addChild(particlesObject);
   emitter.play()
+
+  const evt = game.scene.addComponent(new Event({
+    hitArea: {
+      type: HIT_AREA_TYPE.Rect,
+      style: {
+        x: 0, y: 0,
+        width: window.innerWidth,
+        height: window.innerHeight - 200,
+      }
+    }
+  }))
+  evt.on('touchmove', (e) => {
+    // console.log(emitter.emitter)
+    // emitter.emitter.ownerPos.set(e.data.position.x, e.data.position.y)
+    particlesObject.transform.position = e.data.position
+  })
+
 }

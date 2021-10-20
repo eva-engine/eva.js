@@ -79,8 +79,11 @@
       "@eva/plugin-transition": [
         "./packages/plugin-transition/lib"
       ],
-      "@eva/drenderer-adapter": [
-        "./packages/drenderer-adapter/lib"
+      "@eva/renderer-adapter": [
+        "./packages/renderer-adapter/lib"
+      ],
+      "@eva/plugin-renderer-particles": [
+        "./packages/plugin-renderer-particles/lib"
       ],
       "@eva/*": [
         "./packages/*/lib"

@@ -24,7 +24,6 @@ resource.registerInstance(RESOURCE_TYPE.PARTICLES, ({ data }) => {
         textures.push(Texture.from(data[key]))
       }
     }
-    console.log(data, textures)
     return textures
   } catch (e) { console.log(e) }
 })
