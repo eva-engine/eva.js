@@ -19,6 +19,7 @@ interface SystemParam {
   debug?: boolean;
   activate?: A11yActivate;
   delay?: number;
+  zIndex?: number;
   checkA11yOpen?: () => Promise<boolean>;
 }
 
@@ -75,6 +76,11 @@ export default class A11ySystem extends System {
   cache: Map<string, HTMLElement> = new Map();
   eventCache: Map<string, (e: MouseEvent) => void> = new Map();
   /**
+   * 
+   * dom 的 zIndex
+   */
+  zIndex: number = ZINDEX;
+  /**
    *
    * @param opt
    */
@@ -119,8 +125,9 @@ export default class A11ySystem extends System {
   }
 
   async init(opt: SystemParam = {}) {
-    const { activate = A11yActivate.CHECK, delay = 100, checkA11yOpen = () => Promise.resolve(false) } = opt;
+    const { activate = A11yActivate.CHECK, delay = 100, checkA11yOpen = () => Promise.resolve(false), zIndex } = opt;
     this.delay = delay;
+    this.zIndex = zIndex || this.zIndex
     switch (activate) {
       case A11yActivate.CHECK:
         try {
@@ -147,7 +154,7 @@ export default class A11ySystem extends System {
     this.div = div;
     // 如果存在父容器，则渲染这个 div，子元素则会相对这个 div 进行定位，否则直接相对于 body 进行定位
     if (this.game.canvas.parentNode) {
-      this.game.canvas.parentNode.appendChild(this.div);
+      this.game.canvas.parentNode.insertBefore(this.div, this.game.canvas);
     }
   }
   setRatio() {
@@ -183,7 +190,7 @@ export default class A11ySystem extends System {
       left: `${left + pageXOffset}px`,
       top: `${top + pageYOffset}px`,
       position: POSITION,
-      zIndex: ZINDEX,
+      zIndex: this.zIndex,
       pointerEvents: PointerEvents.NONE,
       background: MaskBackground.NONE,
     };
@@ -380,7 +387,7 @@ export default class A11ySystem extends System {
       width: width === 0 ? 1 : width * this.ratioX,
       height: height === 0 ? 1 : height * this.ratioY,
       position: POSITION,
-      zIndex: ZINDEX,
+      zIndex: this.zIndex,
       pointerEvents: PointerEvents.AUTO,
       background: this.debug ? MaskBackground.DEBUG : MaskBackground.NONE,
     };
@@ -395,5 +402,6 @@ export default class A11ySystem extends System {
     this.div.parentElement.removeChild(this.div);
     this.cache = null;
     this.eventCache = null;
+    this.div = null
   }
 }
