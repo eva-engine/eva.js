@@ -1,6 +1,6 @@
 {
   "name": "@eva/miniprogram-pixi",
-  "version": "1.2.1",
+  "version": "1.3.0-alpha.0",
   "description": "@eva/miniprogram-pixi",
   "main": "index.js",
   "module": "dist/miniprogram-pixi.esm.js",
