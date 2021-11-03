@@ -10,13 +10,13 @@ $tnpm run build 构建全部package
 --all -a      根据模糊匹配构建多个 $tnpm run build plugin-renderer -- --all`，会构建包含`plugin-renderer`的所有package
 --devOnly -d  为开发环境构建      $tnpm run build -- --devOnly
 --prodOnly -p 为生产环境构建      $tnpm run build -- --prodOnly
---formats -f  指定构建格式       $tnpm run build -- --formats ejs-umd-esm
+--formats -f  指定构建格式       $tnpm run build -- --formats ejs-iife-esm
 --types -t    生成d.ts             $tnpm run build -- --types
 --sourcemap -s 生成sourceMap    $tnpm run build -- --sourcemap
 
 常用命令
 
-生产环境构建eva.js的cjs和umd包，$tnpm run build eva.js -- -f cjs-umd -p
+生产环境构建eva.js的cjs和iife包，$tnpm run build eva.js -- -f cjs-iife -p
 
 开发环境构建所有plugin，$tnpm run build plugin -- -ad
 */

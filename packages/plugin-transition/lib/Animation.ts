@@ -25,6 +25,7 @@ export default class Animation {
   private finishCount = 0;
   private callbacks = new Map();
   readonly tweenGroup: Group;
+  currentTime: number;
 
   stoped: boolean;
   objectCache: Record<string, Cache> = {};
@@ -117,7 +118,8 @@ export default class Animation {
     });
   }
 
-  play(iteration = 1) {
+  play(iteration = 1, currentTime) {
+    this.currentTime = currentTime
     this.stoped = false;
     this.start();
     this.currIteration = 0;
@@ -128,15 +130,15 @@ export default class Animation {
     this.finishCount = 0;
     this.tweens.length = 0;
     this.init();
-    this.tweens.forEach((tween: Tween<any>) => tween.start());
+    this.tweens.forEach((tween: Tween<any>) => tween.start(this.currentTime));
   }
 
   pause() {
-    this.tweens.forEach((tween: Tween<any>) => tween.pause());
+    this.tweens.forEach((tween: Tween<any>) => tween.pause(this.currentTime));
   }
 
   resume() {
-    this.tweens.forEach((tween: Tween<any>) => tween.resume());
+    this.tweens.forEach((tween: Tween<any>) => tween.resume(this.currentTime));
   }
 
   stop() {

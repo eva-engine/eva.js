@@ -1,10 +1,10 @@
-import { Game, GameObject, resource, RESOURCE_TYPE} from "@eva/eva.js";
+import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { RendererSystem } from "@eva/plugin-renderer";
 import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 import "@eva/plugin-renderer-sprite";
 import { Mask, MaskSystem, MASK_TYPE } from "@eva/plugin-renderer-mask";
 export const name = 'mask';
-export async function init(canavs) {
+export async function init(canvas) {
 
   resource.addResource([
     {
@@ -120,4 +120,33 @@ export async function init(canavs) {
     }),
   );
   game.scene.addChild(image2);
+
+
+  // @ts-ignore
+  window.test = () => {
+    setTimeout(() => {
+      image2.removeComponent(Mask)
+      setTimeout(() => {
+        image2.removeComponent(Mask)
+        setTimeout(() => {
+          image2.addComponent(
+            new Mask({
+              type: MASK_TYPE.Sprite,
+              style: {
+                width: 100,
+                height: 100,
+                x: 20,
+                y: 20,
+              },
+              resource: 'tag',
+              spriteName: 'task.png',
+            }),
+          );
+          console.log(123)
+        }, 1000)
+        console.log(1233)
+      }, 1000)
+      console.log(1223)
+    }, 1000)
+  }
 }

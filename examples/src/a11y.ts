@@ -24,7 +24,7 @@ export async function init(canvas) {
         y: 0,
       },
     });
-    text.addComponent(
+    const txt = text.addComponent(
       new Text({
         text: '欢迎试用EVA互动游戏开发体系！',
         style: {
@@ -48,15 +48,18 @@ export async function init(canvas) {
         },
       }),
     );
+
+    let a11y
     setTimeout(() => {
       game.scene.addChild(text);
     }, 1000);
     setTimeout(() => {
-      text.addComponent(new A11y({ hint: 'aaaa' }));
+      a11y = text.addComponent(new A11y({ hint: 'aaaa' }));
     }, 2000);
-    // setTimeout(() => {
-    //   text.addComponent(new A11y({ hint: 'aaaa' }))
-    // }, 3000);
+    setTimeout(() => {
+      txt.text = '123'
+      a11y.hint = '123'
+    }, 3000);
     setTimeout(() => {
       game.scene.removeChild(text);
     }, 4000);
@@ -216,7 +219,7 @@ export async function init(canvas) {
       },
       anchor: { x: 0, y: 1 },
     });
-    const img = image.addComponent(
+    image.addComponent(
       new Img({
         resource: 'heart',
       }),
@@ -271,7 +274,7 @@ export async function init(canvas) {
         y: 0.5,
       },
     });
-    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle', autoPlay: true });
     gameObject.addComponent(spine);
     spine.on('complete', e => {
       console.log('动画播放结束', e.name);
@@ -293,10 +296,18 @@ export async function init(canvas) {
       name: 'tree',
       type: RESOURCE_TYPE.DRAGONBONE,
       src: {
-        ske: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
-        tex: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
-        image:
-          '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
+        ske: {
+          url: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
+          type: 'json'
+        },
+        tex: {
+          url: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
+          type: 'json'
+        },
+        image: {
+          url: '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
+          type: 'png'
+        },
       },
     },
     {
@@ -332,8 +343,10 @@ export async function init(canvas) {
       name: 'heart',
       type: RESOURCE_TYPE.IMAGE,
       src: {
-        image:
-          '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+        image:{
+          type: 'png',
+          url: '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+        }
       },
       preload: false,
     },
@@ -365,7 +378,7 @@ export async function init(canvas) {
   const game = new Game({
     systems: [
       new RendererSystem({
-        canvas: document.querySelector('canvas'),
+        canvas,
         width: 750,
         height: 1000,
       }),
@@ -376,8 +389,7 @@ export async function init(canvas) {
       new SpineSystem(),
       new A11ySystem({
         debug: true,
-        activate: A11yActivate.CHECK,
-      }),
+        activate: A11yActivate.CHECK,      }),
     ],
     autoStart: true,
     frameRate: 60,

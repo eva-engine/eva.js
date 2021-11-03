@@ -11,8 +11,7 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url:
-            'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/dragonbone/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
+          url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/dragonbone/TB1RIpUBhn1gK0jSZKPXXXvUXXa-1024-1024.png',
         },
         tex: {
           type: 'json',

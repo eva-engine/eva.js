@@ -11,6 +11,7 @@ export interface PhysicsParams {
     isStatic?: boolean,
     restitution?: number,
     density?: number,
+    [propName: string]: any,
   },
   position?: {
     x?: number
