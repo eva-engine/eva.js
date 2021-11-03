@@ -6,7 +6,9 @@ import { Spritesheet, BaseTexture } from 'pixi.js';
 import SpriteAnimationComponent from './component';
 
 const resourceKeySplit = '_s|r|c_';
-
+Object.defineProperty(RESOURCE_TYPE, 'SPRITE_ANIMATION', {
+  value: 'SPRITE_ANIMATION'
+})
 resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({ name, data }) => {
   return new Promise(r => {
     const textureObj = data.json;

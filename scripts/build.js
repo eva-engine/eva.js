@@ -129,12 +129,19 @@ async function build(target) {
       //   );
       //   await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
       // }
-      const enhancePath = path.resolve(pkgDir, 'global.d.ts');
-      if (await fs.exists(enhancePath)) {
+      const globalPath = path.resolve(pkgDir, 'global.d.ts');
+      if (await fs.exists(globalPath)) {
         const dtsPath = path.resolve(pkgDir, pkg.types);
         const existing = await fs.readFile(dtsPath, 'utf-8');
-        await fs.writeFile(dtsPath, '/// <reference types="./global.d.ts"/>' + '\n' + existing);
-        await fs.copyFile(enhancePath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
+        await fs.writeFile(dtsPath, '/// <reference path="./global.d.ts"/>' + '\n' + existing);
+        await fs.copyFile(globalPath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
+      }
+      const localPath = path.resolve(pkgDir, 'local.d.ts');
+      if (await fs.exists(localPath)) {
+        const dtsPath = path.resolve(pkgDir, pkg.types);
+        const existing = await fs.readFile(dtsPath, 'utf-8');
+        await fs.writeFile(dtsPath, '/// <reference path="./local.d.ts"/>' + '\n' + existing);
+        await fs.copyFile(localPath, path.resolve(pkgDir, pkg.types, '../local.d.ts'));
       }
 
       console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));

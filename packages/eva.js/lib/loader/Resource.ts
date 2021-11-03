@@ -14,10 +14,6 @@ export enum LOAD_EVENT {
 /** Resource type */
 export enum RESOURCE_TYPE {
   'IMAGE' = 'IMAGE',
-  'SPRITE' = 'SPRITE',
-  'SPRITE_ANIMATION' = 'SPRITE_ANIMATION',
-  'DRAGONBONE' = 'DRAGONBONE',
-  'SPINE' = 'SPINE',
   'AUDIO' = 'AUDIO',
   'VIDEO' = 'VIDEO',
 }

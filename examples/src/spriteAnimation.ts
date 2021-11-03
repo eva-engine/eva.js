@@ -4,6 +4,7 @@ import { SpriteAnimationSystem, SpriteAnimation } from '@eva/plugin-renderer-spr
 
 export const name = 'spriteAnimation';
 export async function init(canvas) {
+  console.log('beginload');
   resource.addResource([
     {
       name: 'fruit',

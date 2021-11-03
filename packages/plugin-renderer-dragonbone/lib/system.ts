@@ -18,7 +18,9 @@ const events = {
 };
 
 const factory = dragonBones.PixiFactory.factory;
-
+Object.defineProperty(RESOURCE_TYPE, 'DRAGONBONE', {
+  value: 'DRAGONBONE'
+})
 resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data, name }) => {
   factory.parseDragonBonesData(data.ske, name);
   factory.parseTextureAtlasData(data.tex, Texture.from(data.image), name);
