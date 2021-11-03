@@ -47,6 +47,6 @@
     "packages/global.d.ts",
     "packages/*/lib",
     "packages/*/__tests__",
-    "packages/*/global.d.ts",
+    "packages/*/global.d.ts"
   ]
 }
