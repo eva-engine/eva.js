@@ -43,14 +43,12 @@ const getInsert = (str) => {
       banners.push(footer)
     }
   })
-  console.log(footers.join(`;\n`))
   return [banners.join(`;\n`), footers.join(`;\n`)]
 }
 
 const sliteName = split(pkg.bundle)
 const iifeName = '_EVA_IIFE_' + sliteName[sliteName.length - 1]
 const insert = getInsert(pkg.bundle)
-console.log(insert)
 
 const outputConfigs = {
   esm: {
