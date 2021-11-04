@@ -1,7 +1,7 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { RendererSystem } from "@eva/plugin-renderer";
 import { Spine, SpineSystem } from "@eva/plugin-renderer-spine40";
-export const name = 'spine38';
+export const name = 'spine40';
 export async function init(canvas) {
   resource.addResource([
     {
