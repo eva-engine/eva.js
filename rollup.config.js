@@ -24,6 +24,34 @@ const packages = fs
   .readdirSync(path.resolve(__dirname, 'packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
+const split = (str) => {
+  return str.split('.')
+}
+const getInsert = (str) => {
+  const arr = split(str)
+  const footers = []
+  const banners = []
+  let lastFooter = 'window'
+  arr.forEach((name, i) => {
+    lastFooter += `.${name}`
+    let footer
+    if (i === arr.length - 1) {
+      footer = `${lastFooter} = ${lastFooter} || ${'_EVA_IIFE_' + name}`
+      footers.push(footer)
+    } else {
+      footer = `${lastFooter} = ${lastFooter} || {}`
+      banners.push(footer)
+    }
+  })
+  console.log(footers.join(`;\n`))
+  return [banners.join(`;\n`), footers.join(`;\n`)]
+}
+
+const sliteName = split(pkg.bundle)
+const iifeName = '_EVA_IIFE_' + sliteName[sliteName.length - 1]
+const insert = getInsert(pkg.bundle)
+console.log(insert)
+
 const outputConfigs = {
   esm: {
     file: resolve(`dist/${name}.esm.js`),
@@ -34,9 +62,11 @@ const outputConfigs = {
     format: 'cjs',
   },
   iife: {
-    name: pkg.bundle,
+    name: iifeName,
     file: resolve(`dist/${pkg.bundle}.js`),
     format: 'iife',
+    banner: insert[0],
+    footer: insert[1]
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
