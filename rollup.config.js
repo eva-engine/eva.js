@@ -24,6 +24,7 @@ const packages = fs
   .readdirSync(path.resolve(__dirname, 'packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
+const IIFE_PREFIX = '_EVA_IIFE_';
 const split = (str) => {
   return str.split('.')
 }
@@ -36,7 +37,7 @@ const getInsert = (str) => {
     lastFooter += `.${name}`
     let footer
     if (i === arr.length - 1) {
-      footer = `${lastFooter} = ${lastFooter} || ${'_EVA_IIFE_' + name}`
+      footer = `${lastFooter} = ${lastFooter} || ${IIFE_PREFIX + name}`
       footers.push(footer)
     } else {
       footer = `${lastFooter} = ${lastFooter} || {}`
@@ -47,7 +48,7 @@ const getInsert = (str) => {
 }
 
 const sliteName = split(pkg.bundle)
-const iifeName = '_EVA_IIFE_' + sliteName[sliteName.length - 1]
+const iifeName = IIFE_PREFIX + sliteName[sliteName.length - 1]
 const insert = getInsert(pkg.bundle)
 
 const outputConfigs = {
