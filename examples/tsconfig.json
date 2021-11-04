@@ -82,6 +82,9 @@
       "@eva/drenderer-adapter": [
         "./packages/drenderer-adapter/lib"
       ],
+      "@eva/spine-base": [
+        "./packages/spine-base/lib"
+      ],
       "@eva/*": [
         "./packages/*/lib"
       ]

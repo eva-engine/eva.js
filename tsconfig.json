@@ -40,6 +40,9 @@
       ],
       "@eva/renderer-adapter": [
         "packages/renderer-adapter/lib"
+      ],
+      "@eva/spine-base": [
+        "packages/spine-base/lib"
       ]
     }
   },

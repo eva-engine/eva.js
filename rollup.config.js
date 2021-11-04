@@ -149,11 +149,12 @@ function createConfig(format, output, plugins = []) {
   }
 
   let external = [];
+  let internal = ['@eva/spine-base']
   if (format === 'esm' || format === 'cjs') {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
-      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1;
+      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1 && internal.indexOf(dep) === -1;
     });
     external = ['pixi.js', ...evaDependencies];
     output.plugins = [
