@@ -1,3 +1,4 @@
+// https://github.com/pixijs/spine/blob/pixi4-spine3.8/dist/pixi-spine.js
 import {
   Texture,
   Rectangle,

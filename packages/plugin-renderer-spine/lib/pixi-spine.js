@@ -1,3 +1,4 @@
+// https://github.com/pixijs/spine/tree/pixi4
 import {
   Texture,
   Rectangle,

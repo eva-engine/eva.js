@@ -10,27 +10,8 @@
  * Copyright 2019-2020, Ivan Igorevich Popelyshev <ivan.popelyshev@gmail.com>, All Rights Reserved
  */
 
-// this.PIXI.spine = this.PIXI.spine || {};
-// import {loaders, core, constants, math, display, sprite, meshExtras, graphics, utils} from 'pixi.js'
-import * as pixi from 'pixi.js'
 
-// import {
-//   Texture,
-//   Rectangle,
-//   Sprite,
-//   Graphics,
-//   mesh,
-//   Matrix,
-//   Container,
-//   SCALE_MODES,
-//   utils,
-//   loaders,
-//   TransformBase,
-//   TransformStatic,
-//   DisplayObject,
-//   Polygon,
-//   BaseTexture,
-// } from 'pixi.js';
+import * as pixi from 'pixi.js'
 
 
 const exports = {}
@@ -540,6 +521,7 @@ var TextureAtlas = /** @class */ (function () {
       if (entry[1].indexOf('y') != -1)
         page.vWrap = exports.TextureWrap.Repeat;
     };
+    // change for Eva.js
     // pageFields["pma"] = function () {
     //   page.pma = entry[1] == "true";
     // };
@@ -627,11 +609,12 @@ var TextureAtlas = /** @class */ (function () {
               return callback && callback(null);
             }
             page.baseTexture = texture;
+            // changfor Eva.js
             //TODO: set scaleMode and mipmapMode from spine
             // if (page.pma) {
             //   texture.alphaMode = constants.ALPHA_MODES.PMA;
             // }
-            if (!texture.valid) {
+            if (!texture.valid) {  // changefor Eva.js
               texture.width = page.width
               texture.height = page.height
             }
@@ -694,7 +677,7 @@ var TextureAtlas = /** @class */ (function () {
           var trim = new math.Rectangle(region.offsetX, region.originalHeight - region.height - region.offsetY, region.width, region.height);
           atlasRegion.texture = new core.Texture(atlasRegion.page.baseTexture, frame, orig, trim, region.rotate);
           atlasRegion.index = region.index;
-          atlasRegion.texture._updateUvs();
+          atlasRegion.texture._updateUvs(); // changefor Eva.js
           _this.regions.push(atlasRegion);
         }
       }
@@ -1260,7 +1243,7 @@ var settings = {
   /**
    * past Spine.globalAutoUpdate
    */
-  GLOBAL_AUTO_UPDATE: false,
+  GLOBAL_AUTO_UPDATE: false,  // changefor Eva.js
   /**
    * past Spine.globalDelayLimit
    */
@@ -1375,7 +1358,7 @@ var SpineBase = /** @class */ (function (_super) {
      * @memberof spine.Spine#
      */
     _this.tintRgb = new Float32Array([1, 1, 1]);
-    _this.autoUpdate = false;
+    _this.autoUpdate = false; // changefor Eva.js
     _this.visible = true;
     return _this;
   }
@@ -1676,7 +1659,7 @@ var SpineBase = /** @class */ (function (_super) {
     mesh.region = region;
     mesh.attachment = attachment;
     mesh.texture = region.texture;
-    region.texture.updateUvs();
+    region.texture._updateUvs(); // changefor Eva.js
     mesh.uvBuffer.update(attachment.regionUVs);
   };
   /**
@@ -1965,6 +1948,7 @@ function isJson(resource) {
 function isBuffer(resource) {
   return resource.xhrType === loaders.LoaderResource.XHR_RESPONSE_TYPE.BUFFER;
 }
+ // changefor Eva.js
 // loaders.LoaderResource.setExtensionXhrType('skel', loaders.LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 /**
  * @public
@@ -2099,6 +2083,7 @@ function imageLoaderAdapter(loader, namePrefix, baseUrl, imageOptions) {
     else {
       loader.add(name, url, imageOptions, function (resource) {
         if (!resource.error) {
+           // changefor Eva.js
           // if (line.indexOf('-pma.') >= 0) {
           //   resource.texture.baseTexture.alphaMode = constants.ALPHA_MODES.PMA;
           // }
