@@ -14,21 +14,21 @@
 import * as pixi from 'pixi.js'
 
 
-const exports = {}
-const loaders = pixi
-const core = pixi
-const constants = {
+var exports = {}
+var loaders = pixi
+var core = pixi
+var constants = {
   ALPHA_MODES: pixi.ALPHA_MODES,
   SCALE_MODES: pixi.SCALE_MODES,
   BLEND_MODES: pixi.BLEND_MODES
 
 }
-const math = pixi
-const display = pixi
-const sprite = pixi
-const meshExtras = pixi.mesh
-const graphics = pixi
-const utils = pixi.utils
+var math = pixi
+var display = pixi
+var sprite = pixi
+var meshExtras = pixi.mesh
+var graphics = pixi
+var utils = pixi.utils
 
 
 
