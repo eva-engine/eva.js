@@ -92,6 +92,7 @@
   },
   "include": [
     "../packages/global.d.ts",
+    "../packages/*/global.d.ts",
     "../packages/*/lib",
     "./"
   ]
