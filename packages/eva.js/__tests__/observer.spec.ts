@@ -187,13 +187,13 @@ describe('observer', () => {
     it('observer add component is null', () => {
       expect(() => {
         observerRemoved(null, TestComponent.componentName);
-      }).toThrow("Cannot read property 'gameObject' of null");
+      }).toThrow();
     });
 
     it('component is undefined', () => {
       expect(() => {
         observerRemoved(undefined, TestComponent.componentName);
-      }).toThrow("Cannot read property 'gameObject' of undefined");
+      }).toThrow();
     });
 
     it('componentName is empty', () => {
