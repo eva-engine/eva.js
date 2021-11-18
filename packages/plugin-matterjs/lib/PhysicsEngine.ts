@@ -67,7 +67,7 @@ export default class PhysicsEngine {
     this.initCollisionEvents();
     this.initBodyEvents();
   }
-  lastTime = 0
+
   public update(e) {
     if (!this.options.isTest) {
       // @ts-ignore

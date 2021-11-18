@@ -1,5 +1,5 @@
 import { UpdateParams } from '../core/Component';
-import Timeline from '../sprite-timeline/index';
+import Timeline from '../timeline/index';
 
 interface TickerOptions {
   autoStart?: boolean;
@@ -90,8 +90,8 @@ class Ticker {
 
       const options: UpdateParams = {
         deltaTime,
-        time: currentTime,
-        currentTime: currentTime,
+        time: frameTime,
+        currentTime: frameTime,
         frameCount: ++this._frameCount,
         fps: Math.round(1000 / deltaTime),
       };
@@ -126,6 +126,9 @@ class Ticker {
   pause() {
     this._started = false;
     this.timeline.playbackRate = 0;
+  }
+  setPlaybackRate(rate: number) {
+    this.timeline.playbackRate = rate
   }
 }
 

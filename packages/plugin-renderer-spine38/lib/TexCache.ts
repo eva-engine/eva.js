@@ -8,9 +8,6 @@ interface CacheData {
 
 function cacheImage(data: CacheData) {
   const oldImg = data.image;
-  const newImg = data.image.cloneNode();
-  // newImg.src = oldImg.src;
-  data.image = newImg;
 
   return {
     tex: Texture.from(oldImg),
@@ -28,11 +25,11 @@ export function retainTexture(name: string, data: CacheData) {
   return cache.tex;
 }
 
-export function getTexture(name: string, data: CacheData) {
-  let cache = texCache[name];
+export function getTexture(imageSrc: string, data: CacheData) {
+  let cache = texCache[imageSrc];
   if (!cache) {
     cache = cacheImage(data);
-    texCache[name] = cache;
+    texCache[imageSrc] = cache;
   }
   return cache.tex;
 }
@@ -47,11 +44,12 @@ export function cleanTextures() {
   texCache = {};
 }
 
-export function releaseTexture(name: string) {
+export function releaseTexture(imageSrc: string) {
+  if (!imageSrc) return
   // 如果要取消上一个timeout，注意count--不要写timeout里面
   setTimeout(() => {
     // 延迟销毁，避免快速重用
-    const cache = texCache[name];
+    const cache = texCache[imageSrc];
     if (cache) {
       cache.count--;
       if (cache.count <= 0) {
@@ -59,7 +57,7 @@ export function releaseTexture(name: string) {
           cache.tex.destroy(true);
           cache.tex = null;
         }
-        delete texCache[name];
+        delete texCache[imageSrc];
       }
     }
   }, 100);

@@ -47,4 +47,26 @@ export async function init(canvas) {
   );
 
   game.scene.addChild(image);
+
+  // @ts-ignore
+  window.test = () => {
+    setTimeout(() => {
+      image.removeComponent(Img)
+      image.addComponent(
+        new Img({
+          resource: 'imageName',
+        }),
+      );
+      setTimeout(() => {
+        image.removeComponent(Img)
+        setTimeout(() => {
+          image.addComponent(
+            new Img({
+              resource: 'imageName',
+            }),
+          );
+        }, 1000)
+      }, 1000)
+    }, 1000)
+  }
 }

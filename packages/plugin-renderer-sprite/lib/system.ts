@@ -6,7 +6,9 @@ import { Sprite as SpriteEngine } from '@eva/renderer-adapter';
 import { Spritesheet, BaseTexture } from 'pixi.js';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be used in ninepatch system.
-
+Object.defineProperty(RESOURCE_TYPE, 'SPRITE', {
+  value: 'SPRITE'
+})
 resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
   return new Promise(r => {
     const textureObj = data.json;
