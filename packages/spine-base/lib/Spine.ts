@@ -1,4 +1,4 @@
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
 
 export interface SpineParams {
@@ -19,7 +19,27 @@ export default class Spine extends Component<SpineParams> {
   @type('boolean')
   autoPlay: boolean = true;
 
-  armature: any;
+  private _armature: any;
+
+  private waitPlay = false
+  private waitStop = false
+
+  private waitPlayInfo: { track?: number, animationName?: string, loop?: boolean } = {}
+  private waitStopTrack?: number
+
+  set armature(val) {
+    this._armature = val;
+    if (!val) return;
+    const { animationName, track, loop } = this.waitPlayInfo;
+    this.waitPlay && this.play(animationName, loop, track);
+    this.waitStop && this.stop(this.waitStopTrack);
+    this.waitPlay = false;
+    this.waitStop = false;
+  }
+  get armature() {
+    return this._armature;
+  }
+
   destroied: boolean;
   addHandler: any;
 
@@ -41,6 +61,13 @@ export default class Spine extends Component<SpineParams> {
     try {
       if (name) this.animationName = name;
       if (!this.armature) {
+        // this.autoPlay = true;
+        this.waitPlay = true;
+        this.waitPlayInfo = {
+          animationName: this.animationName,
+          track: track || 0,
+          loop
+        }
       } else {
         if (track === undefined) {
           track = 0;
@@ -54,6 +81,8 @@ export default class Spine extends Component<SpineParams> {
 
   stop(track?: number) {
     if (!this.armature) {
+      this.waitStopTrack = track || 0;
+      this.waitStop = true;
       return;
     }
     if (track === undefined) {
