@@ -36,7 +36,8 @@ export default class TilingSprite extends Renderer {
         const sprite = new TilingSpriteEngine(null);
         resource.getResource(component.resource).then(({ data }) => {
           if (!data) {
-            throw new Error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+            console.error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+            return
           }
           sprite.image = data.image;
         });
@@ -47,7 +48,8 @@ export default class TilingSprite extends Renderer {
         if (changed.prop.prop[0] === 'resource') {
           const { data } = await resource.getResource(component.resource);
           if (!data) {
-            throw new Error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+            console.error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+            return
           }
           this.imgs[changed.gameObject.id].image = data.image;
         } else {
