@@ -1,3 +1,4 @@
+// https://github.com/pixijs/spine/blob/pixi4-spine3.8/dist/pixi-spine.js
 import {
   Texture,
   Rectangle,
@@ -16,10 +17,10 @@ import {
   BaseTexture,
 } from 'pixi.js';
 
-const VERSION = '4.8.9';
-const loader = loaders.shared;
+var VERSION = '4.8.9';
+var loader = loaders.shared;
 
-const PIXI = {
+var PIXI = {
   Texture,
   Rectangle,
   Sprite,

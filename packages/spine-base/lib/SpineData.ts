@@ -1,13 +1,12 @@
 import { resource } from '@eva/eva.js';
-import pixispine from './pixi-spine.js';
 import { cleanTextures, getTexture, releaseTexture, retainTexture } from './TexCache';
 let dataMap: any = {};
 
-function createSpineData(name, data, scale) {
+function createSpineData(name, data, scale, pixiSpine) {
   let spineData: any = null;
   const img = getTexture(data.image.src, data);
   // @ts-ignore
-  new pixispine.core.TextureAtlas(
+  new pixiSpine.core.TextureAtlas(
     (data as any).atlas,
     // @ts-ignore
     (line, callback) => {
@@ -16,9 +15,9 @@ function createSpineData(name, data, scale) {
     spineAtlas => {
       if (spineAtlas) {
         // @ts-ignore
-        const attachmentLoader = new pixispine.core.AtlasAttachmentLoader(spineAtlas);
+        const attachmentLoader = new pixiSpine.core.AtlasAttachmentLoader(spineAtlas);
         // @ts-ignore
-        const spineJsonParser = new pixispine.core.SkeletonJson(attachmentLoader);
+        const spineJsonParser = new pixiSpine.core.SkeletonJson(attachmentLoader);
         if (scale) {
           spineJsonParser.scale = scale;
         }
@@ -30,27 +29,31 @@ function createSpineData(name, data, scale) {
   dataMap[name] = obj;
   return obj;
 }
-resource.registerInstance('SPINE' as any, info => {
-  return createSpineData(info.name, info.data, (info as any).scale);
-});
 
-resource.registerDestroy('SPINE' as any, info => {
-  if (info.instance) {
-    // if (info.instance.img) {
-    // 用true，baseTexture的缓存和webgl的绑定一起删除
-    // info.instance.img.destroy(true);
+export const registryResource = (pixiSpine) => {
 
-    // }
-    releaseTexture(info.data.image.src as string);
-    info.instance = null;
-  }
-});
+  resource.registerInstance('SPINE' as any, info => {
+    return createSpineData(info.name, info.data, (info as any).scale, pixiSpine);
+  });
 
-export default async function getSpineData(res) {
+  resource.registerDestroy('SPINE' as any, info => {
+    if (info.instance) {
+      // if (info.instance.img) {
+      // 用true，baseTexture的缓存和webgl的绑定一起删除
+      // info.instance.img.destroy(true);
+
+      // }
+      releaseTexture(info.data.image.src as string);
+      info.instance = null;
+    }
+  });
+}
+
+export default async function getSpineData(res, pixiSpine) {
   let data = dataMap[res.name];
   if (!data) {
     if (res.complete) {
-      data = createSpineData(res.name, res.data, (res as any).scale);
+      data = createSpineData(res.name, res.data, (res as any).scale, pixiSpine);
     } else if (!data) {
       return;
     }

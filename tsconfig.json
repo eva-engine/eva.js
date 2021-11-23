@@ -40,11 +40,15 @@
       ],
       "@eva/renderer-adapter": [
         "packages/renderer-adapter/lib"
+      ],
+      "@eva/spine-base": [
+        "packages/spine-base/lib"
       ]
     }
   },
   "include": [
     "packages/global.d.ts",
+    "packages/*/global.d.ts",
     "packages/*/lib",
     "packages/*/__tests__"
   ]

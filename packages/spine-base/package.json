@@ -1,16 +1,16 @@
 {
-  "name": "@eva/plugin-renderer-lottie",
+  "name": "@eva/spine-base",
   "version": "1.2.2-type.0",
-  "description": "@eva/plugin-renderer-lottie",
+  "description": "@eva/spine-base",
   "main": "index.js",
-  "module": "dist/plugin-renderer-lottie.esm.js",
-  "bundle": "EVA.plugin.renderer.lottie",
-  "unpkg": "dist/EVA.plugin.renderer.lottie.min.js",
+  "module": "dist/spine-base.esm.js",
+  "bundle": "EVA.plugin.spineBase",
+  "unpkg": "dist/EVA.plugin.spineBase.min.js",
   "files": [
     "index.js",
     "dist"
   ],
-  "types": "dist/plugin-renderer-lottie.d.ts",
+  "types": "dist/spine-base.d.ts",
   "keywords": [
     "eva.js"
   ],
@@ -20,7 +20,7 @@
   "dependencies": {
     "@eva/eva.js": "1.2.2-type.0",
     "@eva/plugin-renderer": "1.2.2-type.0",
-    "ios-version": "^1.0.1",
+    "@eva/inspector-decorator": "^0.0.5",
     "pixi.js": "^4.8.9"
   }
 }
