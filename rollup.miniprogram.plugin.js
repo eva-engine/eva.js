@@ -1,6 +1,7 @@
 import inject from 'rollup-plugin-inject';
 import modify from 'rollup-plugin-modify';
 import fs from 'fs'
+import path from 'path'
 
 const packages = fs
   .readdirSync(path.resolve(__dirname, 'packages'))
