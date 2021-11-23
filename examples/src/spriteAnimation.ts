@@ -19,7 +19,7 @@ export async function init(canvas) {
         },
       },
       preload: false,
-    },
+    }
   ]);
 
   const game = new Game({
@@ -44,6 +44,7 @@ export async function init(canvas) {
       resource: 'fruit',
       speed: 100,
       autoPlay: true,
+      forwards: true
     }),
   );
 
