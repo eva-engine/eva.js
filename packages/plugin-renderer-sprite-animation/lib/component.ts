@@ -6,7 +6,8 @@ export interface SpriteAnimationParams {
   resource: string;
   autoPlay?: boolean;
   speed?: number;
-  stopAtLastFrame?: boolean;
+  /** Stop at last frame */
+  forwards?: boolean;
 }
 
 export default class SpriteAnimation extends Component<SpriteAnimationParams> {
@@ -14,7 +15,7 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   @type('string') resource: string = '';
   @type('boolean') autoPlay: boolean = true;
   @type('number') @step(10) speed: number = 100;
-  @type('boolean') stopAtLastFrame: boolean = false;
+  @type('boolean') forwards: boolean = false;
   _animate: SpriteAnimationEngine;
   private waitPlay: boolean = false;
   private waitStop: boolean = false;
@@ -24,7 +25,7 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     obj && Object.assign(this, obj);
     this.on('loop', () => {
       if (++this.count >= this.times) {
-        if (this.stopAtLastFrame) {
+        if (this.forwards) {
           this.animate.animatedSprite.loop = false
         } else {
           this.animate.stop();
@@ -41,7 +42,7 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     if (!this.animate) {
       this.waitPlay = true;
     } else {
-      if (times === 1 && this.stopAtLastFrame) {
+      if (times === 1 && this.forwards) {
         this.animate.animatedSprite.loop = false
       }
       this.animate.play();

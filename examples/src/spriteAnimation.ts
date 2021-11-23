@@ -44,7 +44,7 @@ export async function init(canvas) {
       resource: 'fruit',
       speed: 100,
       autoPlay: true,
-      stopAtLastFrame: true
+      forwards: true
     }),
   );
 
