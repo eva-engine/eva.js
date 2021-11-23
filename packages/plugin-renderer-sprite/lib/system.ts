@@ -72,7 +72,8 @@ export default class Sprite extends Renderer {
         const sprite = new SpriteEngine(null);
         resource.getResource(component.resource).then(async ({ instance }) => {
           if (!instance) {
-            throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+            console.error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+            return
           }
           sprite.image = instance[component.resource + resourceKeySplit + component.spriteName];
         });
@@ -81,7 +82,8 @@ export default class Sprite extends Renderer {
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
         const { instance } = await resource.getResource(component.resource);
         if (!instance) {
-          throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+          console.error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+          return
         }
         this.sprites[changed.gameObject.id].image =
           instance[component.resource + resourceKeySplit + component.spriteName];
