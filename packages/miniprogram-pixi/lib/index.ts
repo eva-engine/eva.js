@@ -29,5 +29,6 @@ export {
   Shader,
   WebGLRenderer,
   ObjectRenderer,
-  CanvasRenderer
+  CanvasRenderer,
+  glCore
 } from '@tbminiapp/pixi-miniprogram-engine';
