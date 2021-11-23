@@ -43,7 +43,8 @@ export default class NinePatch extends Renderer {
     const component = changed.component as NinePatchComponent;
     const { type, data } = await resource.getResource(component.resource);
     if (!data) {
-      throw new Error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
+      console.error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
+      return
     }
     let img: Parameters<(typeof Texture)['from']>[0];
     if (type === RESOURCE_TYPE.SPRITE) {
