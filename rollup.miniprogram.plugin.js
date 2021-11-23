@@ -1,6 +1,10 @@
 import inject from 'rollup-plugin-inject';
 import modify from 'rollup-plugin-modify';
-import nodeResolve from '@rollup/plugin-node-resolve';
+import fs from 'fs'
+
+const packages = fs
+  .readdirSync(path.resolve(__dirname, 'packages'))
+  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const moduleName = '@eva/miniprogram-adapter';
 
@@ -46,7 +50,10 @@ export const miniprogramPlugins1 = [
       if (moduleName.indexOf('/dist/miniprogram') > -1) {
         return `@eva/${moduleName}`;
       }
-      return `@eva/${moduleName}/dist/miniprogram`;
+      if (packages.indexOf(moduleName) > -1) {
+        return `@eva/${moduleName}/dist/miniprogram`;
+      }
+      return `@eva/${moduleName}`;
     },
   }),
   modify({
