@@ -125,7 +125,7 @@ class SoundSystem extends System {
    *
    * Called while the game to play when game pause.
    */
-  onPlay() {
+  onResume() {
     if (!this.autoPauseAndStart) {
       return;
     }
@@ -162,9 +162,8 @@ class SoundSystem extends System {
   }
 
   async componentChanged(changed: ComponentChanged) {
-    if (changed.componentName !== 'Sound') {
-      return;
-    }
+    if (changed.componentName !== 'Sound') return;
+
     if (changed.type === OBSERVER_TYPE.ADD) {
       this.add(changed);
     }
@@ -219,7 +218,7 @@ class SoundSystem extends System {
       component.state = 'loading';
 
       const audio = await resource.getResource(config.resource);
-      if (!this.audioBufferCache[audio.name]) {
+      if (!this.audioBufferCache[audio.name] && audio?.data?.audio) {
         this.audioBufferCache[audio.name] = await this.decodeAudioData(audio.data.audio, audio.name);
       }
       if (this.audioBufferCache[audio.name]) {
@@ -228,7 +227,6 @@ class SoundSystem extends System {
         component.onload(this.audioBufferCache[audio.name]);
       }
     } catch (error) {
-      console.error(error);
       if (this.onError) {
         this.onError(error);
       }
@@ -239,16 +237,12 @@ class SoundSystem extends System {
     if (this.decodeAudioPromiseMap[name]) {
       return this.decodeAudioPromiseMap[name];
     }
+
     const promise = new Promise<AudioBuffer>((resolve, reject) => {
       if (!this.ctx) {
         reject(new Error('No audio support'));
       }
-      const error = (err: DOMException) => {
-        if (this.decodeAudioPromiseMap[name]) {
-          delete this.decodeAudioPromiseMap[name];
-        }
-        reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
-      };
+
       const success = (decodedData: AudioBuffer) => {
         if (this.decodeAudioPromiseMap[name]) {
           delete this.decodeAudioPromiseMap[name];
@@ -260,8 +254,21 @@ class SoundSystem extends System {
         }
       };
 
-      this.ctx.decodeAudioData(arraybuffer, success, error);
+      const error = (err: DOMException) => {
+        if (this.decodeAudioPromiseMap[name]) {
+          delete this.decodeAudioPromiseMap[name];
+        }
+        reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
+      };
+
+      const promise = this.ctx.decodeAudioData(arraybuffer, success, error)
+      if (promise instanceof Promise) {
+        promise.catch((err) => {
+          reject(new Error(`catch ${err}, arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
+        });
+      }
     });
+
     this.decodeAudioPromiseMap[name] = promise;
     return promise;
   }

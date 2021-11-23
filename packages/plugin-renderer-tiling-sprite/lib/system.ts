@@ -2,6 +2,7 @@ import { GameObject, decorators, resource, ComponentChanged, OBSERVER_TYPE } fro
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import TilingSpriteComponent from './component';
 import { TilingSprite as TilingSpriteEngine } from '@eva/renderer-adapter';
+import type { Point } from 'pixi.js';
 
 @decorators.componentObserver({
   TilingSprite: [
@@ -55,13 +56,16 @@ export default class TilingSprite extends Renderer {
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         const sprite = this.imgs[changed.gameObject.id];
         this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.tilingSprite);
-        sprite.tilingSprite.destory(true);
+        sprite.tilingSprite.destroy({
+          children: true
+        });
         delete this.imgs[changed.gameObject.id];
       }
     }
   }
   setProp(id: number, component: TilingSpriteComponent) {
-    this.imgs[id].tilingSprite.tilePosition = component.tilePosition as any;
-    this.imgs[id].tilingSprite.tileScale = component.tileScale as any;
+    // bug possible
+    this.imgs[id].tilingSprite.tilePosition = component.tilePosition as Point;
+    this.imgs[id].tilingSprite.tileScale = component.tileScale as Point;
   }
 }

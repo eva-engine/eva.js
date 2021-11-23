@@ -3,6 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { Application, Container } from '@eva/renderer-adapter';
 import Render from './System';
 import ContainerManager from './manager/ContainerManager';
+import type { Render as RenderComponent } from "@eva/plugin-renderer-render";
 
 @decorators.componentObserver({
   Transform: ['_parent'],
@@ -78,7 +79,7 @@ export default class Transform extends EventEmitter {
 
       const render =
         changed.gameObject.transform.parent &&
-        (changed.gameObject.transform.parent.gameObject.getComponent('Render') as any);
+        (changed.gameObject.transform.parent.gameObject.getComponent('Render') as RenderComponent);
       if (render) {
         render.sortDirty = true;
       }

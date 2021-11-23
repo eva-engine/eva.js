@@ -2,6 +2,7 @@ import { GameObject, decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/ev
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 
 import RenderComponent from './component';
+import type { Container } from '@eva/renderer-adapter';
 
 @decorators.componentObserver({
   Render: ['zIndex'],
@@ -39,7 +40,7 @@ export default class Render extends Renderer {
           return this.containerManager.getContainer(gameObject.id);
         });
       const oldChildren = this.containerManager.getContainer(component.gameObject.id).children;
-      const elements = oldChildren.filter(c => children.indexOf(c as any) === -1);
+      const elements = oldChildren.filter(c => children.indexOf(c as Container) === -1);
       oldChildren.length = 0;
       oldChildren.push(...elements, ...children);
       component.sortDirty = false;

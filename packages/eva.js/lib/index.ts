@@ -1,13 +1,13 @@
-import Component, { UpdateParams as _UpdateParams } from './core/Component';
-import { ObserverType, PureObserverInfo as _PureObserverInfo } from './core/observer';
+import Component from './core/Component';
+import { ObserverType } from './core/observer';
 import GameObject from './core/GameObject';
 import System from './core/System';
-import Transform, { TransformParams as _TransformParams } from './core/Transform';
+import Transform from './core/Transform';
 import Game, { LOAD_SCENE_MODE } from './game/Game';
 import Scene from './game/Scene';
 import { IDEProp } from './decorators/ide';
 import { componentObserver } from './decorators/system';
-import { resource, LOAD_EVENT, RESOURCE_TYPE } from './loader/Resource';
+import { resource, LOAD_EVENT, RESOURCE_TYPE, RESOURCE_TYPE_STRATEGY, resourceLoader } from './loader/Resource';
 
 /** Decorators util */
 const decorators = {
@@ -23,8 +23,13 @@ export type { PureObserverInfo } from './core/observer';
 export type { UpdateParams, ComponentParams } from './core/Component';
 export type { ObserverInfo } from './decorators/system';
 export type { ResourceBase } from './loader/Resource';
+export type { SystemConstructor } from './core/System';
+
+const version = '__VERSION__';
+console.log(`Eva.js version: ${version}`);
 
 export {
+  version,
   Game,
   Scene,
   GameObject,
@@ -39,4 +44,6 @@ export {
   LOAD_SCENE_MODE,
   IDEProp,
   componentObserver,
+  RESOURCE_TYPE_STRATEGY,
+  resourceLoader
 };

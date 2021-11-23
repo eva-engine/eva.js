@@ -1,4 +1,5 @@
-import { System, decorators, ComponentChanged, Transform, GameObject, OBSERVER_TYPE } from '@eva/eva.js';
+import { System, decorators, ComponentChanged, Transform, OBSERVER_TYPE } from '@eva/eva.js';
+import type { GameObject } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import EE from 'eventemitter3';
 
@@ -18,12 +19,13 @@ interface SystemParam {
   debug?: boolean;
   activate?: A11yActivate;
   delay?: number;
+  zIndex?: number;
   checkA11yOpen?: () => Promise<boolean>;
 }
 
 const notAttr = ['hint', 'event', 'delay', 'attr', 'role', 'props', 'state', 'a11yId', 'name'];
 
-const getEventFunc = function (event, gameObject, e) {
+const getEventFunc = function (event: EE, gameObject: GameObject, e: MouseEvent) {
   ['touchstart', 'touchend', 'tap'].forEach(name => {
     event.emit(name, {
       stopPropagation: () => e.stopPropagation(),
@@ -36,7 +38,7 @@ const getEventFunc = function (event, gameObject, e) {
 };
 
 @decorators.componentObserver({
-  A11y: [],
+  A11y: ['hint'],
   Transform: ['inScene'],
   Event: [],
 })
@@ -72,7 +74,12 @@ export default class A11ySystem extends System {
    */
   delay: number;
   cache: Map<string, HTMLElement> = new Map();
-  eventCache: Map<string, Function> = new Map();
+  eventCache: Map<string, (e: MouseEvent) => void> = new Map();
+  /**
+   * 
+   * dom 的 zIndex
+   */
+  zIndex: number = ZINDEX;
   /**
    *
    * @param opt
@@ -118,8 +125,9 @@ export default class A11ySystem extends System {
   }
 
   async init(opt: SystemParam = {}) {
-    const { activate = A11yActivate.CHECK, delay = 100, checkA11yOpen = () => Promise.resolve(false) } = opt;
+    const { activate = A11yActivate.CHECK, delay = 100, checkA11yOpen = () => Promise.resolve(false), zIndex } = opt;
     this.delay = delay;
+    this.zIndex = zIndex || this.zIndex
     switch (activate) {
       case A11yActivate.CHECK:
         try {
@@ -146,7 +154,7 @@ export default class A11ySystem extends System {
     this.div = div;
     // 如果存在父容器，则渲染这个 div，子元素则会相对这个 div 进行定位，否则直接相对于 body 进行定位
     if (this.game.canvas.parentNode) {
-      this.game.canvas.parentNode.appendChild(this.div);
+      this.game.canvas.parentNode.insertBefore(this.div, this.game.canvas);
     }
   }
   setRatio() {
@@ -162,8 +170,7 @@ export default class A11ySystem extends System {
     }
   }
   getRenderRect() {
-    // @ts-ignore
-    const { params } = this.game.getSystem(RendererSystem) || ({ width: 300, height: 300 } as any);
+    const { params = { width: 300, height: 300 } } = this.game.getSystem(RendererSystem);
     const { height: renderHeight, width: renderWidth } = params;
     return { renderWidth, renderHeight };
   }
@@ -183,7 +190,7 @@ export default class A11ySystem extends System {
       left: `${left + pageXOffset}px`,
       top: `${top + pageYOffset}px`,
       position: POSITION,
-      zIndex: ZINDEX,
+      zIndex: this.zIndex,
       pointerEvents: PointerEvents.NONE,
       background: MaskBackground.NONE,
     };
@@ -218,11 +225,21 @@ export default class A11ySystem extends System {
           break;
         case OBSERVER_TYPE.CHANGE:
           changed.componentName === 'Transform' && this.transformChange(changed);
+          changed.componentName === 'A11y' && this.change(changed);
           break;
         case OBSERVER_TYPE.REMOVE:
           changed.componentName === 'Event' && this.removeEvent(changed);
           changed.componentName === 'A11y' && this.remove(changed);
       }
+    }
+  }
+
+  change(changed: ComponentChanged) {
+    const component = changed.component as A11y
+    if (changed.prop.prop[0] === 'hint') {
+      const dom = this.cache.get(component.a11yId)
+      dom?.setAttribute('aria-label', component.hint)
+      dom && this.setPosition(dom, changed.gameObject.transform)
     }
   }
 
@@ -297,7 +314,7 @@ export default class A11ySystem extends System {
     if (!event) {
       return;
     }
-    const func = getEventFunc.bind(this, event, gameObject);
+    const func = getEventFunc.bind(this, event, gameObject) as (e: MouseEvent) => void;
     this.eventCache.set(id, func);
     element.addEventListener('click', func);
   }
@@ -318,7 +335,7 @@ export default class A11ySystem extends System {
     const event = changed.component;
     if (!event) return;
     const { a11yId } = a11y;
-    const func = this.eventCache.get(a11yId) as any;
+    const func = this.eventCache.get(a11yId);
     const element = this.cache.get(a11yId);
     element && element.removeEventListener('click', func);
   }
@@ -370,7 +387,7 @@ export default class A11ySystem extends System {
       width: width === 0 ? 1 : width * this.ratioX,
       height: height === 0 ? 1 : height * this.ratioY,
       position: POSITION,
-      zIndex: ZINDEX,
+      zIndex: this.zIndex,
       pointerEvents: PointerEvents.AUTO,
       background: this.debug ? MaskBackground.DEBUG : MaskBackground.NONE,
     };
@@ -385,5 +402,6 @@ export default class A11ySystem extends System {
     this.div.parentElement.removeChild(this.div);
     this.cache = null;
     this.eventCache = null;
+    this.div = null
   }
 }

@@ -90,7 +90,7 @@ async function main() {
   // build all packages with types
   step('\nBuilding all packages...');
   if (!skipBuild && !isDryRun) {
-    await run('npm', ['run', 'build', '--', '--release', '-f', 'cjs-esm-umd-miniprogram']);
+    await run('npm', ['run', 'build', '--', '--release', '-f', 'cjs-esm-iife-miniprogram']);
   } else {
     console.log('(skipped)');
   }

@@ -11,7 +11,7 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png',
+          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png'
         },
         json: {
           type: 'json',
@@ -48,14 +48,14 @@ export async function init(canvas) {
   );
 
   frame.play(4);
-  frame.on('onComplete', () => {
-    console.log('onComplete');
+  frame.on('complete', () => {
+    console.log('complete');
   });
-  frame.on('onLoop', () => {
-    console.log('onLoop');
+  frame.on('loop', () => {
+    console.log('loop');
   });
-  frame.on('onFrameChange', () => {
-    console.log('onFrameChange');
+  frame.on('frameChange', () => {
+    console.log('frameChange');
   });
 
   game.scene.addChild(cut);

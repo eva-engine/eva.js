@@ -19,7 +19,6 @@ export async function init(canvas) {
       preload: false,
     },
   ]);
-
   const game = new Game({
     systems: [
       new RendererSystem({
@@ -31,6 +30,7 @@ export async function init(canvas) {
       new TransitionSystem(),
     ],
   });
+  window.game = game
 
   const image = new GameObject('image', {
     size: { width: 200, height: 200 },
@@ -41,7 +41,7 @@ export async function init(canvas) {
     },
     anchor: { x: 0.5, y: 0.5 },
   });
-  const img = image.addComponent(
+  image.addComponent(
     new Img({
       resource: 'heart',
     }),

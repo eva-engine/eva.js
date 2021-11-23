@@ -1,6 +1,7 @@
 import { isEqual, isObject } from 'lodash-es';
 import Component from './Component';
 import System from './System';
+import type { SystemConstructor } from './System';
 import type { ObserverEvent } from './ComponentObserver';
 
 /** Observer event type */
@@ -238,7 +239,7 @@ function isComponent(comp): comp is Component {
  * Collect observerInfo on system
  * @param Systems - array of system or just a system
  */
-export function initObserver(Systems: typeof System[] | typeof System) {
+export function initObserver(Systems: SystemConstructor[] | SystemConstructor) {
   const Ss = [];
   if (Systems instanceof Array) {
     Ss.push(...Systems);
@@ -337,7 +338,7 @@ export function observerRemoved(component: Component, componentName: string = co
  * @param system - system instance
  * @param S - system constructor
  */
-export function setSystemObserver(system: System, S: typeof System) {
+export function setSystemObserver(system: System, S: SystemConstructor) {
   observerInfos[S.systemName] = S.observerInfo;
   systemInstance[S.systemName] = system;
 }

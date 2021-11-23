@@ -21,48 +21,68 @@ export async function init(canvas) {
           url: 'https://g.alicdn.com/eva-assets/eva-assets-examples/0.0.2/spine/TB1YHC8Vxz1gK0jSZSgXXavwpXa-711-711.png',
         },
       },
+      preload: true
     },
   ]);
+  window.resource =resource
+
 
   const game = new Game({
     systems: [
-      //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
       }),
-      //@ts-ignore
       new SpineSystem(),
     ],
     autoStart: true,
     frameRate: 60,
   });
+  window.game = game
 
   game.scene.transform.size = {
     width: 750,
     height: 1000,
   };
-
-  const gameObject = new GameObject('spine', {
-    anchor: {
-      x: 0.5,
-      y: 0.5,
-    },
-    scale: {
-      x: 0.5,
-      y: 0.5,
-    },
-  });
-  //@ts-ignore
-  const spine = new Spine({ resource: 'anim', animationName: 'idle' });
-  //@ts-ignore
-  gameObject.addComponent(spine);
-  //@ts-ignore
-  spine.on('complete', e => {
-    console.log('动画播放结束', e.name);
-  });
-  spine.play('idle', true);
-  game.scene.addChild(gameObject);
-
+  let gameObject
+  {
+    gameObject = new GameObject('spine', {
+      anchor: {
+        x: 0.5,
+        y: 0.5,
+      },
+      scale: {
+        x: 0.5,
+        y: 0.5,
+      },
+    });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    gameObject.addComponent(spine);
+    spine.on('complete', e => {
+      console.log('动画播放结束', e.name);
+    });
+    spine.play('idle', true);
+    game.scene.addChild(gameObject);
+  }
+  setTimeout(() => {
+    gameObject.destroy()
+    let gameObject1 = new GameObject('spine', {
+      anchor: {
+        x: 0.5,
+        y: 0.5,
+      },
+      scale: {
+        x: 0.5,
+        y: 0.5,
+      },
+    });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    gameObject1.addComponent(spine);
+    spine.on('complete', e => {
+      console.log('动画播放结束', e.name);
+    });
+    spine.play('idle', true);
+    game.scene.addChild(gameObject1);
+  }, 1000)
 }
