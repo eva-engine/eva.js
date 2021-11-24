@@ -21,16 +21,18 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   private waitStop: boolean = false;
   private times: number = Infinity;
   private count: number = 0;
+  private complete: boolean = false;
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
     this.on('loop', () => {
       if (++this.count >= this.times) {
         if (this.forwards) {
-          this.animate.animatedSprite.loop = false
+          this.gotoAndStop(this.totalFrames - 1)
         } else {
           this.animate.stop();
-          this.emit('complete');
         }
+        this.complete = true
+        this.emit('complete');
       }
     });
   }
@@ -42,11 +44,12 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     if (!this.animate) {
       this.waitPlay = true;
     } else {
-      if (times === 1 && this.forwards) {
-        this.animate.animatedSprite.loop = false
+      if (this.complete) {
+        this.gotoAndStop(0)
       }
       this.animate.play();
       this.count = 0;
+      this.complete = false
     }
   }
   stop() {
