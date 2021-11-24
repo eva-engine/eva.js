@@ -1,6 +1,6 @@
 {
   "name": "@eva/miniprogram-adapter",
-  "version": "1.2.2-type.1",
+  "version": "1.2.2-alpha.3",
   "description": "@eva/miniprogram-adapter",
   "main": "index.js",
   "module": "dist/miniprogram-adapter.esm.js",
@@ -24,6 +24,6 @@
     ]
   },
   "dependencies": {
-    "@eva/miniprogram-pixi": "1.2.2-type.1"
+    "@eva/miniprogram-pixi": "1.2.2-alpha.3"
   }
 }
