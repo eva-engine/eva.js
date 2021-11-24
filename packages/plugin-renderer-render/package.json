@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-render",
-  "version": "1.2.2-type.1",
+  "version": "1.2.2-alpha.3",
   "description": "@eva/plugin-renderer-render",
   "main": "index.js",
   "module": "dist/plugin-renderer-render.esm.js",
@@ -19,9 +19,9 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "1.2.2-type.1",
-    "@eva/renderer-adapter": "1.2.2-type.1",
-    "@eva/eva.js": "1.2.2-type.1",
+    "@eva/plugin-renderer": "1.2.2-alpha.3",
+    "@eva/renderer-adapter": "1.2.2-alpha.3",
+    "@eva/eva.js": "1.2.2-alpha.3",
     "pixi.js": "^4.8.7"
   }
 }
