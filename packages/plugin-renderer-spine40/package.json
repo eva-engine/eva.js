@@ -1,16 +1,16 @@
 {
-  "name": "@eva/plugin-renderer-sprite",
+  "name": "@eva/plugin-renderer-spine40",
   "version": "1.2.2-alpha.2",
-  "description": "@eva/plugin-renderer-sprite",
+  "description": "@eva/plugin-renderer-spine40",
   "main": "index.js",
-  "module": "dist/plugin-renderer-sprite.esm.js",
-  "bundle": "EVA.plugin.renderer.sprite",
-  "unpkg": "dist/EVA.plugin.renderer.sprite.min.js",
+  "module": "dist/plugin-renderer-spine40.esm.js",
+  "bundle": "EVA.plugin.renderer.spine40",
+  "unpkg": "dist/EVA.plugin.renderer.spine40.min.js",
   "files": [
     "index.js",
     "dist"
   ],
-  "types": "dist/plugin-renderer-sprite.d.ts",
+  "types": "dist/plugin-renderer-spine40.d.ts",
   "keywords": [
     "eva.js"
   ],
@@ -18,9 +18,9 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
+    "@eva/eva.js": "1.2.2-alpha.2",
     "@eva/inspector-decorator": "^0.0.5",
     "@eva/plugin-renderer": "1.2.2-alpha.2",
-    "@eva/eva.js": "1.2.2-alpha.2",
     "pixi.js": "^4.8.7"
   }
 }

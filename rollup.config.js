@@ -24,6 +24,33 @@ const packages = fs
   .readdirSync(path.resolve(__dirname, 'packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
+const IIFE_PREFIX = '_EVA_IIFE_';
+const split = (str) => {
+  return str.split('.')
+}
+const getInsert = (str) => {
+  const arr = split(str)
+  const footers = []
+  const banners = []
+  let lastFooter = 'window'
+  arr.forEach((name, i) => {
+    lastFooter += `.${name}`
+    let footer
+    if (i === arr.length - 1) {
+      footer = `${lastFooter} = ${lastFooter} || ${IIFE_PREFIX + name}`
+      footers.push(footer)
+    } else {
+      footer = `${lastFooter} = ${lastFooter} || {}`
+      banners.push(footer)
+    }
+  })
+  return [banners.join(`;\n`), footers.join(`;\n`)]
+}
+
+const sliteName = split(pkg.bundle)
+const iifeName = IIFE_PREFIX + sliteName[sliteName.length - 1]
+const insert = getInsert(pkg.bundle)
+
 const outputConfigs = {
   esm: {
     file: resolve(`dist/${name}.esm.js`),
@@ -34,9 +61,11 @@ const outputConfigs = {
     format: 'cjs',
   },
   iife: {
-    name: pkg.bundle,
+    name: iifeName,
     file: resolve(`dist/${pkg.bundle}.js`),
     format: 'iife',
+    banner: insert[0],
+    footer: insert[1]
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
@@ -120,11 +149,12 @@ function createConfig(format, output, plugins = []) {
   }
 
   let external = [];
+  let internal = ['@eva/spine-base']
   if (format === 'esm' || format === 'cjs') {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
-      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1;
+      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1 && internal.indexOf(dep) === -1;
     });
     external = ['pixi.js', ...evaDependencies];
     output.plugins = [
