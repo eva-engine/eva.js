@@ -17,6 +17,12 @@
   "author": "fanmingfei <az8641683@163.com>",
   "license": "MIT",
   "homepage": "https://eva.js.org",
+  "buildOptions": {
+    "formats": [
+      "cjs",
+      "esm"
+    ]
+  },
   "dependencies": {
     "@eva/miniprogram-pixi": "1.2.2-type.1"
   }

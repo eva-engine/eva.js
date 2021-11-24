@@ -1,4 +1,34 @@
-// @ts-ignore
 import * as PIXI from '@tbminiapp/pixi-miniprogram-engine';
-
 export default PIXI;
+export {
+  Application,
+  Container,
+  Graphics,
+  mesh,
+  Texture,
+  Sprite,
+  extras,
+  Text,
+  ticker,
+  BLEND_MODES,
+  Circle,
+  Ellipse,
+  Polygon,
+  Rectangle,
+  RoundedRectangle,
+  TextStyle,
+  loaders,
+  Matrix,
+  SCALE_MODES,
+  utils,
+  TransformBase,
+  TransformStatic,
+  DisplayObject,
+  Spritesheet,
+  BaseTexture,
+  Shader,
+  WebGLRenderer,
+  ObjectRenderer,
+  CanvasRenderer,
+  glCore
+} from '@tbminiapp/pixi-miniprogram-engine';

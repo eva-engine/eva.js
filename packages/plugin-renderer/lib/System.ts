@@ -110,9 +110,9 @@ export default class Renderer extends System<RendererSystemParams> {
     if (params.renderType === RENDERER_TYPE.CANVAS) {
       params.forceCanvas = true;
     }
-    ticker.shared.autoStart = false;
-    ticker.shared.stop();
     const app = new Application({ sharedTicker: true, ...params });
+    ticker.shared.stop();
+    ticker.shared.autoStart = false;
     /**
      * Fix https://github.com/eva-engine/eva.js/issues/30
      * PreventScroll is legacy, because it has bug.
