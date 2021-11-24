@@ -34,6 +34,13 @@ type EventParam = {
       x: number,
       y: number,
     },
+    /**
+     * The position related to event target gameobject
+     */
+    localPosition: {
+      x: number,
+      y: number
+    }
   },
   gameObject: GameObject,
 }

@@ -1,6 +1,7 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { RendererSystem } from "@eva/plugin-renderer";
 import { Img, ImgSystem } from "@eva/plugin-renderer-img";
+import { GraphicsSystem, Graphics } from "@eva/plugin-renderer-graphics";
 import { Event, EventSystem, HIT_AREA_TYPE } from "@eva/plugin-renderer-event";
 export const name = 'event';
 export async function init(canvas) {
@@ -31,6 +32,8 @@ export async function init(canvas) {
       new EventSystem(),
 
       new ImgSystem(),
+
+      new GraphicsSystem()
     ],
   });
 
@@ -84,4 +87,33 @@ export async function init(canvas) {
   });
 
   game.scene.addChild(image);
+
+  const localPosEventGameObject = new GameObject('', {
+    position: {
+      x: 400,
+      y: 700
+    },
+    size: {
+      width: 1000,
+      height: 1000
+    },
+    scale: {
+      x: .25,
+      y: .5
+    },
+    origin: {
+      x: .5,
+      y: .5
+    },
+    rotation: Math.PI * .25
+  });
+  const g = localPosEventGameObject.addComponent(new Graphics());
+  g.graphics.beginFill(0xff0000).drawRect(0, 0, 1000, 1000).endFill();
+
+  const e = localPosEventGameObject.addComponent(new Event());
+
+  e.on('tap', e => {
+    console.log(`LocalPosition: [x: ${e.data.localPosition.x}, y: ${e.data.localPosition.y}]`);
+  })
+  game.scene.addChild(localPosEventGameObject);
 }
