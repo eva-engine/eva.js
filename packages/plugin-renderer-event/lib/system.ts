@@ -74,7 +74,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
-          localPosition: e.target.worldTransform.applyInverse(e.data.global)
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -89,7 +89,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
-          localPosition: e.target.worldTransform.applyInverse(e.data.global)
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -104,7 +104,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
-          localPosition: e.target.worldTransform.applyInverse(e.data.global)
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -119,7 +119,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
-          localPosition: e.target.worldTransform.applyInverse(e.data.global)
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -134,7 +134,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
-          localPosition: e.target.worldTransform.applyInverse(e.data.global)
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -149,7 +149,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
-          localPosition: e.target.worldTransform.applyInverse(e.data.global)
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });

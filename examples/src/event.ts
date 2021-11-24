@@ -94,8 +94,12 @@ export async function init(canvas) {
       y: 700
     },
     size: {
-      width: 300,
-      height: 200
+      width: 1000,
+      height: 1000
+    },
+    scale: {
+      x: .25,
+      y: .5
     },
     origin: {
       x: .5,
@@ -104,7 +108,7 @@ export async function init(canvas) {
     rotation: Math.PI * .25
   });
   const g = localPosEventGameObject.addComponent(new Graphics());
-  g.graphics.beginFill(0xff0000).drawRect(0, 0, 300, 200).endFill();
+  g.graphics.beginFill(0xff0000).drawRect(0, 0, 1000, 1000).endFill();
 
   const e = localPosEventGameObject.addComponent(new Event());
 
