@@ -4,8 +4,8 @@ import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
+import { miniprogramPlugins1, miniprogramPlugins2 } from './rollup.miniprogram.plugin';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
-import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
   throw new Error('TARGET package must be specified via --environment flag.');
@@ -69,7 +69,7 @@ const outputConfigs = {
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
-    format: 'cjs',
+    format: 'es',
   },
 };
 
@@ -79,7 +79,7 @@ let hasTypesChecked = false;
 // 开发环境 esm，cjs 打包
 const defaultFormats = ['esm', 'cjs', 'iife'];
 const inlineFormats = process.env.FORMATS && process.env.FORMATS.split('-');
-const packageFormats = inlineFormats || packageOptions.formats || defaultFormats;
+const packageFormats = packageOptions.formats || inlineFormats || defaultFormats;
 
 const packageConfigs = [];
 if (!process.env.PROD_ONLY) {
@@ -111,7 +111,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-function createConfig(format, output, plugins = []) {
+function createConfig(format, output, plugins1 = [], plugins2 = []) {
   if (!output) {
     console.log(require('chalk').yellow(`invalid format: "${format}"`));
     process.exit(1);
@@ -146,6 +146,13 @@ function createConfig(format, output, plugins = []) {
       require('rollup-plugin-polyfill-node')(),
       require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
     ];
+  } else if (format === 'miniprogram') {
+    nodePlugins = [
+      require('@rollup/plugin-node-resolve').nodeResolve({
+        resolveOnly: ['resource-loader', 'type-signals', 'parse-uri']
+      }),
+      require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
+    ]
   }
 
   let external = [];
@@ -178,6 +185,7 @@ function createConfig(format, output, plugins = []) {
     },
     external,
     plugins: [
+      ...plugins1,
       json({ preferConst: true }),
       replace({
         __TEST__: false,
@@ -186,7 +194,7 @@ function createConfig(format, output, plugins = []) {
       }),
       ...nodePlugins,
       tsPlugin,
-      ...plugins,
+      ...plugins2
     ],
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
@@ -237,6 +245,6 @@ function createMinifiedConfig(format) {
 }
 
 function createMiniProgramConfig(format) {
-  return createConfig(format, outputConfigs[format], miniProgramPlugin);
+  return createConfig(format, outputConfigs[format], miniprogramPlugins1, miniprogramPlugins2);
 }
 export default packageConfigs;
