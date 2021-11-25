@@ -98,7 +98,7 @@ game.scene.addChild(image);
 ```
 
 ## 问题交流
-可以在 [Gitter](https://gitter.im/eva-engine/Eva.js) 或者 [微信](https://weixin.qq.com/) (微信) 扫码 [二维码](https://gw.alicdn.com/imgextra/i4/O1CN015W09ux1QD1RAxBkYN_!!6000000001941-2-tps-610-1279.png) 进行交流.
+可以在 [Gitter](https://gitter.im/eva-engine/Eva.js) 或者 [微信](https://weixin.qq.com/) 扫码 [二维码](https://gw.alicdn.com/imgextra/i4/O1CN015W09ux1QD1RAxBkYN_!!6000000001941-2-tps-610-1279.png) 进行交流.
 
 
 ## Issues
