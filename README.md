@@ -100,7 +100,7 @@ game.scene.addChild(image);
 ```
 
 ## Questions
-For questions and support please use [Gitter](https://gitter.im/eva-engine/Eva.js) or [DingTalk](https://www.dingtalk.com/) (钉钉) to scan [this QR Code](https://gw.alicdn.com/imgextra/i3/O1CN01I0KDY41JkjGZ4xxks_!!6000000001067-2-tps-465-668.png).
+For questions and support please use [Gitter](https://gitter.im/eva-engine/Eva.js) or [WeChat](https://weixin.qq.com/) (微信) to scan [this QR Code](https://gw.alicdn.com/imgextra/i4/O1CN015W09ux1QD1RAxBkYN_!!6000000001941-2-tps-610-1279.png).
 
 
 ## Issues
