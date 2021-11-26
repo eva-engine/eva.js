@@ -54,13 +54,13 @@ export async function init(canvas) {
       y: 0.5,
     },
   });
-  const spine = new Spine({ resource: 'anim', animationName: 'run' });
+  const spine = new Spine({ resource: 'anim', animationName: 'run', autoPlay: false });
   gameObject.addComponent(spine);
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
   });
   spine.play('run', true);
-  setTimeout(()=>{
+  setTimeout(() => {
     spine.play('all', true);
 
   }, 5000)
