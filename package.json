@@ -1,13 +1,13 @@
 {
   "private": true,
-  "version": "1.2.2-alpha.2",
+  "version": "1.2.2-alpha.3",
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
     "dev": "vite ./examples -c ./examples/vite.config.ts",
     "build": "node ./scripts/build.js",
     "buildDev": "npm run build -- -a -d -f iife",
-    "buildProd": "npm run build -- -a -p -f cjs-esm-iife",
+    "buildProd": "npm run build -- -a -p -f cjs-esm-iife-miniprogram",
     "release": "node ./scripts/release.js",
     "bootstrap": "node ./scripts/bootstrap.js",
     "test": "jest --runInBand",
