@@ -21,20 +21,20 @@ export default class Spine extends Component<SpineParams> {
 
   private _armature: any;
 
-  private waitPlay = false
-  private waitStop = false
-
-  private waitPlayInfo: { track?: number, animationName?: string, loop?: boolean } = {}
-  private waitStopTrack?: number
+  private waitExecuteInfos: { playType: boolean, track?: number, name?: string, loop?: boolean }[] = []
 
   set armature(val) {
     this._armature = val;
     if (!val) return;
-    const { animationName, track, loop } = this.waitPlayInfo;
-    this.waitPlay && this.play(animationName, loop, track);
-    this.waitStop && this.stop(this.waitStopTrack);
-    this.waitPlay = false;
-    this.waitStop = false;
+    for (const info of this.waitExecuteInfos) {
+      if (info.playType) {
+        const { name, loop, track } = info;
+        this.play(name, loop, track);
+      } else {
+        this.stop(info.track);
+      }
+    }
+    this.waitExecuteInfos = [];
   }
   get armature() {
     return this._armature;
@@ -61,13 +61,12 @@ export default class Spine extends Component<SpineParams> {
     try {
       if (name) this.animationName = name;
       if (!this.armature) {
-        // this.autoPlay = true;
-        this.waitPlay = true;
-        this.waitPlayInfo = {
-          animationName: this.animationName,
-          track: track || 0,
-          loop
-        }
+        this.waitExecuteInfos.push({
+          playType: true,
+          name,
+          loop,
+          track
+        })
       } else {
         if (track === undefined) {
           track = 0;
@@ -81,8 +80,10 @@ export default class Spine extends Component<SpineParams> {
 
   stop(track?: number) {
     if (!this.armature) {
-      this.waitStopTrack = track || 0;
-      this.waitStop = true;
+      this.waitExecuteInfos.push({
+        playType: false,
+        track
+      })
       return;
     }
     if (track === undefined) {
