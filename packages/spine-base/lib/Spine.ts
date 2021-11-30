@@ -26,6 +26,9 @@ export default class Spine extends Component<SpineParams> {
   set armature(val) {
     this._armature = val;
     if (!val) return;
+    if (this.autoPlay) {
+      this.play(this.animationName);
+    }
     for (const info of this.waitExecuteInfos) {
       if (info.playType) {
         const { name, loop, track } = info;
@@ -49,9 +52,6 @@ export default class Spine extends Component<SpineParams> {
     if (!obj) return;
 
     Object.assign(this, obj);
-    if (this.autoPlay) {
-      this.play(this.animationName);
-    }
   }
   onDestroy() {
     this.destroied = true;
