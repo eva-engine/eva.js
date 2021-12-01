@@ -1,4 +1,4 @@
-import {Component} from '@eva/eva.js';
+import { Component } from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
 
 export interface SpineParams {
@@ -19,7 +19,30 @@ export default class Spine extends Component<SpineParams> {
   @type('boolean')
   autoPlay: boolean = true;
 
-  armature: any;
+  private _armature: any;
+
+  private waitExecuteInfos: { playType: boolean, track?: number, name?: string, loop?: boolean }[] = []
+
+  set armature(val) {
+    this._armature = val;
+    if (!val) return;
+    if (this.autoPlay) {
+      this.play(this.animationName);
+    }
+    for (const info of this.waitExecuteInfos) {
+      if (info.playType) {
+        const { name, loop, track } = info;
+        this.play(name, loop, track);
+      } else {
+        this.stop(info.track);
+      }
+    }
+    this.waitExecuteInfos = [];
+  }
+  get armature() {
+    return this._armature;
+  }
+
   destroied: boolean;
   addHandler: any;
 
@@ -29,9 +52,6 @@ export default class Spine extends Component<SpineParams> {
     if (!obj) return;
 
     Object.assign(this, obj);
-    if (this.autoPlay) {
-      this.play(this.animationName);
-    }
   }
   onDestroy() {
     this.destroied = true;
@@ -41,6 +61,12 @@ export default class Spine extends Component<SpineParams> {
     try {
       if (name) this.animationName = name;
       if (!this.armature) {
+        this.waitExecuteInfos.push({
+          playType: true,
+          name,
+          loop,
+          track
+        })
       } else {
         if (track === undefined) {
           track = 0;
@@ -54,6 +80,10 @@ export default class Spine extends Component<SpineParams> {
 
   stop(track?: number) {
     if (!this.armature) {
+      this.waitExecuteInfos.push({
+        playType: false,
+        track
+      })
       return;
     }
     if (track === undefined) {

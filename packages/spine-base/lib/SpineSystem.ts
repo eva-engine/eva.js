@@ -128,13 +128,6 @@ export default class SpineSystem extends Renderer {
     armature.update()
     armature.updateTransform()
     component.armature = armature;
-    if (component.autoPlay) {
-      try {
-        armature.state.setAnimation(0, component.animationName, true);
-      } catch (e) {
-        console.log(e);
-      }
-    }
     // @ts-ignore
     component.emit('loaded', { resource: component.resource });
     armature.state.addListener({
