@@ -1,7 +1,6 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
 import { RendererSystem } from "@eva/plugin-renderer";
 import { Img, ImgSystem } from "@eva/plugin-renderer-img";
-import { RENDERER_TYPE } from "pixi.js";
 
 export const name = 'compressed-textures';
 export async function init(canvas: HTMLCanvasElement) {
