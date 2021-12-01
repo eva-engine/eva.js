@@ -172,7 +172,7 @@ class Resource extends EE {
     const names = [];
     for (const key in this.resourcesMap) {
       const resource = this.resourcesMap[key];
-      if (resource.preload && !resource.complete) {
+      if (resource.preload && !resource.complete && !this.promiseMap[key]) {
         names.push(resource.name);
       }
     }
