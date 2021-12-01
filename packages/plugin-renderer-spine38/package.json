@@ -21,6 +21,7 @@
     "@eva/eva.js": "1.2.2-alpha.4",
     "@eva/inspector-decorator": "^0.0.5",
     "@eva/plugin-renderer": "1.2.2-alpha.4",
+    "@eva/spine-base": "1.2.2-alpha.4",
     "pixi.js": "^4.8.7"
   }
 }
