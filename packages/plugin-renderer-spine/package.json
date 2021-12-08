@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-spine",
-  "version": "1.2.2-alpha.4",
+  "version": "1.2.2-alpha.5",
   "description": "@eva/plugin-renderer-spine",
   "main": "index.js",
   "module": "dist/plugin-renderer-spine.esm.js",
@@ -19,9 +19,9 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "1.2.2-alpha.4",
-    "@eva/eva.js": "1.2.2-alpha.4",
-    "@eva/spine-base": "1.2.2-alpha.4",
+    "@eva/plugin-renderer": "1.2.2-alpha.5",
+    "@eva/eva.js": "1.2.2-alpha.5",
+    "@eva/spine-base": "1.2.2-alpha.5",
     "pixi.js": "^4.8.7"
   }
 }
