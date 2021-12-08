@@ -130,7 +130,7 @@ function removeObjectCache(component: Component) {
  * @param {ObserverType} param0.type - observer type
  */
 function addObserver({ systemName, componentName, component, prop, type }: ObserverEvent) {
-  systemInstance[systemName].componentObserver.add({
+  systemInstance[systemName]?.componentObserver?.add({
     component,
     prop,
     type,
@@ -304,7 +304,7 @@ export function observerAdded(component: Component, componentName: string = comp
     const observerInfo = observerInfos[systemName] || {};
     const info = observerInfo[componentName];
     if (info) {
-      systemInstance[systemName].componentObserver.add({
+      systemInstance[systemName]?.componentObserver?.add({
         component,
         type: ObserverType.ADD,
         componentName,
@@ -323,7 +323,7 @@ export function observerRemoved(component: Component, componentName: string = co
     const observerInfo = observerInfos[systemName] || {};
     const info = observerInfo[componentName];
     if (info) {
-      systemInstance[systemName].componentObserver.add({
+      systemInstance[systemName]?.componentObserver?.add({
         component,
         type: ObserverType.REMOVE,
         componentName,
