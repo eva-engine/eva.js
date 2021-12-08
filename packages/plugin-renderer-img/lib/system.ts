@@ -60,7 +60,8 @@ export default class Img extends Renderer {
         this.imgs[changed.gameObject.id].image = instance;
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         const sprite = this.imgs[changed.gameObject.id];
-        this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.sprite);
+        if (!sprite) return
+        this.containerManager?.getContainer(changed.gameObject.id)?.removeChild(sprite.sprite);
         sprite.sprite.destroy({ children: true });
         delete this.imgs[changed.gameObject.id];
       }
