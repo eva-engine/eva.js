@@ -108,7 +108,7 @@ export default class SpineSystem extends Renderer {
       return;
     }
     this.remove(changed);
-    const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
+    const container = this.renderSystem?.containerManager?.getContainer(changed.gameObject.id);
     if (!container) {
       // console.warn('添加spine的container不存在');
       return;
@@ -164,7 +164,7 @@ export default class SpineSystem extends Renderer {
     clearTimeout(component.addHandler);
     const armature = this.armatures[changed.gameObject.id];
 
-    const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
+    const container = this.renderSystem?.containerManager?.getContainer(changed.gameObject.id);
     if (container && armature) {
       container.removeChild(armature);
     } else {
