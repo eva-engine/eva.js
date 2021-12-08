@@ -17,6 +17,7 @@ export default class ContainerManager {
   updateTransform({ name, transform }: { name: number; transform: Transform }) {
     const container = this.containerMap[name];
     if (!container) return;
+    if (!transform) return;
     const { anchor, origin, position, rotation, scale, size, skew } = transform;
     container.rotation = rotation;
     container.scale = scale as Point;
