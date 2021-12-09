@@ -1,12 +1,11 @@
 import { BaseTexture, utils } from "pixi.js";
 import { CompressedTextureResource } from "../resource/CompressedTextureResource";
-const oldFrom = Symbol();
 export const BaseTextureMixin = {
-  [oldFrom]: BaseTexture.from,
+  oldFrom: BaseTexture.from,
   from(source, scaleMode, sourceScale) {
 
     if (!(source instanceof CompressedTextureResource)) {
-      return this[oldFrom](source, scaleMode, sourceScale);
+      return this.oldFrom(source, scaleMode, sourceScale);
     }
 
     const imageUrl = source.src;
