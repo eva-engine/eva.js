@@ -1,5 +1,7 @@
 # Eva.js (Interactive Game Engine)
 
+<p align="center"><a href="https://eva.js.org" target="_blank" rel="noopener noreferrer"><img width="300" src="https://user-images.githubusercontent.com/4632277/145818886-e0b1ca70-d789-4735-a8fe-411046263aa5.png" alt="Eva.js logo"></a></p>
+
 ![npm-version](https://img.shields.io/npm/v/@eva/eva.js)
 ![npm-size](https://img.shields.io/bundlephobia/minzip/@eva/eva.js)
 ![npm-download](https://img.shields.io/npm/dm/@eva/eva.js)
