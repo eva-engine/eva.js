@@ -40,6 +40,7 @@ class ComponentObserver {
   add({ component, prop, type, componentName }: ObserverEventParams) {
     if (type === ObserverType.REMOVE) {
       if (this.events.find((changed: ObserverEvent) => changed.component === component && changed.type === ObserverType.ADD)) {
+        this.events = this.events.filter(changed => changed.component !== component);
         return
       }
       this.events = this.events.filter(changed => changed.component !== component);
