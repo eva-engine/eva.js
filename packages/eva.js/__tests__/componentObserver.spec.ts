@@ -68,16 +68,16 @@ describe('componentObserver', () => {
 
     co.add({
       prop,
-      component: transform2,
+      component: transform1,
       type: ObserverType.REMOVE,
       componentName: Transform.componentName,
     });
 
-    expect(co.getChanged().length).toBe(2);
+    expect(co.getChanged().length).toBe(1);
     expect(co.getChanged()[0]).toMatchObject({
       prop,
       gameObject: undefined,
-      component: transform1,
+      component: transform2,
       type: ObserverType.ADD,
       componentName: Transform.componentName,
     });
