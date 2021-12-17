@@ -1,4 +1,4 @@
-import { Texture, ticker } from 'pixi.js';
+import { Texture } from 'pixi.js';
 import { decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSERVER_TYPE, Component } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import DragonBoneEngine from './engine';
@@ -44,7 +44,7 @@ export default class DragonBone extends Renderer {
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
-    ticker.shared.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
+    this.renderSystem.application.ticker.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
   }
   async componentChanged(changed: ComponentChanged) {
     this.autoPlay[changed.gameObject.id] = (changed.component as DragonBoneComponent).autoPlay;
