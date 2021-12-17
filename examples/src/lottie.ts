@@ -50,73 +50,87 @@ export async function init(canvas) {
     height: 1624,
   };
 
-  const halo = new Lottie({ resource: 'Halo' });
-  const red = new Lottie({ resource: 'Red' });
 
-  halo.on('complete', () => {
-    console.log('halo play complete !');
-  });
-  red.on('complete', () => {
-    console.log('Red play complete !');
-  });
-  halo.play([], { repeats: 0 });
-  red.play([], {
-    repeats: 0,
-    slot: [
-      {
-        name: '#number',
-        type: 'TEXT',
-        value: '10',
-        style: {
-          fontSize: 64,
-        },
+  function createHalo() {
+    const halo = new Lottie({ resource: 'Halo' });
+
+    halo.on('complete', () => {
+      console.log('halo play complete !');
+    });
+    halo.play([], { repeats: 0 });
+
+
+    const haloGameObj = new GameObject('Halo', {
+      anchor: {
+        x: 0,
+        y: 0,
       },
-      {
-        name: '#unit',
-        type: 'TEXT',
-        value: '元',
-        style: {
-          fontSize: 22,
+    });
+    haloGameObj.addComponent(halo);
+    game.scene.addChild(haloGameObj);
+  }
+  function createRed() {
+    const red = new Lottie({ resource: 'Red' });
+
+    red.on('complete', () => {
+      console.log('Red play complete !');
+    });
+
+    red.play([], {
+      repeats: 0,
+      slot: [
+        {
+          name: '#number',
+          type: 'TEXT',
+          value: '10',
+          style: {
+            fontSize: 64,
+          },
         },
-      },
-      {
-        name: '#title',
-        type: 'TEXT',
-        value: '我是主标题',
-        style: {
-          fontSize: 32,
+        {
+          name: '#unit',
+          type: 'TEXT',
+          value: '元',
+          style: {
+            fontSize: 22,
+          },
         },
-      },
-      {
-        name: '#subtitle',
-        type: 'TEXT',
-        value: '我是副标题',
-        style: {
-          fontSize: 24,
+        {
+          name: '#title',
+          type: 'TEXT',
+          value: '我是主标题',
+          style: {
+            fontSize: 32,
+          },
         },
-      },
-    ],
-  });
+        {
+          name: '#subtitle',
+          type: 'TEXT',
+          value: '我是副标题',
+          style: {
+            fontSize: 24,
+          },
+        },
+      ],
+    });
 
-  red.onTap('#btn', () => {
-    console.log('btn click !');
-  });
 
-  const haloGameObj = new GameObject('Halo', {
-    anchor: {
-      x: 0,
-      y: 0,
-    },
-  });
-  const redGameObj = new GameObject('Red', {
-    anchor: { x: 0.5, y: 0.3 },
-    size: { width: 660, height: 757 },
-    origin: { x: 0.5, y: 0.5 },
-  });
+    red.onTap('#btn', () => {
+      console.log('btn click !');
+    });
 
-  haloGameObj.addComponent(halo);
-  redGameObj.addComponent(red);
+    const redGameObj = new GameObject('Red', {
+      anchor: { x: 0.5, y: 0.3 },
+      size: { width: 660, height: 757 },
+      origin: { x: 0.5, y: 0.5 },
+    });
 
-  game.scene.addChild(haloGameObj);
-  game.scene.addChild(redGameObj);
+    redGameObj.addComponent(red);
+    game.scene.addChild(redGameObj);
+  }
+
+
+  createHalo()
+  createRed()
+
 }
