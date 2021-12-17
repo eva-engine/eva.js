@@ -64,7 +64,13 @@ export default class Spine extends Component<SpineParams> {
         this.waitExecuteInfos.push({
           playType: true,
           name,
-          loop,
+          /**
+           * 在 v1.2.2 之前，Spine 动画的 autoPlay 为 true，动画会循环播放 https://github.com/eva-engine/eva.js/pull/164/files#diff-46e9ae36c04e7a0abedc1e14fd9d1c4e81d8386e9bb851f85971ccdba8957804L131
+           * 在 v1.2.2 之前，Spine 动画在每加载完( armature 设置之前)调用播放是不生效的， 在 v1.2.2 [#164](https://github.com/eva-engine/eva.js/pull/164) 解决了这个问题
+           * 解决了不生效的问题以后，加载完成之前调用播放默认循环是false，导致autoPlay下本来循环动画不循环了，和之前表现不一致
+           * 为了解决这个问题，这里在未加载完之前调用播放默认循环，除非设置不循环参数
+           */
+          loop: loop ?? this.autoPlay,
           track
         })
       } else {
