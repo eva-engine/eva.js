@@ -59,7 +59,6 @@ export async function init(canvas) {
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
   });
-  spine.play('dance', true);
+  spine.play('dance');
   game.scene.addChild(gameObject);
-
 }
