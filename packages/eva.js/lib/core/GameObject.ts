@@ -29,6 +29,9 @@ class GameObject {
   /** Components apply to this gameObject */
   public components: Component<ComponentParams>[] = [];
 
+  /** GameObject has been destroyed */
+  public destroyed: boolean = false;
+
   /**
    * Consruct a new gameObject
    * @param name - the name of this gameObject
@@ -132,6 +135,7 @@ class GameObject {
   addComponent<T extends Component<ComponentParams>>(C: T): T;
   addComponent<T extends Component<ComponentParams>>(C: ComponentConstructor<T>, obj?: ComponentParams): T;
   addComponent<T extends Component<ComponentParams>>(C: T | ComponentConstructor<T>, obj?: ComponentParams): T {
+    if (this.destroyed) return
     const componentName = getComponentName(C);
     if (this._componentCache[componentName]) return;
 
@@ -246,6 +250,7 @@ class GameObject {
       this._removeComponent(key);
     }
     this.components.length = 0;
+    this.destroyed = true
   }
 }
 
