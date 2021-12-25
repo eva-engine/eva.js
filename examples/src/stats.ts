@@ -51,7 +51,7 @@ export async function init(canvas) {
   text.addComponent(
     //@ts-ignore
     new Text({
-      text: '欢迎使用EVA互动游戏开发体系！',
+      text: '欢迎使用EVA性能监控！',
       style: {
         fontFamily: 'Arial',
         fontSize: 36,
