@@ -152,7 +152,21 @@ class GameObject {
     observerAdded(component, component.name);
     observer(component, component.name);
 
-    this.components.push(component);
+    //transform组件必定存在，进入循环
+    //从后往前找，在第一个小于等于executionOrder的component后插入，
+    for (let i = this.components.length - 1; i >= 0; i--) {
+      const ctor = this.components[i].constructor as typeof Component;
+      if (ctor._executionOrder <= component.constructor._executionOrder) {
+        this.components.splice(i, 0, component);
+        break;
+      }
+
+      //兜底，新增组件的executionOrder最小，放第一个
+      if (i === 0) {
+        this.components.unshift(component);
+      }
+    }
+
     this._componentCache[componentName] = component;
 
     component.awake && component.awake();
@@ -234,8 +248,8 @@ class GameObject {
   /** Destory this gameObject */
   destroy() {
     if (!this.transform) {
-      console.error('Cannot destroy gameObject that have already been destroyed.')
-      return
+      console.error('Cannot destroy gameObject that have already been destroyed.');
+      return;
     }
     Array.from(this.transform.children).forEach(({ gameObject }) => {
       gameObject.destroy();

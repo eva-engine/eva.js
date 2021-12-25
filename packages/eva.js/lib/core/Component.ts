@@ -58,6 +58,9 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
   /** Name of this component */
   static componentName: string;
 
+  /** The execution order of life cycle methods for Component. Smaller priority get invoked before larger priority */
+  static _executionOrder: number = 0;
+
   /** Name of this component */
   public readonly name: string;
 
