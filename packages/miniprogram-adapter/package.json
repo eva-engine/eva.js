@@ -1,6 +1,6 @@
 {
   "name": "@eva/miniprogram-adapter",
-  "version": "1.2.5",
+  "version": "1.2.5-edtor.0",
   "description": "@eva/miniprogram-adapter",
   "main": "index.js",
   "module": "dist/miniprogram-adapter.esm.js",
@@ -24,6 +24,6 @@
     ]
   },
   "dependencies": {
-    "@eva/miniprogram-pixi": "1.2.5"
+    "@eva/miniprogram-pixi": "1.2.5-edtor.0"
   }
 }
