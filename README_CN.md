@@ -108,7 +108,7 @@ game.scene.addChild(image);
 按照 [Issue Reporting Checklist](.github/ISSUE_TEMPLATE.md) 提交 issue. 不符合准则的问题可能会立即关闭。
 
 ## Changelog
-[版本记录](https://eva-engine.gitee.io/#/others/changelog).
+[版本记录](https://github.com/eva-engine/eva.js/releases).
 
 ## Contribute
 [如何贡献](.github/HOW_TO_CONTRIBUTE.md)
