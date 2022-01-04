@@ -25,6 +25,7 @@ Eva.js 是一个专注于开发互动游戏项目的前端游戏引擎。
 - [在线案例](https://eva.js.org/playground)
 - [快速开始](https://eva.js.org/#/tutorials/quickstart)
 - [基础脚手架](https://github.com/eva-engine/start-demo)
+- [Awesome](https://github.com/eva-engine/awesome)
 
 
 ## 使用
