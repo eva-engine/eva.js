@@ -27,6 +27,7 @@ Checking out the [Live example](https://eva.js.org/playground).
 
 - [Quick Start](https://eva.js.org/#/tutorials/quickstart)
 - [Start Demo](https://github.com/eva-engine/start-demo)
+- [Awesome](https://github.com/eva-engine/awesome)
 
 
 ## Usage
