@@ -42,29 +42,34 @@ export default class Img extends Renderer {
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Img') {
       const component: ImgComponent = changed.component as ImgComponent;
+      const name = component.resource;
       if (changed.type === OBSERVER_TYPE.ADD) {
         const sprite = new Sprite(null);
-        resource.getResource(component.resource).then(({ instance }) => {
-          if (!instance) {
-            console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
-          }
-          sprite.image = instance;
-        });
         this.imgs[changed.gameObject.id] = sprite;
         this.containerManager.getContainer(changed.gameObject.id).addChildAt(sprite.sprite, 0);
+        const { instance } = await resource.getResource(component.resource);
+        if (!instance) {
+          console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
+        }
+        if (!component.destroyed && name === component.resource) {
+          this.imgs[component.gameObject.id].image = instance;
+        }
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
         const { instance } = await resource.getResource(component.resource);
         if (!instance) {
           console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
         }
-        this.imgs[changed.gameObject.id].image = instance;
+        if (!component.destroyed && name === component.resource) {
+          this.imgs[component.gameObject.id].image = instance;
+        }
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         const sprite = this.imgs[changed.gameObject.id];
-        if (!sprite) return
+        if (!sprite) return;
         this.containerManager?.getContainer(changed.gameObject.id)?.removeChild(sprite.sprite);
         sprite.sprite.destroy({ children: true });
         delete this.imgs[changed.gameObject.id];
       }
     }
   }
+  
 }

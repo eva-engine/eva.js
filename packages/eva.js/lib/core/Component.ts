@@ -43,11 +43,11 @@ export function getComponentName<T extends Component<ComponentParams>>(component
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ComponentParams {}
+export interface ComponentParams { }
 
 export interface ComponentConstructor<T extends Component<ComponentParams>> {
   componentName: string;
-  new (params?: ComponentParams): T;
+  new(params?: ComponentParams): T;
 }
 
 /**
@@ -131,11 +131,14 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
    */
   onPause?(): void;
 
+  destroyed = false
   /**
    * Called while component be destroyed.
    * @override
    */
-  onDestroy?(): void;
+  onDestroy(): void {
+    this.destroyed = true;
+  }
 }
 
 export default Component;
