@@ -3,7 +3,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "outDir": "dist/types",
-    "target": "es5",
+    "target": "es6",
     "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
@@ -51,5 +51,13 @@
     "packages/*/global.d.ts",
     "packages/*/lib",
     "packages/*/__tests__"
-  ]
+  ],
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "esnext",
+      "skipLibCheck": true
+    }
+  }
 }
