@@ -3,6 +3,8 @@ import { swcPlugin } from "esbuild-plugin-swc";
 import { evaAlias } from "./plugins/eva-alias";
 import { esbuildDecorators } from "esbuild-plugin-typescript-decorators";
 import { NodeResolvePlugin } from "@esbuild-plugins/node-resolve";
+import external from "@chialab/esbuild-plugin-external";
+
 import { resolve } from "path";
 
 (async () => {

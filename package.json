@@ -38,6 +38,7 @@
     "@babel/preset-env": "^7.15.0",
     "@babel/preset-typescript": "^7.15.0",
     "@babel/runtime": "^7.15.3",
+    "@chialab/esbuild-plugin-external": "^0.14.10",
     "@esbuild-plugins/node-resolve": "^0.1.4",
     "@microsoft/api-documenter": "^7.5.4",
     "@microsoft/api-extractor": "^7.11.2",
