@@ -26,6 +26,11 @@ async function build() {
     outfile: './packages/eva.js/dist/EVA.esbuild.js',
     target: 'es2015',
     minify: false,
+    define: {
+      __TEST__: 'false',
+      __DEV__: `${process.env.NODE_ENV === 'development'}`,
+      __VERSION__: `'0.0.0'`,
+    },
     bundle: true,
     tsconfig: './tsconfig.json',
     treeShaking: true,
@@ -58,9 +63,19 @@ async function build() {
     ]
   });
 
-  const result2 = await transform(result.outputFiles[0].text, {
+  const temp = result.outputFiles[0].text
+  // const temp = await minify(result.outputFiles[0].text, {
+  //   ecma: 2020,
+  //   output: {
+  //     wrap_iife: false,
+  //     ecma: 2020,
+  //   }
+  // }).code;
+
+  const result2 = await transform(temp, {
     configFile: './.swcrc',
     swcrc: true,
+    minify: true
   });
 
   writeFileSync('./packages/eva.js/dist/EVA.esbuild.js', result2.code)
@@ -68,11 +83,12 @@ async function build() {
   const result3 = await minify(result2.code, {
     ecma: 5,
     output: {
-      wrap_iife: true,
+      wrap_iife: false,
       ecma: 5
     }
-  })
-  // console.log(result2)
+  });
   writeFileSync('./packages/eva.js/dist/EVA.esbuild.min.js', result3.code);
+
+  console.log(`${result3.code.length / 1024}`.slice(0, 6), 'KB');
 
 }
