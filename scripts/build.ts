@@ -14,7 +14,7 @@ import { resolve } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
 
-const pkg = 'eva.js';
+const pkg = 'renderer-adapter';
 
 const entry = `./packages/${pkg}/lib/index.ts`;
 const preoutput = `./packages/${pkg}/dist/${pkg}.esbuild.raw.js`
@@ -58,7 +58,7 @@ async function build() {
           // "parse-uri",
           // "resource-loader",
           // "sprite-timeline",
-          // "pixi.js"
+          "pixi.js"
         ]
       }),
       // NodeResolvePlugin({
