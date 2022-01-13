@@ -1,11 +1,12 @@
 import { build as esbuild } from "esbuild";
-import { swcPlugin } from "esbuild-plugin-swc";
+import { swcPlugin } from "./plugins/swc";
 import { evaAlias } from "./plugins/eva-alias";
 import { esbuildDecorators } from "esbuild-plugin-typescript-decorators";
 import { NodeResolvePlugin } from "@esbuild-plugins/node-resolve";
 import external from "@chialab/esbuild-plugin-external";
 import EsmExternals from '@esbuild-plugins/esm-externals'
-import { transform } from "@swc/core";
+import { transform, bundle } from "@swc/core";
+import { transformAsync } from "@babel/core";
 
 import { minify } from "terser";
 
@@ -13,9 +14,10 @@ import { resolve } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
 
-const pkg = 'renderer-adapter';
+const pkg = 'eva.js';
 
 const entry = `./packages/${pkg}/lib/index.ts`;
+const preoutput = `./packages/${pkg}/dist/${pkg}.esbuild.raw.js`
 const output = `./packages/${pkg}/dist/${pkg}.esbuild.js`
 const minoutput = `./packages/${pkg}/dist/${pkg}.esbuild.min.js`;
 
@@ -56,7 +58,7 @@ async function build() {
           // "parse-uri",
           // "resource-loader",
           // "sprite-timeline",
-          "pixi.js"
+          // "pixi.js"
         ]
       }),
       // NodeResolvePlugin({
@@ -64,14 +66,26 @@ async function build() {
       // })
       // evaAlias(),/
 
+      // swcPlugin()
+
       // swcPlugin({
       //   configFile: './.swcrc',
-      //   minify: true
+      //   minify: true,
+      //   isModule: false
       // }),
     ]
   });
 
-  const temp = result.outputFiles[0].text
+  const temp = result.outputFiles[0].text;
+
+  writeFileSync(preoutput, temp);
+
+
+  const result2 = await transformAsync(temp, {
+    configFile: './babel.config.js'
+  });
+
+  writeFileSync(output, result2.code);
   // const temp = await minify(result.outputFiles[0].text, {
   //   ecma: 2020,
   //   output: {
@@ -80,23 +94,35 @@ async function build() {
   //   }
   // }).code;
 
-  const result2 = await transform(temp, {
-    configFile: './.swcrc',
-    swcrc: true,
-    minify: true
-  });
+  // const result2 = { code: temp };
 
-  writeFileSync(output, result2.code)
+
+
+
+  // const result2 = await transform(temp, {
+  //   configFile: './.swcrc',
+  //   swcrc: true,
+  //   minify: false,
+  //   isModule: true,
+
+  //   module: {
+  //     type: 'es6',
+  //     noInterop: false
+  //   }
+  // });
+
+  // writeFileSync(output, result2.code)
 
   const result3 = await minify(result2.code, {
     ecma: 5,
     output: {
       wrap_iife: false,
-      ecma: 5
-    }
+      ecma: 5,
+    },
+
   });
   writeFileSync(minoutput, result3.code);
 
-  console.log(`${result3.code.length / 1024}`.slice(0, 6), 'KB');
+  // console.log(`${result3.code.length / 1024}`.slice(0, 6), 'KB');
 
 }
