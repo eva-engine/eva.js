@@ -12,18 +12,25 @@ import { minify } from "terser";
 import { resolve } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
+
+const pkg = 'renderer-adapter';
+
+const entry = `./packages/${pkg}/lib/index.ts`;
+const output = `./packages/${pkg}/dist/${pkg}.esbuild.js`
+const minoutput = `./packages/${pkg}/dist/${pkg}.esbuild.min.js`;
+
+
 (async () => {
   console.time('build');
   await build();
   console.timeEnd('build');
 })();
 
-
 async function build() {
   const result = await esbuild({
-    entryPoints: ['./packages/eva.js/lib/index.ts'],
+    entryPoints: [entry],
     sourcemap: false,
-    outfile: './packages/eva.js/dist/EVA.esbuild.js',
+    outfile: output,
     target: 'es2015',
     minify: false,
     define: {
@@ -49,6 +56,7 @@ async function build() {
           // "parse-uri",
           // "resource-loader",
           // "sprite-timeline",
+          "pixi.js"
         ]
       }),
       // NodeResolvePlugin({
@@ -78,7 +86,7 @@ async function build() {
     minify: true
   });
 
-  writeFileSync('./packages/eva.js/dist/EVA.esbuild.js', result2.code)
+  writeFileSync(output, result2.code)
 
   const result3 = await minify(result2.code, {
     ecma: 5,
@@ -87,7 +95,7 @@ async function build() {
       ecma: 5
     }
   });
-  writeFileSync('./packages/eva.js/dist/EVA.esbuild.min.js', result3.code);
+  writeFileSync(minoutput, result3.code);
 
   console.log(`${result3.code.length / 1024}`.slice(0, 6), 'KB');
 

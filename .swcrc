@@ -8,8 +8,8 @@
       "functionBind": false,
       "exportDefaultFrom": false,
       "exportNamespaceFrom": false,
-      "decorators": true,
-      "decoratorsBeforeExport": true,
+      "decorators": false,
+      "decoratorsBeforeExport": false,
       "topLevelAwait": false,
       "importMeta": false
     },
