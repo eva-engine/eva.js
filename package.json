@@ -5,8 +5,7 @@
   "name": "eva.js",
   "scripts": {
     "dev": "vite ./examples -c ./examples/vite.config.ts",
-    "build": "ts-node ./scripts/build.ts",
-    "esbuild": "esbuild ./scripts/build.ts",
+    "build": "ts-node ./scripts/build.ts --release -f cjs-esm-iife -t -s",
     "buildDev": "npm run build -- -a -d -f iife",
     "buildProd": "npm run build -- -a -p -f cjs-esm-iife-miniprogram",
     "release": "node ./scripts/release.js",
