@@ -165,10 +165,10 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
     });
     external = ['pixi.js', ...evaDependencies];
     output.plugins = [
-      getBabelOutputPlugin({
-        configFile: path.resolve(__dirname, 'babel.config.js'),
-        allowAllFormats: true,
-      }),
+      // getBabelOutputPlugin({
+      //   configFile: path.resolve(__dirname, 'babel.config.js'),
+      //   allowAllFormats: true,
+      // }),
     ];
   }
 

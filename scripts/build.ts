@@ -5,7 +5,7 @@ import { esbuildDecorators } from "esbuild-plugin-typescript-decorators";
 import { NodeResolvePlugin } from "@esbuild-plugins/node-resolve";
 import external from "@chialab/esbuild-plugin-external";
 import EsmExternals from '@esbuild-plugins/esm-externals'
-import { transform, bundle } from "@swc/core";
+import { transform, bundle, Compiler } from "@swc/core";
 import { transformAsync } from "@babel/core";
 
 import { minify } from "terser";
@@ -14,11 +14,12 @@ import { resolve } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
 
-const pkg = 'renderer-adapter';
+const pkg = 'eva.js';
 
 const entry = `./packages/${pkg}/lib/index.ts`;
 const preoutput = `./packages/${pkg}/dist/${pkg}.esbuild.raw.js`
 const output = `./packages/${pkg}/dist/${pkg}.esbuild.js`
+const outputes5 = `./packages/${pkg}/dist/${pkg}.esbuild.es5.js`
 const minoutput = `./packages/${pkg}/dist/${pkg}.esbuild.min.js`;
 
 
@@ -29,10 +30,10 @@ const minoutput = `./packages/${pkg}/dist/${pkg}.esbuild.min.js`;
 })();
 
 async function build() {
+  console.time('esbuild');
   const result = await esbuild({
     entryPoints: [entry],
     sourcemap: false,
-    outfile: output,
     target: 'es2015',
     minify: false,
     define: {
@@ -43,8 +44,7 @@ async function build() {
     bundle: true,
     tsconfig: './tsconfig.json',
     treeShaking: true,
-    format: 'iife',
-    globalName: 'EVA',
+    format: 'esm',
     write: false,
     plugins: [
 
@@ -61,59 +61,51 @@ async function build() {
           "pixi.js"
         ]
       }),
-      // NodeResolvePlugin({
-      //   extensions: ['.ts', '.js'],
-      // })
-      // evaAlias(),/
-
-      // swcPlugin()
-
-      // swcPlugin({
-      //   configFile: './.swcrc',
-      //   minify: true,
-      //   isModule: false
-      // }),
     ]
   });
+  console.timeEnd('esbuild');
 
   const temp = result.outputFiles[0].text;
 
   writeFileSync(preoutput, temp);
 
-
-  const result2 = await transformAsync(temp, {
-    configFile: './babel.config.js'
+  console.time('swc');
+  const result2 = await transform(temp, {
+    configFile: './.swcrc',
+    swcrc: true,
+    minify: false,
+    isModule: true,
+    module: {
+      type: 'es6',
+      noInterop: false
+    }
   });
+  console.timeEnd('swc');
 
   writeFileSync(output, result2.code);
-  // const temp = await minify(result.outputFiles[0].text, {
-  //   ecma: 2020,
-  //   output: {
-  //     wrap_iife: false,
-  //     ecma: 2020,
-  //   }
-  // }).code;
 
-  // const result2 = { code: temp };
+  console.time('esbuild2');
+  const result3 = await esbuild({
+    entryPoints: [output],
+    target: 'es5',
+    globalName: 'EVA',
+    format: 'iife',
+    write: false,
+    bundle: true,
+    plugins: [
+      EsmExternals({
+        externals: [
+          "pixi.js"
+        ]
+      }),
+    ]
+  })
+  console.timeEnd('esbuild2');
+  writeFileSync(outputes5, result2.code);
 
 
-
-
-  // const result2 = await transform(temp, {
-  //   configFile: './.swcrc',
-  //   swcrc: true,
-  //   minify: false,
-  //   isModule: true,
-
-  //   module: {
-  //     type: 'es6',
-  //     noInterop: false
-  //   }
-  // });
-
-  // writeFileSync(output, result2.code)
-
-  const result3 = await minify(result2.code, {
+  console.time('terser');
+  const result4 = await minify(result3.outputFiles[0].text, {
     ecma: 5,
     output: {
       wrap_iife: false,
@@ -121,7 +113,8 @@ async function build() {
     },
 
   });
-  writeFileSync(minoutput, result3.code);
+  console.timeEnd('terser')
+  writeFileSync(minoutput, result4.code);
 
   // console.log(`${result3.code.length / 1024}`.slice(0, 6), 'KB');
 
