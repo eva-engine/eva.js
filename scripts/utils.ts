@@ -1,10 +1,10 @@
-const fs = require('fs');
-const chalk = require('chalk');
+import fs from "fs";
+import chalk from "chalk";
 
 // 过滤文件夹，不进行编译
 const excludes = ['plugin-renderer-test'];
 
-const targets = (exports.targets = fs.readdirSync('packages').filter(f => {
+export const targets = fs.readdirSync('packages').filter(f => {
   if (!fs.statSync(`packages/${f}`).isDirectory()) {
     return false;
   }
@@ -16,9 +16,9 @@ const targets = (exports.targets = fs.readdirSync('packages').filter(f => {
     return false;
   }
   return true;
-}));
+});
 
-exports.fuzzyMatchTarget = (partialTargets, includeAllMatching) => {
+export const fuzzyMatchTarget = (partialTargets, includeAllMatching) => {
   const matched = [];
   partialTargets.forEach(partialTarget => {
     for (const target of targets) {

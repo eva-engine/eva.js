@@ -62,6 +62,7 @@
     "core-js": "^3.16.4",
     "enquirer": "^2.3.6",
     "esbuild": "^0.14.11",
+    "esbuild-node-externals": "^1.4.1",
     "esbuild-plugin-path-alias": "^1.0.3",
     "esbuild-plugin-swc": "^1.0.1",
     "esbuild-plugin-typescript-decorators": "^0.0.8",
