@@ -57,7 +57,8 @@
     "compilerOptions": {
       "module": "commonjs",
       "target": "esnext",
-      "skipLibCheck": true
+      "skipLibCheck": true,
+      "resolveJsonModule": true
     }
   }
 }

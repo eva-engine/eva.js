@@ -27,6 +27,7 @@ import { compress } from "brotli";
 import { targets as allTargets, fuzzyMatchTarget } from "./utils";
 import { build as esbuild, BuildOptions } from "esbuild";
 import { nodeExternalsPlugin } from "esbuild-node-externals";
+import { resolve } from "core-js/fn/promise";
 
 const args = require('minimist')(process.argv.slice(2));
 const targets = args._;
@@ -58,7 +59,7 @@ function getBaseEsbuildConfig(): BuildOptions {
     define: {
       __TEST__: 'false',
       __DEV__: `${false}`,
-      __VERSION__: `${version}`,
+      __VERSION__: `${version}`
     },
     bundle: true,
     tsconfig: './tsconfig.json',
@@ -69,8 +70,8 @@ function getBaseEsbuildConfig(): BuildOptions {
 
 async function buildAll(targets: string[]) {
   const pkgStructs = targets.map(target => ([target, {
-    pkgDir: path.resolve(`packages/${target}`),
-    pkg: require(`packages/${target}/package.json`)
+    pkgDir: path.resolve(`./packages/${target}`),
+    pkg: require(path.resolve(`./packages/${target}/package.json`))
   }] as const)).filter(([_, { pkg }]) => !isRelease || !pkg.private)
 
   const pkgMap = Object.fromEntries(pkgStructs);
@@ -79,6 +80,7 @@ async function buildAll(targets: string[]) {
     await fs.rm(`${struct[1].pkgDir}/dist`, {
       recursive: true,
     });
+    await fs.mkdir(`${struct[1].pkgDir}/dist`);
   }
 
   const esmInternal = [];
@@ -93,6 +95,8 @@ async function buildAll(targets: string[]) {
       entryPoints: pkgStructs.map(([_, { pkgDir }]) => path.resolve(pkgDir, './lib/index.ts')),
       sourcemap: sourceMap,
       format: 'esm',
+      outbase: path.resolve('./'),
+      outdir: './dist',
       plugins: [
         nodeExternalsPlugin({
           packagePath: pkgStructs.map(([_, { pkgDir }]) => path.resolve(pkgDir, 'package.json')),
