@@ -28,6 +28,7 @@ import { targets as allTargets, fuzzyMatchTarget } from "./utils";
 import { build as esbuild, BuildOptions } from "esbuild";
 import { nodeExternalsPlugin } from "esbuild-node-externals";
 import { resolve } from "core-js/fn/promise";
+import { transformAsync } from "@babel/core";
 
 const args = require('minimist')(process.argv.slice(2));
 const targets = args._;
@@ -45,31 +46,18 @@ run();
 async function run() {
   if (!targets.length) {
     await buildAll(allTargets);
-    checkAllSizes(allTargets);
+    // checkAllSizes(allTargets);
   } else {
     await buildAll(fuzzyMatchTarget(targets, buildAllMatching));
-    checkAllSizes(fuzzyMatchTarget(targets, buildAllMatching));
+    // checkAllSizes(fuzzyMatchTarget(targets, buildAllMatching));
   }
 }
 
-function getBaseEsbuildConfig(): BuildOptions {
-  return {
-    target: 'es2015',
-    minify: false,
-    define: {
-      __TEST__: 'false',
-      __DEV__: `${false}`,
-      __VERSION__: `${version}`
-    },
-    bundle: true,
-    tsconfig: './tsconfig.json',
-    treeShaking: true,
-    write: false
-  }
-}
+
 
 async function buildAll(targets: string[]) {
   const pkgStructs = targets.map(target => ([target, {
+    entry: path.resolve(`./packages/${target}/lib/index.ts`),
     pkgDir: path.resolve(`./packages/${target}`),
     pkg: require(path.resolve(`./packages/${target}/package.json`))
   }] as const)).filter(([_, { pkg }]) => !isRelease || !pkg.private)
@@ -77,37 +65,82 @@ async function buildAll(targets: string[]) {
   const pkgMap = Object.fromEntries(pkgStructs);
 
   for (const struct of pkgStructs) {
-    await fs.rm(`${struct[1].pkgDir}/dist`, {
-      recursive: true,
-    });
-    await fs.mkdir(`${struct[1].pkgDir}/dist`);
+    try {
+      await fs.rm(`${struct[1].pkgDir}/dist`, {
+        recursive: true,
+      });
+    } catch { } finally {
+      await fs.mkdir(`${struct[1].pkgDir}/dist`);
+      await fs.mkdir(`${struct[1].pkgDir}/dist/esm`);
+      await fs.mkdir(`${struct[1].pkgDir}/dist/cjs`);
+      await fs.mkdir(`${struct[1].pkgDir}/dist/browser`);
+    }
   }
 
-  const esmInternal = [];
-  const cjsInternal = [];
-  const iifeInternal = [];
+  const esmInternal: string[] = [];
+  const cjsInternal: string[] = [];
+  const iifeInternal: string[] = [];
+  const internals = {
+    esm: esmInternal,
+    cjs: cjsInternal,
+    iife: iifeInternal
+  }
 
-  const env = 'production';
-
-  if (formats.includes('esm')) {
-    const result = await esbuild({
-      ...getBaseEsbuildConfig(),
-      entryPoints: pkgStructs.map(([_, { pkgDir }]) => path.resolve(pkgDir, './lib/index.ts')),
+  function getBaseEsbuildConfig(mode: 'esm' | 'cjs' | 'iife'): BuildOptions {
+    return {
+      target: 'es2015',
+      minify: false,
+      define: {
+        "__TEST__": 'false',
+        "__DEV__": `${false}`,
+        "__VERSION__": `"${version}"`
+      },
+      bundle: true,
+      tsconfig: './tsconfig.json',
+      treeShaking: true,
+      write: false,
+      outdir: '/',
       sourcemap: sourceMap,
-      format: 'esm',
-      outbase: path.resolve('./'),
-      outdir: './dist',
+      entryPoints: Object.fromEntries(pkgStructs.map(([name, { entry }]) => [name, entry])),
+      format: mode,
       plugins: [
         nodeExternalsPlugin({
           packagePath: pkgStructs.map(([_, { pkgDir }]) => path.resolve(pkgDir, 'package.json')),
           dependencies: true,
           peerDependencies: true,
-          allowList: esmInternal
+          allowList: internals[mode]
         })
       ]
-    });
+    }
+  }
+
+  const modeType = {
+    esm: 'esm',
+    cjs: 'cjs',
+    iife: 'browser'
+  } as const;
+
+  for (const mode of formats && ['esm'] as const) {
+    const config = getBaseEsbuildConfig(mode);
+    const result = await esbuild(config);
+    const buildStrust = {} as Record<string, {
+      content: string,
+      sourceMap?: string
+    }>;
     for (const res of result.outputFiles) {
-      console.log({ path: res.path });
+      const pkg = res.path.slice(1).replace(/\.js(\.map)?$/, '');
+      buildStrust[pkg] = {
+        content: res.text,
+        sourceMap: result.outputFiles.find(s => s.path === `/${pkg}.js.map`).text
+      }
+    };
+    for (const [pkg, { content, sourceMap: sourceCode }] of Object.entries(buildStrust)) {
+      // writeFile(path.resolve(`./packages/${pkg}/dist/${modeType[mode]}/index.js`), content);
+      const result = await transformAsync(content, {
+        inputSourceMap: JSON.parse(sourceCode),
+        sourceMaps: sourceMap
+      })
+      console.log(result.code)
     }
   }
 
