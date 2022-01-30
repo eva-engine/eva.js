@@ -131,14 +131,11 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
    */
   onPause?(): void;
 
-  destroyed = false
   /**
    * Called while component be destroyed.
    * @override
    */
-  onDestroy(): void {
-    this.destroyed = true;
-  }
+  onDestroy?(): void;
 }
 
 export default Component;
