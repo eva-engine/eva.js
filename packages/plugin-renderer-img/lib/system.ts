@@ -52,7 +52,7 @@ export default class Img extends Renderer {
         if (!instance) {
           console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
         }
-        this.imgs[component.gameObject.id].image = instance;
+        this.imgs[changed.gameObject.id].image = instance;
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
         const asyncId = this.increaseAsyncId(changed.gameObject.id);
         const { instance } = await resource.getResource(component.resource);
@@ -60,7 +60,7 @@ export default class Img extends Renderer {
         if (!instance) {
           console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
         }
-        this.imgs[component.gameObject.id].image = instance;
+        this.imgs[changed.gameObject.id].image = instance;
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
         this.increaseAsyncId(changed.gameObject.id);
         const sprite = this.imgs[changed.gameObject.id];
