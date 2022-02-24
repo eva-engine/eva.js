@@ -65,7 +65,9 @@ export default class DragonBone extends Renderer {
   async add(changed: ComponentChanged) {
     const component = changed.component as DragonBoneComponent;
     this.isRemovedMap.delete(component);
+    const asyncId = this.increaseAsyncId(changed.gameObject.id);
     await resource.getResource(component.resource);
+    if (!this.validateAsyncId(changed.gameObject.id, asyncId)) return;
     if (this.isRemovedMap.get(component)) {
       this.isRemovedMap.delete(component);
       return;

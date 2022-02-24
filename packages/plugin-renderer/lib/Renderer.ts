@@ -61,4 +61,15 @@ export default class Renderer<T extends {} = {}> extends System<T> {
       this.componentChanged(changed);
     }
   }
+
+  protected asyncIdMap: Record<number, number> = {}
+
+  protected increaseAsyncId(id: number) {
+    this.asyncIdMap[id] = (this.asyncIdMap[id] || 0) + 1;
+    return this.asyncIdMap[id];
+  }
+
+  protected validateAsyncId(id: number, asyncId: number) {
+    return this.asyncIdMap[id] === asyncId;
+  }
 }

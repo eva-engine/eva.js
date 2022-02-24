@@ -70,11 +70,14 @@ export default class SpriteAnimation extends Renderer {
     }
   }
   async componentChanged(changed: ComponentChanged) {
+    const gameObjectId = changed.gameObject.id;
     if (changed.componentName === 'SpriteAnimation') {
       const component: SpriteAnimationComponent = changed.component as SpriteAnimationComponent;
       this.autoPlay[changed.gameObject.id] = component.autoPlay;
       if (changed.type === OBSERVER_TYPE.ADD) {
+        const asyncId = this.increaseAsyncId(gameObjectId);
         const { instance: frames } = await resource.getResource(component.resource);
+        if (!this.validateAsyncId(gameObjectId, asyncId)) return;
         if (!frames) {
           console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
         }
@@ -87,7 +90,9 @@ export default class SpriteAnimation extends Renderer {
         if (changed.prop && changed.prop.prop[0] === 'speed') {
           this.animates[changed.gameObject.id].speed = 1000 / 60 / component.speed;
         } else {
+          const asyncId = this.increaseAsyncId(gameObjectId);
           const { instance: frames } = await resource.getResource(component.resource);
+          if (!this.validateAsyncId(gameObjectId, asyncId)) return;
           if (!frames) {
             console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
           }
@@ -98,6 +103,7 @@ export default class SpriteAnimation extends Renderer {
           });
         }
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
+        this.increaseAsyncId(gameObjectId);
         this.remove(changed.gameObject.id);
       }
     }
@@ -129,6 +135,7 @@ export default class SpriteAnimation extends Renderer {
   }
   remove(id, isChange?: boolean) {
     const animate = this.animates[id];
+    if (!animate) return;
     this.autoPlay[id] = animate.animatedSprite.playing;
     this.containerManager.getContainer(id).removeChild(animate.animatedSprite);
     animate.animatedSprite.destroy({ children: true });
