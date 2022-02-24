@@ -28,7 +28,7 @@ export default class StatsSystem extends System {
     this.style = param.style;
     this.renderSystem = this.game.getSystem('Renderer') as RendererSystem;
     this.app = this.renderSystem.application;
-    if (this.app) {
+    if (this.app && this.show) {
       // @ts-ignore
       const gl = this.app.renderer.gl as WebGLRenderingContext;
       this.hook = new BaseHooks();
