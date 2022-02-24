@@ -88,8 +88,12 @@ export default class SpineSystem extends Renderer {
   async add(changed: ComponentChanged, count?: number) {
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
+    const gameObjectId = changed.gameObject.id;
+    const asyncId = this.increaseAsyncId(gameObjectId);
     const res = await resource.getResource(component.resource);
+    if (!this.validateAsyncId(gameObjectId, asyncId)) return;
     const spineData = await getSpineData(res, this.pixiSpine);
+    if (!this.validateAsyncId(gameObjectId, asyncId)) return;
     if (!spineData) {
       component.addHandler = setTimeout(() => {
         if (!component.destroied) {
@@ -160,6 +164,7 @@ export default class SpineSystem extends Renderer {
     this.add(changed);
   }
   async remove(changed: ComponentChanged) {
+    this.increaseAsyncId(changed.gameObject.id);
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
     const armature = this.armatures[changed.gameObject.id];
