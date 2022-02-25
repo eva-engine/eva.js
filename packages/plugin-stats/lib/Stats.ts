@@ -38,6 +38,8 @@ const Stats = function (style) {
 
   const fpsPanel = addPanel(Stats.Panel('FPS', '#0ff', '#002'));
   const msPanel = addPanel(Stats.Panel('MS', '#0f0', '#020'));
+  const dcPanel = addPanel(Stats.Panel('DrawCall', '#330570', '#A69700'));
+  const tcPanel = addPanel(Stats.Panel('TC:', '#A62500', '#00B454'));
   let memPanel;
   // @ts-ignore
   if (self.performance && self.performance.memory) {
@@ -58,12 +60,16 @@ const Stats = function (style) {
       beginTime = time || (performance || Date).now();
     },
 
-    end: function () {
+    end: function (hook) {
       frames++;
 
       const time = (performance || Date).now();
 
       msPanel.update(time - beginTime, 200);
+      if (hook) {
+        dcPanel.update(hook.deltaDrawCalls, Math.max(50, hook.maxDeltaDrawCalls));
+        tcPanel.update(hook.texturesCount, Math.max(20, hook.maxTextureCount));
+      }
 
       if (time >= prevTime + 1000) {
         fpsPanel.update((frames * 1000) / (time - prevTime), 100);
