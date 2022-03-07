@@ -31,6 +31,7 @@ export async function init(canvas) {
       console.log('start', this.myName);
     }
     update(e) {
+      // console.log('update', this.myName)
     }
     onPause() {
       this.oldSpeed = this.speed;
