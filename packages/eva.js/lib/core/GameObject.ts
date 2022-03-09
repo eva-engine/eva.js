@@ -32,6 +32,8 @@ class GameObject {
   /** GameObject has been destroyed */
   public destroyed: boolean = false;
 
+  static gameObjects: GameObject[] = []
+
   /**
    * Consruct a new gameObject
    * @param name - the name of this gameObject
@@ -40,6 +42,7 @@ class GameObject {
   constructor(name: string, obj?: TransformParams) {
     this._name = name;
     this.id = getId();
+    GameObject.gameObjects.push(this)
     this.addComponent(Transform, obj);
   }
 
