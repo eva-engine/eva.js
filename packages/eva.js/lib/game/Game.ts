@@ -3,7 +3,7 @@ import Scene from './Scene';
 import type { SystemConstructor } from '../core/System';
 import System from '../core/System';
 import Component from '../core/Component';
-import { setSystemObserver, initObserver } from '../core/observer';
+import Observer from '../core/observer';
 import EventEmitter from 'eventemitter3';
 
 
@@ -144,6 +144,8 @@ class Game extends EventEmitter {
   started: boolean = false;
   multiScenes: Scene[] = [];
 
+  observer: Observer;
+
   /**
    * Ticker
    */
@@ -159,6 +161,8 @@ class Game extends EventEmitter {
     }
     this.ticker = new Ticker({ autoStart: false, frameRate });
     this.initTicker();
+
+    this.observer = new Observer()
 
     if (systems && systems.length) {
       for (const system of systems) {
@@ -221,8 +225,8 @@ class Game extends EventEmitter {
     system.game = this;
     system.init && system.init(system.__systemDefaultParams);
 
-    setSystemObserver(system, system.constructor);
-    initObserver(system.constructor);
+    this.observer.setSystemObserver(system, system.constructor);
+    this.observer.initObserver(system.constructor);
 
     try {
       system.awake && system.awake();
