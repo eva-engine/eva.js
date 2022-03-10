@@ -254,6 +254,8 @@ class GameObject {
     }
     this.components.length = 0;
     this.destroyed = true
+    const index = GameObject.gameObjects.indexOf(this);
+    index > -1 && GameObject.gameObjects.splice(index, 1);
   }
 }
 
