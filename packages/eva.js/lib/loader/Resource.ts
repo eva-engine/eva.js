@@ -95,6 +95,35 @@ type ResourceProcessFn = (resource: ResourceStruct) => any;
 type PreProcessResourceHandler = (res: ResourceBase) => void;
 
 
+class ResourceItem implements ResourceStruct {
+  name: string;
+  type: RESOURCE_TYPE;
+  src: {
+    [propName: string]: SrcBase;
+  };
+  complete?: boolean;
+  preload?: boolean;
+  data?: {
+    [propName: string]: any;
+  };
+  instance?: any;
+
+  private _rc: number = 0;
+
+  constructor(res) {
+    Object.assign(this, res)
+    this.data = {}
+  }
+
+  ref() {
+    this._rc++;
+  }
+  release() {
+    this._rc--;
+  }
+}
+
+
 /**
  * Resource manager
  * @public
@@ -107,7 +136,7 @@ class Resource extends EE {
   private preProcessResourceHandlers: PreProcessResourceHandler[] = []
 
   /** Resource cache  */
-  public resourcesMap: Record<ResourceName, ResourceStruct> = {};
+  public resourcesMap: Record<ResourceName, ResourceItem> = {};
 
   /** Collection of make resource instance function */
   private makeInstanceFunctions: Record<string, ResourceProcessFn> = {};
@@ -136,7 +165,7 @@ class Resource extends EE {
   }
 
   /** Add single resource config and then preload */
-  public loadSingle(resource: ResourceBase): Promise<ResourceStruct> {
+  public loadSingle(resource: ResourceBase): Promise<ResourceBase> {
     this.addResource([resource]);
     return this.getResource(resource.name);
   }
@@ -153,8 +182,7 @@ class Resource extends EE {
         continue;
       }
 
-      this.resourcesMap[res.name] = res;
-      this.resourcesMap[res.name].data = {};
+      this.resourcesMap[res.name] = new ResourceItem(res);
     }
   }
 
@@ -184,9 +212,19 @@ class Resource extends EE {
   }
 
   /** Get resource by name */
-  public async getResource(name: string): Promise<ResourceStruct> {
+  public async getResource(name: string): Promise<ResourceItem> {
     this.loadResource({ names: [name] });
-    return this.promiseMap[name] || Promise.resolve({});
+    if (this.promiseMap[name]) {
+      this.resourcesMap[name]?.ref()
+      return this.promiseMap[name];
+    } else {
+      return Promise.resolve(new ResourceItem({}, this));
+    }
+  }
+
+  public getResourceItem(name: string): ResourceItem {
+    this.loadResource({ names: [name] });
+    return this.resourcesMap[name];
   }
 
   /** Make resource instance by resource type */
@@ -197,6 +235,10 @@ class Resource extends EE {
 
   /** destory this resource manager */
   async destroy(name: string) {
+    if (this.resourcesMap[name]._rc > 0) {
+      throw `Resource: ${name} , is in use and cannot be destroyed`;
+    }
+
     await this._destroy(name);
   }
   private async _destroy(name, loadError = false) {

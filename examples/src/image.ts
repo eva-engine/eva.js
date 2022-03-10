@@ -3,6 +3,7 @@ import { Game, GameObject, RESOURCE_TYPE, resource } from "@eva/eva.js"
 import { Img, ImgSystem } from "@eva/plugin-renderer-img";
 export const name = 'image';
 export async function init(canvas) {
+  window.resource = resource
   resource.addResource([
     {
       name: 'imageName',
@@ -39,6 +40,7 @@ export async function init(canvas) {
       y: 0,
     },
   });
+  window.image = image
 
   image.addComponent(
     new Img({
