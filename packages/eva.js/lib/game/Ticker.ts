@@ -58,6 +58,14 @@ class Ticker {
   }[] = []
   private _timeoutId: number = 0
 
+  private _frameDelayList: {
+    execFrameNumber: number;
+    callback: Function;
+    frameDelayId: number;
+  }[] = []
+
+  private _frameDelayId: number = 0
+
   public time: UpdateParams = {
     deltaTime: 0,
     time: 0,
@@ -96,6 +104,38 @@ class Ticker {
     }
   }
 
+  setFrameDelay(callback, frameCount: number) {
+    if (frameCount < 1 || !frameCount) {
+      throw 'frameCount must greater than 0'
+    }
+    const frameDelayInfo = {
+      frameDelayId: this._frameDelayId++,
+      callback,
+      execFrameNumber: this.time.frameCount + frameCount
+    }
+    this._frameDelayList.push(frameDelayInfo)
+    return frameDelayInfo.frameDelayId;
+  }
+
+  resolveFrameDelay() {
+    const index = this._frameDelayList.findIndex(event => event.execFrameNumber <= this.time.frameCount)
+    if (index === -1) return;
+    const needResolve = this._frameDelayList.splice(0, index + 1)
+    for (const delayInfo of needResolve) {
+      try {
+        delayInfo.callback()
+      } catch (e) {
+        throw e
+      }
+    }
+  }
+
+  clearFrameDelay(frameDelayId: number) {
+    const index = this._frameDelayList.findIndex(event => event.frameDelayId === frameDelayId)
+    if (index === -1) return
+    this._frameDelayList.splice(index, 1)
+  }
+
   setTimeout(callback, delay, ...args) {
     const delayInfo = {
       timeoutId: this._timeoutId++,
@@ -118,7 +158,7 @@ class Ticker {
   }
 
   private resolveSetTimeout() {
-    const index = this._timeoutList.findIndex(event => event.endTime <= this.time.currentTime + 0.00000000001)
+    const index = this._timeoutList.findIndex(event => event.endTime <= this.time.currentTime + 0.0001)
     if (index === -1) return;
     const needResolve = this._timeoutList.splice(0, index + 1)
     for (const delayInfo of needResolve) {
@@ -149,12 +189,14 @@ class Ticker {
       };
       this.time = options
 
-      this.resolveSetTimeout()
       for (const func of this._tickers) {
         if (typeof func === 'function') {
           func(options);
         }
       }
+
+      this.resolveFrameDelay()
+      this.resolveSetTimeout()
     }
   }
 
