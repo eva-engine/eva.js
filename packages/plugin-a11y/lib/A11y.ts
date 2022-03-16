@@ -1,6 +1,6 @@
-import {Component} from '@eva/eva.js';
-import {type, step} from '@eva/inspector-decorator';
-import {uuid} from './utils';
+import { Component } from '@eva/eva.js';
+import { Field } from '@eva/inspector-decorator';
+import { uuid } from './utils';
 
 export interface A11yParams {
   hint: string;
@@ -20,11 +20,11 @@ export default class A11y extends Component<A11yParams> {
   /**
    * 是否可交互
    */
-  @type('boolean') interactive: boolean;
+  @Field() interactive: boolean;
   /**
    * 无障碍标签朗读内容
    */
-  @type('string') hint: string;
+  @Field() hint: string;
   /**
    * 弃用，将根据Event组件自动添加
    * 事件对象
@@ -33,12 +33,12 @@ export default class A11y extends Component<A11yParams> {
   /**
    * 延时加载时间（millisecond）
    */
-  @type('number') @step(1) delay: number;
+  @Field({ step: 1 }) delay: number;
 
   /**
    * role 属性
    */
-  @type('string') role: string;
+  @Field() role: string;
 
   /**
    * 弃用，将属性写在component上
@@ -65,7 +65,7 @@ export default class A11y extends Component<A11yParams> {
   /**
    * 辅助Dom id 自动生成
    */
-  @type('string') a11yId: string;
+  @Field() a11yId: string;
 
   /**
    * 无障碍组件构造函数

@@ -1,4 +1,4 @@
-import { type } from '@eva/inspector-decorator';
+import { Field } from '@eva/inspector-decorator';
 
 import DragonboneEngine from './engine';
 import { Component, ComponentParams } from '@eva/eva.js';
@@ -18,10 +18,10 @@ export default class DragonBone extends Component<DragonBoneParams> {
   private waitPlayInfo: { animationName: string; times?: number } = {
     animationName: null,
   };
-  @type('string') resource: string = '';
-  @type('string') armatureName: string = '';
-  @type('string') animationName: string = '';
-  @type('boolean') autoPlay: boolean = true;
+  @Field() resource: string = '';
+  @Field() armatureName: string = '';
+  @Field() animationName: string = '';
+  @Field() autoPlay: boolean = true;
 
   init(obj?: DragonBoneParams) {
     if (!obj) return;

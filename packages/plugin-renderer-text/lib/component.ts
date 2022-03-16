@@ -1,47 +1,77 @@
 import { TextStyle } from 'pixi.js';
 import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Field } from '@eva/inspector-decorator';
+
+class Style {
+  @Field()
+  align?: string;
+  @Field()
+  breakWords?: boolean;
+  @Field()
+  dropShadow?: boolean;
+  @Field()
+  dropShadowAlpha?: number;
+  @Field()
+  dropShadowAngle?: number;
+  @Field()
+  dropShadowBlur?: number;
+  @Field()
+  dropShadowColor?: string | number;
+  @Field()
+  dropShadowDistance?: number;
+  fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
+  @Field()
+  fillGradientType?: number;
+  @Field(() => Number)
+  fillGradientStops?: number[];
+  @Field()
+  fontFamily?: string | string[];
+  @Field(() => Number)
+  fontSize?: number | string;
+  @Field()
+  fontStyle?: string;
+  @Field()
+  fontVariant?: string;
+  @Field()
+  fontWeight?: string;
+  @Field()
+  letterSpacing?: number;
+  @Field()
+  lineHeight?: number;
+  @Field()
+  lineJoin?: string;
+  @Field()
+  miterLimit?: number;
+  @Field()
+  padding?: number;
+  stroke?: string | number;
+  @Field()
+  strokeThickness?: number;
+  @Field()
+  textBaseline?: string;
+  @Field()
+  trim?: boolean;
+  @Field()
+  whiteSpace?: string;
+  @Field()
+  wordWrap?: boolean;
+  @Field()
+  wordWrapWidth?: number;
+  @Field()
+  leading?: number;
+}
 
 export interface TextParams {
   text: string;
-  style?: {
-    align?: string;
-    breakWords?: boolean;
-    dropShadow?: boolean;
-    dropShadowAlpha?: number;
-    dropShadowAngle?: number;
-    dropShadowBlur?: number;
-    dropShadowColor?: string | number;
-    dropShadowDistance?: number;
-    fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
-    fillGradientType?: number;
-    fillGradientStops?: number[];
-    fontFamily?: string | string[];
-    fontSize?: number | string;
-    fontStyle?: string;
-    fontVariant?: string;
-    fontWeight?: string;
-    letterSpacing?: number;
-    lineHeight?: number;
-    lineJoin?: string;
-    miterLimit?: number;
-    padding?: number;
-    stroke?: string | number;
-    strokeThickness?: number;
-    textBaseline?: string;
-    trim?: boolean;
-    whiteSpace?: string;
-    wordWrap?: boolean;
-    wordWrapWidth?: number;
-    leading?: number;
-  };
+  style?: Style;
 }
 
 export default class Text extends Component<TextParams> {
   static componentName: string = 'Text';
-  @type('string') text: string = '';
+  @Field() text: string = '';
   // @decorators.IDEProp 复杂编辑后续添加
-  style: TextParams['style'] = {};
+  @Field()
+  style: Style = {};
   init(obj?: TextParams) {
     const style = new TextStyle({
       fontSize: 20,

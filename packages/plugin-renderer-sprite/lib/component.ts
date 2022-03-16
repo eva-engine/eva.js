@@ -1,5 +1,5 @@
 import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Field } from '@eva/inspector-decorator';
 
 export interface SpriteParams {
   resource: string;
@@ -8,8 +8,8 @@ export interface SpriteParams {
 
 export default class Sprite extends Component<SpriteParams> {
   static componentName: string = 'Sprite';
-  @type('string') resource: string = '';
-  @type('string') spriteName: string = '';
+  @Field() resource: string = '';
+  @Field() spriteName: string = '';
   init(obj?: SpriteParams) {
     if (obj && obj.resource) {
       this.resource = obj.resource;
