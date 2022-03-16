@@ -1,26 +1,19 @@
-import { type } from '@eva/inspector-decorator'
-import {decorators, System} from '../lib';
+import { Field, getPropertiesOf } from '@eva/inspector-decorator';
+import { decorators, System } from '../lib';
 
-const {componentObserver} = decorators;
+const { componentObserver } = decorators;
 
 describe('decorators', () => {
   it('ide decorator should collect props', () => {
     class Test {
-      static IDEProps: any = {};
-
-      @type('string') public name: string = 'Test';
-      @type('size') public size: number[] = [10, 10];
+      @Field() public name: string = 'Test';
+      @Field(() => Number) public size: number[] = [10, 10];
     }
-    expect(Test.IDEProps).toEqual({
-      name: {
-        key: 'name',
-        type: 'string'
-      },
-      size: {
-        key: 'size',
-        type: 'size'
-      }
-    });
+    const attrs = getPropertiesOf(Test);
+    expect(attrs.name.type).toBe('string');
+    expect(attrs.name.isArray).toBe(false);
+    expect(attrs.size.type).toBe('number');
+    expect(attrs.size.isArray).toBe(true);
   });
 
   it('class use component observer decorator', () => {
