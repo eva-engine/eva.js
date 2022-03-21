@@ -2,7 +2,7 @@ clean:
 	@lerna clean
 
 install:
-	@npm install
+	@npm install --force
 	@lerna bootstrap
 
 build: clean install
