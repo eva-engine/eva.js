@@ -14,7 +14,7 @@ class Vector2 {
   y!: number;
 }
 
-class IntVector2 extends Vector2 {
+class IntVector2 {
   @Field({ step: 1 })
   x!: number;
   @Field({ step: 1 })
