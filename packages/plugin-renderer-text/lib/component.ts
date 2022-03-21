@@ -2,6 +2,12 @@ import { TextStyle } from 'pixi.js';
 import { Component } from '@eva/eva.js';
 import { Field } from '@eva/inspector-decorator';
 
+class Color {
+  static getProperties() {
+    return 'color';
+  }
+}
+
 class Style {
   @Field()
   align?: string;
@@ -15,16 +21,17 @@ class Style {
   dropShadowAngle?: number;
   @Field()
   dropShadowBlur?: number;
-  @Field()
+  @Field(() => Color)
   dropShadowColor?: string | number;
   @Field()
   dropShadowDistance?: number;
+  @Field(() => Color)
   fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
   @Field()
   fillGradientType?: number;
   @Field(() => Number)
   fillGradientStops?: number[];
-  @Field()
+  @Field(() => String)
   fontFamily?: string | string[];
   @Field(() => Number)
   fontSize?: number | string;
