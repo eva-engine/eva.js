@@ -10,6 +10,6 @@ build: clean install
 	@npm run build -- --types
 
 link:
-	@pnpm link ./packages/*/ --global
+	@node scripts/link.js
 
 all: build link
