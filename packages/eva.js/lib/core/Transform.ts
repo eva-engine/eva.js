@@ -6,16 +6,16 @@ import type { ComponentParams } from './Component';
  * Two dimensional vector
  */
 class Vector2 {
-  @Field({ step: 0.1 })
+  @Field({ step: 0.1, default: 0 })
   x!: number;
-  @Field({ step: 0.1 })
+  @Field({ step: 0.1, default: 0 })
   y!: number;
 }
 
 class IntVector2 {
-  @Field({ step: 1 })
+  @Field({ step: 1, default: 0 })
   x!: number;
-  @Field({ step: 1 })
+  @Field({ step: 1, default: 0 })
   y!: number;
 }
 
@@ -23,10 +23,17 @@ class IntVector2 {
  * Two dimensional size
  */
 class Size2 {
-  @Field({ step: 1 })
+  @Field({ step: 1, default: 0 })
   width: number;
-  @Field({ step: 1 })
+  @Field({ step: 1, default: 0 })
   height: number;
+}
+
+class Scale {
+  @Field({ step: 0.1, default: 1 })
+  x!: number;
+  @Field({ step: 0.1, default: 1 })
+  y!: number;
 }
 
 /**
@@ -95,7 +102,7 @@ class Transform extends Component<TransformParams> {
   @Field(() => Size2) size: Size2 = { width: 0, height: 0 };
   @Field(() => Vector2) origin: Vector2 = { x: 0, y: 0 };
   @Field(() => Vector2) anchor: Vector2 = { x: 0, y: 0 };
-  @Field(() => Vector2) scale: Vector2 = { x: 1, y: 1 };
+  @Field(() => Scale) scale: Vector2 = { x: 1, y: 1 };
   @Field(() => Vector2) skew: Vector2 = { x: 0, y: 0 };
   @Field({ step: 0.1 }) rotation: number = 0;
 

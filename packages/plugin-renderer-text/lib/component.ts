@@ -9,60 +9,92 @@ class Color {
 }
 
 class Style {
-  @Field()
+  @Field({
+    type: 'selector',
+    isArray: false,
+    options: ['center', 'left', 'right'],
+    default: 'left',
+  })
   align?: string;
   @Field()
   breakWords?: boolean;
   @Field()
   dropShadow?: boolean;
-  @Field()
+  @Field({ default: 1 })
   dropShadowAlpha?: number;
-  @Field()
+  @Field({ default: Math.PI / 6 })
   dropShadowAngle?: number;
-  @Field()
+  @Field({ default: 0 })
   dropShadowBlur?: number;
-  @Field(() => Color)
+  @Field(() => Color, { default: '#000000' })
   dropShadowColor?: string | number;
-  @Field()
+  @Field({ default: 5 })
   dropShadowDistance?: number;
-  @Field(() => Color)
+
+  @Field(() => [Color], { default: ['#000000'] })
   fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
-  @Field()
+
+  @Field({
+    type: 'selector',
+    options: { vertical: 1, horizontal: 0 },
+    default: 1,
+    filter: val => Number(val),
+    isArray: false,
+  })
   fillGradientType?: number;
-  @Field(() => Number)
+
+  @Field(() => Number, { step: 0.1, min: 0, max: 1 })
   fillGradientStops?: number[];
-  @Field(() => String)
+  @Field(() => String, { default: 'Arial' })
   fontFamily?: string | string[];
-  @Field(() => Number)
+
+  @Field(() => Number, { min: 5, default: 26 })
   fontSize?: number | string;
-  @Field()
+
+  @Field({ type: 'selector', options: ['normal', 'italic', 'oblique'], default: 'normal' })
   fontStyle?: string;
-  @Field()
+  @Field({ type: 'selector', options: ['normal', 'small-caps'], default: 'normal' })
   fontVariant?: string;
-  @Field()
+
+  @Field({
+    type: 'selector',
+    options: ['normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900'],
+    default: 'normal',
+  })
   fontWeight?: string;
-  @Field()
+
+  @Field({ default: 0 })
   letterSpacing?: number;
-  @Field()
+  @Field({ default: 0 })
   lineHeight?: number;
-  @Field()
+  @Field({ type: 'selector', options: ['miter', 'round', 'bevel'], default: 'miter' })
   lineJoin?: string;
-  @Field()
+
+  @Field({ default: 10 })
   miterLimit?: number;
-  @Field()
+
+  @Field({ default: 0 })
   padding?: number;
+
+  @Field(() => Color, { default: '#000000' })
   stroke?: string | number;
-  @Field()
+
+  @Field({ default: 0, min: 0 })
   strokeThickness?: number;
-  @Field()
+
+  @Field({ default: 'alphabetic' })
   textBaseline?: string;
+
   @Field()
   trim?: boolean;
-  @Field()
+
+  @Field({ default: 'pre', type: 'selector', options: ['normal', 'pre', 'pre-line'] })
   whiteSpace?: string;
+
   @Field()
   wordWrap?: boolean;
-  @Field()
+
+  @Field({ default: 100 })
   wordWrapWidth?: number;
   @Field()
   leading?: number;
@@ -75,7 +107,19 @@ export interface TextParams {
 
 export default class Text extends Component<TextParams> {
   static componentName: string = 'Text';
-  @Field() text: string = '';
+  @Field({
+    type: 'textarea',
+    filter: (text: string): string => {
+      if (typeof text !== 'string') {
+        return '';
+      }
+      if (text.length > 100) {
+        return text.slice(0, 100);
+      }
+      return text;
+    },
+  })
+  text: string = '';
   // @decorators.IDEProp 复杂编辑后续添加
   @Field()
   style: Style = {};
