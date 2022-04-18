@@ -13,6 +13,8 @@ export interface PluginStruct {
   Systems?: typeof System[];
 }
 
+type Mode = 'EDIT' | 'PLAY'
+
 interface GameParams {
   /** isn't game will auto start */
   autoStart?: boolean;
@@ -25,6 +27,8 @@ interface GameParams {
 
   /** whether or not need to create scene */
   needScene?: boolean;
+  /**  */
+  mode?: Mode;
 }
 
 export enum LOAD_SCENE_MODE {
@@ -86,27 +90,7 @@ const getAllGameObjects = game => {
   return [...mainSceneGameObjects, ...otherSceneGameObjects];
 };
 
-const gameObjectLoop = (e, gameObjects = []) => {
-  for (const gameObject of gameObjects) {
-    for (const component of gameObject.components) {
-      try {
-        triggerStart(component);
-        component.update && component.update(e);
-      } catch (e) {
-        console.error(`gameObject: ${gameObject.name} ${component.name} update error`, e);
-      }
-    }
-  }
-  for (const gameObject of gameObjects) {
-    for (const component of gameObject.components) {
-      try {
-        component.lateUpdate && component.lateUpdate(e);
-      } catch (e) {
-        console.error(`gameObject: ${gameObject.name} ${component.name} lateUpdate error`, e);
-      }
-    }
-  }
-};
+
 
 const gameObjectResume = gameObjects => {
   for (const gameObject of gameObjects) {
@@ -152,8 +136,11 @@ class Game extends EventEmitter {
   /** Systems alled to this game */
   systems: System[] = [];
 
-  constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
+  mode: Mode = 'PLAY'
+
+  constructor({ systems, frameRate = 60, autoStart = true, needScene = true, mode = 'PLAY' }: GameParams = {}) {
     super();
+    this.mode = mode;
     if (window.__EVA_INSPECTOR_ENV__) {
       window.__EVA_GAME_INSTANCE__ = this;
     }
@@ -307,7 +294,7 @@ class Game extends EventEmitter {
    */
   initTicker() {
     this.ticker.add(e => {
-      this.scene && gameObjectLoop(e, this.gameObjects);
+      this.scene && this.gameObjectLoop(e, this.gameObjects);
       for (const system of this.systems) {
         try {
           triggerStart(system);
@@ -391,6 +378,32 @@ class Game extends EventEmitter {
     }
     this.emit('sceneChanged', { scene, mode, params });
   }
+
+  private gameObjectLoop(e, gameObjects = []) {
+    for (const gameObject of gameObjects) {
+      for (const component of gameObject.components) {
+        try {
+          if (this.mode === 'PLAY') { // TODO: 装饰器获取 ExecuteInEditMode 信息
+            triggerStart(component);
+            component.update && component.update(e);
+          }
+        } catch (e) {
+          console.error(`gameObject: ${gameObject.name} ${component.name} update error`, e);
+        }
+      }
+    }
+    for (const gameObject of gameObjects) {
+      for (const component of gameObject.components) {
+        try {
+          if (this.mode === 'PLAY') {
+            component.lateUpdate && component.lateUpdate(e);
+          }
+        } catch (e) {
+          console.error(`gameObject: ${gameObject.name} ${component.name} lateUpdate error`, e);
+        }
+      }
+    }
+  };
 }
 
 export default Game;
