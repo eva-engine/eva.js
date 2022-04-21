@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/inspector-decorator": "^0.0.5",
+    "@eva/inspector-decorator"："0.1.0-alpha.1"
     "@eva/plugin-renderer": "1.2.7-editor.0",
     "@eva/eva.js": "1.2.7-editor.0",
     "pixi.js": "^4.8.7"
