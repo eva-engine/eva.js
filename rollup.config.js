@@ -225,7 +225,7 @@ function createCjsProductionConfig(format) {
 }
 
 function createMinifiedConfig(format) {
-  const { file, name } = outputConfigs[format];
+  const { file, name, banner, footer } = outputConfigs[format];
   const destFilename = file.replace(/\.js$/, '.min.js');
   return createConfig(
     format,
@@ -233,6 +233,8 @@ function createMinifiedConfig(format) {
       name,
       format,
       file: destFilename,
+      banner,
+      footer
     },
     [
       terser({

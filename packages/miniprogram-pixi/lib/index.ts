@@ -30,5 +30,7 @@ export {
   WebGLRenderer,
   ObjectRenderer,
   CanvasRenderer,
-  glCore
+  glCore,
+  settings,
+  UPDATE_PRIORITY
 } from '@tbminiapp/pixi-miniprogram-engine';

@@ -39,9 +39,12 @@ export default class NinePatch extends Renderer {
       }
     }
   }
-  async add(changed) {
+  async add(changed: ComponentChanged) {
     const component = changed.component as NinePatchComponent;
+    const gameObjectId = changed.gameObject.id;
+    const asyncId = this.increaseAsyncId(gameObjectId);
     const { type, data } = await resource.getResource(component.resource);
+    if (!this.validateAsyncId(gameObjectId, asyncId)) return;
     if (!data) {
       console.error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
       return
@@ -62,8 +65,10 @@ export default class NinePatch extends Renderer {
       // @ts-ignore
       .addChildAt(np, 0);
   }
-  remove(changed) {
-    const sprite = this.ninePatch[changed.gameObject.id];
+  remove(changed: ComponentChanged) {
+    const gameObjectId = changed.gameObject.id;
+    this.increaseAsyncId(gameObjectId);
+    const sprite = this.ninePatch[gameObjectId];
     if (sprite) {
       this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite);
       delete this.ninePatch[changed.gameObject.id];

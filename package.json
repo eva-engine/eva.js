@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.2.5-edtor.0",
+  "version": "1.2.7",
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "keywords": [
     "game",
-    "egine",
+    "engine",
     "javascript",
     "animation",
     "2d",

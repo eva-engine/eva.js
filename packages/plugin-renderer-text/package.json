@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-text",
-  "version": "1.2.5-edtor.0",
+  "version": "1.2.7",
   "description": "@eva/plugin-renderer-text",
   "main": "index.js",
   "module": "dist/plugin-renderer-text.esm.js",
@@ -18,10 +18,10 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/inspector-decorator": "^0.1.0-alpha.1",
-    "@eva/plugin-renderer": "1.2.5-edtor.0",
-    "@eva/renderer-adapter": "1.2.5-edtor.0",
-    "@eva/eva.js": "1.2.5-edtor.0",
+    "@eva/inspector-decorator": "^0.0.5",
+    "@eva/plugin-renderer": "1.2.7",
+    "@eva/renderer-adapter": "1.2.7",
+    "@eva/eva.js": "1.2.7",
     "pixi.js": "^4.8.7"
   }
 }

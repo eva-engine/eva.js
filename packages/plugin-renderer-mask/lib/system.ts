@@ -176,7 +176,9 @@ export default class Mask extends Renderer {
   async setSprite(component: MaskComponent, sprite) {
     let res;
     try {
+      const asyncId = this.increaseAsyncId(component.gameObject.id);
       res = await resource.getResource(component.resource);
+      if (!this.validateAsyncId(component.gameObject.id, asyncId)) return;
     } catch (e) {
       throw new Error('mask resource load error');
     }

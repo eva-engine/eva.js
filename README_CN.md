@@ -25,6 +25,7 @@ Eva.js 是一个专注于开发互动游戏项目的前端游戏引擎。
 - [在线案例](https://eva.js.org/playground)
 - [快速开始](https://eva.js.org/#/tutorials/quickstart)
 - [基础脚手架](https://github.com/eva-engine/start-demo)
+- [Awesome](https://github.com/eva-engine/awesome)
 
 
 ## 使用
@@ -108,7 +109,7 @@ game.scene.addChild(image);
 按照 [Issue Reporting Checklist](.github/ISSUE_TEMPLATE.md) 提交 issue. 不符合准则的问题可能会立即关闭。
 
 ## Changelog
-[版本记录](https://eva-engine.gitee.io/#/others/changelog).
+[版本记录](https://github.com/eva-engine/eva.js/releases).
 
 ## Contribute
 [如何贡献](.github/HOW_TO_CONTRIBUTE.md)

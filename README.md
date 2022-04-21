@@ -27,6 +27,7 @@ Checking out the [Live example](https://eva.js.org/playground).
 
 - [Quick Start](https://eva.js.org/#/tutorials/quickstart)
 - [Start Demo](https://github.com/eva-engine/start-demo)
+- [Awesome](https://github.com/eva-engine/awesome)
 
 
 ## Usage
@@ -109,7 +110,7 @@ For questions and support please use [Gitter](https://gitter.im/eva-engine/Eva.j
 Please make sure to read the [Issue Reporting Checklist](.github/ISSUE_TEMPLATE.md) before opening an issue. Issues not conforming to the guidelines may be closed immediately.
 
 ## Changelog
-[release notes](https://eva.js.org/#/others/changelog) in documentation.
+[release notes](https://github.com/eva-engine/eva.js/releases) in documentation.
 
 ## Contribute
 [How to Contribute](.github/HOW_TO_CONTRIBUTE.md)
