@@ -14,7 +14,7 @@ export interface NinePatchParams {
 export default class NinePatch extends Component<NinePatchParams> {
   static componentName: string = 'NinePatch';
   ninePatch: NinePatchSprite;
-  @Field() resource: string = '';
+  @Field({ type: 'resource' }) resource: string = '';
   @Field() spriteName: string = '';
 
   @Field({ step: 1 }) leftWidth: number = 0;
