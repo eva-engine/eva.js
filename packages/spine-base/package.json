@@ -1,6 +1,6 @@
 {
   "name": "@eva/spine-base",
-  "version": "1.2.7-editor.1",
+  "version": "1.2.7-editor.3",
   "description": "@eva/spine-base",
   "main": "index.js",
   "module": "dist/spine-base.esm.js",
@@ -18,8 +18,8 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.2.7-editor.1",
-    "@eva/plugin-renderer": "1.2.7-editor.1",
+    "@eva/eva.js": "1.2.7-editor.3",
+    "@eva/plugin-renderer": "1.2.7-editor.3",
     "@eva/inspector-decorator": "0.1.0-alpha.1",
     "pixi.js": "^4.8.9"
   }
