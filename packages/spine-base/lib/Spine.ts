@@ -10,7 +10,7 @@ export interface SpineParams {
 export default class Spine extends Component<SpineParams> {
   static componentName: string = 'Spine';
 
-  @Field()
+  @Field({ type: 'resource' })
   resource: string = '';
 
   @Field()
