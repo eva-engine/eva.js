@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer",
-  "version": "1.2.7-editor.4",
+  "version": "1.2.7-editor.5",
   "description": "@eva/plugin-renderer",
   "main": "index.js",
   "module": "dist/plugin-renderer.esm.js",
@@ -18,8 +18,8 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.2.7-editor.4",
-    "@eva/renderer-adapter": "1.2.7-editor.4",
+    "@eva/eva.js": "1.2.7-editor.5",
+    "@eva/renderer-adapter": "1.2.7-editor.5",
     "@types/pixi.js": "^4.8.9",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
