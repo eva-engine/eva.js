@@ -61,7 +61,7 @@ export async function init(canvas) {
     }),
   );
   game.scene.addChild(image);
-  const m = image.addComponent(
+  image.addComponent(
     new Mask({
       type: MASK_TYPE.Circle,
       style: {
@@ -95,19 +95,6 @@ export async function init(canvas) {
     }),
   );
   game.scene.addChild(image1);
-
-  setTimeout(()=>{
-    m.type = MASK_TYPE.Rect,
-    m.style = {
-      x: 20,
-      y: 20,
-      width: 100,
-      height: 100,
-    }
-    
-    // m.resource= 'tag'
-    // m.spriteName= 'task.png'
-  }, 1000)
 
   const image2 = new GameObject('image', {
     size: { width: 200, height: 200 },
