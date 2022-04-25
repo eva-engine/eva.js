@@ -27,6 +27,7 @@ export interface MaskParams {
 
 export default class Mask extends Component<MaskParams> {
   static componentName: string = 'Mask';
+  _lastType: MaskParams['type'];
   // @decorators.IDEProp 复杂编辑后续添加
   type: MaskParams['type'];
   // @decorators.IDEProp 复杂编辑后续添加
