@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-sprite",
-  "version": "1.2.7-editor.3",
+  "version": "1.2.7-editor.4",
   "description": "@eva/plugin-renderer-sprite",
   "main": "index.js",
   "module": "dist/plugin-renderer-sprite.esm.js",
@@ -19,8 +19,8 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "0.1.0-alpha.1",
-    "@eva/plugin-renderer": "1.2.7-editor.3",
-    "@eva/eva.js": "1.2.7-editor.3",
+    "@eva/plugin-renderer": "1.2.7-editor.4",
+    "@eva/eva.js": "1.2.7-editor.4",
     "pixi.js": "^4.8.7"
   }
 }
