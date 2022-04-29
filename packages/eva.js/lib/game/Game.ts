@@ -5,7 +5,7 @@ import System from '../core/System';
 import Component from '../core/Component';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
-
+import { shouldExecuteInEditMode } from '@eva/inspector-decorator';
 
 /** eva plugin struct */
 export interface PluginStruct {
@@ -13,7 +13,7 @@ export interface PluginStruct {
   Systems?: typeof System[];
 }
 
-type Mode = 'EDIT' | 'PLAY'
+type Mode = 'EDIT' | 'PLAY';
 
 interface GameParams {
   /** isn't game will auto start */
@@ -42,8 +42,8 @@ interface LoadSceneParams {
   params?: {
     width?: number;
     height?: number;
-    canvas?: HTMLCanvasElement
-    renderType?: number
+    canvas?: HTMLCanvasElement;
+    renderType?: number;
     autoStart?: boolean;
     sharedTicker?: boolean;
     sharedLoader?: boolean;
@@ -57,7 +57,7 @@ interface LoadSceneParams {
     forceFXAA?: boolean;
     legacy?: boolean;
     autoResize?: boolean;
-    powerPreference?: "high-performance";
+    powerPreference?: 'high-performance';
   };
 }
 
@@ -89,8 +89,6 @@ const getAllGameObjects = game => {
   }
   return [...mainSceneGameObjects, ...otherSceneGameObjects];
 };
-
-
 
 const gameObjectResume = gameObjects => {
   for (const gameObject of gameObjects) {
@@ -136,7 +134,7 @@ class Game extends EventEmitter {
   /** Systems alled to this game */
   systems: System[] = [];
 
-  mode: Mode = 'PLAY'
+  mode: Mode = 'PLAY';
 
   constructor({ systems, frameRate = 60, autoStart = true, needScene = true, mode = 'PLAY' }: GameParams = {}) {
     super();
@@ -379,11 +377,15 @@ class Game extends EventEmitter {
     this.emit('sceneChanged', { scene, mode, params });
   }
 
+  private shouldUpdate(component) {
+    return this.mode === 'PLAY' || (this.mode === 'EDIT' && shouldExecuteInEditMode(component.constructor));
+  }
+
   private gameObjectLoop(e, gameObjects = []) {
     for (const gameObject of gameObjects) {
       for (const component of gameObject.components) {
         try {
-          if (this.mode === 'PLAY') { // TODO: 装饰器获取 ExecuteInEditMode 信息
+          if (this.shouldUpdate(component)) {
             triggerStart(component);
             component.update && component.update(e);
           }
@@ -395,7 +397,7 @@ class Game extends EventEmitter {
     for (const gameObject of gameObjects) {
       for (const component of gameObject.components) {
         try {
-          if (this.mode === 'PLAY') {
+          if (this.shouldUpdate(component)) {
             component.lateUpdate && component.lateUpdate(e);
           }
         } catch (e) {
@@ -403,7 +405,7 @@ class Game extends EventEmitter {
         }
       }
     }
-  };
+  }
 }
 
 export default Game;
