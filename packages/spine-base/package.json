@@ -20,7 +20,7 @@
   "dependencies": {
     "@eva/eva.js": "1.2.7-editor.5",
     "@eva/plugin-renderer": "1.2.7-editor.5",
-    "@eva/inspector-decorator": "0.1.0-alpha.1",
+    "@eva/inspector-decorator": "0.1.0-alpha.2",
     "pixi.js": "^4.8.9"
   }
 }
