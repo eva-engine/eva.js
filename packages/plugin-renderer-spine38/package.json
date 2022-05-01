@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-spine38",
-  "version": "1.2.7-editor.6",
+  "version": "1.2.7-editor.7",
   "description": "@eva/plugin-renderer-spine38",
   "main": "index.js",
   "module": "dist/plugin-renderer-spine38.esm.js",
@@ -18,10 +18,10 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "1.2.7-editor.6",
+    "@eva/eva.js": "1.2.7-editor.7",
     "@eva/inspector-decorator": "0.1.0-alpha.2",
-    "@eva/plugin-renderer": "1.2.7-editor.6",
-    "@eva/spine-base": "1.2.7-editor.6",
+    "@eva/plugin-renderer": "1.2.7-editor.7",
+    "@eva/spine-base": "1.2.7-editor.7",
     "pixi.js": "^4.8.7"
   }
 }
