@@ -13,7 +13,7 @@ export default class Lottie extends Component {
 
   static componentName: string = 'Lottie';
 
-  @Field({ type: 'resource' })
+  @Field({ type: 'resource', required: true })
   public resource: string;
   public anim: any;
   public options: ExtendOptions;
