@@ -1,47 +1,128 @@
 import { TextStyle } from 'pixi.js';
 import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Field } from '@eva/inspector-decorator';
+
+class Color {
+  static getProperties() {
+    return 'color';
+  }
+}
+
+class Style {
+  @Field({
+    type: 'selector',
+    isArray: false,
+    options: ['center', 'left', 'right'],
+    default: 'left',
+  })
+  align?: string;
+  @Field()
+  breakWords?: boolean;
+  @Field()
+  dropShadow?: boolean;
+  @Field({ default: 1 })
+  dropShadowAlpha?: number;
+  @Field({ default: Math.PI / 6 })
+  dropShadowAngle?: number;
+  @Field({ default: 0 })
+  dropShadowBlur?: number;
+  @Field(() => Color, { default: '#000000' })
+  dropShadowColor?: string | number;
+  @Field({ default: 5 })
+  dropShadowDistance?: number;
+
+  @Field(() => [Color], { default: ['#000000'] })
+  fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
+
+  @Field({
+    type: 'selector',
+    options: { vertical: 1, horizontal: 0 },
+    default: 1,
+    filter: val => Number(val),
+    isArray: false,
+  })
+  fillGradientType?: number;
+
+  @Field(() => Number, { step: 0.1, min: 0, max: 1 })
+  fillGradientStops?: number[];
+  @Field(() => String, { default: 'Arial' })
+  fontFamily?: string | string[];
+
+  @Field(() => Number, { min: 5, default: 26 })
+  fontSize?: number | string;
+
+  @Field({ type: 'selector', options: ['normal', 'italic', 'oblique'], default: 'normal' })
+  fontStyle?: string;
+  @Field({ type: 'selector', options: ['normal', 'small-caps'], default: 'normal' })
+  fontVariant?: string;
+
+  @Field({
+    type: 'selector',
+    options: ['normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900'],
+    default: 'normal',
+  })
+  fontWeight?: string;
+
+  @Field({ default: 0 })
+  letterSpacing?: number;
+  @Field({ default: 0 })
+  lineHeight?: number;
+  @Field({ type: 'selector', options: ['miter', 'round', 'bevel'], default: 'miter' })
+  lineJoin?: string;
+
+  @Field({ default: 10 })
+  miterLimit?: number;
+
+  @Field({ default: 0 })
+  padding?: number;
+
+  @Field(() => Color, { default: '#000000' })
+  stroke?: string | number;
+
+  @Field({ default: 0, min: 0 })
+  strokeThickness?: number;
+
+  @Field({ default: 'alphabetic' })
+  textBaseline?: string;
+
+  @Field()
+  trim?: boolean;
+
+  @Field({ default: 'pre', type: 'selector', options: ['normal', 'pre', 'pre-line'] })
+  whiteSpace?: string;
+
+  @Field()
+  wordWrap?: boolean;
+
+  @Field({ default: 100 })
+  wordWrapWidth?: number;
+  @Field()
+  leading?: number;
+}
 
 export interface TextParams {
   text: string;
-  style?: {
-    align?: string;
-    breakWords?: boolean;
-    dropShadow?: boolean;
-    dropShadowAlpha?: number;
-    dropShadowAngle?: number;
-    dropShadowBlur?: number;
-    dropShadowColor?: string | number;
-    dropShadowDistance?: number;
-    fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
-    fillGradientType?: number;
-    fillGradientStops?: number[];
-    fontFamily?: string | string[];
-    fontSize?: number | string;
-    fontStyle?: string;
-    fontVariant?: string;
-    fontWeight?: string;
-    letterSpacing?: number;
-    lineHeight?: number;
-    lineJoin?: string;
-    miterLimit?: number;
-    padding?: number;
-    stroke?: string | number;
-    strokeThickness?: number;
-    textBaseline?: string;
-    trim?: boolean;
-    whiteSpace?: string;
-    wordWrap?: boolean;
-    wordWrapWidth?: number;
-    leading?: number;
-  };
+  style?: Style;
 }
 
 export default class Text extends Component<TextParams> {
   static componentName: string = 'Text';
-  @type('string') text: string = '';
+  @Field({
+    type: 'textarea',
+    filter: (text: string): string => {
+      if (typeof text !== 'string') {
+        return '';
+      }
+      if (text.length > 100) {
+        return text.slice(0, 100);
+      }
+      return text;
+    },
+  })
+  text: string = '';
   // @decorators.IDEProp 复杂编辑后续添加
-  style: TextParams['style'] = {};
+  @Field()
+  style: Style = {};
   init(obj?: TextParams) {
     const style = new TextStyle({
       fontSize: 20,

@@ -1,5 +1,5 @@
 import { Component } from '@eva/eva.js';
-import { type, step } from '@eva/inspector-decorator';
+import { Field } from '@eva/inspector-decorator';
 import { SpriteAnimation as SpriteAnimationEngine } from '@eva/renderer-adapter';
 
 export interface SpriteAnimationParams {
@@ -12,10 +12,10 @@ export interface SpriteAnimationParams {
 
 export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   static componentName: string = 'SpriteAnimation';
-  @type('string') resource: string = '';
-  @type('boolean') autoPlay: boolean = true;
-  @type('number') @step(10) speed: number = 100;
-  @type('boolean') forwards: boolean = false;
+  @Field() resource: string = '';
+  @Field() autoPlay: boolean = true;
+  @Field({ step: 10 }) speed: number = 100;
+  @Field() forwards: boolean = false;
   _animate: SpriteAnimationEngine;
   private waitPlay: boolean = false;
   private waitStop: boolean = false;
@@ -27,11 +27,11 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     this.on('loop', () => {
       if (++this.count >= this.times) {
         if (this.forwards) {
-          this.gotoAndStop(this.totalFrames - 1)
+          this.gotoAndStop(this.totalFrames - 1);
         } else {
           this.animate.stop();
         }
-        this.complete = true
+        this.complete = true;
         this.emit('complete');
       }
     });
@@ -45,11 +45,11 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
       this.waitPlay = true;
     } else {
       if (this.complete) {
-        this.gotoAndStop(0)
+        this.gotoAndStop(0);
       }
       this.animate.play();
       this.count = 0;
-      this.complete = false
+      this.complete = false;
     }
   }
   stop() {
@@ -80,9 +80,9 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     this.animate.gotoAndStop(frameNumber);
   }
   get currentFrame() {
-    return this.animate?.animatedSprite?.currentFrame
+    return this.animate?.animatedSprite?.currentFrame;
   }
   get totalFrames() {
-    return this.animate?.animatedSprite?.totalFrames
+    return this.animate?.animatedSprite?.totalFrames;
   }
 }

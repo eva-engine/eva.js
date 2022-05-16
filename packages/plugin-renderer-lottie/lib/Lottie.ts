@@ -1,6 +1,7 @@
 import { Component } from '@eva/eva.js';
 import { IExpandOpts, IOptions } from './types';
 import { Sprite, Text, TextStyle, Graphics } from 'pixi.js';
+import { Field } from '@eva/inspector-decorator';
 
 interface ExtendOptions extends IOptions {
   autoStart: boolean;
@@ -8,9 +9,12 @@ interface ExtendOptions extends IOptions {
 
 export default class Lottie extends Component {
   // @decorators.IDEProp 复杂编辑后续添加
-  slot: { [key: string]: string }
+  slot: { [key: string]: string };
 
   static componentName: string = 'Lottie';
+
+  @Field({ type: 'resource', required: true })
+  public resource: string;
   public anim: any;
   public options: ExtendOptions;
   public loadStatus: boolean = false;

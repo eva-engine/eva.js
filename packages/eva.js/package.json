@@ -1,6 +1,6 @@
 {
   "name": "@eva/eva.js",
-  "version": "1.2.7",
+  "version": "1.2.7-editor.8",
   "description": "@eva/eva.js",
   "main": "index.js",
   "module": "dist/eva.js.esm.js",
@@ -18,11 +18,12 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/inspector-decorator": "^0.0.5",
+    "@eva/inspector-decorator": "^0.1.0-alpha.2",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
     "mini-signals": "^1.2.0",
     "parse-uri": "^1.0.3",
+    "reflect-metadata": "^0.1.13",
     "resource-loader": "^4.0.0-rc4",
     "sprite-timeline": "^1.10.2"
   }

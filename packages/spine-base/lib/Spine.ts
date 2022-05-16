@@ -1,5 +1,5 @@
-import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Component, resource } from '@eva/eva.js';
+import { Field } from '@eva/inspector-decorator';
 
 export interface SpineParams {
   resource: string;
@@ -7,21 +7,34 @@ export interface SpineParams {
   autoPlay?: boolean;
 }
 
+const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+
 export default class Spine extends Component<SpineParams> {
   static componentName: string = 'Spine';
 
-  @type('string')
+  @Field({ type: 'resource' })
   resource: string = '';
 
-  @type('string')
+  @Field({
+    type: 'selector',
+    options: async function (that: Spine) {
+      await sleep(0);
+      if (!that.resource || !(resource as any).promiseMap[that.resource]) {
+        return {};
+      }
+      await (resource as any).promiseMap[that.resource];
+      const animations = resource.resourcesMap[that.resource]?.data?.ske?.animations;
+      return animations ? Object.keys(animations).reduce((prev, key) => ({ ...prev, [key]: key }), {}) : {};
+    },
+  })
   animationName: string = '';
 
-  @type('boolean')
+  @Field()
   autoPlay: boolean = true;
 
   private _armature: any;
 
-  private waitExecuteInfos: { playType: boolean, track?: number, name?: string, loop?: boolean }[] = []
+  private waitExecuteInfos: { playType: boolean; track?: number; name?: string; loop?: boolean }[] = [];
 
   set armature(val) {
     this._armature = val;
@@ -71,8 +84,8 @@ export default class Spine extends Component<SpineParams> {
            * 为了解决这个问题，在 autoPlay 的情况下，未加载完之前调用 play ，默认循环播放，除非设置不循环参数
            */
           loop: loop ?? this.autoPlay,
-          track
-        })
+          track,
+        });
       } else {
         if (track === undefined) {
           track = 0;
@@ -88,8 +101,8 @@ export default class Spine extends Component<SpineParams> {
     if (!this.armature) {
       this.waitExecuteInfos.push({
         playType: false,
-        track
-      })
+        track,
+      });
       return;
     }
     if (track === undefined) {

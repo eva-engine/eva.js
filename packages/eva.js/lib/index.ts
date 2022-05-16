@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import Component from './core/Component';
 import { ObserverType } from './core/observer';
 import GameObject from './core/GameObject';
@@ -5,13 +6,11 @@ import System from './core/System';
 import Transform from './core/Transform';
 import Game, { LOAD_SCENE_MODE } from './game/Game';
 import Scene from './game/Scene';
-import { IDEProp } from './decorators/ide';
 import { componentObserver } from './decorators/system';
 import { resource, LOAD_EVENT, RESOURCE_TYPE, RESOURCE_TYPE_STRATEGY, resourceLoader } from './loader/Resource';
 
 /** Decorators util */
 const decorators = {
-  IDEProp,
   componentObserver,
 };
 
@@ -42,8 +41,7 @@ export {
   RESOURCE_TYPE,
   ObserverType as OBSERVER_TYPE,
   LOAD_SCENE_MODE,
-  IDEProp,
   componentObserver,
   RESOURCE_TYPE_STRATEGY,
-  resourceLoader
+  resourceLoader,
 };

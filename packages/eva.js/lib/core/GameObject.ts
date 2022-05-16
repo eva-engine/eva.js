@@ -112,6 +112,23 @@ class GameObject {
     gameObject.scene = this.scene;
   }
 
+
+  /**
+   * 
+   * @param gameObject Child GameObject
+   * @param index Add to index in children
+   */
+  addChildAt(gameObject: GameObject, index: number) {
+    if (index > this.transform.children.length) {
+      throw new Error(gameObject.name + "addChildAt: The index 18 supplied is out of bounds " + this.transform.children.length);
+    }
+    this.addChild(gameObject)
+    // packages/eva.js/lib/core/GameObject.ts > addChildAt
+    // packages/plugin-renderer/lib/Transform.ts > change
+    // packages/eva.js/lib/core/Transform.ts > addChild
+    gameObject.transform.childIndex = index
+  }
+
   /**
    * Remove child gameObject
    * @param gameObject - child gameobject

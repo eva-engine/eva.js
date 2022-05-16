@@ -9,6 +9,7 @@
     "allowJs": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "removeComments": true,
@@ -20,36 +21,15 @@
     "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": false,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "jest",
-      "node"
-    ],
+    "lib": ["esnext", "dom"],
+    "types": ["jest", "node"],
     "paths": {
-      "@eva/miniprogram-*": [
-        "packages/miniprogram-*/lib"
-      ],
-      "@eva/plugin-*": [
-        "packages/plugin-*/lib"
-      ],
-      "@eva/eva.js": [
-        "packages/eva.js/lib"
-      ],
-      "@eva/renderer-adapter": [
-        "packages/renderer-adapter/lib"
-      ],
-      "@eva/spine-base": [
-        "packages/spine-base/lib"
-      ]
+      "@eva/miniprogram-*": ["packages/miniprogram-*/lib"],
+      "@eva/plugin-*": ["packages/plugin-*/lib"],
+      "@eva/eva.js": ["packages/eva.js/lib"],
+      "@eva/renderer-adapter": ["packages/renderer-adapter/lib"],
+      "@eva/spine-base": ["packages/spine-base/lib"]
     }
   },
-  "include": [
-    "packages/global.d.ts",
-    "packages/*/global.d.ts",
-    "packages/*/lib",
-    "packages/*/__tests__"
-  ]
+  "include": ["packages/global.d.ts", "packages/*/global.d.ts", "packages/*/lib", "packages/*/__tests__"]
 }

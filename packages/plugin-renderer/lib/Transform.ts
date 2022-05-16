@@ -75,7 +75,18 @@ export default class Transform extends EventEmitter {
     const transform = changed.component as Trans;
     if (transform.parent) {
       const parentContainer = this.containerManager.getContainer(transform.parent.gameObject.id);
-      parentContainer.addChild(this.containerManager.getContainer(changed.gameObject.id));
+
+      if (transform.childIndex > -1) {
+        parentContainer.addChildAt(this.containerManager.getContainer(changed.gameObject.id), transform.childIndex);
+
+
+        // packages/eva.js/lib/core/GameObject.ts > addChildAt
+        // packages/plugin-renderer/lib/Transform.ts > change
+        // packages/eva.js/lib/core/Transform.ts > addChild
+        transform.childIndex = -1
+      } else {
+        parentContainer.addChild(this.containerManager.getContainer(changed.gameObject.id));
+      }
 
       const render =
         changed.gameObject.transform.parent &&

@@ -1,21 +1,39 @@
-import {type, step} from '@eva/inspector-decorator';
+import { Field } from '@eva/inspector-decorator';
 import Component from './Component';
 import type { ComponentParams } from './Component';
 
 /**
  * Two dimensional vector
  */
-interface Vector2 {
-  x: number;
-  y: number;
+class Vector2 {
+  @Field({ step: 0.1, default: 0 })
+  x!: number;
+  @Field({ step: 0.1, default: 0 })
+  y!: number;
+}
+
+class IntVector2 {
+  @Field({ step: 1, default: 0 })
+  x!: number;
+  @Field({ step: 1, default: 0 })
+  y!: number;
 }
 
 /**
  * Two dimensional size
  */
-interface Size2 {
+class Size2 {
+  @Field({ step: 1, default: 0 })
   width: number;
+  @Field({ step: 1, default: 0 })
   height: number;
+}
+
+class Scale {
+  @Field({ step: 0.1, default: 1 })
+  x!: number;
+  @Field({ step: 0.1, default: 1 })
+  y!: number;
 }
 
 /**
@@ -56,6 +74,9 @@ class Transform extends Component<TransformParams> {
   readonly name: string = 'Transform';
   private _parent: Transform = null;
 
+  /** only used in addChildAt */
+  childIndex: number = -1;
+
   /** Whether this transform in a scene object */
   inScene: boolean = false;
 
@@ -77,13 +98,13 @@ class Transform extends Component<TransformParams> {
     this.rotation = params.rotation || this.rotation;
   }
 
-  @type('vector2') @step(1) position: Vector2 = {x: 0, y: 0};
-  @type('size') @step(1) size: Size2 = {width: 0, height: 0};
-  @type('vector2') @step(0.1) origin: Vector2 = {x: 0, y: 0};
-  @type('vector2') @step(0.1) anchor: Vector2 = {x: 0, y: 0};
-  @type('vector2') @step(0.1) scale: Vector2 = {x: 1, y: 1};
-  @type('vector2') @step(0.1) skew: Vector2 = {x: 0, y: 0};
-  @type('number') @step(0.1) rotation: number = 0;
+  @Field(() => IntVector2) position: IntVector2 = { x: 0, y: 0 };
+  @Field(() => Size2) size: Size2 = { width: 0, height: 0 };
+  @Field(() => Vector2) origin: Vector2 = { x: 0, y: 0 };
+  @Field(() => Vector2) anchor: Vector2 = { x: 0, y: 0 };
+  @Field(() => Scale) scale: Vector2 = { x: 1, y: 1 };
+  @Field(() => Vector2) skew: Vector2 = { x: 0, y: 0 };
+  @Field({ step: 0.1 }) rotation: number = 0;
 
   set parent(val: Transform) {
     if (val) {
@@ -108,14 +129,18 @@ class Transform extends Component<TransformParams> {
    * @param child - child gameObject's transform component
    */
   addChild(child: Transform) {
-    if (child.parent === this) {
-      const index = this.children.findIndex(item => item === child);
-      this.children.splice(index, 1);
-    } else if (child.parent) {
+    if (child.parent) {
       child.parent.removeChild(child);
     }
     child._parent = this;
-    this.children.push(child);
+    if (child.childIndex > -1) {
+      // packages/eva.js/lib/core/GameObject.ts > addChildAt
+      // packages/plugin-renderer/lib/Transform.ts > change
+      // packages/eva.js/lib/core/Transform.ts > addChild
+      this.children.splice(child.childIndex, 0, child);
+    } else {
+      this.children.push(child);
+    }
   }
 
   /**
