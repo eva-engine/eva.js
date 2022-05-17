@@ -110,7 +110,15 @@ export default class Renderer extends System<RendererSystemParams> {
     if (params.renderType === RENDERER_TYPE.CANVAS) {
       params.forceCanvas = true;
     }
-    const app = new Application({ sharedTicker: true, ...params });
+    let app;
+
+    try {
+      app = new Application({ sharedTicker: true, ...params });
+    } catch (e) {
+      if (e.message.match(/not support webgl/i) !== undefined) {
+        app = new Application({ sharedTicker: true, ...params, forceCanvas: true });
+      }
+    }
     ticker.shared.stop();
     ticker.shared.autoStart = false;
     /**
