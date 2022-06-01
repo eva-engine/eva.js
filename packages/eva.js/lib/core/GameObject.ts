@@ -112,21 +112,22 @@ class GameObject {
     gameObject.scene = this.scene;
   }
 
-
   /**
-   * 
+   *
    * @param gameObject Child GameObject
    * @param index Add to index in children
    */
   addChildAt(gameObject: GameObject, index: number) {
     if (index > this.transform.children.length) {
-      throw new Error(gameObject.name + "addChildAt: The index 18 supplied is out of bounds " + this.transform.children.length);
+      throw new Error(
+        gameObject.name + 'addChildAt: The index 18 supplied is out of bounds ' + this.transform.children.length,
+      );
     }
-    this.addChild(gameObject)
+    gameObject.transform.childIndex = index;
+    this.addChild(gameObject);
     // packages/eva.js/lib/core/GameObject.ts > addChildAt
     // packages/plugin-renderer/lib/Transform.ts > change
     // packages/eva.js/lib/core/Transform.ts > addChild
-    gameObject.transform.childIndex = index
   }
 
   /**
@@ -152,7 +153,7 @@ class GameObject {
   addComponent<T extends Component<ComponentParams>>(C: T): T;
   addComponent<T extends Component<ComponentParams>>(C: ComponentConstructor<T>, obj?: ComponentParams): T;
   addComponent<T extends Component<ComponentParams>>(C: T | ComponentConstructor<T>, obj?: ComponentParams): T {
-    if (this.destroyed) return
+    if (this.destroyed) return;
     const componentName = getComponentName(C);
     if (this._componentCache[componentName]) return;
 
@@ -255,8 +256,8 @@ class GameObject {
   /** Destory this gameObject */
   destroy() {
     if (!this.transform) {
-      console.error('Cannot destroy gameObject that have already been destroyed.')
-      return
+      console.error('Cannot destroy gameObject that have already been destroyed.');
+      return;
     }
     Array.from(this.transform.children).forEach(({ gameObject }) => {
       gameObject.destroy();
@@ -267,7 +268,7 @@ class GameObject {
       this._removeComponent(key);
     }
     this.components.length = 0;
-    this.destroyed = true
+    this.destroyed = true;
   }
 }
 
