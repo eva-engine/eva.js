@@ -15,3 +15,9 @@ Example:
 ```
 
 This development way prefer incresing your development efficiency to making an example for Eva.js learner.
+
+## Vconsole打开方式
+在非首页页面中，在手机环境里  
+
+- 设置href中search里debug=true可以开启VConsole  
+- 或者在屏幕上画V字也会打开VConsole

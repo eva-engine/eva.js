@@ -21,8 +21,15 @@ if (modules[path]) {
     document.title = module.name;
     module.init(canvas);
   })();
-  if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.length < 1) {
-    new VConsole();
+  if (/android|phone|mobile|ipad/i.test(navigator.userAgent)) {
+    if (/\bdebug=true\b/.test(location.search)) {
+      new VConsole();
+    } else {
+      window.addEventListener('openvconsole', () => {
+        new VConsole();
+      })
+      import('./vopen');
+    }
   }
 } else {
   const ul = document.createElement('ul');
