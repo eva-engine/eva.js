@@ -66,7 +66,6 @@ export default class SpineSystem extends Renderer {
       // TODO: 类型
       // @ts-ignore
       this.armatures[key].update(e.deltaTime * 0.001)
-      this.armatures[key].updateTransform()
     }
     super.update()
   }
