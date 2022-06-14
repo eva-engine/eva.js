@@ -19,9 +19,16 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
+<<<<<<< HEAD
     "@eva/plugin-renderer": "1.2.8",
     "@eva/renderer-adapter": "1.2.8",
     "@eva/eva.js": "1.2.8",
     "pixi.js": "^4.8.7"
+=======
+    "@eva/plugin-renderer": "1.2.8-fix.1",
+    "@eva/renderer-adapter": "1.2.8-fix.1",
+    "@eva/eva.js": "1.2.8-fix.1",
+    "pixi.js": "^4.8.9"
+>>>>>>> 4bfa521 (add lerna scripts && update package scaffold script)
   }
 }

@@ -20,8 +20,14 @@
   "dependencies": {
     "@eva/eva.js": "1.2.8",
     "@eva/inspector-decorator": "^0.0.5",
+<<<<<<< HEAD
     "@eva/plugin-renderer": "1.2.8",
     "@eva/spine-base": "1.2.8",
     "pixi.js": "^4.8.7"
+=======
+    "@eva/plugin-renderer": "1.2.8-fix.1",
+    "@eva/spine-base": "1.2.8-fix.1",
+    "pixi.js": "^4.8.9"
+>>>>>>> 4bfa521 (add lerna scripts && update package scaffold script)
   }
 }
