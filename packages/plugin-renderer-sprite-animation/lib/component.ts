@@ -1,11 +1,13 @@
-import {Component} from '@eva/eva.js';
-import {type, step} from '@eva/inspector-decorator';
-import {SpriteAnimation as SpriteAnimationEngine} from '@eva/renderer-adapter';
+import { Component } from '@eva/eva.js';
+import { type, step } from '@eva/inspector-decorator';
+import { SpriteAnimation as SpriteAnimationEngine } from '@eva/renderer-adapter';
 
 export interface SpriteAnimationParams {
   resource: string;
-  autoPlay: boolean;
-  speed: number;
+  autoPlay?: boolean;
+  speed?: number;
+  /** Stop at last frame */
+  forwards?: boolean;
 }
 
 export default class SpriteAnimation extends Component<SpriteAnimationParams> {
@@ -13,16 +15,23 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   @type('string') resource: string = '';
   @type('boolean') autoPlay: boolean = true;
   @type('number') @step(10) speed: number = 100;
+  @type('boolean') forwards: boolean = false;
   _animate: SpriteAnimationEngine;
   private waitPlay: boolean = false;
   private waitStop: boolean = false;
   private times: number = Infinity;
   private count: number = 0;
+  private complete: boolean = false;
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
     this.on('loop', () => {
       if (++this.count >= this.times) {
-        this.animate.stop();
+        if (this.forwards) {
+          this.gotoAndStop(this.totalFrames - 1)
+        } else {
+          this.animate.stop();
+        }
+        this.complete = true
         this.emit('complete');
       }
     });
@@ -35,8 +44,12 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     if (!this.animate) {
       this.waitPlay = true;
     } else {
+      if (this.complete) {
+        this.gotoAndStop(0)
+      }
       this.animate.play();
       this.count = 0;
+      this.complete = false
     }
   }
   stop() {
@@ -65,5 +78,11 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   }
   gotoAndStop(frameNumber) {
     this.animate.gotoAndStop(frameNumber);
+  }
+  get currentFrame() {
+    return this.animate?.animatedSprite?.currentFrame
+  }
+  get totalFrames() {
+    return this.animate?.animatedSprite?.totalFrames
   }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "@eva/spine-base",
+  "version": "1.2.8-fix.1",
+  "description": "@eva/spine-base",
+  "main": "index.js",
+  "module": "dist/spine-base.esm.js",
+  "bundle": "EVA.plugin.spineBase",
+  "unpkg": "dist/EVA.plugin.spineBase.min.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/spine-base.d.ts",
+  "keywords": [
+    "eva.js"
+  ],
+  "author": "fanmingfei <az8641683@163.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/eva.js": "1.2.8-fix.1",
+    "@eva/plugin-renderer": "1.2.8-fix.1",
+    "@eva/inspector-decorator": "^0.0.5",
+    "pixi.js": "^4.8.9"
+  }
+}

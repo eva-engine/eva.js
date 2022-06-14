@@ -2,7 +2,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 
 // 过滤文件夹，不进行编译
-const excludes = ['plugin-renderer-test', 'miniprogram-adapter', 'miniprogram-pixi'];
+const excludes = ['plugin-renderer-test'];
 
 const targets = (exports.targets = fs.readdirSync('packages').filter(f => {
   if (!fs.statSync(`packages/${f}`).isDirectory()) {

@@ -24,7 +24,7 @@ export async function init(canvas) {
       preload: true
     },
   ]);
-  window.resource =resource
+  window.resource = resource
 
 
   const game = new Game({
@@ -57,7 +57,7 @@ export async function init(canvas) {
         y: 0.5,
       },
     });
-    const spine = new Spine({ resource: 'anim', animationName: 'idle' });
+    const spine = new Spine({ resource: 'anim', animationName: 'idle', autoPlay: false });
     gameObject.addComponent(spine);
     spine.on('complete', e => {
       console.log('动画播放结束', e.name);

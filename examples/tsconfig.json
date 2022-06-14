@@ -85,6 +85,9 @@
       "@eva/plugin-renderer-particles": [
         "./packages/plugin-renderer-particles/lib"
       ],
+      "@eva/spine-base": [
+        "./packages/spine-base/lib"
+      ],
       "@eva/*": [
         "./packages/*/lib"
       ]
@@ -92,6 +95,7 @@
   },
   "include": [
     "../packages/global.d.ts",
+    "../packages/*/global.d.ts",
     "../packages/*/lib",
     "./"
   ]

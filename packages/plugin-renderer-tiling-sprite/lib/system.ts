@@ -30,30 +30,37 @@ export default class TilingSprite extends Renderer {
     }
   }
   async componentChanged(changed: ComponentChanged) {
+    const gameObjectId = changed.gameObject.id;
     if (changed.componentName === 'TilingSprite') {
       const component: TilingSpriteComponent = changed.component as TilingSpriteComponent;
       if (changed.type === OBSERVER_TYPE.ADD) {
         const sprite = new TilingSpriteEngine(null);
-        resource.getResource(component.resource).then(({ data }) => {
-          if (!data) {
-            throw new Error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
-          }
-          sprite.image = data.image;
-        });
         this.imgs[changed.gameObject.id] = sprite;
         this.containerManager.getContainer(changed.gameObject.id).addChildAt(sprite.tilingSprite, 0);
         this.setProp(changed.gameObject.id, component);
+        const asyncId = this.increaseAsyncId(gameObjectId);
+        const { data } = await resource.getResource(component.resource);
+        if (!this.validateAsyncId(gameObjectId, asyncId)) return;
+        if (!data) {
+          console.error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+          return
+        }
+        sprite.image = data.image;
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
         if (changed.prop.prop[0] === 'resource') {
+          const asyncId = this.increaseAsyncId(gameObjectId);
           const { data } = await resource.getResource(component.resource);
+          if (!this.validateAsyncId(gameObjectId, asyncId)) return;
           if (!data) {
-            throw new Error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+            console.error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
+            return
           }
           this.imgs[changed.gameObject.id].image = data.image;
         } else {
           this.setProp(changed.gameObject.id, component);
         }
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
+        this.increaseAsyncId(gameObjectId);
         const sprite = this.imgs[changed.gameObject.id];
         this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.tilingSprite);
         sprite.tilingSprite.destroy({

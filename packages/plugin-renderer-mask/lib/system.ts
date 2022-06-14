@@ -115,9 +115,13 @@ export default class Mask extends Renderer {
     const component = changed.component as MaskComponent;
     if (changed.prop.prop[0] === 'type') {
       this.changedCache[changed.gameObject.id] = true;
-      if ([MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(component.type) > -1) {
+      if (
+        [MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(component.type) > -1 ||
+        component._lastType !== component.type
+      ) {
         this.remove(changed);
         this.add(changed);
+        component._lastType = component.type
       } else {
         this.redrawGraphics(changed);
       }
@@ -176,7 +180,9 @@ export default class Mask extends Renderer {
   async setSprite(component: MaskComponent, sprite) {
     let res;
     try {
+      const asyncId = this.increaseAsyncId(component.gameObject.id);
       res = await resource.getResource(component.resource);
+      if (!this.validateAsyncId(component.gameObject.id, asyncId)) return;
     } catch (e) {
       throw new Error('mask resource load error');
     }

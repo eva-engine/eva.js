@@ -16,10 +16,6 @@ export enum RESOURCE_TYPE {
   'IMAGE' = 'IMAGE',
   'SPRITE' = 'SPRITE',
   'SPRITE_ANIMATION' = 'SPRITE_ANIMATION',
-  'DRAGONBONE' = 'DRAGONBONE',
-  'PARTICLES' = 'PARTICLES',
-  'LOTTIE' = 'LOTTIE',
-  'SPINE' = 'SPINE',
   'AUDIO' = 'AUDIO',
   'VIDEO' = 'VIDEO',
 }
@@ -176,7 +172,7 @@ class Resource extends EE {
     const names = [];
     for (const key in this.resourcesMap) {
       const resource = this.resourcesMap[key];
-      if (resource.preload && !resource.complete) {
+      if (resource.preload && !resource.complete && !this.promiseMap[key]) {
         names.push(resource.name);
       }
     }
@@ -219,6 +215,34 @@ class Resource extends EE {
     resource.data = {};
     resource.complete = false;
     resource.instance = undefined;
+  }
+
+  /**
+   * You should use this function and redefine RESOURCE_TYPE in global.d.ts at the same time.   
+   * such as:
+   * 
+   * #### package plugin-renderer-lottie
+   * - index.ts:
+   * ``` typescript
+   *      import {resource} from "@eva/eva.js"  
+   *      resource.registerResourceType('LOTTIE');  
+   * ```
+   * - global.d.ts
+   * ``` typescript
+   *      import "@eva/eva.js";
+   *      declare module "@eva/eva.js" {
+   *        export enum RESOURCE_TYPE {
+   *          'LOTTIE' = 'LOTTIE'
+   *        }
+   *      }
+   *  ```
+   * The another tip is that you should call it before you call resource.registerInstance/resource.registerDestroy.
+  */
+  public registerResourceType(type: string, value = type) {
+    if (RESOURCE_TYPE[type]) {
+      throw new Error(`The type ${type} already exists in RESOURCE_TYPE`);
+    }
+    RESOURCE_TYPE[type] = value;
   }
 
   /** Add resource instance function */

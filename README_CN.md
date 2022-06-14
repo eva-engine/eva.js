@@ -1,5 +1,8 @@
 # Eva.js (互动游戏引擎)
 
+<p align="center"><a href="https://eva.js.org" target="_blank" rel="noopener noreferrer"><img width="300" src="https://user-images.githubusercontent.com/4632277/145818886-e0b1ca70-d789-4735-a8fe-411046263aa5.png" alt="Eva.js logo"></a></p>
+
+
 ![npm-version](https://img.shields.io/npm/v/@eva/eva.js)
 ![npm-size](https://img.shields.io/bundlephobia/minzip/@eva/eva.js)
 ![npm-download](https://img.shields.io/npm/dm/@eva/eva.js)
@@ -22,6 +25,7 @@ Eva.js 是一个专注于开发互动游戏项目的前端游戏引擎。
 - [在线案例](https://eva.js.org/playground)
 - [快速开始](https://eva.js.org/#/tutorials/quickstart)
 - [基础脚手架](https://github.com/eva-engine/start-demo)
+- [Awesome](https://github.com/eva-engine/awesome)
 
 
 ## 使用
@@ -98,14 +102,14 @@ game.scene.addChild(image);
 ```
 
 ## 问题交流
-可以在 [Gitter](https://gitter.im/eva-engine/Eva.js) 或者 [DingTalk](https://www.dingtalk.com/) (钉钉) 扫码 [二维码](https://gw.alicdn.com/imgextra/i3/O1CN01I0KDY41JkjGZ4xxks_!!6000000001067-2-tps-465-668.png) 进行交流.
+可以在 [Gitter](https://gitter.im/eva-engine/Eva.js) 或者 [微信](https://weixin.qq.com/) 扫码 [二维码](https://gw.alicdn.com/imgextra/i4/O1CN015W09ux1QD1RAxBkYN_!!6000000001941-2-tps-610-1279.png) 进行交流.
 
 
 ## Issues
 按照 [Issue Reporting Checklist](.github/ISSUE_TEMPLATE.md) 提交 issue. 不符合准则的问题可能会立即关闭。
 
 ## Changelog
-[版本记录](https://eva-engine.gitee.io/#/others/changelog).
+[版本记录](https://github.com/eva-engine/eva.js/releases).
 
 ## Contribute
 [如何贡献](.github/HOW_TO_CONTRIBUTE.md)

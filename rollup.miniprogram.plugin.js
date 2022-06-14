@@ -1,5 +1,11 @@
 import inject from 'rollup-plugin-inject';
 import modify from 'rollup-plugin-modify';
+import fs from 'fs'
+import path from 'path'
+
+const packages = fs
+  .readdirSync(path.resolve(__dirname, 'packages'))
+  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const moduleName = '@eva/miniprogram-adapter';
 
@@ -35,22 +41,28 @@ for (let name in adapterArray) {
   adapterVars[name] = register(adapterArray[name]);
 }
 
-const plugins = [
-  inject(adapterVars),
+export const miniprogramPlugins1 = [
   modify({
     find: /@eva\/([\w\.\/-]*)/g,
     replace: (match, moduleName) => {
-      console.log(match, moduleName);
+      if(moduleName === 'miniprogram-pixi' || moduleName === 'miniprogram-adapter') {
+        return `@eva/${moduleName}`;
+      }
       if (moduleName.indexOf('/dist/miniprogram') > -1) {
         return `@eva/${moduleName}`;
       }
-      return `@eva/${moduleName}/dist/miniprogram`;
+      if (packages.indexOf(moduleName) > -1) {
+        return `@eva/${moduleName}/dist/miniprogram`;
+      }
+      return `@eva/${moduleName}`;
     },
   }),
   modify({
     find: /pixi\.js/g,
     replace: `@eva/miniprogram-pixi`,
-  }),
+  })
 ];
 
-export default plugins;
+export const miniprogramPlugins2 = [
+  inject(adapterVars)
+]

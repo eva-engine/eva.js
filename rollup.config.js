@@ -4,8 +4,8 @@ import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
+import { miniprogramPlugins1, miniprogramPlugins2 } from './rollup.miniprogram.plugin';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
-import miniProgramPlugin from './rollup.miniprogram.plugin';
 
 if (!process.env.TARGET) {
   throw new Error('TARGET package must be specified via --environment flag.');
@@ -24,6 +24,33 @@ const packages = fs
   .readdirSync(path.resolve(__dirname, 'packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
+const IIFE_PREFIX = '_EVA_IIFE_';
+const split = (str) => {
+  return str.split('.')
+}
+const getInsert = (str) => {
+  const arr = split(str)
+  const footers = []
+  const banners = []
+  let lastFooter = 'window'
+  arr.forEach((name, i) => {
+    lastFooter += `.${name}`
+    let footer
+    if (i === arr.length - 1) {
+      footer = `${lastFooter} = ${lastFooter} || ${IIFE_PREFIX + name}`
+      footers.push(footer)
+    } else {
+      footer = `${lastFooter} = ${lastFooter} || {}`
+      banners.push(footer)
+    }
+  })
+  return [banners.join(`;\n`), footers.join(`;\n`)]
+}
+
+const sliteName = split(pkg.bundle)
+const iifeName = IIFE_PREFIX + sliteName[sliteName.length - 1]
+const insert = getInsert(pkg.bundle)
+
 const outputConfigs = {
   esm: {
     file: resolve(`dist/${name}.esm.js`),
@@ -34,13 +61,15 @@ const outputConfigs = {
     format: 'cjs',
   },
   iife: {
-    name: pkg.bundle,
+    name: iifeName,
     file: resolve(`dist/${pkg.bundle}.js`),
     format: 'iife',
+    banner: insert[0],
+    footer: insert[1]
   },
   miniprogram: {
     file: resolve(`dist/miniprogram.js`),
-    format: 'cjs',
+    format: 'es',
   },
 };
 
@@ -50,7 +79,7 @@ let hasTypesChecked = false;
 // 开发环境 esm，cjs 打包
 const defaultFormats = ['esm', 'cjs', 'iife'];
 const inlineFormats = process.env.FORMATS && process.env.FORMATS.split('-');
-const packageFormats = inlineFormats || packageOptions.formats || defaultFormats;
+const packageFormats = packageOptions.formats || inlineFormats || defaultFormats;
 
 const packageConfigs = [];
 if (!process.env.PROD_ONLY) {
@@ -82,7 +111,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-function createConfig(format, output, plugins = []) {
+function createConfig(format, output, plugins1 = [], plugins2 = []) {
   if (!output) {
     console.log(require('chalk').yellow(`invalid format: "${format}"`));
     process.exit(1);
@@ -117,14 +146,22 @@ function createConfig(format, output, plugins = []) {
       require('rollup-plugin-polyfill-node')(),
       require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
     ];
+  } else if (format === 'miniprogram') {
+    nodePlugins = [
+      require('@rollup/plugin-node-resolve').nodeResolve({
+        resolveOnly: ['resource-loader', 'type-signals', 'parse-uri']
+      }),
+      require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
+    ]
   }
 
   let external = [];
+  let internal = ['@eva/spine-base']
   if (format === 'esm' || format === 'cjs') {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
-      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1;
+      return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1 && internal.indexOf(dep) === -1;
     });
     external = ['pixi.js', ...evaDependencies];
     output.plugins = [
@@ -148,6 +185,7 @@ function createConfig(format, output, plugins = []) {
     },
     external,
     plugins: [
+      ...plugins1,
       json({ preferConst: true }),
       replace({
         __TEST__: false,
@@ -156,7 +194,7 @@ function createConfig(format, output, plugins = []) {
       }),
       ...nodePlugins,
       tsPlugin,
-      ...plugins,
+      ...plugins2
     ],
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
@@ -187,7 +225,7 @@ function createCjsProductionConfig(format) {
 }
 
 function createMinifiedConfig(format) {
-  const { file, name } = outputConfigs[format];
+  const { file, name, banner, footer } = outputConfigs[format];
   const destFilename = file.replace(/\.js$/, '.min.js');
   return createConfig(
     format,
@@ -195,6 +233,8 @@ function createMinifiedConfig(format) {
       name,
       format,
       file: destFilename,
+      banner,
+      footer
     },
     [
       terser({
@@ -207,6 +247,6 @@ function createMinifiedConfig(format) {
 }
 
 function createMiniProgramConfig(format) {
-  return createConfig(format, outputConfigs[format], miniProgramPlugin);
+  return createConfig(format, outputConfigs[format], miniprogramPlugins1, miniprogramPlugins2);
 }
 export default packageConfigs;

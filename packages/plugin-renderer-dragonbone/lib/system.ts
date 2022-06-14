@@ -1,4 +1,4 @@
-import { Texture, ticker } from 'pixi.js';
+import { Texture } from 'pixi.js';
 import { decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSERVER_TYPE, Component } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import DragonBoneEngine from './engine';
@@ -19,6 +19,7 @@ const events = {
 
 const factory = dragonBones.PixiFactory.factory;
 
+resource.registerResourceType('DRAGONBONE')
 resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data, name }) => {
   factory.parseDragonBonesData(data.ske, name);
   factory.parseTextureAtlasData(data.tex, Texture.from(data.image), name);
@@ -43,7 +44,7 @@ export default class DragonBone extends Renderer {
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
-    ticker.shared.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
+    this.renderSystem.application.ticker.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
   }
   async componentChanged(changed: ComponentChanged) {
     this.autoPlay[changed.gameObject.id] = (changed.component as DragonBoneComponent).autoPlay;
@@ -64,7 +65,9 @@ export default class DragonBone extends Renderer {
   async add(changed: ComponentChanged) {
     const component = changed.component as DragonBoneComponent;
     this.isRemovedMap.delete(component);
+    const asyncId = this.increaseAsyncId(changed.gameObject.id);
     await resource.getResource(component.resource);
+    if (!this.validateAsyncId(changed.gameObject.id, asyncId)) return;
     if (this.isRemovedMap.get(component)) {
       this.isRemovedMap.delete(component);
       return;

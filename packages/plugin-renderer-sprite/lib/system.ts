@@ -67,25 +67,32 @@ export default class Sprite extends Renderer {
   }
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Sprite') {
+      const gameObjectId = changed.gameObject.id;
       const component: SpriteComponent = changed.component as SpriteComponent;
       if (changed.type === OBSERVER_TYPE.ADD) {
         const sprite = new SpriteEngine(null);
-        resource.getResource(component.resource).then(async ({ instance }) => {
-          if (!instance) {
-            throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
-          }
-          sprite.image = instance[component.resource + resourceKeySplit + component.spriteName];
-        });
         this.sprites[changed.gameObject.id] = sprite;
         this.containerManager.getContainer(changed.gameObject.id).addChildAt(sprite.sprite, 0);
-      } else if (changed.type === OBSERVER_TYPE.CHANGE) {
+        const asyncId = this.increaseAsyncId(gameObjectId);
         const { instance } = await resource.getResource(component.resource);
+        if (!this.validateAsyncId(gameObjectId, asyncId)) return;
         if (!instance) {
-          throw new Error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+          console.error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+          return;
+        }
+        sprite.image = instance[component.resource + resourceKeySplit + component.spriteName];
+      } else if (changed.type === OBSERVER_TYPE.CHANGE) {
+        const asyncId = this.increaseAsyncId(gameObjectId);
+        const { instance } = await resource.getResource(component.resource);
+        if (!this.validateAsyncId(gameObjectId, asyncId)) return;
+        if (!instance) {
+          console.error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
+          return
         }
         this.sprites[changed.gameObject.id].image =
           instance[component.resource + resourceKeySplit + component.spriteName];
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
+        this.increaseAsyncId(gameObjectId);
         const sprite = this.sprites[changed.gameObject.id];
         this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.sprite);
         sprite.sprite.destroy({ children: true });

@@ -74,6 +74,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -88,6 +89,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -102,6 +104,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -116,6 +119,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -130,6 +134,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
@@ -144,6 +149,7 @@ export default class Event extends Renderer<EventSystemParams> {
             x: e.data.global.x,
             y: e.data.global.y,
           },
+          localPosition: container.worldTransform.applyInverse(e.data.global)
         },
         gameObject: component.gameObject,
       });
