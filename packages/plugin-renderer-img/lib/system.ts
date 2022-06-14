@@ -71,13 +71,4 @@ export default class Img extends Renderer {
       }
     }
   }
-  destroy(): void {
-    console.log('destroy')
-    for (const key in this.imgs) {
-      const sprite = this.imgs[key]
-      this.containerManager?.getContainer(parseInt(key))?.removeChild(sprite.sprite);
-      sprite.sprite.destroy({ children: true });
-      delete this.imgs[key];
-    }
-  }
 }
