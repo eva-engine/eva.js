@@ -3,8 +3,9 @@ import Scene from './Scene';
 import type { SystemConstructor } from '../core/System';
 import System from '../core/System';
 import Component from '../core/Component';
-import { setSystemObserver, initObserver } from '../core/observer';
+import { setSystemObserver, initObserver, observerAddedWithSystem, observerWithSystem } from '../core/observer';
 import EventEmitter from 'eventemitter3';
+import GameObject from '../core/GameObject';
 
 
 /** eva plugin struct */
@@ -224,6 +225,13 @@ class Game extends EventEmitter {
     setSystemObserver(system, system.constructor);
     initObserver(system.constructor);
 
+    for (const gameObject of GameObject.gameObjects) {
+      for (const component of gameObject.components) {
+        observerAddedWithSystem(component, component.name, system.name);
+        observerWithSystem(component, component.name, system.name);
+      }
+    }
+
     try {
       system.awake && system.awake();
     } catch (e) {
@@ -252,7 +260,7 @@ class Game extends EventEmitter {
     }
 
     if (index > -1) {
-      this.systems[index].destroy && this.systems[index].destroy();
+      this.systems[index]?.destroy();
       this.systems.splice(index, 1);
     }
   }
@@ -374,6 +382,7 @@ class Game extends EventEmitter {
     this.scene = null;
     this.canvas = null;
     this.multiScenes = null;
+    GameObject.gameObjects.length = 0
   }
 
   loadScene({ scene, mode = LOAD_SCENE_MODE.SINGLE, params = {} }: LoadSceneParams) {

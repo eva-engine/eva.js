@@ -16,6 +16,8 @@ export async function init(canvas) {
       preload: true,
     },
   ]);
+
+
   const game = new Game({
     systems: [
       new RendererSystem({
@@ -27,6 +29,7 @@ export async function init(canvas) {
     ],
   });
 
+  
   const image = new GameObject('image', {
     size: { width: 750, height: 1319 },
     origin: { x: 0, y: 0 },
@@ -45,6 +48,7 @@ export async function init(canvas) {
       resource: 'imageName',
     }),
   );
+  
 
   game.scene.addChild(image);
 

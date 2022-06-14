@@ -71,5 +71,4 @@ export default class Img extends Renderer {
       }
     }
   }
-
 }

@@ -294,6 +294,23 @@ export function observer(component: Component, componentName: string = component
   }
 }
 
+
+export function observerWithSystem(component: Component, componentName: string = component.name, systemName: string) {
+  const observerInfo = observerInfos[systemName]?.[componentName]
+  if (observerInfo) {
+    for (const item of observerInfo) {
+      const { property, key } = getObjectCache(component, item.prop);
+      defineProperty({
+        obj: property,
+        key,
+        prop: item,
+        component,
+        componentName,
+      });
+    }
+  }
+}
+
 /**
  * Push a `Add` event to componentObserver
  * @param component
@@ -301,15 +318,19 @@ export function observer(component: Component, componentName: string = component
  */
 export function observerAdded(component: Component, componentName: string = component.name) {
   for (const systemName in observerInfos) {
-    const observerInfo = observerInfos[systemName] || {};
-    const info = observerInfo[componentName];
-    if (info) {
-      systemInstance[systemName]?.componentObserver?.add({
-        component,
-        type: ObserverType.ADD,
-        componentName,
-      });
-    }
+    observerAddedWithSystem(component, componentName, systemName)
+  }
+}
+
+export function observerAddedWithSystem(component: Component, componentName: string = component.name, systemName: string) {
+  const observerInfo = observerInfos[systemName] || {};
+  const info = observerInfo[componentName];
+  if (info) {
+    systemInstance[systemName]?.componentObserver?.add({
+      component,
+      type: ObserverType.ADD,
+      componentName,
+    });
   }
 }
 
