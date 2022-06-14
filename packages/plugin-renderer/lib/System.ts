@@ -12,7 +12,7 @@ export interface RendererSystemParams extends ApplicationOptions {
   canvas?: HTMLCanvasElement
   renderType?: number
   /**
-   * @deprecated PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game
+   * @deprecated PreventScroll property will deprecate at next major version, please use enableScroll instead. https://eva.js.org/#/tutorials/game
    */
   preventScroll?: boolean
   enableScroll?: boolean
@@ -110,7 +110,15 @@ export default class Renderer extends System<RendererSystemParams> {
     if (params.renderType === RENDERER_TYPE.CANVAS) {
       params.forceCanvas = true;
     }
-    const app = new Application({ sharedTicker: true, ...params });
+    let app;
+
+    try {
+      app = new Application({ sharedTicker: true, ...params });
+    } catch (e) {
+      if (e.message.match(/not support webgl/i) !== undefined) {
+        app = new Application({ sharedTicker: true, ...params, forceCanvas: true });
+      }
+    }
     ticker.shared.stop();
     ticker.shared.autoStart = false;
     /**
@@ -119,7 +127,7 @@ export default class Renderer extends System<RendererSystemParams> {
      */
     if (params.preventScroll !== undefined) {
       console.warn(
-        'PreventScroll property will deprecate at next major version, please use enableEnable instead. https://eva.js.org/#/tutorials/game',
+        'PreventScroll property will deprecate at next major version, please use enableScroll instead. https://eva.js.org/#/tutorials/game',
       );
       params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
