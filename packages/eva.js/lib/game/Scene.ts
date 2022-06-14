@@ -8,6 +8,8 @@ class Scene extends GameObject {
   gameObjects: GameObject[] = [];
   canvas: HTMLCanvasElement;
 
+  protected _active = true;
+
   constructor(name, obj?: TransformParams) {
     super(name, obj);
     this.scene = this; // gameObject.scene = this
