@@ -24,16 +24,6 @@ export interface MaskParams {
   spriteName?: string;
 }
 
-interface MaskStyle {
-  x: number;
-  y: number;
-  radius: number;
-  width: number;
-  height: number;
-  // 暂时不支持paths
-  paths: number[];
-}
-
 export default class Mask extends Component<MaskParams> {
   static componentName: string = 'Mask';
   _lastType: MaskParams['type'];
