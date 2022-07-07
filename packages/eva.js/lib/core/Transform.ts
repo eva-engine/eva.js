@@ -5,35 +5,14 @@ import type { ComponentParams } from './Component';
 /**
  * Two dimensional vector
  */
-class Vector2 {
-  @Field({ step: 0.1, default: 0 })
-  x!: number;
-  @Field({ step: 0.1, default: 0 })
-  y!: number;
+interface Vector2 {
+  x: number;
+  y: number;
 }
 
-class IntVector2 {
-  @Field({ step: 1, default: 0 })
-  x!: number;
-  @Field({ step: 1, default: 0 })
-  y!: number;
-}
-
-/**
- * Two dimensional size
- */
-class Size2 {
-  @Field({ step: 1, default: 0 })
+interface Size2 {
   width: number;
-  @Field({ step: 1, default: 0 })
   height: number;
-}
-
-class Scale {
-  @Field({ step: 0.1, default: 1 })
-  x!: number;
-  @Field({ step: 0.1, default: 1 })
-  y!: number;
 }
 
 /**
@@ -98,13 +77,17 @@ class Transform extends Component<TransformParams> {
     this.rotation = params.rotation || this.rotation;
   }
 
-  @Field(() => IntVector2) position: IntVector2 = { x: 0, y: 0 };
-  @Field(() => Size2) size: Size2 = { width: 0, height: 0 };
-  @Field(() => Vector2) origin: Vector2 = { x: 0, y: 0 };
-  @Field(() => Vector2) anchor: Vector2 = { x: 0, y: 0 };
-  @Field(() => Scale) scale: Vector2 = { x: 1, y: 1 };
-  @Field(() => Vector2) skew: Vector2 = { x: 0, y: 0 };
-  @Field({ step: 0.1 }) rotation: number = 0;
+  @Field({ type: 'vector2', step: 0.01 }) position = { x: 0, y: 0 };
+  @Field({
+    type: 'size2',
+    step: 0.01,
+  })
+  size: Size2 = { width: 0, height: 0 };
+  @Field({ type: 'vector2', step: 0.01 }) origin: Vector2 = { x: 0, y: 0 };
+  @Field({ type: 'vector2', step: 0.01 }) anchor: Vector2 = { x: 0, y: 0 };
+  @Field({ type: 'vector2', bindable: true, step: 0.01 }) scale: Vector2 = { x: 1, y: 1 };
+  @Field({ type: 'vector2', step: 0.01 }) skew: Vector2 = { x: 0, y: 0 };
+  @Field({ step: 0.01 }) rotation: number = 0;
 
   set parent(val: Transform) {
     if (val) {

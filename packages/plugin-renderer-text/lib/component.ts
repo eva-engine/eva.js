@@ -2,17 +2,14 @@ import { TextStyle } from 'pixi.js';
 import { Component } from '@eva/eva.js';
 import { Field } from '@eva/inspector-decorator';
 
-class Color {
-  static getProperties() {
-    return 'color';
-  }
-}
-
 class Style {
   @Field({
-    type: 'selector',
-    isArray: false,
-    options: ['center', 'left', 'right'],
+    type: 'select',
+    options: [
+      { key: 'center', value: 'center' },
+      { key: 'left', value: 'left' },
+      { key: 'right', value: 'right' },
+    ],
     default: 'left',
   })
   align?: string;
@@ -26,20 +23,21 @@ class Style {
   dropShadowAngle?: number;
   @Field({ default: 0 })
   dropShadowBlur?: number;
-  @Field(() => Color, { default: '#000000' })
+  @Field({ type: 'color', default: '#000000' })
   dropShadowColor?: string | number;
   @Field({ default: 5 })
   dropShadowDistance?: number;
 
-  @Field(() => [Color], { default: ['#000000'] })
+  @Field({ type: 'color', default: ['#000000'], isArray: true })
   fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
 
   @Field({
-    type: 'selector',
-    options: { vertical: 1, horizontal: 0 },
+    type: 'select',
+    options: [
+      { key: 1, value: 'vertical' },
+      { key: 0, value: 'horizontal' },
+    ],
     default: 1,
-    filter: val => Number(val),
-    isArray: false,
   })
   fillGradientType?: number;
 
@@ -51,14 +49,44 @@ class Style {
   @Field(() => Number, { min: 5, default: 26 })
   fontSize?: number | string;
 
-  @Field({ type: 'selector', options: ['normal', 'italic', 'oblique'], default: 'normal' })
+  @Field({
+    type: 'select',
+    options: [
+      { key: 'normal', value: 'normal' },
+      { key: 'italic', value: 'italic' },
+      { key: 'oblique', value: 'oblique' },
+    ],
+    default: 'normal',
+  })
   fontStyle?: string;
-  @Field({ type: 'selector', options: ['normal', 'small-caps'], default: 'normal' })
+
+  @Field({
+    type: 'select',
+    options: [
+      { key: 'normal', value: 'normal' },
+      { key: 'small-caps', value: 'small-caps' },
+    ],
+    default: 'normal',
+  })
   fontVariant?: string;
 
   @Field({
-    type: 'selector',
-    options: ['normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900'],
+    type: 'select',
+    options: [
+      { key: 'normal', value: 'normal' },
+      { key: 'bold', value: 'bold' },
+      { key: 'bolder', value: 'bolder' },
+      { key: 'lighter', value: 'lighter' },
+      { key: '100', value: '100' },
+      { key: '200', value: '200' },
+      { key: '300', value: '300' },
+      { key: '400', value: '400' },
+      { key: '500', value: '500' },
+      { key: '600', value: '600' },
+      { key: '700', value: '700' },
+      { key: '800', value: '800' },
+      { key: '900', value: '900' },
+    ],
     default: 'normal',
   })
   fontWeight?: string;
@@ -67,7 +95,15 @@ class Style {
   letterSpacing?: number;
   @Field({ default: 0 })
   lineHeight?: number;
-  @Field({ type: 'selector', options: ['miter', 'round', 'bevel'], default: 'miter' })
+  @Field({
+    type: 'select',
+    options: [
+      { key: 'miter', value: 'miter' },
+      { key: 'round', value: 'round' },
+      { key: 'bevel', value: 'bevel' },
+    ],
+    default: 'miter',
+  })
   lineJoin?: string;
 
   @Field({ default: 10 })
@@ -76,7 +112,7 @@ class Style {
   @Field({ default: 0 })
   padding?: number;
 
-  @Field(() => Color, { default: '#000000' })
+  @Field({ type: 'color', default: '#000000' })
   stroke?: string | number;
 
   @Field({ default: 0, min: 0 })
@@ -88,7 +124,15 @@ class Style {
   @Field()
   trim?: boolean;
 
-  @Field({ default: 'pre', type: 'selector', options: ['normal', 'pre', 'pre-line'] })
+  @Field({
+    default: 'pre',
+    type: 'select',
+    options: [
+      { key: 'normal', value: 'normal' },
+      { key: 'pre', value: 'pre' },
+      { key: 'pre-line', value: 'pre-line' },
+    ],
+  })
   whiteSpace?: string;
 
   @Field()
@@ -107,18 +151,7 @@ export interface TextParams {
 
 export default class Text extends Component<TextParams> {
   static componentName: string = 'Text';
-  @Field({
-    type: 'textarea',
-    filter: (text: string): string => {
-      if (typeof text !== 'string') {
-        return '';
-      }
-      if (text.length > 100) {
-        return text.slice(0, 100);
-      }
-      return text;
-    },
-  })
+  @Field()
   text: string = '';
   // @decorators.IDEProp 复杂编辑后续添加
   @Field()

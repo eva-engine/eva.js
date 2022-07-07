@@ -1,5 +1,4 @@
-import { Component, resource } from '@eva/eva.js';
-import { Field } from '@eva/inspector-decorator';
+import { Component } from '@eva/eva.js';
 
 export interface SpineParams {
   resource: string;
@@ -7,29 +6,13 @@ export interface SpineParams {
   autoPlay?: boolean;
 }
 
-const sleep = time => new Promise(resolve => setTimeout(resolve, time));
-
 export default class Spine extends Component<SpineParams> {
   static componentName: string = 'Spine';
 
-  @Field({ type: 'resource' })
   resource: string = '';
 
-  @Field({
-    type: 'selector',
-    options: async function (that: Spine) {
-      await sleep(0);
-      if (!that.resource || !(resource as any).promiseMap[that.resource]) {
-        return {};
-      }
-      await (resource as any).promiseMap[that.resource];
-      const animations = resource.resourcesMap[that.resource]?.data?.ske?.animations;
-      return animations ? Object.keys(animations).reduce((prev, key) => ({ ...prev, [key]: key }), {}) : {};
-    },
-  })
   animationName: string = '';
 
-  @Field()
   autoPlay: boolean = true;
 
   private _armature: any;
