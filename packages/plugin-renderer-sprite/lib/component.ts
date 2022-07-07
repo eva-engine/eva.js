@@ -1,7 +1,4 @@
-import { Component, resource } from '@eva/eva.js';
-import { Field } from '@eva/inspector-decorator';
-
-const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+import { Component } from '@eva/eva.js';
 
 export interface SpriteParams {
   resource: string;

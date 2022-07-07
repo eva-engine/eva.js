@@ -10,10 +10,10 @@ describe('decorators', () => {
       @Field(() => Number) public size: number[] = [10, 10];
     }
     const attrs = getPropertiesOf(Test);
-    expect(attrs.name.type).toBe('string');
-    expect(attrs.name.isArray).toBe(false);
-    expect(attrs.size.type).toBe('number');
-    expect(attrs.size.isArray).toBe(true);
+    expect(attrs.children[0].type).toBe('string');
+    expect(attrs.children[0].isArray).toBe(false);
+    expect(attrs.children[1].type).toBe('number');
+    expect(attrs.children[1].isArray).toBe(true);
   });
 
   it('class use component observer decorator', () => {
