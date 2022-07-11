@@ -81,11 +81,12 @@ class Transform extends Component<TransformParams> {
   @Field({
     type: 'size2',
     step: 0.01,
+    min: 0,
   })
   size: Size2 = { width: 0, height: 0 };
   @Field({ type: 'vector2', step: 0.01 }) origin: Vector2 = { x: 0, y: 0 };
   @Field({ type: 'vector2', step: 0.01 }) anchor: Vector2 = { x: 0, y: 0 };
-  @Field({ type: 'vector2', bindable: true, step: 0.01 }) scale: Vector2 = { x: 1, y: 1 };
+  @Field({ type: 'vector2', bindable: true, step: 0.01, min: 0 }) scale: Vector2 = { x: 1, y: 1 };
   @Field({ type: 'vector2', step: 0.01 }) skew: Vector2 = { x: 0, y: 0 };
   @Field({ step: 0.01 }) rotation: number = 0;
 
