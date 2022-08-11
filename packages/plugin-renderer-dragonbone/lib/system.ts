@@ -45,6 +45,9 @@ export default class DragonBone extends Renderer {
     this.renderSystem.rendererManager.register(this);
     ticker.shared.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
   }
+  onDestroy() {
+    ticker.shared.remove(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
+  }
   async componentChanged(changed: ComponentChanged) {
     this.autoPlay[changed.gameObject.id] = (changed.component as DragonBoneComponent).autoPlay;
     if (changed.componentName === 'DragonBone') {
