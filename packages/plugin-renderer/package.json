@@ -1,10 +1,6 @@
 {
   "name": "@eva/plugin-renderer",
-<<<<<<< HEAD
   "version": "1.2.7",
-=======
-  "version": "1.1.1-fix.1",
->>>>>>> fix/dragonebone-ticker
   "description": "@eva/plugin-renderer",
   "main": "index.js",
   "module": "dist/plugin-renderer.esm.js",
@@ -22,14 +18,9 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-<<<<<<< HEAD
     "@eva/eva.js": "1.2.7",
     "@eva/renderer-adapter": "1.2.7",
     "@types/pixi.js": "^4.8.9",
-=======
-    "@eva/eva.js": "1.1.1-fix.1",
-    "@eva/renderer-adapter": "1.1.1-fix.1",
->>>>>>> fix/dragonebone-ticker
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
     "pixi.js": "^4.8.9"
