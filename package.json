@@ -4,6 +4,7 @@
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
+    "clean": "lerna clean && rm -rf node_modules packages/**/dist packages/**/package-lock.json",
     "dev": "vite ./examples -c ./examples/vite.config.ts",
     "build": "node ./scripts/build.js",
     "buildDev": "npm run build -- -a -d -f iife",
