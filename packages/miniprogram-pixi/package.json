@@ -1,6 +1,10 @@
 {
   "name": "@eva/miniprogram-pixi",
+<<<<<<< HEAD
   "version": "1.2.7",
+=======
+  "version": "1.1.1-fix.1",
+>>>>>>> fix/dragonebone-ticker
   "description": "@eva/miniprogram-pixi",
   "main": "index.js",
   "module": "dist/miniprogram-pixi.esm.js",
