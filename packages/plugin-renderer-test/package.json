@@ -1,6 +1,10 @@
 {
   "name": "plugin-renderer-test",
+<<<<<<< HEAD
   "version": "1.2.7",
+=======
+  "version": "1.1.1-fix.1",
+>>>>>>> fix/dragonebone-ticker
   "private": true,
   "description": "test plugin",
   "keywords": [

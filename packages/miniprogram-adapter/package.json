@@ -1,6 +1,10 @@
 {
   "name": "@eva/miniprogram-adapter",
+<<<<<<< HEAD
   "version": "1.2.7",
+=======
+  "version": "1.1.1-fix.1",
+>>>>>>> fix/dragonebone-ticker
   "description": "@eva/miniprogram-adapter",
   "main": "index.js",
   "module": "dist/miniprogram-adapter.esm.js",
@@ -24,6 +28,10 @@
     ]
   },
   "dependencies": {
+<<<<<<< HEAD
     "@eva/miniprogram-pixi": "1.2.7"
+=======
+    "@eva/miniprogram-pixi": "1.1.1-fix.1"
+>>>>>>> fix/dragonebone-ticker
   }
 }

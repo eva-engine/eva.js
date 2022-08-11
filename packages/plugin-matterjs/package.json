@@ -1,6 +1,10 @@
 {
   "name": "@eva/plugin-matterjs",
+<<<<<<< HEAD
   "version": "1.2.7",
+=======
+  "version": "1.1.1-fix.1",
+>>>>>>> fix/dragonebone-ticker
   "description": "@eva/plugin-matterjs",
   "main": "index.js",
   "module": "dist/plugin-matterjs.esm.js",
@@ -18,8 +22,12 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
+<<<<<<< HEAD
     "@eva/eva.js": "1.2.7",
     "@types/matter-js": "^0.17.5",
+=======
+    "@eva/eva.js": "1.1.1-fix.1",
+>>>>>>> fix/dragonebone-ticker
     "poly-decomp": "^0.3.0"
   }
 }
