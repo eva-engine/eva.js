@@ -1,54 +1,79 @@
 /**
- * 初始化package基础配置，在项目最开始使用，已经有package时可以通过 --force 覆盖，慎用。
- *
- * 区别于lerna bootstrap命令，这个命令是用来在已有package后，为所有package安装依赖，应该后于该脚本使用过
+ * 初始化package基础配置，可以自行在packages目录下创建新项目目录，或者用--package命令指定项目名。
+ * 已有项目可以通过 --force 覆盖，慎用。
  *
  * 创建内容包括：
  *
  * - index.js 统一入口文件
  * - api-extractor.json apiExtractor配置文件
  * - package.json
- * - lib/index.ts 源码入口文件，废弃
- * - Readme.md 文件
+ * - README.md 文件
  */
 const args = require('minimist')(process.argv.slice(2));
 const fs = require('fs');
 const path = require('path');
+const gitUser = require('./git-user');
 const version = require('../package.json').version;
-
 const packagesDir = path.resolve(__dirname, '../packages');
-const files = fs.readdirSync(packagesDir);
+
+let files;
+
+if (!args.package) {
+  files = fs.readdirSync(packagesDir);
+} else {
+  files = [args.package];
+}
 
 files.forEach(shortName => {
-  const isDirectory = fs.statSync(path.join(packagesDir, shortName)).isDirectory();
-  if (!isDirectory) return;
+  const pkgRootDir = path.join(packagesDir, shortName);
+  if (!fs.existsSync(pkgRootDir)) {
+    fs.mkdirSync(pkgRootDir);
+  } else {
+    const stat = fs.statSync(pkgRootDir);
+    if (!stat.isDirectory()) {
+      return;
+    }
+  }
 
-  const name = shortName.startsWith('eva-') ? `@eva/${shortName.replace('eva-', '')}` : `@eva/${shortName}`;
+  const name = `@eva/${shortName}`;
   const pkgPath = path.join(packagesDir, shortName, 'package.json');
   const pkgExists = fs.existsSync(pkgPath);
-  const pkg = require(pkgPath);
+  let pkg = {};
   if (pkgExists) {
+    pkg = require(pkgPath);
     if (pkg.private) {
       return;
     }
   }
 
   if (args.force || !pkgExists) {
+    const bundle = pkg.bundle ?? `EVA.${shortName.replaceAll('-', '.')}`;
+    const pluginRendererDep = shortName.startsWith('plugin-renderer-') ? {
+      "@eva/plugin-renderer": version,
+      "pixi.js": "^4.8.9"
+    } : {}
+    const dependencies = {
+      "@eva/inspector-decorator": "^0.0.5",
+      "@eva/eva.js": version,
+      ...pluginRendererDep,
+      ...(pkg.dependencies ?? {})
+    };
+    const author = gitUser();
     const json = {
       name,
       version,
       description: name,
       main: 'index.js',
       module: `dist/${shortName}.esm.js`,
-      bundle: pkg.bundle || '',
-      unpkg: pkg.bundle && `dist/${pkg.bundle}.min.js`,
+      bundle,
+      unpkg: `dist/${bundle}.min.js`,
       files: ['index.js', 'dist'],
       types: `dist/${shortName}.d.ts`,
-      keywords: ['eva.js'],
-      author: 'fanmingfei <az8641683@163.com>',
+      keywords: ['eva.js', `eva-${shortName}`],
+      author: author ? `${author.name} <${author.email}>` : 'yourself',
       license: 'MIT',
       homepage: 'https://eva.js.org',
-      dependencies: pkg.dependencies || {},
+      dependencies,
     };
     fs.writeFileSync(pkgPath, JSON.stringify(json, null, 2));
   }
