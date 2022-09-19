@@ -77,12 +77,12 @@ const outputConfigs = {
 let hasTypesChecked = false;
 
 // 开发环境 esm，cjs 打包
-const defaultFormats = ['esm', 'cjs', 'iife'];
 const inlineFormats = process.env.FORMATS && process.env.FORMATS.split('-');
-const packageFormats = packageOptions.formats || inlineFormats || defaultFormats;
+let packageFormats;
 
 const packageConfigs = [];
 if (!process.env.PROD_ONLY) {
+  packageFormats = packageOptions.formats || inlineFormats || ['esm', 'cjs', 'iife'];
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
@@ -94,6 +94,7 @@ if (!process.env.PROD_ONLY) {
 
 // 为生产环境创建rollup配置
 if (process.env.NODE_ENV === 'production') {
+packageFormats = packageOptions.formats || inlineFormats || ['cjs', 'iife', 'miniprogram'];
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
@@ -249,4 +250,5 @@ function createMinifiedConfig(format) {
 function createMiniProgramConfig(format) {
   return createConfig(format, outputConfigs[format], miniprogramPlugins1, miniprogramPlugins2);
 }
+
 export default packageConfigs;
