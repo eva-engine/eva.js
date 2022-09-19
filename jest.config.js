@@ -30,7 +30,6 @@ module.exports = {
     'packages/plugin-renderer-test',
     'packages/eva-plugin-tiny',
     'packages/plugin-alive',
-    'packages/plugin-render',
   ],
   moduleFileExtensions: ['ts', 'js', 'json'],
   testMatch: ['<rootDir>/packages/**/__tests__/**/*.spec.ts'],
@@ -40,6 +39,5 @@ module.exports = {
     'packages/plugin-renderer-test',
     'packages/eva-plugin-tiny',
     'packages/plugin-alive',
-    'packages/plugin-render',
   ],
 };
