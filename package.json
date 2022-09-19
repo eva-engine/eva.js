@@ -61,6 +61,7 @@
     "enquirer": "^2.3.6",
     "eslint": "^6.2.2",
     "eslint-config-prettier": "^6.1.0",
+    "eslint-plugin-jest": "^22.21.0",
     "eslint-plugin-prettier": "^3.1.0",
     "execa": "^4.1.0",
     "fs-extra": "^9.0.1",

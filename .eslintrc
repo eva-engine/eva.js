@@ -4,10 +4,12 @@
         "browser": true,
         "es6": true,
         "node": true,
-        "commonjs": true
+        "commonjs": true,
+        "jest/globals": true
     },
     "extends": [
         "eslint:recommended",
+        "plugin:jest/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "prettier/@typescript-eslint"
@@ -28,7 +30,8 @@
     },
     "plugins": [
         "@typescript-eslint",
-        "prettier"
+        "prettier",
+        "jest"
     ],
     "rules": {
         "@typescript-eslint/explicit-function-return-type": "off",
