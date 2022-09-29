@@ -1,6 +1,6 @@
 {
   "name": "plugin-renderer-test",
-  "version": "1.2.8-fix.1",
+  "version": "1.2.8",
   "private": true,
   "description": "test plugin",
   "keywords": [
@@ -21,6 +21,6 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@eva/inspector-decorator": "^0.0.4"
+    "@eva/inspector-decorator": "^0.0.5"
   }
 }

@@ -72,9 +72,9 @@ async function build(target) {
   }
 
   // if building a specific format, do not remove dist.
-  if (!formats) {
-    await fs.remove(`${pkgDir}/dist`);
-  }
+//   if (!formats) {
+//     await fs.remove(`${pkgDir}/dist`);
+//   }
 
   const env = (pkg.buildOptions && pkg.buildOptions.env) || (devOnly ? 'development' : 'production');
 
