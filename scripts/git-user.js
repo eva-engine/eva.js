@@ -4,8 +4,8 @@ module.exports = () => {
   const commandPrefix = 'git config --get user';
 
   try {
-    const name = execSync(`${commandPrefix}.name`).toString().replaceAll('\n', '');
-    const email = execSync(`${commandPrefix}.email`).toString().replaceAll('\n', '');
+    const name = execSync(`${commandPrefix}.name`).toString().replace(/\n/, '');
+    const email = execSync(`${commandPrefix}.email`).toString().replace(/\n/, '');
     
     return {
       name,

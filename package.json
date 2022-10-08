@@ -6,7 +6,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "clean:dist": "rm -rf dist packages/**/dist",
-    "clean": "lerna clean && rm -rf node_modules packages/**/package-lock.json && npm run clean:dist",
+    "clean": "lerna clean && rm -rf packages/**/package-lock.json && npm run clean:dist",
     "scaffold": "node ./scripts/scaffold.js",
     "dev": "vite ./examples -c ./examples/vite.config.ts",
     "prebuildDev": "node ./scripts/build.js spine-base -d",

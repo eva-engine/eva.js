@@ -1,0 +1,1 @@
+export default 'This is only for sync on mirror site, DO NOT install and use it.';

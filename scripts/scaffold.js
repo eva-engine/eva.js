@@ -47,7 +47,7 @@ files.forEach(shortName => {
   }
 
   if (args.force || !pkgExists) {
-    const bundle = pkg.bundle ?? `EVA.${shortName.replaceAll('-', '.')}`;
+    const bundle = pkg.bundle ?? `EVA.${shortName.replace(/-/g, '.')}`;
     const pluginRendererDep = shortName.startsWith('plugin-renderer-') ? {
       "@eva/plugin-renderer": version,
       "pixi.js": "^4.8.9"
