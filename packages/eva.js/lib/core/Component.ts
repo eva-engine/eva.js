@@ -43,11 +43,11 @@ export function getComponentName<T extends Component<ComponentParams>>(component
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ComponentParams {}
+export interface ComponentParams { }
 
 export interface ComponentConstructor<T extends Component<ComponentParams>> {
   componentName: string;
-  new (params?: ComponentParams): T;
+  new(params?: ComponentParams): T;
 }
 
 /**
@@ -60,6 +60,8 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
 
   /** Name of this component */
   public readonly name: string;
+
+  private _enable = false;
 
   /**
    * Represents the status of the component, If component has started, the value is true
@@ -85,6 +87,20 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
     this.__componentDefaultParams = params;
   }
 
+  get enable() {
+    return this._enable;
+  }
+
+  set enable(val: boolean) {
+    if (this._enable === val) return
+    this._enable = val;
+    if (this._enable) {
+      this.onEnable?.()
+    } else {
+      this.onDisable?.()
+    }
+  }
+
   /**
    * Called during component construction
    * @param params - optional initial parameters
@@ -97,6 +113,8 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
    * @override
    */
   awake?(): void;
+
+  onEnable?(): void;
 
   /**
    * Called after all component's `awake` method has been called
@@ -130,6 +148,8 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
    * @override
    */
   onPause?(): void;
+
+  onDisable?(): void;
 
   /**
    * Called while component be destroyed.

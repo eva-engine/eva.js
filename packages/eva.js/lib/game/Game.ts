@@ -88,6 +88,7 @@ const getAllGameObjects = game => {
 
 const gameObjectLoop = (e, gameObjects = []) => {
   for (const gameObject of gameObjects) {
+    if (!gameObject.active) continue;
     for (const component of gameObject.components) {
       try {
         triggerStart(component);

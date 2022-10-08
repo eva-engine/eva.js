@@ -18,7 +18,7 @@ class GameObject {
   private _name: string;
 
   /** Scene is an abstraction, represent a canvas layer */
-  private _scene: Scene;
+  public _scene: Scene;
 
   /** A key-value map for components on this gameObject */
   private _componentCache: Record<string, Component<ComponentParams>> = {};
@@ -31,6 +31,12 @@ class GameObject {
 
   /** GameObject has been destroyed */
   public destroyed: boolean = false;
+
+  protected _active: boolean = false;
+
+  static _needKeepInactiveGameObjects: number[] = []
+
+  static _currentProcessGameObjectId: number
 
   /**
    * Consruct a new gameObject
@@ -69,6 +75,7 @@ class GameObject {
     return this._name;
   }
 
+
   set scene(val: Scene) {
     if (this._scene === val) return;
     const scene = this._scene;
@@ -94,6 +101,66 @@ class GameObject {
     return this._scene;
   }
 
+  get active() {
+    return this._active;
+  }
+
+  _setActive(val) {
+    const parent = this.transform?.parent?.gameObject
+    if (val) {
+      if (this._active === true) return;
+      if (parent?.active === false) {
+        throw `Can't make gameObject ${this.name} active, because parent is inactive.`
+        return
+      }
+      const index = GameObject._needKeepInactiveGameObjects.indexOf(this.id)
+
+      // 这个元素被直接设置成false了，需要直接设置成true才能通过根据父级变化来变化
+      if (GameObject._currentProcessGameObjectId !== this.id && index > -1) {
+        return
+      }
+
+      if (index > -1) {
+        GameObject._needKeepInactiveGameObjects.splice(index, 1)
+      }
+
+      this._active = true
+
+      for (const component of this.components) {
+        component.enable = true
+      }
+      const children = this.transform.children.map(({ gameObject }) => gameObject)
+      for (const child of children) {
+        child._setActive(true)
+      }
+    } else {
+      // 直接设置的要放到一个数组里，防止跟随父级变化
+      if (GameObject._currentProcessGameObjectId === this.id) {
+        const index = GameObject._needKeepInactiveGameObjects.indexOf(this.id)
+        if (index === -1) {
+          GameObject._needKeepInactiveGameObjects.push(this.id)
+        }
+      }
+      if (this._active === false) return;
+
+      this._active = false
+
+      for (const component of this.components) {
+        component.enable = false
+      }
+      const children = this.transform.children.map(({ gameObject }) => gameObject)
+      for (const child of children) {
+        child._setActive(false)
+      }
+    }
+  }
+  setActive(val) {
+    if (!this.scene) return
+    GameObject._currentProcessGameObjectId = this.id
+    this._setActive(val)
+    GameObject._currentProcessGameObjectId = undefined
+  }
+
   /**
    * Add child gameObject
    * @param gameObject - child gameobject
@@ -110,6 +177,8 @@ class GameObject {
     }
     gameObject.transform.parent = this.transform;
     gameObject.scene = this.scene;
+
+    gameObject.setActive(this.active)
   }
 
   /**
@@ -160,6 +229,10 @@ class GameObject {
     this._componentCache[componentName] = component;
 
     component.awake && component.awake();
+
+    if (this.active) {
+      component.onEnable?.()
+    }
 
     return component;
   }

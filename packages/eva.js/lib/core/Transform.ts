@@ -1,4 +1,4 @@
-import {type, step} from '@eva/inspector-decorator';
+import { type, step } from '@eva/inspector-decorator';
 import Component from './Component';
 import type { ComponentParams } from './Component';
 
@@ -77,12 +77,12 @@ class Transform extends Component<TransformParams> {
     this.rotation = params.rotation || this.rotation;
   }
 
-  @type('vector2') @step(1) position: Vector2 = {x: 0, y: 0};
-  @type('size') @step(1) size: Size2 = {width: 0, height: 0};
-  @type('vector2') @step(0.1) origin: Vector2 = {x: 0, y: 0};
-  @type('vector2') @step(0.1) anchor: Vector2 = {x: 0, y: 0};
-  @type('vector2') @step(0.1) scale: Vector2 = {x: 1, y: 1};
-  @type('vector2') @step(0.1) skew: Vector2 = {x: 0, y: 0};
+  @type('vector2') @step(1) position: Vector2 = { x: 0, y: 0 };
+  @type('size') @step(1) size: Size2 = { width: 0, height: 0 };
+  @type('vector2') @step(0.1) origin: Vector2 = { x: 0, y: 0 };
+  @type('vector2') @step(0.1) anchor: Vector2 = { x: 0, y: 0 };
+  @type('vector2') @step(0.1) scale: Vector2 = { x: 1, y: 1 };
+  @type('vector2') @step(0.1) skew: Vector2 = { x: 0, y: 0 };
   @type('number') @step(0.1) rotation: number = 0;
 
   set parent(val: Transform) {
@@ -133,6 +133,28 @@ class Transform extends Component<TransformParams> {
   /** Clear all child transform */
   clearChildren() {
     this.children.length = 0;
+  }
+
+
+  static changedTransform = []
+
+  onEnable() {
+    const index = Transform.changedTransform.indexOf(this)
+    if (index === -1) {
+      Transform.changedTransform.push(this)
+    }
+  }
+  onDisable(): void {
+    const index = Transform.changedTransform.indexOf(this)
+    if (index === -1) {
+      Transform.changedTransform.push(this)
+    }
+  }
+  onDestroy(): void {
+    const index = Transform.changedTransform.indexOf(this)
+    if (index > -1) {
+      Transform.changedTransform.splice(index, 1)
+    }
   }
 }
 

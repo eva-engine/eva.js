@@ -48,9 +48,17 @@ export default class Transform extends EventEmitter {
       if (container) {
         sceneInfo.application.stage.removeChildren();
         sceneInfo.application.stage.addChild(container);
+        container.visible = true;
       }
     }
     this.waitChangeScenes = [];
+    for (const trans of Trans.changedTransform) {
+      const container = this.containerManager.getContainer(trans?.gameObject?.id)
+      if (container) {
+        container.visible = trans.enable
+      }
+    }
+    Trans.changedTransform.length = 0
   }
   componentChanged(changed: ComponentChanged) {
     if (changed.type === OBSERVER_TYPE.ADD) {
@@ -63,6 +71,7 @@ export default class Transform extends EventEmitter {
   }
   addContainer(changed: ComponentChanged) {
     const container = new Container();
+    container.visible = false;
     container.name = changed.gameObject.name;
     this.containerManager.addContainer({
       name: changed.gameObject.id,
