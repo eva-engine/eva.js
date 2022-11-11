@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-sprite-animation",
-  "version": "1.2.7-fix.5",
+  "version": "1.2.7-fix.6",
   "description": "@eva/plugin-renderer-sprite-animation",
   "main": "index.js",
   "module": "dist/plugin-renderer-sprite-animation.esm.js",
@@ -19,9 +19,9 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "1.2.7-fix.5",
-    "@eva/renderer-adapter": "1.2.7-fix.5",
-    "@eva/eva.js": "1.2.7-fix.5",
+    "@eva/plugin-renderer": "1.2.7-fix.6",
+    "@eva/renderer-adapter": "1.2.7-fix.6",
+    "@eva/eva.js": "1.2.7-fix.6",
     "pixi.js": "^4.8.7"
   }
 }
