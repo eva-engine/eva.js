@@ -3,8 +3,8 @@ export class TextureHook {
   public maxTexturesCount: number = 0;
 
   public isInit: boolean = false;
-  private realGLCreateTexture: Function = function() {};
-  private realGLDeleteTexture: Function = function() {};
+  private realGLCreateTexture: Function = function () { };
+  private realGLDeleteTexture: Function = function () { };
 
   private gl: any;
 
@@ -16,8 +16,8 @@ export class TextureHook {
         this.realGLDeleteTexture = _gl.__proto__.deleteTexture;
 
         //replace to new function
-        _gl.__proto__.createTexture = this.fakeGLCreateTexture.bind(this);
-        _gl.__proto__.deleteTexture = this.fakeGLDeleteTexture.bind(this);
+        _gl.__proto__.createTexture = this.fakeGLCreateTexture(this);
+        _gl.__proto__.deleteTexture = this.fakeGLDeleteTexture(this);
 
         this.isInit = true;
 
@@ -37,19 +37,22 @@ export class TextureHook {
     this.maxTexturesCount = Math.max(this.createdTextures.length, this.maxTexturesCount);
   }
 
-  private fakeGLCreateTexture(): any {
-    var texture = this.realGLCreateTexture.call(this.gl);
-    this.registerTexture(texture);
-    return texture;
+  private fakeGLCreateTexture(context): any {
+    return function () {
+      var texture = context.realGLCreateTexture.call(this);
+      context.registerTexture(texture);
+      return texture;
+    }
   }
 
-  private fakeGLDeleteTexture(texture: any): void {
-    var index: number = this.createdTextures.indexOf(texture);
-    if (index > -1) {
-      this.createdTextures.splice(index, 1);
+  private fakeGLDeleteTexture(context): any {
+    return function (texture: any): void {
+      var index: number = context.createdTextures.indexOf(texture);
+      if (index > -1) {
+        context.createdTextures.splice(index, 1);
+      }
+      context.realGLDeleteTexture.call(this, texture);
     }
-
-    this.realGLDeleteTexture.call(this.gl, texture);
   }
   public reset(): void {
     this.createdTextures = new Array<any>();
