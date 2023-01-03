@@ -16,7 +16,7 @@
 					this.realGLDrawElements = _gl.__proto__.drawElements;
 					
 					//replace to new function
-					_gl.__proto__.drawElements = this.fakeGLdrawElements.bind(this);
+					_gl.__proto__.drawElements = this.fakeGLdrawElements(this)
 					this.isInit = true;
 
 					// console.log("[GLHook] GL was Hooked!");
@@ -27,11 +27,11 @@
 			}
 		}
 
-		private fakeGLdrawElements(mode:any, count:any, type:any, offset:any):void {
-
-			this.drawPasses ++;
-			this.realGLDrawElements.call(this.gl, mode, count, type, offset);
-		
+		private fakeGLdrawElements(context): any {
+			return function (mode: any, count: any, type: any, offset: any): void {
+				context.drawPasses ++;
+				context.realGLDrawElements.call(this, mode, count, type, offset);
+			}
 		}
 		public reset():void{
 		
