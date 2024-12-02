@@ -1,5 +1,5 @@
 import { Component } from '@eva/eva.js';
-import type { GameObject } from "@eva/eva.js";
+import type { GameObject } from '@eva/eva.js';
 
 export enum HIT_AREA_TYPE {
   Circle = 'Circle',
@@ -27,23 +27,23 @@ export interface EventParams {
 
 type TouchEventName = 'touchstart' | 'touchmove' | 'touchend' | 'tap' | 'touchendoutside' | 'touchcancel';
 type EventParam = {
-  stopPropagation: () => void,
+  stopPropagation: () => void;
   data: {
-    pointerId: number,
+    pointerId: number;
     position: {
-      x: number,
-      y: number,
-    },
+      x: number;
+      y: number;
+    };
     /**
      * The position related to event target gameobject
      */
     localPosition: {
-      x: number,
-      y: number
-    }
-  },
-  gameObject: GameObject,
-}
+      x: number;
+      y: number;
+    };
+  };
+  gameObject: GameObject;
+};
 
 export default class Event extends Component<EventParams> {
   static componentName = 'Event';
@@ -52,22 +52,21 @@ export default class Event extends Component<EventParams> {
     params && Object.assign(this, params);
   }
 
-  emit(eventName: TouchEventName, ...args: [EventParam]): boolean
-  emit<T extends string>(eventName: Exclude<T, TouchEventName>, ...args: any[]): boolean
+  emit(eventName: TouchEventName, ...args: [EventParam]): boolean;
+  emit<T extends string>(eventName: Exclude<T, TouchEventName>, ...args: any[]): boolean;
   emit(en: string, ...args: any[]) {
     return super.emit(en, ...args);
   }
 
-  once(eventName: TouchEventName, fn: (arg: EventParam) => void, context?: any): this
-  once<T extends string>(eventName: Exclude<T, TouchEventName>, fn: (...args: any[]) => void, context?: any): this
+  once(eventName: TouchEventName, fn: (arg: EventParam) => void, context?: any): this;
+  once<T extends string>(eventName: Exclude<T, TouchEventName>, fn: (...args: any[]) => void, context?: any): this;
   once(en: string, fn: (...args: any[]) => void, context?: any) {
     return super.once(en, fn, context);
   }
 
-  on(eventName: TouchEventName, fn: (arg: EventParam) => void, context?: any): this
-  on<T extends string>(eventName: Exclude<T, TouchEventName>, fn: (...args: any[]) => void, context?: any): this
+  on(eventName: TouchEventName, fn: (arg: EventParam) => void, context?: any): this;
+  on<T extends string>(eventName: Exclude<T, TouchEventName>, fn: (...args: any[]) => void, context?: any): this;
   on(en: string, fn: (...args: any[]) => void, context?: any) {
     return super.on(en, fn, context);
   }
-
 }

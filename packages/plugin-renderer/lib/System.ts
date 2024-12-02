@@ -9,13 +9,13 @@ import { registerCompressedTexture } from './compressedTexture';
 import { SuportedCompressedTexture, getSuportCompressedTextureFormats } from './compressedTexture/ability';
 
 export interface RendererSystemParams extends ApplicationOptions {
-  canvas?: HTMLCanvasElement
-  renderType?: number
+  canvas?: HTMLCanvasElement;
+  renderType?: number;
   /**
    * @deprecated PreventScroll property will deprecate at next major version, please use enableScroll instead. https://eva.js.org/#/tutorials/game
    */
-  preventScroll?: boolean
-  enableScroll?: boolean
+  preventScroll?: boolean;
+  enableScroll?: boolean;
 }
 
 export enum RENDERER_TYPE {
@@ -80,12 +80,11 @@ export default class Renderer extends System<RendererSystemParams> {
       });
     });
 
-    const gl = (this.application.renderer as WebGLRenderer).gl
+    const gl = (this.application.renderer as WebGLRenderer).gl;
     if (gl) {
-      this.suportedCompressedTextureFormats = getSuportCompressedTextureFormats(gl)
+      this.suportedCompressedTextureFormats = getSuportCompressedTextureFormats(gl);
       registerCompressedTexture(gl);
     }
-
   }
 
   registerObserver(observerInfo) {

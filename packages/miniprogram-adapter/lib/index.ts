@@ -32,7 +32,7 @@ export const {
   registerCanvas2D,
   requestAnimationFrame,
   screen,
-  windowAlias
+  windowAlias,
 } = PIXI.miniprogram;
 
 export default PIXI.miniprogram;

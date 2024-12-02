@@ -19,7 +19,7 @@ export default class SpineSystem extends Renderer {
   init({ pixiSpine }) {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
-    this.pixiSpine = pixiSpine
+    this.pixiSpine = pixiSpine;
     this.game.canvas.addEventListener(
       'webglcontextrestored',
       () => {
@@ -65,10 +65,10 @@ export default class SpineSystem extends Renderer {
     for (let key in this.armatures) {
       // TODO: 类型
       // @ts-ignore
-      this.armatures[key].update(e.deltaTime * 0.001)
-      this.armatures[key].updateTransform()
+      this.armatures[key].update(e.deltaTime * 0.001);
+      this.armatures[key].updateTransform();
     }
-    super.update()
+    super.update();
   }
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Spine') {
@@ -117,7 +117,7 @@ export default class SpineSystem extends Renderer {
       // console.warn('添加spine的container不存在');
       return;
     }
-    component.lastResource = component.resource
+    component.lastResource = component.resource;
     // @ts-ignore
     const armature: any = new this.pixiSpine.Spine(spineData);
     this.armatures[changed.gameObject.id] = armature;
@@ -129,8 +129,8 @@ export default class SpineSystem extends Renderer {
 
     container.addChildAt(armature, 0);
     /** 保证第一帧显示正常 */
-    armature.update()
-    armature.updateTransform()
+    armature.update();
+    armature.updateTransform();
     component.armature = armature;
     // @ts-ignore
     component.emit('loaded', { resource: component.resource });

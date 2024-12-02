@@ -1,24 +1,24 @@
 import { System, decorators, OBSERVER_TYPE, Transform } from '@eva/eva.js';
-import type { ComponentChanged } from "@eva/eva.js";
+import type { ComponentChanged } from '@eva/eva.js';
 import PhysicsEngine from './PhysicsEngine';
 import { Physics } from './Physics';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Object ? DeepPartial<T[P]> : T[P];
-}
+};
 
 export interface PhysicsSystemParams {
-  resolution?: number
-  fps?: number
-  isTest?: boolean
-  element?: HTMLElement
-  canvas?: HTMLCanvasElement
-  deltaSampleSize?: number
+  resolution?: number;
+  fps?: number;
+  isTest?: boolean;
+  element?: HTMLElement;
+  canvas?: HTMLCanvasElement;
+  deltaSampleSize?: number;
   mouse?: {
-    open: boolean
-    constraint?: Matter.Constraint
-  }
-  world: DeepPartial<Matter.IWorldDefinition>
+    open: boolean;
+    constraint?: Matter.Constraint;
+  };
+  world: DeepPartial<Matter.IWorldDefinition>;
 }
 
 @decorators.componentObserver({
@@ -44,7 +44,7 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
    *
    * Called while the System installed, if game is not begain, it will be called while begain. use to pre operation, init data.
    */
-  awake() { }
+  awake() {}
 
   /**
    * System 被安装后，所有的 awake 执行完后
@@ -107,7 +107,7 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
    *
    * Like update, called all of gameobject update.
    */
-  lateUpdate() { }
+  lateUpdate() {}
   /**
    * 游戏开始和游戏暂停后开始播放的时候调用。
    *
@@ -130,5 +130,5 @@ export default class PhysicsSystem extends System<PhysicsSystemParams> {
    * System 被销毁的时候调用。
    * Called while the system be destroyed.
    */
-  onDestroy() { }
+  onDestroy() {}
 }

@@ -27,11 +27,11 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     this.on('loop', () => {
       if (++this.count >= this.times) {
         if (this.forwards) {
-          this.gotoAndStop(this.totalFrames - 1)
+          this.gotoAndStop(this.totalFrames - 1);
         } else {
           this.animate.stop();
         }
-        this.complete = true
+        this.complete = true;
         this.emit('complete');
       }
     });
@@ -45,11 +45,11 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
       this.waitPlay = true;
     } else {
       if (this.complete) {
-        this.gotoAndStop(0)
+        this.gotoAndStop(0);
       }
       this.animate.play();
       this.count = 0;
-      this.complete = false
+      this.complete = false;
     }
   }
   stop() {
@@ -80,9 +80,9 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     this.animate.gotoAndStop(frameNumber);
   }
   get currentFrame() {
-    return this.animate?.animatedSprite?.currentFrame
+    return this.animate?.animatedSprite?.currentFrame;
   }
   get totalFrames() {
-    return this.animate?.animatedSprite?.totalFrames
+    return this.animate?.animatedSprite?.totalFrames;
   }
 }

@@ -1,5 +1,5 @@
-import { BaseTexture, Texture } from "pixi.js";
-import { CompressedTextureResource } from "../resource/CompressedTextureResource";
+import { BaseTexture, Texture } from 'pixi.js';
+import { CompressedTextureResource } from '../resource/CompressedTextureResource';
 export const TextureMixin = {
   oldFrom: Texture.from,
   from(source) {
@@ -7,5 +7,5 @@ export const TextureMixin = {
       return this.oldFrom(source);
     }
     return new Texture(BaseTexture.from(source as any));
-  }
-}
+  },
+};

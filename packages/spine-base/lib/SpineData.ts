@@ -30,8 +30,7 @@ function createSpineData(name, data, scale, pixiSpine) {
   return obj;
 }
 
-export const registryResource = (pixiSpine) => {
-
+export const registryResource = pixiSpine => {
   resource.registerInstance('SPINE' as any, info => {
     return createSpineData(info.name, info.data, (info as any).scale, pixiSpine);
   });
@@ -47,7 +46,7 @@ export const registryResource = (pixiSpine) => {
       info.instance = null;
     }
   });
-}
+};
 
 export default async function getSpineData(res, pixiSpine) {
   let data = dataMap[res.name];

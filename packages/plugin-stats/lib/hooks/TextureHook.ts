@@ -3,8 +3,8 @@ export class TextureHook {
   public maxTexturesCount: number = 0;
 
   public isInit: boolean = false;
-  private realGLCreateTexture: Function = function () { };
-  private realGLDeleteTexture: Function = function () { };
+  private realGLCreateTexture: Function = function () {};
+  private realGLDeleteTexture: Function = function () {};
 
   private gl: any;
 
@@ -42,7 +42,7 @@ export class TextureHook {
       var texture = context.realGLCreateTexture.call(this);
       context.registerTexture(texture);
       return texture;
-    }
+    };
   }
 
   private fakeGLDeleteTexture(context): any {
@@ -52,7 +52,7 @@ export class TextureHook {
         context.createdTextures.splice(index, 1);
       }
       context.realGLDeleteTexture.call(this, texture);
-    }
+    };
   }
   public reset(): void {
     this.createdTextures = new Array<any>();

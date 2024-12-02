@@ -22,7 +22,7 @@ export default class Transition extends Component<TransitionParams> {
   tweenGroup: Group;
   group: Record<string, AnimationStruct[]> = {};
   private currentTime: number = 0;
-  private needPlay: { name: string, iteration?: number }[] = [];
+  private needPlay: { name: string; iteration?: number }[] = [];
 
   init({ group } = { group: {} }) {
     this.group = group;
@@ -43,7 +43,7 @@ export default class Transition extends Component<TransitionParams> {
       this.newAnimation(name);
     }
     if (name && this.animations[name]) {
-      this.needPlay.push({ name, iteration })
+      this.needPlay.push({ name, iteration });
     }
   }
 
@@ -80,15 +80,15 @@ export default class Transition extends Component<TransitionParams> {
     this.removeAllListeners();
   }
   update(e) {
-    this.currentTime = e.time
+    this.currentTime = e.time;
     for (const key in this.animations) {
-      this.animations[key].currentTime = e.time
+      this.animations[key].currentTime = e.time;
     }
     this.tweenGroup.update(e.time);
     for (const play of this.needPlay) {
-      this.animations[play.name]?.play(play.iteration, this.currentTime)
+      this.animations[play.name]?.play(play.iteration, this.currentTime);
     }
-    this.needPlay.length = 0
+    this.needPlay.length = 0;
   }
 
   newAnimation(name) {

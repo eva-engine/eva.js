@@ -261,9 +261,9 @@ class SoundSystem extends System {
         reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
       };
 
-      const promise = this.ctx.decodeAudioData(arraybuffer, success, error)
+      const promise = this.ctx.decodeAudioData(arraybuffer, success, error);
       if (promise instanceof Promise) {
-        promise.catch((err) => {
+        promise.catch(err => {
           reject(new Error(`catch ${err}, arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
         });
       }

@@ -1,4 +1,3 @@
-import { Spine as SpineBase } from '@eva/spine-base'
+import { Spine as SpineBase } from '@eva/spine-base';
 
-export default class Spine extends SpineBase {
-}
+export default class Spine extends SpineBase {}

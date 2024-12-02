@@ -6,20 +6,20 @@ export enum PhysicsType {
   POLYGON = 'polygon',
 }
 export interface PhysicsParams {
-  type?: PhysicsType
+  type?: PhysicsType;
   bodyOptions?: {
-    isStatic?: boolean,
-    restitution?: number,
-    density?: number,
-    [propName: string]: any,
-  },
+    isStatic?: boolean;
+    restitution?: number;
+    density?: number;
+    [propName: string]: any;
+  };
   position?: {
-    x?: number
-    y?: number
-  }
-  sides?: number
-  radius?: number
-  stopRotation?: boolean
+    x?: number;
+    y?: number;
+  };
+  sides?: number;
+  radius?: number;
+  stopRotation?: boolean;
 }
 
 export class Physics extends Component<PhysicsParams> {

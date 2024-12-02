@@ -692,8 +692,8 @@ class z extends X {
         'm' == e[t].t
           ? this.moveTo(e[t].p[0], e[t].p[1])
           : 'c' == e[t].t
-          ? this.bezierCurveTo(e[t].pts[0], e[t].pts[1], e[t].pts[2], e[t].pts[3], e[t].pts[4], e[t].pts[5])
-          : this.closePath();
+            ? this.bezierCurveTo(e[t].pts[0], e[t].pts[1], e[t].pts[2], e[t].pts[3], e[t].pts[4], e[t].pts[5])
+            : this.closePath();
     }
     ('st' !== s && 'gs' !== s) ||
       (e.da
@@ -835,10 +835,10 @@ function j(t) {
   return t.response && 'object' == typeof t.response
     ? t.response
     : t.response && 'string' == typeof t.response
-    ? JSON.parse(t.response)
-    : t.responseText
-    ? JSON.parse(t.responseText)
-    : void 0;
+      ? JSON.parse(t.response)
+      : t.responseText
+        ? JSON.parse(t.responseText)
+        : void 0;
 }
 class q extends e {
   constructor(t) {
@@ -910,10 +910,10 @@ const Y = {
       0 === t
         ? 0
         : 1 === t
-        ? 1
-        : (t *= 2) < 1
-        ? -0.5 * Math.pow(2, 10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI)
-        : 0.5 * Math.pow(2, -10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI) + 1,
+          ? 1
+          : (t *= 2) < 1
+            ? -0.5 * Math.pow(2, 10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI)
+            : 0.5 * Math.pow(2, -10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI) + 1,
   },
   Back: {
     In(t) {
@@ -935,10 +935,10 @@ const Y = {
       t < 1 / 2.75
         ? 7.5625 * t * t
         : t < 2 / 2.75
-        ? 7.5625 * (t -= 1.5 / 2.75) * t + 0.75
-        : t < 2.5 / 2.75
-        ? 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375
-        : 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375,
+          ? 7.5625 * (t -= 1.5 / 2.75) * t + 0.75
+          : t < 2.5 / 2.75
+            ? 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375
+            : 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375,
     InOut: t => (t < 0.5 ? 0.5 * Y.Bounce.In(2 * t) : 0.5 * Y.Bounce.Out(2 * t - 1) + 0.5),
   },
 };

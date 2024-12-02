@@ -2130,7 +2130,7 @@ var pixi_spine;
         if (!EventQueue.deprecatedWarning1) {
           EventQueue.deprecatedWarning1 = true;
           console.warn(
-            'Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. \'state.addListener({ complete: function(track, event) { } })\'',
+            "Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'",
           );
         }
         return true;
@@ -7614,10 +7614,10 @@ var pixi_spine;
       var adapter = metadata.images
         ? staticImageLoader(metadata.images)
         : metadata.image
-        ? staticImageLoader({ default: metadata.image })
-        : metadata.imageLoader
-        ? metadata.imageLoader(this, namePrefix, baseUrl, imageOptions)
-        : imageLoaderAdapter(this, namePrefix, baseUrl, imageOptions);
+          ? staticImageLoader({ default: metadata.image })
+          : metadata.imageLoader
+            ? metadata.imageLoader(this, namePrefix, baseUrl, imageOptions)
+            : imageLoaderAdapter(this, namePrefix, baseUrl, imageOptions);
       var createSkeletonWithRawAtlas = function (rawData) {
         new pixi_spine.core.TextureAtlas(rawData, adapter, function (spineAtlas) {
           if (spineAtlas) {

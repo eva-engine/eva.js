@@ -6,31 +6,26 @@
  *
  * pixi-spine is licensed under SPINE-LICENSE
  * http://esotericsoftware.com/spine-runtimes-license
- * 
+ *
  * Copyright 2019-2020, Ivan Igorevich Popelyshev <ivan.popelyshev@gmail.com>, All Rights Reserved
  */
 
+import * as pixi from 'pixi.js';
 
-import * as pixi from 'pixi.js'
-
-
-var exports = {}
-var loaders = pixi
-var core = pixi
+var exports = {};
+var loaders = pixi;
+var core = pixi;
 var constants = {
   ALPHA_MODES: pixi.ALPHA_MODES,
   SCALE_MODES: pixi.SCALE_MODES,
-  BLEND_MODES: pixi.BLEND_MODES
-
-}
-var math = pixi
-var display = pixi
-var sprite = pixi
-var meshExtras = pixi.mesh
-var graphics = pixi
-var utils = pixi.utils
-
-
+  BLEND_MODES: pixi.BLEND_MODES,
+};
+var math = pixi;
+var display = pixi;
+var sprite = pixi;
+var meshExtras = pixi.mesh;
+var graphics = pixi;
+var utils = pixi.utils;
 
 var __extends =
   (this && this.__extends) ||
@@ -56,20 +51,18 @@ var __extends =
     };
   })();
 
-
-
 /**
  * @public
  */
 exports.AttachmentType = void 0;
 (function (AttachmentType) {
-  AttachmentType[AttachmentType["Region"] = 0] = "Region";
-  AttachmentType[AttachmentType["BoundingBox"] = 1] = "BoundingBox";
-  AttachmentType[AttachmentType["Mesh"] = 2] = "Mesh";
-  AttachmentType[AttachmentType["LinkedMesh"] = 3] = "LinkedMesh";
-  AttachmentType[AttachmentType["Path"] = 4] = "Path";
-  AttachmentType[AttachmentType["Point"] = 5] = "Point";
-  AttachmentType[AttachmentType["Clipping"] = 6] = "Clipping";
+  AttachmentType[(AttachmentType['Region'] = 0)] = 'Region';
+  AttachmentType[(AttachmentType['BoundingBox'] = 1)] = 'BoundingBox';
+  AttachmentType[(AttachmentType['Mesh'] = 2)] = 'Mesh';
+  AttachmentType[(AttachmentType['LinkedMesh'] = 3)] = 'LinkedMesh';
+  AttachmentType[(AttachmentType['Path'] = 4)] = 'Path';
+  AttachmentType[(AttachmentType['Point'] = 5)] = 'Point';
+  AttachmentType[(AttachmentType['Clipping'] = 6)] = 'Clipping';
 })(exports.AttachmentType || (exports.AttachmentType = {}));
 
 /**
@@ -77,9 +70,15 @@ exports.AttachmentType = void 0;
  */
 var BinaryInput = /** @class */ (function () {
   function BinaryInput(data, strings, index, buffer) {
-    if (strings === void 0) { strings = new Array(); }
-    if (index === void 0) { index = 0; }
-    if (buffer === void 0) { buffer = new DataView(data.buffer); }
+    if (strings === void 0) {
+      strings = new Array();
+    }
+    if (index === void 0) {
+      index = 0;
+    }
+    if (buffer === void 0) {
+      buffer = new DataView(data.buffer);
+    }
     this.strings = strings;
     this.index = index;
     this.buffer = buffer;
@@ -102,24 +101,24 @@ var BinaryInput = /** @class */ (function () {
   };
   BinaryInput.prototype.readInt = function (optimizePositive) {
     var b = this.readByte();
-    var result = b & 0x7F;
+    var result = b & 0x7f;
     if ((b & 0x80) != 0) {
       b = this.readByte();
-      result |= (b & 0x7F) << 7;
+      result |= (b & 0x7f) << 7;
       if ((b & 0x80) != 0) {
         b = this.readByte();
-        result |= (b & 0x7F) << 14;
+        result |= (b & 0x7f) << 14;
         if ((b & 0x80) != 0) {
           b = this.readByte();
-          result |= (b & 0x7F) << 21;
+          result |= (b & 0x7f) << 21;
           if ((b & 0x80) != 0) {
             b = this.readByte();
-            result |= (b & 0x7F) << 28;
+            result |= (b & 0x7f) << 28;
           }
         }
       }
     }
-    return optimizePositive ? result : ((result >>> 1) ^ -(result & 1));
+    return optimizePositive ? result : (result >>> 1) ^ -(result & 1);
   };
   BinaryInput.prototype.readStringRef = function () {
     var index = this.readInt(true);
@@ -131,20 +130,20 @@ var BinaryInput = /** @class */ (function () {
       case 0:
         return null;
       case 1:
-        return "";
+        return '';
     }
     byteCount--;
-    var chars = "";
-    for (var i = 0; i < byteCount;) {
+    var chars = '';
+    for (var i = 0; i < byteCount; ) {
       var b = this.readByte();
       switch (b >> 4) {
         case 12:
         case 13:
-          chars += String.fromCharCode(((b & 0x1F) << 6 | this.readByte() & 0x3F));
+          chars += String.fromCharCode(((b & 0x1f) << 6) | (this.readByte() & 0x3f));
           i += 2;
           break;
         case 14:
-          chars += String.fromCharCode(((b & 0x0F) << 12 | (this.readByte() & 0x3F) << 6 | this.readByte() & 0x3F));
+          chars += String.fromCharCode(((b & 0x0f) << 12) | ((this.readByte() & 0x3f) << 6) | (this.readByte() & 0x3f));
           i += 3;
           break;
         default:
@@ -163,7 +162,7 @@ var BinaryInput = /** @class */ (function () {
     return this.readByte() != 0;
   };
   return BinaryInput;
-}());
+})();
 
 // Those enums were moved from Animation.ts of spine 3.8 and 4.0
 /** Controls how a timeline value is mixed with the setup pose value or current pose value when a timeline's `alpha`
@@ -176,25 +175,25 @@ exports.MixBlend = void 0;
 (function (MixBlend) {
   /** Transitions from the setup value to the timeline value (the current value is not used). Before the first key, the setup
    * value is set. */
-  MixBlend[MixBlend["setup"] = 0] = "setup";
+  MixBlend[(MixBlend['setup'] = 0)] = 'setup';
   /** Transitions from the current value to the timeline value. Before the first key, transitions from the current value to
    * the setup value. Timelines which perform instant transitions, such as DrawOrderTimeline or
    * AttachmentTimeline, use the setup value before the first key.
    *
    * `first` is intended for the first animations applied, not for animations layered on top of those. */
-  MixBlend[MixBlend["first"] = 1] = "first";
+  MixBlend[(MixBlend['first'] = 1)] = 'first';
   /** Transitions from the current value to the timeline value. No change is made before the first key (the current value is
    * kept until the first key).
    *
    * `replace` is intended for animations layered on top of others, not for the first animations applied. */
-  MixBlend[MixBlend["replace"] = 2] = "replace";
+  MixBlend[(MixBlend['replace'] = 2)] = 'replace';
   /** Transitions from the current value to the current value plus the timeline value. No change is made before the first key
    * (the current value is kept until the first key).
    *
    * `add` is intended for animations layered on top of others, not for the first animations applied. Properties
    * keyed by additive animations must be set manually or by another animation before applying the additive animations, else
    * the property values will increase continually. */
-  MixBlend[MixBlend["add"] = 3] = "add";
+  MixBlend[(MixBlend['add'] = 3)] = 'add';
 })(exports.MixBlend || (exports.MixBlend = {}));
 /** Indicates whether a timeline's `alpha` is mixing out over time toward 0 (the setup or current pose value) or
  * mixing in toward 1 (the timeline's value).
@@ -204,8 +203,8 @@ exports.MixBlend = void 0;
  * */
 exports.MixDirection = void 0;
 (function (MixDirection) {
-  MixDirection[MixDirection["mixIn"] = 0] = "mixIn";
-  MixDirection[MixDirection["mixOut"] = 1] = "mixOut";
+  MixDirection[(MixDirection['mixIn'] = 0)] = 'mixIn';
+  MixDirection[(MixDirection['mixOut'] = 1)] = 'mixOut';
 })(exports.MixDirection || (exports.MixDirection = {}));
 
 // These enums were moved from PathConstraintData.ts of spine 3.7, 3.8 and 4.0
@@ -216,8 +215,8 @@ exports.MixDirection = void 0;
  * */
 exports.PositionMode = void 0;
 (function (PositionMode) {
-  PositionMode[PositionMode["Fixed"] = 0] = "Fixed";
-  PositionMode[PositionMode["Percent"] = 1] = "Percent";
+  PositionMode[(PositionMode['Fixed'] = 0)] = 'Fixed';
+  PositionMode[(PositionMode['Percent'] = 1)] = 'Percent';
 })(exports.PositionMode || (exports.PositionMode = {}));
 /** Controls how bones are rotated, translated, and scaled to match the path.
  *
@@ -226,9 +225,9 @@ exports.PositionMode = void 0;
  * */
 exports.RotateMode = void 0;
 (function (RotateMode) {
-  RotateMode[RotateMode["Tangent"] = 0] = "Tangent";
-  RotateMode[RotateMode["Chain"] = 1] = "Chain";
-  RotateMode[RotateMode["ChainScale"] = 2] = "ChainScale";
+  RotateMode[(RotateMode['Tangent'] = 0)] = 'Tangent';
+  RotateMode[(RotateMode['Chain'] = 1)] = 'Chain';
+  RotateMode[(RotateMode['ChainScale'] = 2)] = 'ChainScale';
 })(exports.RotateMode || (exports.RotateMode = {}));
 
 // This enum was moved from BoneData.ts of spine 3.7, 3.8 and 4.0
@@ -237,11 +236,11 @@ exports.RotateMode = void 0;
  * */
 exports.TransformMode = void 0;
 (function (TransformMode) {
-  TransformMode[TransformMode["Normal"] = 0] = "Normal";
-  TransformMode[TransformMode["OnlyTranslation"] = 1] = "OnlyTranslation";
-  TransformMode[TransformMode["NoRotationOrReflection"] = 2] = "NoRotationOrReflection";
-  TransformMode[TransformMode["NoScale"] = 3] = "NoScale";
-  TransformMode[TransformMode["NoScaleOrReflection"] = 4] = "NoScaleOrReflection";
+  TransformMode[(TransformMode['Normal'] = 0)] = 'Normal';
+  TransformMode[(TransformMode['OnlyTranslation'] = 1)] = 'OnlyTranslation';
+  TransformMode[(TransformMode['NoRotationOrReflection'] = 2)] = 'NoRotationOrReflection';
+  TransformMode[(TransformMode['NoScale'] = 3)] = 'NoScale';
+  TransformMode[(TransformMode['NoScaleOrReflection'] = 4)] = 'NoScaleOrReflection';
 })(exports.TransformMode || (exports.TransformMode = {}));
 
 /**
@@ -249,14 +248,22 @@ exports.TransformMode = void 0;
  */
 function filterFromString(text) {
   switch (text.toLowerCase()) {
-    case "nearest": return exports.TextureFilter.Nearest;
-    case "linear": return exports.TextureFilter.Linear;
-    case "mipmap": return exports.TextureFilter.MipMap;
-    case "mipmapnearestnearest": return exports.TextureFilter.MipMapNearestNearest;
-    case "mipmaplinearnearest": return exports.TextureFilter.MipMapLinearNearest;
-    case "mipmapnearestlinear": return exports.TextureFilter.MipMapNearestLinear;
-    case "mipmaplinearlinear": return exports.TextureFilter.MipMapLinearLinear;
-    default: throw new Error("Unknown texture filter " + text);
+    case 'nearest':
+      return exports.TextureFilter.Nearest;
+    case 'linear':
+      return exports.TextureFilter.Linear;
+    case 'mipmap':
+      return exports.TextureFilter.MipMap;
+    case 'mipmapnearestnearest':
+      return exports.TextureFilter.MipMapNearestNearest;
+    case 'mipmaplinearnearest':
+      return exports.TextureFilter.MipMapLinearNearest;
+    case 'mipmapnearestlinear':
+      return exports.TextureFilter.MipMapNearestLinear;
+    case 'mipmaplinearlinear':
+      return exports.TextureFilter.MipMapLinearLinear;
+    default:
+      throw new Error('Unknown texture filter ' + text);
   }
 }
 /**
@@ -264,10 +271,14 @@ function filterFromString(text) {
  */
 function wrapFromString(text) {
   switch (text.toLowerCase()) {
-    case "mirroredtepeat": return exports.TextureWrap.MirroredRepeat;
-    case "clamptoedge": return exports.TextureWrap.ClampToEdge;
-    case "repeat": return exports.TextureWrap.Repeat;
-    default: throw new Error("Unknown texture wrap " + text);
+    case 'mirroredtepeat':
+      return exports.TextureWrap.MirroredRepeat;
+    case 'clamptoedge':
+      return exports.TextureWrap.ClampToEdge;
+    case 'repeat':
+      return exports.TextureWrap.Repeat;
+    default:
+      throw new Error('Unknown texture wrap ' + text);
   }
 }
 /**
@@ -275,22 +286,22 @@ function wrapFromString(text) {
  */
 exports.TextureFilter = void 0;
 (function (TextureFilter) {
-  TextureFilter[TextureFilter["Nearest"] = 9728] = "Nearest";
-  TextureFilter[TextureFilter["Linear"] = 9729] = "Linear";
-  TextureFilter[TextureFilter["MipMap"] = 9987] = "MipMap";
-  TextureFilter[TextureFilter["MipMapNearestNearest"] = 9984] = "MipMapNearestNearest";
-  TextureFilter[TextureFilter["MipMapLinearNearest"] = 9985] = "MipMapLinearNearest";
-  TextureFilter[TextureFilter["MipMapNearestLinear"] = 9986] = "MipMapNearestLinear";
-  TextureFilter[TextureFilter["MipMapLinearLinear"] = 9987] = "MipMapLinearLinear"; // WebGLRenderingContext.LINEAR_MIPMAP_LINEAR
+  TextureFilter[(TextureFilter['Nearest'] = 9728)] = 'Nearest';
+  TextureFilter[(TextureFilter['Linear'] = 9729)] = 'Linear';
+  TextureFilter[(TextureFilter['MipMap'] = 9987)] = 'MipMap';
+  TextureFilter[(TextureFilter['MipMapNearestNearest'] = 9984)] = 'MipMapNearestNearest';
+  TextureFilter[(TextureFilter['MipMapLinearNearest'] = 9985)] = 'MipMapLinearNearest';
+  TextureFilter[(TextureFilter['MipMapNearestLinear'] = 9986)] = 'MipMapNearestLinear';
+  TextureFilter[(TextureFilter['MipMapLinearLinear'] = 9987)] = 'MipMapLinearLinear'; // WebGLRenderingContext.LINEAR_MIPMAP_LINEAR
 })(exports.TextureFilter || (exports.TextureFilter = {}));
 /**
  * @public
  */
 exports.TextureWrap = void 0;
 (function (TextureWrap) {
-  TextureWrap[TextureWrap["MirroredRepeat"] = 33648] = "MirroredRepeat";
-  TextureWrap[TextureWrap["ClampToEdge"] = 33071] = "ClampToEdge";
-  TextureWrap[TextureWrap["Repeat"] = 10497] = "Repeat"; // WebGLRenderingContext.REPEAT
+  TextureWrap[(TextureWrap['MirroredRepeat'] = 33648)] = 'MirroredRepeat';
+  TextureWrap[(TextureWrap['ClampToEdge'] = 33071)] = 'ClampToEdge';
+  TextureWrap[(TextureWrap['Repeat'] = 10497)] = 'Repeat'; // WebGLRenderingContext.REPEAT
 })(exports.TextureWrap || (exports.TextureWrap = {}));
 /**
  * @public
@@ -302,7 +313,7 @@ var TextureRegion = /** @class */ (function () {
     this.names = null;
     this.values = null;
   }
-  Object.defineProperty(TextureRegion.prototype, "width", {
+  Object.defineProperty(TextureRegion.prototype, 'width', {
     get: function () {
       var tex = this.texture;
       if (tex.trim) {
@@ -311,9 +322,9 @@ var TextureRegion = /** @class */ (function () {
       return tex.orig.width;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "height", {
+  Object.defineProperty(TextureRegion.prototype, 'height', {
     get: function () {
       var tex = this.texture;
       if (tex.trim) {
@@ -322,112 +333,112 @@ var TextureRegion = /** @class */ (function () {
       return tex.orig.height;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "u", {
+  Object.defineProperty(TextureRegion.prototype, 'u', {
     get: function () {
       return this.texture._uvs.x0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "v", {
+  Object.defineProperty(TextureRegion.prototype, 'v', {
     get: function () {
       return this.texture._uvs.y0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "u2", {
+  Object.defineProperty(TextureRegion.prototype, 'u2', {
     get: function () {
       return this.texture._uvs.x2;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "v2", {
+  Object.defineProperty(TextureRegion.prototype, 'v2', {
     get: function () {
       return this.texture._uvs.y2;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "offsetX", {
+  Object.defineProperty(TextureRegion.prototype, 'offsetX', {
     get: function () {
       var tex = this.texture;
       return tex.trim ? tex.trim.x : 0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "offsetY", {
+  Object.defineProperty(TextureRegion.prototype, 'offsetY', {
     get: function () {
       // console.warn("Deprecation Warning: @Hackerham: I guess, if you are using PIXI-SPINE ATLAS region.offsetY, you want a texture, right? Use region.texture from now on.");
       return this.spineOffsetY;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "pixiOffsetY", {
+  Object.defineProperty(TextureRegion.prototype, 'pixiOffsetY', {
     get: function () {
       var tex = this.texture;
       return tex.trim ? tex.trim.y : 0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "spineOffsetY", {
+  Object.defineProperty(TextureRegion.prototype, 'spineOffsetY', {
     get: function () {
       var tex = this.texture;
       return this.originalHeight - this.height - (tex.trim ? tex.trim.y : 0);
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "originalWidth", {
+  Object.defineProperty(TextureRegion.prototype, 'originalWidth', {
     get: function () {
       return this.texture.orig.width;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "originalHeight", {
+  Object.defineProperty(TextureRegion.prototype, 'originalHeight', {
     get: function () {
       return this.texture.orig.height;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "x", {
+  Object.defineProperty(TextureRegion.prototype, 'x', {
     get: function () {
       return this.texture.frame.x;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "y", {
+  Object.defineProperty(TextureRegion.prototype, 'y', {
     get: function () {
       return this.texture.frame.y;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "rotate", {
+  Object.defineProperty(TextureRegion.prototype, 'rotate', {
     get: function () {
       return this.texture.rotate !== 0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TextureRegion.prototype, "degrees", {
+  Object.defineProperty(TextureRegion.prototype, 'degrees', {
     get: function () {
       return (360 - this.texture.rotate * 45) % 360;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   return TextureRegion;
-}());
+})();
 
 var RegionFields = /** @class */ (function () {
   function RegionFields() {
@@ -443,7 +454,7 @@ var RegionFields = /** @class */ (function () {
     this.index = 0;
   }
   return RegionFields;
-}());
+})();
 /**
  * @public
  */
@@ -488,7 +499,10 @@ var TextureAtlas = /** @class */ (function () {
   TextureAtlas.prototype.addTextureHash = function (textures, stripExtension) {
     for (var key in textures) {
       if (textures.hasOwnProperty(key)) {
-        this.addTexture(stripExtension && key.indexOf('.') !== -1 ? key.substr(0, key.lastIndexOf('.')) : key, textures[key]);
+        this.addTexture(
+          stripExtension && key.indexOf('.') !== -1 ? key.substr(0, key.lastIndexOf('.')) : key,
+          textures[key],
+        );
       }
     }
   };
@@ -497,90 +511,82 @@ var TextureAtlas = /** @class */ (function () {
   };
   TextureAtlas.prototype.load = function (atlasText, textureLoader, callback) {
     var _this = this;
-    if (textureLoader == null)
-      throw new Error("textureLoader cannot be null.");
+    if (textureLoader == null) throw new Error('textureLoader cannot be null.');
     var reader = new TextureAtlasReader(atlasText);
     var entry = new Array(4);
     var page = null;
     var pageFields = {};
     var region = null;
-    pageFields["size"] = function () {
+    pageFields['size'] = function () {
       page.width = parseInt(entry[1]);
       page.height = parseInt(entry[2]);
     };
-    pageFields["format"] = function () {
+    pageFields['format'] = function () {
       // page.format = Format[tuple[0]]; we don't need format in WebGL
     };
-    pageFields["filter"] = function () {
+    pageFields['filter'] = function () {
       page.minFilter = filterFromString(entry[1]);
       page.magFilter = filterFromString(entry[2]);
     };
-    pageFields["repeat"] = function () {
-      if (entry[1].indexOf('x') != -1)
-        page.uWrap = exports.TextureWrap.Repeat;
-      if (entry[1].indexOf('y') != -1)
-        page.vWrap = exports.TextureWrap.Repeat;
+    pageFields['repeat'] = function () {
+      if (entry[1].indexOf('x') != -1) page.uWrap = exports.TextureWrap.Repeat;
+      if (entry[1].indexOf('y') != -1) page.vWrap = exports.TextureWrap.Repeat;
     };
     // change for Eva.js
     // pageFields["pma"] = function () {
     //   page.pma = entry[1] == "true";
     // };
     var regionFields = {};
-    regionFields["xy"] = function () {
+    regionFields['xy'] = function () {
       region.x = parseInt(entry[1]);
       region.y = parseInt(entry[2]);
     };
-    regionFields["size"] = function () {
+    regionFields['size'] = function () {
       region.width = parseInt(entry[1]);
       region.height = parseInt(entry[2]);
     };
-    regionFields["bounds"] = function () {
+    regionFields['bounds'] = function () {
       region.x = parseInt(entry[1]);
       region.y = parseInt(entry[2]);
       region.width = parseInt(entry[3]);
       region.height = parseInt(entry[4]);
     };
-    regionFields["offset"] = function () {
+    regionFields['offset'] = function () {
       region.offsetX = parseInt(entry[1]);
       region.offsetY = parseInt(entry[2]);
     };
-    regionFields["orig"] = function () {
+    regionFields['orig'] = function () {
       region.originalWidth = parseInt(entry[1]);
       region.originalHeight = parseInt(entry[2]);
     };
-    regionFields["offsets"] = function () {
+    regionFields['offsets'] = function () {
       region.offsetX = parseInt(entry[1]);
       region.offsetY = parseInt(entry[2]);
       region.originalWidth = parseInt(entry[3]);
       region.originalHeight = parseInt(entry[4]);
     };
-    regionFields["rotate"] = function () {
+    regionFields['rotate'] = function () {
       var rotateValue = entry[1];
       var rotate = 0;
-      if (rotateValue.toLocaleLowerCase() == "true") {
+      if (rotateValue.toLocaleLowerCase() == 'true') {
         rotate = 6;
-      }
-      else if (rotateValue.toLocaleLowerCase() == "false") {
+      } else if (rotateValue.toLocaleLowerCase() == 'false') {
         rotate = 0;
-      }
-      else {
+      } else {
         rotate = ((720 - parseFloat(rotateValue)) % 360) / 45;
       }
       region.rotate = rotate;
     };
-    regionFields["index"] = function () {
+    regionFields['index'] = function () {
       region.index = parseInt(entry[1]);
     };
     var line = reader.readLine();
     // Ignore empty lines before first entry.
-    while (line != null && line.trim().length == 0)
-      line = reader.readLine();
+    while (line != null && line.trim().length == 0) line = reader.readLine();
     // Header entries.
     while (true) {
-      if (line == null || line.trim().length == 0)
-        break;
-      if (reader.readEntry(entry, line) == 0)
-        break; // Silently ignore all header fields.
+      if (line == null || line.trim().length == 0) break;
+      if (reader.readEntry(entry, line) == 0) break; // Silently ignore all header fields.
       line = reader.readLine();
     }
     var iterateParser = function () {
@@ -591,16 +597,13 @@ var TextureAtlas = /** @class */ (function () {
         if (line.trim().length == 0) {
           page = null;
           line = reader.readLine();
-        }
-        else if (page === null) {
+        } else if (page === null) {
           page = new TextureAtlasPage();
           page.name = line.trim();
           while (true) {
-            if (reader.readEntry(entry, line = reader.readLine()) == 0)
-              break;
+            if (reader.readEntry(entry, (line = reader.readLine())) == 0) break;
             var field = pageFields[entry[0]];
-            if (field)
-              field();
+            if (field) field();
           }
           _this.pages.push(page);
           textureLoader(page.name, function (texture) {
@@ -614,9 +617,10 @@ var TextureAtlas = /** @class */ (function () {
             // if (page.pma) {
             //   texture.alphaMode = constants.ALPHA_MODES.PMA;
             // }
-            if (!texture.valid) {  // changefor Eva.js
-              texture.width = page.width
-              texture.height = page.height
+            if (!texture.valid) {
+              // changefor Eva.js
+              texture.width = page.width;
+              texture.height = page.height;
             }
             _this.pages.push(page);
             page.setFilters();
@@ -624,15 +628,18 @@ var TextureAtlas = /** @class */ (function () {
               page.width = texture.realWidth;
               page.height = texture.realHeight;
               if (!page.width || !page.height) {
-                console.log("ERROR spine atlas page " + page.name + ": meshes wont work if you dont specify size in atlas (http://www.html5gamedevs.com/topic/18888-pixi-spines-and-meshes/?p=107121)");
+                console.log(
+                  'ERROR spine atlas page ' +
+                    page.name +
+                    ': meshes wont work if you dont specify size in atlas (http://www.html5gamedevs.com/topic/18888-pixi-spines-and-meshes/?p=107121)',
+                );
               }
             }
             iterateParser();
           });
           _this.pages.push(page);
           break;
-        }
-        else {
+        } else {
           region = new RegionFields();
           var atlasRegion = new TextureAtlasRegion();
           atlasRegion.name = line;
@@ -640,12 +647,10 @@ var TextureAtlas = /** @class */ (function () {
           var names = null;
           var values = null;
           while (true) {
-            var count = reader.readEntry(entry, line = reader.readLine());
-            if (count == 0)
-              break;
+            var count = reader.readEntry(entry, (line = reader.readLine()));
+            if (count == 0) break;
             var field = regionFields[entry[0]];
-            if (field)
-              field();
+            if (field) field();
             else {
               if (names == null) {
                 names = [];
@@ -653,8 +658,7 @@ var TextureAtlas = /** @class */ (function () {
               }
               names.push(entry[0]);
               var entryValues = [];
-              for (var i = 0; i < count; i++)
-                entryValues.push(parseInt(entry[i + 1]));
+              for (var i = 0; i < count; i++) entryValues.push(parseInt(entry[i + 1]));
               values.push(entryValues);
             }
           }
@@ -672,9 +676,19 @@ var TextureAtlas = /** @class */ (function () {
           region.offsetX /= resolution;
           region.offsetY /= resolution;
           var swapWH = region.rotate % 4 !== 0;
-          var frame = new math.Rectangle(region.x, region.y, swapWH ? region.height : region.width, swapWH ? region.width : region.height);
+          var frame = new math.Rectangle(
+            region.x,
+            region.y,
+            swapWH ? region.height : region.width,
+            swapWH ? region.width : region.height,
+          );
           var orig = new math.Rectangle(0, 0, region.originalWidth, region.originalHeight);
-          var trim = new math.Rectangle(region.offsetX, region.originalHeight - region.height - region.offsetY, region.width, region.height);
+          var trim = new math.Rectangle(
+            region.offsetX,
+            region.originalHeight - region.height - region.offsetY,
+            region.width,
+            region.height,
+          );
           atlasRegion.texture = new core.Texture(atlasRegion.page.baseTexture, frame, orig, trim, region.rotate);
           atlasRegion.index = region.index;
           atlasRegion.texture._updateUvs(); // changefor Eva.js
@@ -698,7 +712,7 @@ var TextureAtlas = /** @class */ (function () {
     }
   };
   return TextureAtlas;
-}());
+})();
 /**
  * @public
  */
@@ -708,19 +722,15 @@ var TextureAtlasReader = /** @class */ (function () {
     this.lines = text.split(/\r\n|\r|\n/);
   }
   TextureAtlasReader.prototype.readLine = function () {
-    if (this.index >= this.lines.length)
-      return null;
+    if (this.index >= this.lines.length) return null;
     return this.lines[this.index++];
   };
   TextureAtlasReader.prototype.readEntry = function (entry, line) {
-    if (line == null)
-      return 0;
+    if (line == null) return 0;
     line = line.trim();
-    if (line.length == 0)
-      return 0;
+    if (line.length == 0) return 0;
     var colon = line.indexOf(':');
-    if (colon == -1)
-      return 0;
+    if (colon == -1) return 0;
     entry[0] = line.substr(0, colon).trim();
     for (var i = 1, lastMatch = colon + 1; ; i++) {
       var comma = line.indexOf(',', lastMatch);
@@ -730,12 +740,11 @@ var TextureAtlasReader = /** @class */ (function () {
       }
       entry[i] = line.substr(lastMatch, comma - lastMatch).trim();
       lastMatch = comma + 1;
-      if (i == 4)
-        return 4;
+      if (i == 4) return 4;
     }
   };
   return TextureAtlasReader;
-}());
+})();
 /**
  * @public
  */
@@ -751,36 +760,33 @@ var TextureAtlasPage = /** @class */ (function () {
     var filter = this.minFilter;
     if (filter == exports.TextureFilter.Linear) {
       tex.scaleMode = constants.SCALE_MODES.LINEAR;
-    }
-    else if (this.minFilter == exports.TextureFilter.Nearest) {
+    } else if (this.minFilter == exports.TextureFilter.Nearest) {
       tex.scaleMode = constants.SCALE_MODES.NEAREST;
-    }
-    else {
+    } else {
       tex.mipmap = constants.MIPMAP_MODES.POW2;
       if (filter == exports.TextureFilter.MipMapNearestNearest) {
         tex.scaleMode = constants.SCALE_MODES.NEAREST;
-      }
-      else {
+      } else {
         tex.scaleMode = constants.SCALE_MODES.LINEAR;
       }
     }
   };
   return TextureAtlasPage;
-}());
+})();
 /**
  * @public
  */
 var TextureAtlasRegion = /** @class */ (function (_super) {
   __extends(TextureAtlasRegion, _super);
   function TextureAtlasRegion() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return (_super !== null && _super.apply(this, arguments)) || this;
   }
   return TextureAtlasRegion;
-}(TextureRegion));
+})(TextureRegion);
 
 var fround_polyfill = (function (array) {
   return function (x) {
-    return array[0] = x, array[0];
+    return (array[0] = x), array[0];
   };
 })(new Float32Array(1));
 var fround = Math.fround || fround_polyfill;
@@ -806,7 +812,7 @@ var IntSet = /** @class */ (function () {
     this.array.length = 0;
   };
   return IntSet;
-}());
+})();
 /**
  * @public
  */
@@ -826,8 +832,7 @@ var StringSet = /** @class */ (function () {
   };
   StringSet.prototype.addAll = function (values) {
     var oldSize = this.size;
-    for (var i = 0, n = values.length; i < n; i++)
-      this.add(values[i]);
+    for (var i = 0, n = values.length; i < n; i++) this.add(values[i]);
     return oldSize != this.size;
   };
   StringSet.prototype.contains = function (value) {
@@ -838,16 +843,24 @@ var StringSet = /** @class */ (function () {
     this.size = 0;
   };
   return StringSet;
-}());
+})();
 /**
  * @public
  */
 var Color = /** @class */ (function () {
   function Color(r, g, b, a) {
-    if (r === void 0) { r = 0; }
-    if (g === void 0) { g = 0; }
-    if (b === void 0) { b = 0; }
-    if (a === void 0) { a = 0; }
+    if (r === void 0) {
+      r = 0;
+    }
+    if (g === void 0) {
+      g = 0;
+    }
+    if (b === void 0) {
+      b = 0;
+    }
+    if (a === void 0) {
+      a = 0;
+    }
     this.r = r;
     this.g = g;
     this.b = b;
@@ -883,34 +896,26 @@ var Color = /** @class */ (function () {
     return this.clamp();
   };
   Color.prototype.clamp = function () {
-    if (this.r < 0)
-      this.r = 0;
-    else if (this.r > 1)
-      this.r = 1;
-    if (this.g < 0)
-      this.g = 0;
-    else if (this.g > 1)
-      this.g = 1;
-    if (this.b < 0)
-      this.b = 0;
-    else if (this.b > 1)
-      this.b = 1;
-    if (this.a < 0)
-      this.a = 0;
-    else if (this.a > 1)
-      this.a = 1;
+    if (this.r < 0) this.r = 0;
+    else if (this.r > 1) this.r = 1;
+    if (this.g < 0) this.g = 0;
+    else if (this.g > 1) this.g = 1;
+    if (this.b < 0) this.b = 0;
+    else if (this.b > 1) this.b = 1;
+    if (this.a < 0) this.a = 0;
+    else if (this.a > 1) this.a = 1;
     return this;
   };
   Color.rgba8888ToColor = function (color, value) {
     color.r = ((value & 0xff000000) >>> 24) / 255;
     color.g = ((value & 0x00ff0000) >>> 16) / 255;
     color.b = ((value & 0x0000ff00) >>> 8) / 255;
-    color.a = ((value & 0x000000ff)) / 255;
+    color.a = (value & 0x000000ff) / 255;
   };
   Color.rgb888ToColor = function (color, value) {
     color.r = ((value & 0x00ff0000) >>> 16) / 255;
     color.g = ((value & 0x0000ff00) >>> 8) / 255;
-    color.b = ((value & 0x000000ff)) / 255;
+    color.b = (value & 0x000000ff) / 255;
   };
   Color.fromString = function (hex) {
     return new Color().setFromString(hex);
@@ -921,18 +926,15 @@ var Color = /** @class */ (function () {
   Color.BLUE = new Color(0, 0, 1, 1);
   Color.MAGENTA = new Color(1, 0, 1, 1);
   return Color;
-}());
+})();
 /**
  * @public
  */
 var MathUtils = /** @class */ (function () {
-  function MathUtils() {
-  }
+  function MathUtils() {}
   MathUtils.clamp = function (value, min, max) {
-    if (value < min)
-      return min;
-    if (value > max)
-      return max;
+    if (value < min) return min;
+    if (value > max) return max;
     return value;
   };
   MathUtils.cosDeg = function (degrees) {
@@ -957,8 +959,7 @@ var MathUtils = /** @class */ (function () {
   MathUtils.randomTriangularWith = function (min, max, mode) {
     var u = Math.random();
     var d = max - min;
-    if (u <= (mode - min) / d)
-      return min + Math.sqrt(u * d * (mode - min));
+    if (u <= (mode - min) / d) return min + Math.sqrt(u * d * (mode - min));
     return max - Math.sqrt((1 - u) * d * (max - mode));
   };
   MathUtils.PI = 3.1415927;
@@ -968,18 +969,17 @@ var MathUtils = /** @class */ (function () {
   MathUtils.degreesToRadians = MathUtils.PI / 180;
   MathUtils.degRad = MathUtils.degreesToRadians;
   return MathUtils;
-}());
+})();
 /**
  * @public
  */
 var Interpolation = /** @class */ (function () {
-  function Interpolation() {
-  }
+  function Interpolation() {}
   Interpolation.prototype.apply = function (start, end, a) {
     return start + (end - start) * this.applyInternal(a);
   };
   return Interpolation;
-}());
+})();
 /**
  * @public
  */
@@ -992,12 +992,11 @@ var Pow = /** @class */ (function (_super) {
     return _this;
   }
   Pow.prototype.applyInternal = function (a) {
-    if (a <= 0.5)
-      return Math.pow(a * 2, this.power) / 2;
+    if (a <= 0.5) return Math.pow(a * 2, this.power) / 2;
     return Math.pow((a - 1) * 2, this.power) / (this.power % 2 == 0 ? -2 : 2) + 1;
   };
   return Pow;
-}(Interpolation));
+})(Interpolation);
 /**
  * @public
  */
@@ -1010,63 +1009,57 @@ var PowOut = /** @class */ (function (_super) {
     return Math.pow(a - 1, this.power) * (this.power % 2 == 0 ? -1 : 1) + 1;
   };
   return PowOut;
-}(Pow));
+})(Pow);
 /**
  * @public
  */
 var Utils = /** @class */ (function () {
-  function Utils() {
-  }
+  function Utils() {}
   Utils.arrayCopy = function (source, sourceStart, dest, destStart, numElements) {
     for (var i = sourceStart, j = destStart; i < sourceStart + numElements; i++, j++) {
       dest[j] = source[i];
     }
   };
   Utils.arrayFill = function (array, fromIndex, toIndex, value) {
-    for (var i = fromIndex; i < toIndex; i++)
-      array[i] = value;
+    for (var i = fromIndex; i < toIndex; i++) array[i] = value;
   };
   Utils.setArraySize = function (array, size, value) {
-    if (value === void 0) { value = 0; }
+    if (value === void 0) {
+      value = 0;
+    }
     var oldSize = array.length;
-    if (oldSize == size)
-      return array;
+    if (oldSize == size) return array;
     array.length = size;
     if (oldSize < size) {
-      for (var i = oldSize; i < size; i++)
-        array[i] = value;
+      for (var i = oldSize; i < size; i++) array[i] = value;
     }
     return array;
   };
   Utils.ensureArrayCapacity = function (array, size, value) {
-    if (value === void 0) { value = 0; }
-    if (array.length >= size)
-      return array;
+    if (value === void 0) {
+      value = 0;
+    }
+    if (array.length >= size) return array;
     return Utils.setArraySize(array, size, value);
   };
   Utils.newArray = function (size, defaultValue) {
     var array = new Array(size);
-    for (var i = 0; i < size; i++)
-      array[i] = defaultValue;
+    for (var i = 0; i < size; i++) array[i] = defaultValue;
     return array;
   };
   Utils.newFloatArray = function (size) {
-    if (Utils.SUPPORTS_TYPED_ARRAYS)
-      return new Float32Array(size);
+    if (Utils.SUPPORTS_TYPED_ARRAYS) return new Float32Array(size);
     else {
       var array = new Array(size);
-      for (var i = 0; i < array.length; i++)
-        array[i] = 0;
+      for (var i = 0; i < array.length; i++) array[i] = 0;
       return array;
     }
   };
   Utils.newShortArray = function (size) {
-    if (Utils.SUPPORTS_TYPED_ARRAYS)
-      return new Int16Array(size);
+    if (Utils.SUPPORTS_TYPED_ARRAYS) return new Int16Array(size);
     else {
       var array = new Array(size);
-      for (var i = 0; i < array.length; i++)
-        array[i] = 0;
+      for (var i = 0; i < array.length; i++) array[i] = 0;
       return array;
     }
   };
@@ -1077,35 +1070,33 @@ var Utils = /** @class */ (function () {
     return Utils.SUPPORTS_TYPED_ARRAYS ? fround(value) : value;
   };
   // This function is used to fix WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
-  Utils.webkit602BugfixHelper = function (alpha, blend) {
-  };
+  Utils.webkit602BugfixHelper = function (alpha, blend) {};
   Utils.contains = function (array, element, identity) {
-    for (var i = 0; i < array.length; i++)
-      if (array[i] == element)
-        return true;
+    for (var i = 0; i < array.length; i++) if (array[i] == element) return true;
     return false;
   };
   Utils.enumValue = function (type, name) {
     return type[name[0].toUpperCase() + name.slice(1)];
   };
-  Utils.SUPPORTS_TYPED_ARRAYS = typeof (Float32Array) !== "undefined";
+  Utils.SUPPORTS_TYPED_ARRAYS = typeof Float32Array !== 'undefined';
   return Utils;
-}());
+})();
 /**
  * @public
  */
 var DebugUtils = /** @class */ (function () {
-  function DebugUtils() {
-  }
+  function DebugUtils() {}
   DebugUtils.logBones = function (skeleton) {
     for (var i = 0; i < skeleton.bones.length; i++) {
       var bone = skeleton.bones[i];
       var mat = bone.matrix;
-      console.log(bone.data.name + ", " + mat.a + ", " + mat.b + ", " + mat.c + ", " + mat.d + ", " + mat.tx + ", " + mat.ty);
+      console.log(
+        bone.data.name + ', ' + mat.a + ', ' + mat.b + ', ' + mat.c + ', ' + mat.d + ', ' + mat.tx + ', ' + mat.ty,
+      );
     }
   };
   return DebugUtils;
-}());
+})();
 /**
  * @public
  */
@@ -1118,26 +1109,28 @@ var Pool = /** @class */ (function () {
     return this.items.length > 0 ? this.items.pop() : this.instantiator();
   };
   Pool.prototype.free = function (item) {
-    if (item.reset)
-      item.reset();
+    if (item.reset) item.reset();
     this.items.push(item);
   };
   Pool.prototype.freeAll = function (items) {
-    for (var i = 0; i < items.length; i++)
-      this.free(items[i]);
+    for (var i = 0; i < items.length; i++) this.free(items[i]);
   };
   Pool.prototype.clear = function () {
     this.items.length = 0;
   };
   return Pool;
-}());
+})();
 /**
  * @public
  */
 var Vector2 = /** @class */ (function () {
   function Vector2(x, y) {
-    if (x === void 0) { x = 0; }
-    if (y === void 0) { y = 0; }
+    if (x === void 0) {
+      x = 0;
+    }
+    if (y === void 0) {
+      y = 0;
+    }
     this.x = x;
     this.y = y;
   }
@@ -1160,7 +1153,7 @@ var Vector2 = /** @class */ (function () {
     return this;
   };
   return Vector2;
-}());
+})();
 /**
  * @public
  */
@@ -1179,8 +1172,7 @@ var TimeKeeper = /** @class */ (function () {
     this.delta = now - this.lastTime;
     this.frameTime += this.delta;
     this.totalTime += this.delta;
-    if (this.delta > this.maxDelta)
-      this.delta = this.maxDelta;
+    if (this.delta > this.maxDelta) this.delta = this.maxDelta;
     this.lastTime = now;
     this.frameCount++;
     if (this.frameTime > 1) {
@@ -1190,13 +1182,15 @@ var TimeKeeper = /** @class */ (function () {
     }
   };
   return TimeKeeper;
-}());
+})();
 /**
  * @public
  */
 var WindowedMean = /** @class */ (function () {
   function WindowedMean(windowSize) {
-    if (windowSize === void 0) { windowSize = 32; }
+    if (windowSize === void 0) {
+      windowSize = 32;
+    }
     this.addedValues = 0;
     this.lastValue = 0;
     this.mean = 0;
@@ -1207,19 +1201,16 @@ var WindowedMean = /** @class */ (function () {
     return this.addedValues >= this.values.length;
   };
   WindowedMean.prototype.addValue = function (value) {
-    if (this.addedValues < this.values.length)
-      this.addedValues++;
+    if (this.addedValues < this.values.length) this.addedValues++;
     this.values[this.lastValue++] = value;
-    if (this.lastValue > this.values.length - 1)
-      this.lastValue = 0;
+    if (this.lastValue > this.values.length - 1) this.lastValue = 0;
     this.dirty = true;
   };
   WindowedMean.prototype.getMean = function () {
     if (this.hasEnoughData()) {
       if (this.dirty) {
         var mean = 0;
-        for (var i = 0; i < this.values.length; i++)
-          mean += this.values[i];
+        for (var i = 0; i < this.values.length; i++) mean += this.values[i];
         this.mean = mean / this.values.length;
         this.dirty = false;
       }
@@ -1228,7 +1219,7 @@ var WindowedMean = /** @class */ (function () {
     return 0;
   };
   return WindowedMean;
-}());
+})();
 
 /**
  * @public
@@ -1243,7 +1234,7 @@ var settings = {
   /**
    * past Spine.globalAutoUpdate
    */
-  GLOBAL_AUTO_UPDATE: false,  // changefor Eva.js
+  GLOBAL_AUTO_UPDATE: false, // changefor Eva.js
   /**
    * past Spine.globalDelayLimit
    */
@@ -1257,13 +1248,13 @@ var tempRgb = [0, 0, 0];
 var SpineSprite = /** @class */ (function (_super) {
   __extends(SpineSprite, _super);
   function SpineSprite() {
-    var _this = _super !== null && _super.apply(this, arguments) || this;
+    var _this = (_super !== null && _super.apply(this, arguments)) || this;
     _this.region = null;
     _this.attachment = null;
     return _this;
   }
   return SpineSprite;
-}(sprite.Sprite));
+})(sprite.Sprite);
 /**
  * @public
  */
@@ -1276,7 +1267,7 @@ var SpineMesh = /** @class */ (function (_super) {
     return _this;
   }
   return SpineMesh;
-}(meshExtras.Mesh));
+})(meshExtras.Mesh);
 /**
  * A class that enables the you to import and run your spine animations in pixi.
  * The Spine animation data needs to be loaded using either the Loader or a SpineLoader before it can be used by this class
@@ -1299,8 +1290,10 @@ var SpineBase = /** @class */ (function (_super) {
     if (!spineData) {
       throw new Error('The spineData param is required.');
     }
-    if ((typeof spineData) === "string") {
-      throw new Error('spineData param cant be string. Please use spine.Spine.fromAtlas("YOUR_RESOURCE_NAME") from now on.');
+    if (typeof spineData === 'string') {
+      throw new Error(
+        'spineData param cant be string. Please use spine.Spine.fromAtlas("YOUR_RESOURCE_NAME") from now on.',
+      );
     }
     /**
      * The spineData object
@@ -1337,15 +1330,13 @@ var SpineBase = /** @class */ (function (_super) {
         slot.currentSprite = sprite;
         slot.currentSpriteName = spriteName;
         slotContainer.addChild(sprite);
-      }
-      else if (attachment.type === exports.AttachmentType.Mesh) {
+      } else if (attachment.type === exports.AttachmentType.Mesh) {
         var mesh = _this.createMesh(slot, attachment);
         slot.currentMesh = mesh;
         slot.currentMeshId = attachment.id;
         slot.currentMeshName = attachment.name;
         slotContainer.addChild(mesh);
-      }
-      else if (attachment.type === exports.AttachmentType.Clipping) {
+      } else if (attachment.type === exports.AttachmentType.Clipping) {
         _this.createGraphics(slot, attachment);
         slotContainer.addChild(slot.clippingContainer);
         slotContainer.addChild(slot.currentGraphics);
@@ -1362,7 +1353,7 @@ var SpineBase = /** @class */ (function (_super) {
     _this.visible = true;
     return _this;
   }
-  Object.defineProperty(SpineBase.prototype, "autoUpdate", {
+  Object.defineProperty(SpineBase.prototype, 'autoUpdate', {
     /**
      * If this flag is set to true, the spine animation will be automatically updated every
      * time the object id drawn. The down side of this approach is that the delta time is
@@ -1380,13 +1371,15 @@ var SpineBase = /** @class */ (function (_super) {
     set: function (value) {
       if (value !== this._autoUpdate) {
         this._autoUpdate = value;
-        this.updateTransform = value ? SpineBase.prototype.autoUpdateTransform : display.Container.prototype.updateTransform;
+        this.updateTransform = value
+          ? SpineBase.prototype.autoUpdateTransform
+          : display.Container.prototype.updateTransform;
       }
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(SpineBase.prototype, "tint", {
+  Object.defineProperty(SpineBase.prototype, 'tint', {
     /**
      * The tint applied to the spine object. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
@@ -1401,22 +1394,21 @@ var SpineBase = /** @class */ (function (_super) {
       this.tintRgb = utils.hex2rgb(value, this.tintRgb);
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(SpineBase.prototype, "delayLimit", {
+  Object.defineProperty(SpineBase.prototype, 'delayLimit', {
     /**
      * Limit value for the update dt with Spine.globalDelayLimit
      * that can be overridden with localDelayLimit
      * @return {number} - Maximum processed dt value for the update
      */
     get: function () {
-      var limit = typeof this.localDelayLimit !== "undefined" ?
-        this.localDelayLimit : settings.GLOBAL_DELAY_LIMIT;
+      var limit = typeof this.localDelayLimit !== 'undefined' ? this.localDelayLimit : settings.GLOBAL_DELAY_LIMIT;
       // If limit is 0, this means there is no limit for the delay
       return limit || Number.MAX_VALUE;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   /**
    * Update the spine skeleton and its animations by delta time (dt)
@@ -1426,23 +1418,21 @@ var SpineBase = /** @class */ (function (_super) {
   SpineBase.prototype.update = function (dt) {
     // Limit delta value to avoid animation jumps
     var delayLimit = this.delayLimit;
-    if (dt > delayLimit)
-      dt = delayLimit;
+    if (dt > delayLimit) dt = delayLimit;
     this.state.update(dt);
     this.state.apply(this.skeleton);
     //check we haven't been destroyed via a spine event callback in state update
-    if (!this.skeleton)
-      return;
+    if (!this.skeleton) return;
     this.skeleton.updateWorldTransform();
     var slots = this.skeleton.slots;
     // in case pixi has double tint
     var globalClr = this.color;
-    var light = null, dark = null;
+    var light = null,
+      dark = null;
     if (globalClr) {
       light = globalClr.light;
       dark = globalClr.dark;
-    }
-    else {
+    } else {
       light = this.tintRgb;
     }
     // let thack = false;
@@ -1475,8 +1465,7 @@ var SpineBase = /** @class */ (function (_super) {
               slot.sprites = slot.sprites || {};
               if (slot.sprites[spriteName] !== undefined) {
                 slot.sprites[spriteName].visible = true;
-              }
-              else {
+              } else {
                 var sprite = this.createSprite(slot, attachment, spriteName);
                 slotContainer.addChild(sprite);
               }
@@ -1484,8 +1473,7 @@ var SpineBase = /** @class */ (function (_super) {
               slot.currentSpriteName = spriteName;
               // force sprite update when attachment name is same.
               // issues https://github.com/pixijs/pixi-spine/issues/318
-            }
-            else if (slot.currentSpriteName === ar.name && !slot.hackRegion) {
+            } else if (slot.currentSpriteName === ar.name && !slot.hackRegion) {
               this.setSpriteRegion(attachment, slot.currentSprite, region);
             }
           }
@@ -1494,8 +1482,7 @@ var SpineBase = /** @class */ (function (_super) {
           if (slot.currentSprite.color) {
             //YAY! double - tint!
             spriteColor = slot.currentSprite.color;
-          }
-          else {
+          } else {
             tempRgb[0] = light[0] * slot.color.r * attColor.r;
             tempRgb[1] = light[1] * slot.color.g * attColor.g;
             tempRgb[2] = light[2] * slot.color.b * attColor.b;
@@ -1524,8 +1511,7 @@ var SpineBase = /** @class */ (function (_super) {
             slot.meshes = slot.meshes || {};
             if (slot.meshes[meshId] !== undefined) {
               slot.meshes[meshId].visible = true;
-            }
-            else {
+            } else {
               var mesh = this.createMesh(slot, attachment);
               slotContainer.addChild(mesh);
             }
@@ -1537,8 +1523,7 @@ var SpineBase = /** @class */ (function (_super) {
           if (slot.currentMesh.color) {
             // pixi-heaven
             spriteColor = slot.currentMesh.color;
-          }
-          else {
+          } else {
             tempRgb[0] = light[0] * slot.color.r * attColor.r;
             tempRgb[1] = light[1] * slot.color.g * attColor.g;
             tempRgb[2] = light[2] * slot.color.b * attColor.b;
@@ -1567,18 +1552,25 @@ var SpineBase = /** @class */ (function (_super) {
         var g0 = slot.color.g * attColor.g;
         var b0 = slot.color.b * attColor.b;
         //YAY! double-tint!
-        spriteColor.setLight(light[0] * r0 + dark[0] * (1.0 - r0), light[1] * g0 + dark[1] * (1.0 - g0), light[2] * b0 + dark[2] * (1.0 - b0));
+        spriteColor.setLight(
+          light[0] * r0 + dark[0] * (1.0 - r0),
+          light[1] * g0 + dark[1] * (1.0 - g0),
+          light[2] * b0 + dark[2] * (1.0 - b0),
+        );
         if (slot.darkColor) {
           r0 = slot.darkColor.r;
           g0 = slot.darkColor.g;
           b0 = slot.darkColor.b;
-        }
-        else {
+        } else {
           r0 = 0.0;
           g0 = 0.0;
           b0 = 0.0;
         }
-        spriteColor.setDark(light[0] * r0 + dark[0] * (1 - r0), light[1] * g0 + dark[1] * (1 - g0), light[2] * b0 + dark[2] * (1 - b0));
+        spriteColor.setDark(
+          light[0] * r0 + dark[0] * (1 - r0),
+          light[1] * g0 + dark[1] * (1 - g0),
+          light[2] * b0 + dark[2] * (1 - b0),
+        );
       }
       slotContainer.alpha = slot.color.a;
     }
@@ -1606,8 +1598,7 @@ var SpineBase = /** @class */ (function (_super) {
         if (clippingAttachment.endSlot === slot.data) {
           clippingAttachment.endSlot = null;
         }
-      }
-      else {
+      } else {
         if (clippingContainer) {
           var c = this.tempClipContainers[i];
           if (!c) {
@@ -1623,8 +1614,7 @@ var SpineBase = /** @class */ (function (_super) {
             clippingContainer = null;
             clippingAttachment = null;
           }
-        }
-        else {
+        } else {
           this.children[i] = slotContainer;
         }
       }
@@ -1643,10 +1633,9 @@ var SpineBase = /** @class */ (function (_super) {
     sprite.position.y = attachment.y;
     sprite.alpha = attachment.color.a;
     if (!region.size) {
-      sprite.scale.x = attachment.scaleX * attachment.width / region.originalWidth;
-      sprite.scale.y = -attachment.scaleY * attachment.height / region.originalHeight;
-    }
-    else {
+      sprite.scale.x = (attachment.scaleX * attachment.width) / region.originalWidth;
+      sprite.scale.y = (-attachment.scaleY * attachment.height) / region.originalHeight;
+    } else {
       //hacked!
       sprite.scale.x = region.size.width / region.originalWidth;
       sprite.scale.y = -region.size.height / region.originalHeight;
@@ -1673,8 +1662,7 @@ var SpineBase = /** @class */ (function (_super) {
       var timeDelta = (Date.now() - this.lastTime) * 0.001;
       this.lastTime = Date.now();
       this.update(timeDelta);
-    }
-    else {
+    } else {
       this.lastTime = 0;
     }
     display.Container.prototype.updateTransform.call(this);
@@ -1712,8 +1700,14 @@ var SpineBase = /** @class */ (function (_super) {
       slot.hackAttachment = null;
       slot.hackRegion = null;
     }
-    var strip = this.newMesh(region.texture, new Float32Array(attachment.regionUVs.length), attachment.regionUVs, new Uint16Array(attachment.triangles), constants.DRAW_MODES.TRIANGLES);
-    if (typeof strip._canvasPadding !== "undefined") {
+    var strip = this.newMesh(
+      region.texture,
+      new Float32Array(attachment.regionUVs.length),
+      attachment.regionUVs,
+      new Uint16Array(attachment.triangles),
+      constants.DRAW_MODES.TRIANGLES,
+    );
+    if (typeof strip._canvasPadding !== 'undefined') {
       strip._canvasPadding = 1.5;
     }
     strip.alpha = attachment.color.a;
@@ -1755,8 +1749,12 @@ var SpineBase = /** @class */ (function (_super) {
    * @returns {boolean} Success flag
    */
   SpineBase.prototype.hackTextureBySlotIndex = function (slotIndex, texture, size) {
-    if (texture === void 0) { texture = null; }
-    if (size === void 0) { size = null; }
+    if (texture === void 0) {
+      texture = null;
+    }
+    if (size === void 0) {
+      size = null;
+    }
     var slot = this.skeleton.slots[slotIndex];
     if (!slot) {
       return false;
@@ -1769,16 +1767,14 @@ var SpineBase = /** @class */ (function (_super) {
       region.size = size;
       slot.hackRegion = region;
       slot.hackAttachment = attachment;
-    }
-    else {
+    } else {
       slot.hackRegion = null;
       slot.hackAttachment = null;
     }
     if (slot.currentSprite && slot.currentSprite.region != region) {
       this.setSpriteRegion(attachment, slot.currentSprite, region);
       slot.currentSprite.region = region;
-    }
-    else if (slot.currentMesh && slot.currentMesh.region != region) {
+    } else if (slot.currentMesh && slot.currentMesh.region != region) {
       this.setMeshRegion(attachment, slot.currentMesh, region);
     }
     return true;
@@ -1794,8 +1790,12 @@ var SpineBase = /** @class */ (function (_super) {
    * @returns {boolean} Success flag
    */
   SpineBase.prototype.hackTextureBySlotName = function (slotName, texture, size) {
-    if (texture === void 0) { texture = null; }
-    if (size === void 0) { size = null; }
+    if (texture === void 0) {
+      texture = null;
+    }
+    if (size === void 0) {
+      size = null;
+    }
     var index = this.skeleton.findSlotIndex(slotName);
     if (index == -1) {
       return false;
@@ -1814,7 +1814,9 @@ var SpineBase = /** @class */ (function (_super) {
    * @returns {boolean} Success flag
    */
   SpineBase.prototype.hackTextureAttachment = function (slotName, attachmentName, texture, size) {
-    if (size === void 0) { size = null; }
+    if (size === void 0) {
+      size = null;
+    }
     // changes the texture of an attachment at the skeleton level
     var slotIndex = this.skeleton.findSlotIndex(slotName);
     var attachment = this.skeleton.getAttachmentByName(slotName, attachmentName);
@@ -1834,16 +1836,14 @@ var SpineBase = /** @class */ (function (_super) {
         region.size = size;
         slot.hackRegion = region;
         slot.hackAttachment = currentAttachment;
-      }
-      else {
+      } else {
         slot.hackRegion = null;
         slot.hackAttachment = null;
       }
       if (slot.currentSprite && slot.currentSprite.region != region) {
         this.setSpriteRegion(currentAttachment, slot.currentSprite, region);
         slot.currentSprite.region = region;
-      }
-      else if (slot.currentMesh && slot.currentMesh.region != region) {
+      } else if (slot.currentMesh && slot.currentMesh.region != region) {
         this.setMeshRegion(currentAttachment, slot.currentMesh, region);
       }
       return true;
@@ -1876,16 +1876,16 @@ var SpineBase = /** @class */ (function (_super) {
     if (!nameSuffix) {
       return undefined;
     }
-    var list_d = [], list_n = [];
+    var list_d = [],
+      list_n = [];
     for (var i = 0, len = this.skeleton.slots.length; i < len; i++) {
       var slot = this.skeleton.slots[i];
-      var name_1 = slot.currentSpriteName || slot.currentMeshName || "";
+      var name_1 = slot.currentSpriteName || slot.currentMeshName || '';
       var target = slot.currentSprite || slot.currentMesh;
       if (name_1.endsWith(nameSuffix)) {
         target.parentGroup = group;
         list_n.push(target);
-      }
-      else if (outGroup && target) {
+      } else if (outGroup && target) {
         target.parentGroup = outGroup;
         list_d.push(target);
       }
@@ -1917,7 +1917,7 @@ var SpineBase = /** @class */ (function (_super) {
   };
   SpineBase.clippingPolygon = [];
   return SpineBase;
-}(display.Container));
+})(display.Container);
 /**
  * The visibility of the spine object. If false the object will not be drawn,
  * the updateTransform function will not be called, and the spine will not be automatically updated.
@@ -1937,7 +1937,7 @@ Object.defineProperty(SpineBase.prototype, 'visible', {
         this.lastTime = 0;
       }
     }
-  }
+  },
 });
 
 /* eslint-disable */
@@ -1948,14 +1948,13 @@ function isJson(resource) {
 function isBuffer(resource) {
   return resource.xhrType === loaders.LoaderResource.XHR_RESPONSE_TYPE.BUFFER;
 }
- // changefor Eva.js
+// changefor Eva.js
 // loaders.LoaderResource.setExtensionXhrType('skel', loaders.LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
 /**
  * @public
  */
 var AbstractSpineParser = /** @class */ (function () {
-  function AbstractSpineParser() {
-  }
+  function AbstractSpineParser() {}
   AbstractSpineParser.prototype.genMiddleware = function () {
     var self = this;
     return {
@@ -1965,8 +1964,9 @@ var AbstractSpineParser = /** @class */ (function () {
           return next();
         }
         var isJsonSpineModel = isJson(resource) && resource.data.bones;
-        var isBinarySpineModel = isBuffer(resource) && (resource.extension === 'skel' || resource.metadata
-          && resource.metadata.spineMetadata);
+        var isBinarySpineModel =
+          isBuffer(resource) &&
+          (resource.extension === 'skel' || (resource.metadata && resource.metadata.spineMetadata));
         if (!isJsonSpineModel && !isBinarySpineModel) {
           return next();
         }
@@ -1974,14 +1974,13 @@ var AbstractSpineParser = /** @class */ (function () {
         var dataToParse = resource.data;
         if (isJsonSpineModel) {
           parser = self.createJsonParser();
-        }
-        else {
+        } else {
           parser = self.createBinaryParser();
           if (resource.data instanceof ArrayBuffer) {
             dataToParse = new Uint8Array(resource.data);
           }
         }
-        var metadata = (resource.metadata || {});
+        var metadata = resource.metadata || {};
         var metadataSkeletonScale = metadata ? metadata.spineSkeletonScale : null;
         if (metadataSkeletonScale) {
           parser.scale = metadataSkeletonScale;
@@ -2017,20 +2016,23 @@ var AbstractSpineParser = /** @class */ (function () {
           crossOrigin: resource.crossOrigin,
           xhrType: loaders.LoaderResource.XHR_RESPONSE_TYPE.TEXT,
           metadata: metadata.spineMetadata || null,
-          parentResource: resource
+          parentResource: resource,
         };
         var imageOptions = {
           crossOrigin: resource.crossOrigin,
           metadata: metadata.imageMetadata || null,
-          parentResource: resource
+          parentResource: resource,
         };
         var baseUrl = resource.url.substr(0, resource.url.lastIndexOf('/') + 1);
         //remove the baseUrl
         baseUrl = baseUrl.replace(this.baseUrl, '');
-        var namePrefix = metadata.imageNamePrefix || (resource.name + '_atlas_page_');
-        var adapter = metadata.images ? staticImageLoader(metadata.images)
-          : metadata.image ? staticImageLoader({ 'default': metadata.image })
-            : metadata.imageLoader ? metadata.imageLoader(this, namePrefix, baseUrl, imageOptions)
+        var namePrefix = metadata.imageNamePrefix || resource.name + '_atlas_page_';
+        var adapter = metadata.images
+          ? staticImageLoader(metadata.images)
+          : metadata.image
+            ? staticImageLoader({ default: metadata.image })
+            : metadata.imageLoader
+              ? metadata.imageLoader(this, namePrefix, baseUrl, imageOptions)
               : imageLoaderAdapter(this, namePrefix, baseUrl, imageOptions);
         function createSkeletonWithRawAtlas(rawData) {
           new TextureAtlas(rawData, adapter, function (spineAtlas) {
@@ -2042,27 +2044,25 @@ var AbstractSpineParser = /** @class */ (function () {
         }
         if (metadata.atlasRawData) {
           createSkeletonWithRawAtlas(metadata.atlasRawData);
-        }
-        else {
+        } else {
           this.add(resource.name + '_atlas', atlasPath, atlasOptions, function (atlasResource) {
             if (!atlasResource.error) {
               createSkeletonWithRawAtlas(atlasResource.data);
-            }
-            else {
+            } else {
               next();
             }
           });
         }
-      }
+      },
     };
   };
   return AbstractSpineParser;
-}());
+})();
 /**
  * @public
  */
 function imageLoaderAdapter(loader, namePrefix, baseUrl, imageOptions) {
-  if (baseUrl && baseUrl.lastIndexOf('/') !== (baseUrl.length - 1)) {
+  if (baseUrl && baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
     baseUrl += '/';
   }
   return function (line, callback) {
@@ -2075,21 +2075,18 @@ function imageLoaderAdapter(loader, namePrefix, baseUrl, imageOptions) {
       };
       if (cachedResource.texture) {
         done();
-      }
-      else {
+      } else {
         cachedResource.onAfterMiddleware.add(done);
       }
-    }
-    else {
+    } else {
       loader.add(name, url, imageOptions, function (resource) {
         if (!resource.error) {
-           // changefor Eva.js
+          // changefor Eva.js
           // if (line.indexOf('-pma.') >= 0) {
           //   resource.texture.baseTexture.alphaMode = constants.ALPHA_MODES.PMA;
           // }
           callback(resource.texture.baseTexture);
-        }
-        else {
+        } else {
           callback(null);
         }
       });
@@ -2100,7 +2097,7 @@ function imageLoaderAdapter(loader, namePrefix, baseUrl, imageOptions) {
  * @public
  */
 function syncImageLoaderAdapter(baseUrl, crossOrigin) {
-  if (baseUrl && baseUrl.lastIndexOf('/') !== (baseUrl.length - 1)) {
+  if (baseUrl && baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
     baseUrl += '/';
   }
   return function (line, callback) {
@@ -2113,10 +2110,8 @@ function syncImageLoaderAdapter(baseUrl, crossOrigin) {
 function staticImageLoader(pages) {
   return function (line, callback) {
     var page = pages[line] || pages['default'];
-    if (page && page.baseTexture)
-      callback(page.baseTexture);
-    else
-      callback(page);
+    if (page && page.baseTexture) callback(page.baseTexture);
+    else callback(page);
   };
 }
 
@@ -2143,12 +2138,11 @@ PERFORMANCE OF THIS SOFTWARE.
  */
 var Attachment$2 = /** @class */ (function () {
   function Attachment(name) {
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
     this.name = name;
   }
   return Attachment;
-}());
+})();
 /**
  * @public
  */
@@ -2176,20 +2170,24 @@ var VertexAttachment$2 = /** @class */ (function (_super) {
     var vertices = this.vertices;
     var bones = this.bones;
     if (bones == null) {
-      if (deformArray.length > 0)
-        vertices = deformArray;
+      if (deformArray.length > 0) vertices = deformArray;
       var mat = slot.bone.matrix;
       var x = mat.tx;
       var y = mat.ty;
-      var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+      var a = mat.a,
+        b = mat.c,
+        c = mat.b,
+        d = mat.d;
       for (var v_1 = start, w = offset; w < count; v_1 += 2, w += stride) {
-        var vx = vertices[v_1], vy = vertices[v_1 + 1];
+        var vx = vertices[v_1],
+          vy = vertices[v_1 + 1];
         worldVertices[w] = vx * a + vy * b + x;
         worldVertices[w + 1] = vx * c + vy * d + y;
       }
       return;
     }
-    var v = 0, skip = 0;
+    var v = 0,
+      skip = 0;
     for (var i = 0; i < start; i += 2) {
       var n = bones[v];
       v += n + 1;
@@ -2198,28 +2196,33 @@ var VertexAttachment$2 = /** @class */ (function (_super) {
     var skeletonBones = skeleton.bones;
     if (deformArray.length == 0) {
       for (var w = offset, b = skip * 3; w < count; w += stride) {
-        var wx = 0, wy = 0;
+        var wx = 0,
+          wy = 0;
         var n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3) {
           var mat = skeletonBones[bones[v]].matrix;
-          var vx = vertices[b], vy = vertices[b + 1], weight = vertices[b + 2];
+          var vx = vertices[b],
+            vy = vertices[b + 1],
+            weight = vertices[b + 2];
           wx += (vx * mat.a + vy * mat.c + mat.tx) * weight;
           wy += (vx * mat.b + vy * mat.d + mat.ty) * weight;
         }
         worldVertices[w] = wx;
         worldVertices[w + 1] = wy;
       }
-    }
-    else {
+    } else {
       var deform = deformArray;
       for (var w = offset, b = skip * 3, f = skip << 1; w < count; w += stride) {
-        var wx = 0, wy = 0;
+        var wx = 0,
+          wy = 0;
         var n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3, f += 2) {
           var mat = skeletonBones[bones[v]].matrix;
-          var vx = vertices[b] + deform[f], vy = vertices[b + 1] + deform[f + 1], weight = vertices[b + 2];
+          var vx = vertices[b] + deform[f],
+            vy = vertices[b + 1] + deform[f + 1],
+            weight = vertices[b + 2];
           wx += (vx * mat.a + vy * mat.c + mat.tx) * weight;
           wy += (vx * mat.b + vy * mat.d + mat.ty) * weight;
         }
@@ -2232,21 +2235,17 @@ var VertexAttachment$2 = /** @class */ (function (_super) {
     if (this.bones != null) {
       attachment.bones = new Array(this.bones.length);
       Utils.arrayCopy(this.bones, 0, attachment.bones, 0, this.bones.length);
-    }
-    else
-      attachment.bones = null;
+    } else attachment.bones = null;
     if (this.vertices != null) {
       attachment.vertices = Utils.newFloatArray(this.vertices.length);
       Utils.arrayCopy(this.vertices, 0, attachment.vertices, 0, this.vertices.length);
-    }
-    else
-      attachment.vertices = null;
+    } else attachment.vertices = null;
     attachment.worldVerticesLength = this.worldVerticesLength;
     attachment.deformAttachment = this.deformAttachment;
   };
   VertexAttachment.nextID = 0;
   return VertexAttachment;
-}(Attachment$2));
+})(Attachment$2);
 
 /**
  * @public
@@ -2266,7 +2265,7 @@ var BoundingBoxAttachment$2 = /** @class */ (function (_super) {
     return copy;
   };
   return BoundingBoxAttachment;
-}(VertexAttachment$2));
+})(VertexAttachment$2);
 
 /**
  * @public
@@ -2288,7 +2287,7 @@ var ClippingAttachment$2 = /** @class */ (function (_super) {
     return copy;
   };
   return ClippingAttachment;
-}(VertexAttachment$2));
+})(VertexAttachment$2);
 
 /**
  * @public
@@ -2319,8 +2318,7 @@ var MeshAttachment$2 = /** @class */ (function (_super) {
     }
   };
   MeshAttachment.prototype.copy = function () {
-    if (this.parentMesh != null)
-      return this.newLinkedMesh();
+    if (this.parentMesh != null) return this.newLinkedMesh();
     var copy = new MeshAttachment(this.name);
     copy.region = this.region;
     copy.path = this.path;
@@ -2351,7 +2349,7 @@ var MeshAttachment$2 = /** @class */ (function (_super) {
     return copy;
   };
   return MeshAttachment;
-}(VertexAttachment$2));
+})(VertexAttachment$2);
 
 /**
  * @public
@@ -2377,7 +2375,7 @@ var PathAttachment$2 = /** @class */ (function (_super) {
     return copy;
   };
   return PathAttachment;
-}(VertexAttachment$2));
+})(VertexAttachment$2);
 
 /**
  * @public
@@ -2398,7 +2396,8 @@ var PointAttachment$2 = /** @class */ (function (_super) {
   };
   PointAttachment.prototype.computeWorldRotation = function (bone) {
     var mat = bone.matrix;
-    var cos = MathUtils.cosDeg(this.rotation), sin = MathUtils.sinDeg(this.rotation);
+    var cos = MathUtils.cosDeg(this.rotation),
+      sin = MathUtils.sinDeg(this.rotation);
     var x = cos * mat.a + sin * mat.c;
     var y = cos * mat.b + sin * mat.d;
     return Math.atan2(y, x) * MathUtils.radDeg;
@@ -2412,7 +2411,7 @@ var PointAttachment$2 = /** @class */ (function (_super) {
     return copy;
   };
   return PointAttachment;
-}(VertexAttachment$2));
+})(VertexAttachment$2);
 
 /**
  * @public
@@ -2436,13 +2435,13 @@ var RegionAttachment$2 = /** @class */ (function (_super) {
     return _this;
   }
   RegionAttachment.prototype.updateOffset = function () {
-    var regionScaleX = this.width / this.region.originalWidth * this.scaleX;
-    var regionScaleY = this.height / this.region.originalHeight * this.scaleY;
-    var localX = -this.width / 2 * this.scaleX + this.region.offsetX * regionScaleX;
-    var localY = -this.height / 2 * this.scaleY + this.region.offsetY * regionScaleY;
+    var regionScaleX = (this.width / this.region.originalWidth) * this.scaleX;
+    var regionScaleY = (this.height / this.region.originalHeight) * this.scaleY;
+    var localX = (-this.width / 2) * this.scaleX + this.region.offsetX * regionScaleX;
+    var localY = (-this.height / 2) * this.scaleY + this.region.offsetY * regionScaleY;
     var localX2 = localX + this.region.width * regionScaleX;
     var localY2 = localY + this.region.height * regionScaleY;
-    var radians = this.rotation * Math.PI / 180;
+    var radians = (this.rotation * Math.PI) / 180;
     var cos = Math.cos(radians);
     var sin = Math.sin(radians);
     var localXCos = localX * cos + this.x;
@@ -2475,8 +2474,7 @@ var RegionAttachment$2 = /** @class */ (function (_super) {
       uvs[7] = region.v;
       uvs[0] = region.u2;
       uvs[1] = region.v2;
-    }
-    else {
+    } else {
       uvs[0] = region.u;
       uvs[1] = region.v2;
       uvs[2] = region.u;
@@ -2490,9 +2488,14 @@ var RegionAttachment$2 = /** @class */ (function (_super) {
   RegionAttachment.prototype.computeWorldVertices = function (bone, worldVertices, offset, stride) {
     var vertexOffset = this.offset;
     var mat = bone.matrix;
-    var x = mat.tx, y = mat.ty;
-    var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
-    var offsetX = 0, offsetY = 0;
+    var x = mat.tx,
+      y = mat.ty;
+    var a = mat.a,
+      b = mat.c,
+      c = mat.b,
+      d = mat.d;
+    var offsetX = 0,
+      offsetY = 0;
     offsetX = vertexOffset[RegionAttachment.OX1];
     offsetY = vertexOffset[RegionAttachment.OY1];
     worldVertices[offset] = offsetX * a + offsetY * b + x; // br
@@ -2571,7 +2574,7 @@ var RegionAttachment$2 = /** @class */ (function (_super) {
   RegionAttachment.U4 = 30;
   RegionAttachment.V4 = 31;
   return RegionAttachment;
-}(Attachment$2));
+})(Attachment$2);
 
 /**
  * @public
@@ -2583,16 +2586,14 @@ var JitterEffect$2 = /** @class */ (function () {
     this.jitterX = jitterX;
     this.jitterY = jitterY;
   }
-  JitterEffect.prototype.begin = function (skeleton) {
-  };
+  JitterEffect.prototype.begin = function (skeleton) {};
   JitterEffect.prototype.transform = function (position, uv, light, dark) {
     position.x += MathUtils.randomTriangular(-this.jitterX, this.jitterY);
     position.y += MathUtils.randomTriangular(-this.jitterX, this.jitterY);
   };
-  JitterEffect.prototype.end = function () {
-  };
+  JitterEffect.prototype.end = function () {};
   return JitterEffect;
-}());
+})();
 
 /**
  * @public
@@ -2624,11 +2625,10 @@ var SwirlEffect$2 = /** @class */ (function () {
       position.y = sin * x + cos * y + this.worldY;
     }
   };
-  SwirlEffect.prototype.end = function () {
-  };
+  SwirlEffect.prototype.end = function () {};
   SwirlEffect.interpolation = new PowOut(2);
   return SwirlEffect;
-}());
+})();
 
 /** A simple container for a list of timelines and a name. */
 /**
@@ -2636,15 +2636,12 @@ var SwirlEffect$2 = /** @class */ (function () {
  */
 var Animation$2 = /** @class */ (function () {
   function Animation(name, timelines, duration) {
-    if (name == null)
-      throw new Error("name cannot be null.");
-    if (timelines == null)
-      throw new Error("timelines cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
+    if (timelines == null) throw new Error('timelines cannot be null.');
     this.name = name;
     this.timelines = timelines;
     this.timelineIds = [];
-    for (var i = 0; i < timelines.length; i++)
-      this.timelineIds[timelines[i].getPropertyId()] = true;
+    for (var i = 0; i < timelines.length; i++) this.timelineIds[timelines[i].getPropertyId()] = true;
     this.duration = duration;
   }
   Animation.prototype.hasTimeline = function (id) {
@@ -2656,12 +2653,10 @@ var Animation$2 = /** @class */ (function () {
    * @param loop If true, the animation repeats after {@link #getDuration()}.
    * @param events May be null to ignore fired events. */
   Animation.prototype.apply = function (skeleton, lastTime, time, loop, events, alpha, blend, direction) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     if (loop && this.duration != 0) {
       time %= this.duration;
-      if (lastTime > 0)
-        lastTime %= this.duration;
+      if (lastTime > 0) lastTime %= this.duration;
     }
     var timelines = this.timelines;
     for (var i = 0, n = timelines.length; i < n; i++)
@@ -2670,50 +2665,46 @@ var Animation$2 = /** @class */ (function () {
   /** @param target After the first and before the last value.
    * @returns index of first value greater than the target. */
   Animation.binarySearch = function (values, target, step) {
-    if (step === void 0) { step = 1; }
+    if (step === void 0) {
+      step = 1;
+    }
     var low = 0;
     var high = values.length / step - 2;
-    if (high == 0)
-      return step;
+    if (high == 0) return step;
     var current = high >>> 1;
     while (true) {
-      if (values[(current + 1) * step] <= target)
-        low = current + 1;
-      else
-        high = current;
-      if (low == high)
-        return (low + 1) * step;
+      if (values[(current + 1) * step] <= target) low = current + 1;
+      else high = current;
+      if (low == high) return (low + 1) * step;
       current = (low + high) >>> 1;
     }
   };
   Animation.linearSearch = function (values, target, step) {
-    for (var i = 0, last = values.length - step; i <= last; i += step)
-      if (values[i] > target)
-        return i;
+    for (var i = 0, last = values.length - step; i <= last; i += step) if (values[i] > target) return i;
     return -1;
   };
   return Animation;
-}());
+})();
 /**
  * @public
  */
 var TimelineType$1;
 (function (TimelineType) {
-  TimelineType[TimelineType["rotate"] = 0] = "rotate";
-  TimelineType[TimelineType["translate"] = 1] = "translate";
-  TimelineType[TimelineType["scale"] = 2] = "scale";
-  TimelineType[TimelineType["shear"] = 3] = "shear";
-  TimelineType[TimelineType["attachment"] = 4] = "attachment";
-  TimelineType[TimelineType["color"] = 5] = "color";
-  TimelineType[TimelineType["deform"] = 6] = "deform";
-  TimelineType[TimelineType["event"] = 7] = "event";
-  TimelineType[TimelineType["drawOrder"] = 8] = "drawOrder";
-  TimelineType[TimelineType["ikConstraint"] = 9] = "ikConstraint";
-  TimelineType[TimelineType["transformConstraint"] = 10] = "transformConstraint";
-  TimelineType[TimelineType["pathConstraintPosition"] = 11] = "pathConstraintPosition";
-  TimelineType[TimelineType["pathConstraintSpacing"] = 12] = "pathConstraintSpacing";
-  TimelineType[TimelineType["pathConstraintMix"] = 13] = "pathConstraintMix";
-  TimelineType[TimelineType["twoColor"] = 14] = "twoColor";
+  TimelineType[(TimelineType['rotate'] = 0)] = 'rotate';
+  TimelineType[(TimelineType['translate'] = 1)] = 'translate';
+  TimelineType[(TimelineType['scale'] = 2)] = 'scale';
+  TimelineType[(TimelineType['shear'] = 3)] = 'shear';
+  TimelineType[(TimelineType['attachment'] = 4)] = 'attachment';
+  TimelineType[(TimelineType['color'] = 5)] = 'color';
+  TimelineType[(TimelineType['deform'] = 6)] = 'deform';
+  TimelineType[(TimelineType['event'] = 7)] = 'event';
+  TimelineType[(TimelineType['drawOrder'] = 8)] = 'drawOrder';
+  TimelineType[(TimelineType['ikConstraint'] = 9)] = 'ikConstraint';
+  TimelineType[(TimelineType['transformConstraint'] = 10)] = 'transformConstraint';
+  TimelineType[(TimelineType['pathConstraintPosition'] = 11)] = 'pathConstraintPosition';
+  TimelineType[(TimelineType['pathConstraintSpacing'] = 12)] = 'pathConstraintSpacing';
+  TimelineType[(TimelineType['pathConstraintMix'] = 13)] = 'pathConstraintMix';
+  TimelineType[(TimelineType['twoColor'] = 14)] = 'twoColor';
 })(TimelineType$1 || (TimelineType$1 = {}));
 /** The base class for timelines that use interpolation between key frame values. */
 /**
@@ -2721,8 +2712,7 @@ var TimelineType$1;
  */
 var CurveTimeline$2 = /** @class */ (function () {
   function CurveTimeline(frameCount) {
-    if (frameCount <= 0)
-      throw new Error("frameCount must be > 0: " + frameCount);
+    if (frameCount <= 0) throw new Error('frameCount must be > 0: ' + frameCount);
     this.curves = Utils.newFloatArray((frameCount - 1) * CurveTimeline.BEZIER_SIZE);
   }
   /** The number of key frames for this timeline. */
@@ -2741,27 +2731,29 @@ var CurveTimeline$2 = /** @class */ (function () {
    * @returns Linear is 0, stepped is 1, Bezier is 2. */
   CurveTimeline.prototype.getCurveType = function (frameIndex) {
     var index = frameIndex * CurveTimeline.BEZIER_SIZE;
-    if (index == this.curves.length)
-      return CurveTimeline.LINEAR;
+    if (index == this.curves.length) return CurveTimeline.LINEAR;
     var type = this.curves[index];
-    if (type == CurveTimeline.LINEAR)
-      return CurveTimeline.LINEAR;
-    if (type == CurveTimeline.STEPPED)
-      return CurveTimeline.STEPPED;
+    if (type == CurveTimeline.LINEAR) return CurveTimeline.LINEAR;
+    if (type == CurveTimeline.STEPPED) return CurveTimeline.STEPPED;
     return CurveTimeline.BEZIER;
   };
   /** Sets the specified key frame to Bezier interpolation. `cx1` and `cx2` are from 0 to 1,
    * representing the percent of time between the two key frames. `cy1` and `cy2` are the percent of the
    * difference between the key frame's values. */
   CurveTimeline.prototype.setCurve = function (frameIndex, cx1, cy1, cx2, cy2) {
-    var tmpx = (-cx1 * 2 + cx2) * 0.03, tmpy = (-cy1 * 2 + cy2) * 0.03;
-    var dddfx = ((cx1 - cx2) * 3 + 1) * 0.006, dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
-    var ddfx = tmpx * 2 + dddfx, ddfy = tmpy * 2 + dddfy;
-    var dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667, dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
+    var tmpx = (-cx1 * 2 + cx2) * 0.03,
+      tmpy = (-cy1 * 2 + cy2) * 0.03;
+    var dddfx = ((cx1 - cx2) * 3 + 1) * 0.006,
+      dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
+    var ddfx = tmpx * 2 + dddfx,
+      ddfy = tmpy * 2 + dddfy;
+    var dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667,
+      dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
     var i = frameIndex * CurveTimeline.BEZIER_SIZE;
     var curves = this.curves;
     curves[i++] = CurveTimeline.BEZIER;
-    var x = dfx, y = dfy;
+    var x = dfx,
+      y = dfy;
     for (var n = i + CurveTimeline.BEZIER_SIZE - 1; i < n; i += 2) {
       curves[i] = x;
       curves[i + 1] = y;
@@ -2779,36 +2771,34 @@ var CurveTimeline$2 = /** @class */ (function () {
     var curves = this.curves;
     var i = frameIndex * CurveTimeline.BEZIER_SIZE;
     var type = curves[i];
-    if (type == CurveTimeline.LINEAR)
-      return percent;
-    if (type == CurveTimeline.STEPPED)
-      return 0;
+    if (type == CurveTimeline.LINEAR) return percent;
+    if (type == CurveTimeline.STEPPED) return 0;
     i++;
     var x = 0;
     for (var start = i, n = i + CurveTimeline.BEZIER_SIZE - 1; i < n; i += 2) {
       x = curves[i];
       if (x >= percent) {
-        var prevX = void 0, prevY = void 0;
+        var prevX = void 0,
+          prevY = void 0;
         if (i == start) {
           prevX = 0;
           prevY = 0;
-        }
-        else {
+        } else {
           prevX = curves[i - 2];
           prevY = curves[i - 1];
         }
-        return prevY + (curves[i + 1] - prevY) * (percent - prevX) / (x - prevX);
+        return prevY + ((curves[i + 1] - prevY) * (percent - prevX)) / (x - prevX);
       }
     }
     var y = curves[i - 1];
-    return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
+    return y + ((1 - y) * (percent - x)) / (1 - x); // Last point is 1,1.
   };
   CurveTimeline.LINEAR = 0;
   CurveTimeline.STEPPED = 1;
   CurveTimeline.BEZIER = 2;
   CurveTimeline.BEZIER_SIZE = 10 * 2 - 1;
   return CurveTimeline;
-}());
+})();
 /** Changes a bone's local {@link Bone#rotation}. */
 /**
  * @public
@@ -2832,8 +2822,7 @@ var RotateTimeline$2 = /** @class */ (function (_super) {
   RotateTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var frames = this.frames;
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -2845,7 +2834,8 @@ var RotateTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    if (time >= frames[frames.length - RotateTimeline.ENTRIES]) { // Time is after last frame.
+    if (time >= frames[frames.length - RotateTimeline.ENTRIES]) {
+      // Time is after last frame.
       var r_2 = frames[frames.length + RotateTimeline.PREV_ROTATION];
       switch (blend) {
         case exports.MixBlend.setup:
@@ -2864,7 +2854,10 @@ var RotateTimeline$2 = /** @class */ (function (_super) {
     var frame = Animation$2.binarySearch(frames, time, RotateTimeline.ENTRIES);
     var prevRotation = frames[frame + RotateTimeline.PREV_ROTATION];
     var frameTime = frames[frame];
-    var percent = this.getCurvePercent((frame >> 1) - 1, 1 - (time - frameTime) / (frames[frame + RotateTimeline.PREV_TIME] - frameTime));
+    var percent = this.getCurvePercent(
+      (frame >> 1) - 1,
+      1 - (time - frameTime) / (frames[frame + RotateTimeline.PREV_TIME] - frameTime),
+    );
     var r = frames[frame + RotateTimeline.ROTATION] - prevRotation;
     r = prevRotation + (r - (16384 - ((16384.499999999996 - r / 360) | 0)) * 360) * percent;
     switch (blend) {
@@ -2883,7 +2876,7 @@ var RotateTimeline$2 = /** @class */ (function (_super) {
   RotateTimeline.PREV_ROTATION = -1;
   RotateTimeline.ROTATION = 1;
   return RotateTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a bone's local {@link Bone#x} and {@link Bone#y}. */
 /**
  * @public
@@ -2908,8 +2901,7 @@ var TranslateTimeline$2 = /** @class */ (function (_super) {
   TranslateTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var frames = this.frames;
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -2922,18 +2914,22 @@ var TranslateTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
-    if (time >= frames[frames.length - TranslateTimeline.ENTRIES]) { // Time is after last frame.
+    var x = 0,
+      y = 0;
+    if (time >= frames[frames.length - TranslateTimeline.ENTRIES]) {
+      // Time is after last frame.
       x = frames[frames.length + TranslateTimeline.PREV_X];
       y = frames[frames.length + TranslateTimeline.PREV_Y];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, TranslateTimeline.ENTRIES);
       x = frames[frame + TranslateTimeline.PREV_X];
       y = frames[frame + TranslateTimeline.PREV_Y];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / TranslateTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + TranslateTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / TranslateTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + TranslateTimeline.PREV_TIME] - frameTime),
+      );
       x += (frames[frame + TranslateTimeline.X] - x) * percent;
       y += (frames[frame + TranslateTimeline.Y] - y) * percent;
     }
@@ -2959,7 +2955,7 @@ var TranslateTimeline$2 = /** @class */ (function (_super) {
   TranslateTimeline.X = 1;
   TranslateTimeline.Y = 2;
   return TranslateTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a bone's local {@link Bone#scaleX)} and {@link Bone#scaleY}. */
 /**
  * @public
@@ -2975,8 +2971,7 @@ var ScaleTimeline$2 = /** @class */ (function (_super) {
   ScaleTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var frames = this.frames;
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -2989,18 +2984,22 @@ var ScaleTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
-    if (time >= frames[frames.length - ScaleTimeline.ENTRIES]) { // Time is after last frame.
+    var x = 0,
+      y = 0;
+    if (time >= frames[frames.length - ScaleTimeline.ENTRIES]) {
+      // Time is after last frame.
       x = frames[frames.length + ScaleTimeline.PREV_X] * bone.data.scaleX;
       y = frames[frames.length + ScaleTimeline.PREV_Y] * bone.data.scaleY;
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, ScaleTimeline.ENTRIES);
       x = frames[frame + ScaleTimeline.PREV_X];
       y = frames[frame + ScaleTimeline.PREV_Y];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / ScaleTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + ScaleTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / ScaleTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + ScaleTimeline.PREV_TIME] - frameTime),
+      );
       x = (x + (frames[frame + ScaleTimeline.X] - x) * percent) * bone.data.scaleX;
       y = (y + (frames[frame + ScaleTimeline.Y] - y) * percent) * bone.data.scaleY;
     }
@@ -3008,14 +3007,13 @@ var ScaleTimeline$2 = /** @class */ (function (_super) {
       if (blend == exports.MixBlend.add) {
         bone.scaleX += x - bone.data.scaleX;
         bone.scaleY += y - bone.data.scaleY;
-      }
-      else {
+      } else {
         bone.scaleX = x;
         bone.scaleY = y;
       }
-    }
-    else {
-      var bx = 0, by = 0;
+    } else {
+      var bx = 0,
+        by = 0;
       if (direction == exports.MixDirection.mixOut) {
         switch (blend) {
           case exports.MixBlend.setup:
@@ -3037,8 +3035,7 @@ var ScaleTimeline$2 = /** @class */ (function (_super) {
             bone.scaleX = bx + (Math.abs(x) * MathUtils.signum(bx) - bone.data.scaleX) * alpha;
             bone.scaleY = by + (Math.abs(y) * MathUtils.signum(by) - bone.data.scaleY) * alpha;
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup:
             bx = Math.abs(bone.data.scaleX) * MathUtils.signum(x);
@@ -3063,7 +3060,7 @@ var ScaleTimeline$2 = /** @class */ (function (_super) {
     }
   };
   return ScaleTimeline;
-}(TranslateTimeline$2));
+})(TranslateTimeline$2);
 /** Changes a bone's local {@link Bone#shearX} and {@link Bone#shearY}. */
 /**
  * @public
@@ -3079,8 +3076,7 @@ var ShearTimeline$2 = /** @class */ (function (_super) {
   ShearTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var frames = this.frames;
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -3093,18 +3089,22 @@ var ShearTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
-    if (time >= frames[frames.length - ShearTimeline.ENTRIES]) { // Time is after last frame.
+    var x = 0,
+      y = 0;
+    if (time >= frames[frames.length - ShearTimeline.ENTRIES]) {
+      // Time is after last frame.
       x = frames[frames.length + ShearTimeline.PREV_X];
       y = frames[frames.length + ShearTimeline.PREV_Y];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, ShearTimeline.ENTRIES);
       x = frames[frame + ShearTimeline.PREV_X];
       y = frames[frame + ShearTimeline.PREV_Y];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / ShearTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + ShearTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / ShearTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + ShearTimeline.PREV_TIME] - frameTime),
+      );
       x = x + (frames[frame + ShearTimeline.X] - x) * percent;
       y = y + (frames[frame + ShearTimeline.Y] - y) * percent;
     }
@@ -3124,7 +3124,7 @@ var ShearTimeline$2 = /** @class */ (function (_super) {
     }
   };
   return ShearTimeline;
-}(TranslateTimeline$2));
+})(TranslateTimeline$2);
 /** Changes a slot's {@link Slot#color}. */
 /**
  * @public
@@ -3150,8 +3150,7 @@ var ColorTimeline$1 = /** @class */ (function (_super) {
   };
   ColorTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -3159,20 +3158,29 @@ var ColorTimeline$1 = /** @class */ (function (_super) {
           slot.color.setFromColor(slot.data.color);
           return;
         case exports.MixBlend.first:
-          var color = slot.color, setup = slot.data.color;
-          color.add((setup.r - color.r) * alpha, (setup.g - color.g) * alpha, (setup.b - color.b) * alpha, (setup.a - color.a) * alpha);
+          var color = slot.color,
+            setup = slot.data.color;
+          color.add(
+            (setup.r - color.r) * alpha,
+            (setup.g - color.g) * alpha,
+            (setup.b - color.b) * alpha,
+            (setup.a - color.a) * alpha,
+          );
       }
       return;
     }
-    var r = 0, g = 0, b = 0, a = 0;
-    if (time >= frames[frames.length - ColorTimeline.ENTRIES]) { // Time is after last frame.
+    var r = 0,
+      g = 0,
+      b = 0,
+      a = 0;
+    if (time >= frames[frames.length - ColorTimeline.ENTRIES]) {
+      // Time is after last frame.
       var i = frames.length;
       r = frames[i + ColorTimeline.PREV_R];
       g = frames[i + ColorTimeline.PREV_G];
       b = frames[i + ColorTimeline.PREV_B];
       a = frames[i + ColorTimeline.PREV_A];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, ColorTimeline.ENTRIES);
       r = frames[frame + ColorTimeline.PREV_R];
@@ -3180,18 +3188,19 @@ var ColorTimeline$1 = /** @class */ (function (_super) {
       b = frames[frame + ColorTimeline.PREV_B];
       a = frames[frame + ColorTimeline.PREV_A];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / ColorTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + ColorTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / ColorTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + ColorTimeline.PREV_TIME] - frameTime),
+      );
       r += (frames[frame + ColorTimeline.R] - r) * percent;
       g += (frames[frame + ColorTimeline.G] - g) * percent;
       b += (frames[frame + ColorTimeline.B] - b) * percent;
       a += (frames[frame + ColorTimeline.A] - a) * percent;
     }
-    if (alpha == 1)
-      slot.color.set(r, g, b, a);
+    if (alpha == 1) slot.color.set(r, g, b, a);
     else {
       var color = slot.color;
-      if (blend == exports.MixBlend.setup)
-        color.setFromColor(slot.data.color);
+      if (blend == exports.MixBlend.setup) color.setFromColor(slot.data.color);
       color.add((r - color.r) * alpha, (g - color.g) * alpha, (b - color.b) * alpha, (a - color.a) * alpha);
     }
   };
@@ -3206,7 +3215,7 @@ var ColorTimeline$1 = /** @class */ (function (_super) {
   ColorTimeline.B = 3;
   ColorTimeline.A = 4;
   return ColorTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a slot's {@link Slot#color} and {@link Slot#darkColor} for two color tinting. */
 /**
  * @public
@@ -3235,8 +3244,7 @@ var TwoColorTimeline$1 = /** @class */ (function (_super) {
   };
   TwoColorTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -3245,14 +3253,29 @@ var TwoColorTimeline$1 = /** @class */ (function (_super) {
           slot.darkColor.setFromColor(slot.data.darkColor);
           return;
         case exports.MixBlend.first:
-          var light = slot.color, dark = slot.darkColor, setupLight = slot.data.color, setupDark = slot.data.darkColor;
-          light.add((setupLight.r - light.r) * alpha, (setupLight.g - light.g) * alpha, (setupLight.b - light.b) * alpha, (setupLight.a - light.a) * alpha);
+          var light = slot.color,
+            dark = slot.darkColor,
+            setupLight = slot.data.color,
+            setupDark = slot.data.darkColor;
+          light.add(
+            (setupLight.r - light.r) * alpha,
+            (setupLight.g - light.g) * alpha,
+            (setupLight.b - light.b) * alpha,
+            (setupLight.a - light.a) * alpha,
+          );
           dark.add((setupDark.r - dark.r) * alpha, (setupDark.g - dark.g) * alpha, (setupDark.b - dark.b) * alpha, 0);
       }
       return;
     }
-    var r = 0, g = 0, b = 0, a = 0, r2 = 0, g2 = 0, b2 = 0;
-    if (time >= frames[frames.length - TwoColorTimeline.ENTRIES]) { // Time is after last frame.
+    var r = 0,
+      g = 0,
+      b = 0,
+      a = 0,
+      r2 = 0,
+      g2 = 0,
+      b2 = 0;
+    if (time >= frames[frames.length - TwoColorTimeline.ENTRIES]) {
+      // Time is after last frame.
       var i = frames.length;
       r = frames[i + TwoColorTimeline.PREV_R];
       g = frames[i + TwoColorTimeline.PREV_G];
@@ -3261,8 +3284,7 @@ var TwoColorTimeline$1 = /** @class */ (function (_super) {
       r2 = frames[i + TwoColorTimeline.PREV_R2];
       g2 = frames[i + TwoColorTimeline.PREV_G2];
       b2 = frames[i + TwoColorTimeline.PREV_B2];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, TwoColorTimeline.ENTRIES);
       r = frames[frame + TwoColorTimeline.PREV_R];
@@ -3273,7 +3295,10 @@ var TwoColorTimeline$1 = /** @class */ (function (_super) {
       g2 = frames[frame + TwoColorTimeline.PREV_G2];
       b2 = frames[frame + TwoColorTimeline.PREV_B2];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / TwoColorTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + TwoColorTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / TwoColorTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + TwoColorTimeline.PREV_TIME] - frameTime),
+      );
       r += (frames[frame + TwoColorTimeline.R] - r) * percent;
       g += (frames[frame + TwoColorTimeline.G] - g) * percent;
       b += (frames[frame + TwoColorTimeline.B] - b) * percent;
@@ -3285,9 +3310,9 @@ var TwoColorTimeline$1 = /** @class */ (function (_super) {
     if (alpha == 1) {
       slot.color.set(r, g, b, a);
       slot.darkColor.set(r2, g2, b2, 1);
-    }
-    else {
-      var light = slot.color, dark = slot.darkColor;
+    } else {
+      var light = slot.color,
+        dark = slot.darkColor;
       if (blend == exports.MixBlend.setup) {
         light.setFromColor(slot.data.color);
         dark.setFromColor(slot.data.darkColor);
@@ -3313,7 +3338,7 @@ var TwoColorTimeline$1 = /** @class */ (function (_super) {
   TwoColorTimeline.G2 = 6;
   TwoColorTimeline.B2 = 7;
   return TwoColorTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a slot's {@link Slot#attachment}. */
 /**
  * @public
@@ -3337,11 +3362,9 @@ var AttachmentTimeline$2 = /** @class */ (function () {
   };
   AttachmentTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     if (direction == exports.MixDirection.mixOut) {
-      if (blend == exports.MixBlend.setup)
-        this.setAttachment(skeleton, slot, slot.data.attachmentName);
+      if (blend == exports.MixBlend.setup) this.setAttachment(skeleton, slot, slot.data.attachmentName);
       return;
     }
     var frames = this.frames;
@@ -3351,19 +3374,20 @@ var AttachmentTimeline$2 = /** @class */ (function () {
       return;
     }
     var frameIndex = 0;
-    if (time >= frames[frames.length - 1]) // Time is after last frame.
+    if (time >= frames[frames.length - 1])
+      // Time is after last frame.
       frameIndex = frames.length - 1;
-    else
-      frameIndex = Animation$2.binarySearch(frames, time, 1) - 1;
+    else frameIndex = Animation$2.binarySearch(frames, time, 1) - 1;
     var attachmentName = this.attachmentNames[frameIndex];
-    skeleton.slots[this.slotIndex]
-      .setAttachment(attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
+    skeleton.slots[this.slotIndex].setAttachment(
+      attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName),
+    );
   };
   AttachmentTimeline.prototype.setAttachment = function (skeleton, slot, attachmentName) {
     slot.setAttachment(attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
   };
   return AttachmentTimeline;
-}());
+})();
 var zeros$1 = null;
 /** Changes a slot's {@link Slot#deform} to deform a {@link VertexAttachment}. */
 /**
@@ -3375,8 +3399,7 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
     var _this = _super.call(this, frameCount) || this;
     _this.frames = Utils.newFloatArray(frameCount);
     _this.frameVertices = new Array(frameCount);
-    if (zeros$1 == null)
-      zeros$1 = Utils.newFloatArray(64);
+    if (zeros$1 == null) zeros$1 = Utils.newFloatArray(64);
     return _this;
   }
   DeformTimeline.prototype.getPropertyId = function () {
@@ -3390,14 +3413,12 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
   };
   DeformTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var slotAttachment = slot.getAttachment();
     if (!(slotAttachment instanceof VertexAttachment$2) || !(slotAttachment.deformAttachment == this.attachment))
       return;
     var deformArray = slot.deform;
-    if (deformArray.length == 0)
-      blend = exports.MixBlend.setup;
+    if (deformArray.length == 0) blend = exports.MixBlend.setup;
     var frameVertices = this.frameVertices;
     var vertexCount = frameVertices[0].length;
     var frames = this.frames;
@@ -3416,20 +3437,18 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
           if (vertexAttachment.bones == null) {
             // Unweighted vertex positions.
             var setupVertices = vertexAttachment.vertices;
-            for (var i = 0; i < vertexCount; i++)
-              deform_1[i] += (setupVertices[i] - deform_1[i]) * alpha;
-          }
-          else {
+            for (var i = 0; i < vertexCount; i++) deform_1[i] += (setupVertices[i] - deform_1[i]) * alpha;
+          } else {
             // Weighted deform offsets.
             alpha = 1 - alpha;
-            for (var i = 0; i < vertexCount; i++)
-              deform_1[i] *= alpha;
+            for (var i = 0; i < vertexCount; i++) deform_1[i] *= alpha;
           }
       }
       return;
     }
     var deform = Utils.setArraySize(deformArray, vertexCount);
-    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+    if (time >= frames[frames.length - 1]) {
+      // Time is after last frame.
       var lastVertices = frameVertices[frames.length - 1];
       if (alpha == 1) {
         if (blend == exports.MixBlend.add) {
@@ -3440,18 +3459,14 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
             for (var i_1 = 0; i_1 < vertexCount; i_1++) {
               deform[i_1] += lastVertices[i_1] - setupVertices[i_1];
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
-            for (var i_2 = 0; i_2 < vertexCount; i_2++)
-              deform[i_2] += lastVertices[i_2];
+            for (var i_2 = 0; i_2 < vertexCount; i_2++) deform[i_2] += lastVertices[i_2];
           }
-        }
-        else {
+        } else {
           Utils.arrayCopy(lastVertices, 0, deform, 0, vertexCount);
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup: {
             var vertexAttachment_1 = slotAttachment;
@@ -3462,18 +3477,15 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
                 var setup = setupVertices[i_3];
                 deform[i_3] = setup + (lastVertices[i_3] - setup) * alpha;
               }
-            }
-            else {
+            } else {
               // Weighted deform offsets, with alpha.
-              for (var i_4 = 0; i_4 < vertexCount; i_4++)
-                deform[i_4] = lastVertices[i_4] * alpha;
+              for (var i_4 = 0; i_4 < vertexCount; i_4++) deform[i_4] = lastVertices[i_4] * alpha;
             }
             break;
           }
           case exports.MixBlend.first:
           case exports.MixBlend.replace:
-            for (var i_5 = 0; i_5 < vertexCount; i_5++)
-              deform[i_5] += (lastVertices[i_5] - deform[i_5]) * alpha;
+            for (var i_5 = 0; i_5 < vertexCount; i_5++) deform[i_5] += (lastVertices[i_5] - deform[i_5]) * alpha;
             break;
           case exports.MixBlend.add:
             var vertexAttachment = slotAttachment;
@@ -3483,11 +3495,9 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
               for (var i_6 = 0; i_6 < vertexCount; i_6++) {
                 deform[i_6] += (lastVertices[i_6] - setupVertices[i_6]) * alpha;
               }
-            }
-            else {
+            } else {
               // Weighted deform offsets, with alpha.
-              for (var i_7 = 0; i_7 < vertexCount; i_7++)
-                deform[i_7] += lastVertices[i_7] * alpha;
+              for (var i_7 = 0; i_7 < vertexCount; i_7++) deform[i_7] += lastVertices[i_7] * alpha;
             }
         }
       }
@@ -3509,23 +3519,20 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
             var prev = prevVertices[i_8];
             deform[i_8] += prev + (nextVertices[i_8] - prev) * percent - setupVertices[i_8];
           }
-        }
-        else {
+        } else {
           // Weighted deform offsets, with alpha.
           for (var i_9 = 0; i_9 < vertexCount; i_9++) {
             var prev = prevVertices[i_9];
             deform[i_9] += prev + (nextVertices[i_9] - prev) * percent;
           }
         }
-      }
-      else {
+      } else {
         for (var i_10 = 0; i_10 < vertexCount; i_10++) {
           var prev = prevVertices[i_10];
           deform[i_10] = prev + (nextVertices[i_10] - prev) * percent;
         }
       }
-    }
-    else {
+    } else {
       switch (blend) {
         case exports.MixBlend.setup: {
           var vertexAttachment_2 = slotAttachment;
@@ -3533,11 +3540,11 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
             // Unweighted vertex positions, with alpha.
             var setupVertices = vertexAttachment_2.vertices;
             for (var i_11 = 0; i_11 < vertexCount; i_11++) {
-              var prev = prevVertices[i_11], setup = setupVertices[i_11];
+              var prev = prevVertices[i_11],
+                setup = setupVertices[i_11];
               deform[i_11] = setup + (prev + (nextVertices[i_11] - prev) * percent - setup) * alpha;
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
             for (var i_12 = 0; i_12 < vertexCount; i_12++) {
               var prev = prevVertices[i_12];
@@ -3562,8 +3569,7 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
               var prev = prevVertices[i_14];
               deform[i_14] += (prev + (nextVertices[i_14] - prev) * percent - setupVertices[i_14]) * alpha;
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
             for (var i_15 = 0; i_15 < vertexCount; i_15++) {
               var prev = prevVertices[i_15];
@@ -3574,7 +3580,7 @@ var DeformTimeline$2 = /** @class */ (function (_super) {
     }
   };
   return DeformTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Fires an {@link Event} when specific animation times are reached. */
 /**
  * @public
@@ -3598,35 +3604,32 @@ var EventTimeline$2 = /** @class */ (function () {
   };
   /** Fires events for frames > `lastTime` and <= `time`. */
   EventTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
-    if (firedEvents == null)
-      return;
+    if (firedEvents == null) return;
     var frames = this.frames;
     var frameCount = this.frames.length;
-    if (lastTime > time) { // Fire events after last time for looped animations.
+    if (lastTime > time) {
+      // Fire events after last time for looped animations.
       this.apply(skeleton, lastTime, Number.MAX_VALUE, firedEvents, alpha, blend, direction);
       lastTime = -1;
-    }
-    else if (lastTime >= frames[frameCount - 1]) // Last time is after last frame.
+    } else if (lastTime >= frames[frameCount - 1])
+      // Last time is after last frame.
       return;
-    if (time < frames[0])
-      return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
     var frame = 0;
-    if (lastTime < frames[0])
-      frame = 0;
+    if (lastTime < frames[0]) frame = 0;
     else {
       frame = Animation$2.binarySearch(frames, lastTime);
       var frameTime = frames[frame];
-      while (frame > 0) { // Fire multiple events with the same frame.
-        if (frames[frame - 1] != frameTime)
-          break;
+      while (frame > 0) {
+        // Fire multiple events with the same frame.
+        if (frames[frame - 1] != frameTime) break;
         frame--;
       }
     }
-    for (; frame < frameCount && time >= frames[frame]; frame++)
-      firedEvents.push(this.events[frame]);
+    for (; frame < frameCount && time >= frames[frame]; frame++) firedEvents.push(this.events[frame]);
   };
   return EventTimeline;
-}());
+})();
 /** Changes a skeleton's {@link Skeleton#drawOrder}. */
 /**
  * @public
@@ -3664,20 +3667,18 @@ var DrawOrderTimeline$2 = /** @class */ (function () {
       return;
     }
     var frame = 0;
-    if (time >= frames[frames.length - 1]) // Time is after last frame.
+    if (time >= frames[frames.length - 1])
+      // Time is after last frame.
       frame = frames.length - 1;
-    else
-      frame = Animation$2.binarySearch(frames, time) - 1;
+    else frame = Animation$2.binarySearch(frames, time) - 1;
     var drawOrderToSetupIndex = this.drawOrders[frame];
-    if (drawOrderToSetupIndex == null)
-      Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
+    if (drawOrderToSetupIndex == null) Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
     else {
-      for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-        drawOrder[i] = slots[drawOrderToSetupIndex[i]];
+      for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++) drawOrder[i] = slots[drawOrderToSetupIndex[i]];
     }
   };
   return DrawOrderTimeline;
-}());
+})();
 /** Changes an IK constraint's {@link IkConstraint#mix}, {@link IkConstraint#softness},
  * {@link IkConstraint#bendDirection}, {@link IkConstraint#stretch}, and {@link IkConstraint#compress}. */
 /**
@@ -3694,7 +3695,15 @@ var IkConstraintTimeline$2 = /** @class */ (function (_super) {
     return (TimelineType$1.ikConstraint << 24) + this.ikConstraintIndex;
   };
   /** Sets the time in seconds, mix, softness, bend direction, compress, and stretch for the specified key frame. */
-  IkConstraintTimeline.prototype.setFrame = function (frameIndex, time, mix, softness, bendDirection, compress, stretch) {
+  IkConstraintTimeline.prototype.setFrame = function (
+    frameIndex,
+    time,
+    mix,
+    softness,
+    bendDirection,
+    compress,
+    stretch,
+  ) {
     frameIndex *= IkConstraintTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + IkConstraintTimeline.MIX] = mix;
@@ -3706,8 +3715,7 @@ var IkConstraintTimeline$2 = /** @class */ (function (_super) {
   IkConstraintTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
     var frames = this.frames;
     var constraint = skeleton.ikConstraints[this.ikConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -3726,25 +3734,27 @@ var IkConstraintTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    if (time >= frames[frames.length - IkConstraintTimeline.ENTRIES]) { // Time is after last frame.
+    if (time >= frames[frames.length - IkConstraintTimeline.ENTRIES]) {
+      // Time is after last frame.
       if (blend == exports.MixBlend.setup) {
-        constraint.mix = constraint.data.mix + (frames[frames.length + IkConstraintTimeline.PREV_MIX] - constraint.data.mix) * alpha;
-        constraint.softness = constraint.data.softness
-          + (frames[frames.length + IkConstraintTimeline.PREV_SOFTNESS] - constraint.data.softness) * alpha;
+        constraint.mix =
+          constraint.data.mix + (frames[frames.length + IkConstraintTimeline.PREV_MIX] - constraint.data.mix) * alpha;
+        constraint.softness =
+          constraint.data.softness +
+          (frames[frames.length + IkConstraintTimeline.PREV_SOFTNESS] - constraint.data.softness) * alpha;
         if (direction == exports.MixDirection.mixOut) {
           constraint.bendDirection = constraint.data.bendDirection;
           constraint.compress = constraint.data.compress;
           constraint.stretch = constraint.data.stretch;
-        }
-        else {
+        } else {
           constraint.bendDirection = frames[frames.length + IkConstraintTimeline.PREV_BEND_DIRECTION];
           constraint.compress = frames[frames.length + IkConstraintTimeline.PREV_COMPRESS] != 0;
           constraint.stretch = frames[frames.length + IkConstraintTimeline.PREV_STRETCH] != 0;
         }
-      }
-      else {
+      } else {
         constraint.mix += (frames[frames.length + IkConstraintTimeline.PREV_MIX] - constraint.mix) * alpha;
-        constraint.softness += (frames[frames.length + IkConstraintTimeline.PREV_SOFTNESS] - constraint.softness) * alpha;
+        constraint.softness +=
+          (frames[frames.length + IkConstraintTimeline.PREV_SOFTNESS] - constraint.softness) * alpha;
         if (direction == exports.MixDirection.mixIn) {
           constraint.bendDirection = frames[frames.length + IkConstraintTimeline.PREV_BEND_DIRECTION];
           constraint.compress = frames[frames.length + IkConstraintTimeline.PREV_COMPRESS] != 0;
@@ -3758,25 +3768,31 @@ var IkConstraintTimeline$2 = /** @class */ (function (_super) {
     var mix = frames[frame + IkConstraintTimeline.PREV_MIX];
     var softness = frames[frame + IkConstraintTimeline.PREV_SOFTNESS];
     var frameTime = frames[frame];
-    var percent = this.getCurvePercent(frame / IkConstraintTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + IkConstraintTimeline.PREV_TIME] - frameTime));
+    var percent = this.getCurvePercent(
+      frame / IkConstraintTimeline.ENTRIES - 1,
+      1 - (time - frameTime) / (frames[frame + IkConstraintTimeline.PREV_TIME] - frameTime),
+    );
     if (blend == exports.MixBlend.setup) {
-      constraint.mix = constraint.data.mix + (mix + (frames[frame + IkConstraintTimeline.MIX] - mix) * percent - constraint.data.mix) * alpha;
-      constraint.softness = constraint.data.softness
-        + (softness + (frames[frame + IkConstraintTimeline.SOFTNESS] - softness) * percent - constraint.data.softness) * alpha;
+      constraint.mix =
+        constraint.data.mix +
+        (mix + (frames[frame + IkConstraintTimeline.MIX] - mix) * percent - constraint.data.mix) * alpha;
+      constraint.softness =
+        constraint.data.softness +
+        (softness + (frames[frame + IkConstraintTimeline.SOFTNESS] - softness) * percent - constraint.data.softness) *
+          alpha;
       if (direction == exports.MixDirection.mixOut) {
         constraint.bendDirection = constraint.data.bendDirection;
         constraint.compress = constraint.data.compress;
         constraint.stretch = constraint.data.stretch;
-      }
-      else {
+      } else {
         constraint.bendDirection = frames[frame + IkConstraintTimeline.PREV_BEND_DIRECTION];
         constraint.compress = frames[frame + IkConstraintTimeline.PREV_COMPRESS] != 0;
         constraint.stretch = frames[frame + IkConstraintTimeline.PREV_STRETCH] != 0;
       }
-    }
-    else {
+    } else {
       constraint.mix += (mix + (frames[frame + IkConstraintTimeline.MIX] - mix) * percent - constraint.mix) * alpha;
-      constraint.softness += (softness + (frames[frame + IkConstraintTimeline.SOFTNESS] - softness) * percent - constraint.softness) * alpha;
+      constraint.softness +=
+        (softness + (frames[frame + IkConstraintTimeline.SOFTNESS] - softness) * percent - constraint.softness) * alpha;
       if (direction == exports.MixDirection.mixIn) {
         constraint.bendDirection = frames[frame + IkConstraintTimeline.PREV_BEND_DIRECTION];
         constraint.compress = frames[frame + IkConstraintTimeline.PREV_COMPRESS] != 0;
@@ -3797,7 +3813,7 @@ var IkConstraintTimeline$2 = /** @class */ (function (_super) {
   IkConstraintTimeline.COMPRESS = 4;
   IkConstraintTimeline.STRETCH = 5;
   return IkConstraintTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a transform constraint's {@link TransformConstraint#rotateMix}, {@link TransformConstraint#translateMix},
  * {@link TransformConstraint#scaleMix}, and {@link TransformConstraint#shearMix}. */
 /**
@@ -3814,7 +3830,14 @@ var TransformConstraintTimeline$2 = /** @class */ (function (_super) {
     return (TimelineType$1.transformConstraint << 24) + this.transformConstraintIndex;
   };
   /** The time in seconds, rotate mix, translate mix, scale mix, and shear mix for the specified key frame. */
-  TransformConstraintTimeline.prototype.setFrame = function (frameIndex, time, rotateMix, translateMix, scaleMix, shearMix) {
+  TransformConstraintTimeline.prototype.setFrame = function (
+    frameIndex,
+    time,
+    rotateMix,
+    translateMix,
+    scaleMix,
+    shearMix,
+  ) {
     frameIndex *= TransformConstraintTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + TransformConstraintTimeline.ROTATE] = rotateMix;
@@ -3822,11 +3845,18 @@ var TransformConstraintTimeline$2 = /** @class */ (function (_super) {
     this.frames[frameIndex + TransformConstraintTimeline.SCALE] = scaleMix;
     this.frames[frameIndex + TransformConstraintTimeline.SHEAR] = shearMix;
   };
-  TransformConstraintTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  TransformConstraintTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.transformConstraints[this.transformConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     if (time < frames[0]) {
       var data = constraint.data;
       switch (blend) {
@@ -3844,15 +3874,18 @@ var TransformConstraintTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    var rotate = 0, translate = 0, scale = 0, shear = 0;
-    if (time >= frames[frames.length - TransformConstraintTimeline.ENTRIES]) { // Time is after last frame.
+    var rotate = 0,
+      translate = 0,
+      scale = 0,
+      shear = 0;
+    if (time >= frames[frames.length - TransformConstraintTimeline.ENTRIES]) {
+      // Time is after last frame.
       var i = frames.length;
       rotate = frames[i + TransformConstraintTimeline.PREV_ROTATE];
       translate = frames[i + TransformConstraintTimeline.PREV_TRANSLATE];
       scale = frames[i + TransformConstraintTimeline.PREV_SCALE];
       shear = frames[i + TransformConstraintTimeline.PREV_SHEAR];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, TransformConstraintTimeline.ENTRIES);
       rotate = frames[frame + TransformConstraintTimeline.PREV_ROTATE];
@@ -3860,7 +3893,10 @@ var TransformConstraintTimeline$2 = /** @class */ (function (_super) {
       scale = frames[frame + TransformConstraintTimeline.PREV_SCALE];
       shear = frames[frame + TransformConstraintTimeline.PREV_SHEAR];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / TransformConstraintTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + TransformConstraintTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / TransformConstraintTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + TransformConstraintTimeline.PREV_TIME] - frameTime),
+      );
       rotate += (frames[frame + TransformConstraintTimeline.ROTATE] - rotate) * percent;
       translate += (frames[frame + TransformConstraintTimeline.TRANSLATE] - translate) * percent;
       scale += (frames[frame + TransformConstraintTimeline.SCALE] - scale) * percent;
@@ -3872,8 +3908,7 @@ var TransformConstraintTimeline$2 = /** @class */ (function (_super) {
       constraint.translateMix = data.translateMix + (translate - data.translateMix) * alpha;
       constraint.scaleMix = data.scaleMix + (scale - data.scaleMix) * alpha;
       constraint.shearMix = data.shearMix + (shear - data.shearMix) * alpha;
-    }
-    else {
+    } else {
       constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
       constraint.translateMix += (translate - constraint.translateMix) * alpha;
       constraint.scaleMix += (scale - constraint.scaleMix) * alpha;
@@ -3891,7 +3926,7 @@ var TransformConstraintTimeline$2 = /** @class */ (function (_super) {
   TransformConstraintTimeline.SCALE = 3;
   TransformConstraintTimeline.SHEAR = 4;
   return TransformConstraintTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a path constraint's {@link PathConstraint#position}. */
 /**
  * @public
@@ -3912,11 +3947,18 @@ var PathConstraintPositionTimeline$2 = /** @class */ (function (_super) {
     this.frames[frameIndex] = time;
     this.frames[frameIndex + PathConstraintPositionTimeline.VALUE] = value;
   };
-  PathConstraintPositionTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintPositionTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -3928,27 +3970,30 @@ var PathConstraintPositionTimeline$2 = /** @class */ (function (_super) {
       return;
     }
     var position = 0;
-    if (time >= frames[frames.length - PathConstraintPositionTimeline.ENTRIES]) // Time is after last frame.
+    if (time >= frames[frames.length - PathConstraintPositionTimeline.ENTRIES])
+      // Time is after last frame.
       position = frames[frames.length + PathConstraintPositionTimeline.PREV_VALUE];
     else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, PathConstraintPositionTimeline.ENTRIES);
       position = frames[frame + PathConstraintPositionTimeline.PREV_VALUE];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / PathConstraintPositionTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + PathConstraintPositionTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / PathConstraintPositionTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + PathConstraintPositionTimeline.PREV_TIME] - frameTime),
+      );
       position += (frames[frame + PathConstraintPositionTimeline.VALUE] - position) * percent;
     }
     if (blend == exports.MixBlend.setup)
       constraint.position = constraint.data.position + (position - constraint.data.position) * alpha;
-    else
-      constraint.position += (position - constraint.position) * alpha;
+    else constraint.position += (position - constraint.position) * alpha;
   };
   PathConstraintPositionTimeline.ENTRIES = 2;
   PathConstraintPositionTimeline.PREV_TIME = -2;
   PathConstraintPositionTimeline.PREV_VALUE = -1;
   PathConstraintPositionTimeline.VALUE = 1;
   return PathConstraintPositionTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 /** Changes a path constraint's {@link PathConstraint#spacing}. */
 /**
  * @public
@@ -3961,11 +4006,18 @@ var PathConstraintSpacingTimeline$2 = /** @class */ (function (_super) {
   PathConstraintSpacingTimeline.prototype.getPropertyId = function () {
     return (TimelineType$1.pathConstraintSpacing << 24) + this.pathConstraintIndex;
   };
-  PathConstraintSpacingTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintSpacingTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -3977,23 +4029,26 @@ var PathConstraintSpacingTimeline$2 = /** @class */ (function (_super) {
       return;
     }
     var spacing = 0;
-    if (time >= frames[frames.length - PathConstraintSpacingTimeline.ENTRIES]) // Time is after last frame.
+    if (time >= frames[frames.length - PathConstraintSpacingTimeline.ENTRIES])
+      // Time is after last frame.
       spacing = frames[frames.length + PathConstraintSpacingTimeline.PREV_VALUE];
     else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, PathConstraintSpacingTimeline.ENTRIES);
       spacing = frames[frame + PathConstraintSpacingTimeline.PREV_VALUE];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / PathConstraintSpacingTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + PathConstraintSpacingTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / PathConstraintSpacingTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + PathConstraintSpacingTimeline.PREV_TIME] - frameTime),
+      );
       spacing += (frames[frame + PathConstraintSpacingTimeline.VALUE] - spacing) * percent;
     }
     if (blend == exports.MixBlend.setup)
       constraint.spacing = constraint.data.spacing + (spacing - constraint.data.spacing) * alpha;
-    else
-      constraint.spacing += (spacing - constraint.spacing) * alpha;
+    else constraint.spacing += (spacing - constraint.spacing) * alpha;
   };
   return PathConstraintSpacingTimeline;
-}(PathConstraintPositionTimeline$2));
+})(PathConstraintPositionTimeline$2);
 /** Changes a transform constraint's {@link PathConstraint#rotateMix} and
  * {@link TransformConstraint#translateMix}. */
 /**
@@ -4016,11 +4071,18 @@ var PathConstraintMixTimeline$2 = /** @class */ (function (_super) {
     this.frames[frameIndex + PathConstraintMixTimeline.ROTATE] = rotateMix;
     this.frames[frameIndex + PathConstraintMixTimeline.TRANSLATE] = translateMix;
   };
-  PathConstraintMixTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintMixTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -4033,26 +4095,29 @@ var PathConstraintMixTimeline$2 = /** @class */ (function (_super) {
       }
       return;
     }
-    var rotate = 0, translate = 0;
-    if (time >= frames[frames.length - PathConstraintMixTimeline.ENTRIES]) { // Time is after last frame.
+    var rotate = 0,
+      translate = 0;
+    if (time >= frames[frames.length - PathConstraintMixTimeline.ENTRIES]) {
+      // Time is after last frame.
       rotate = frames[frames.length + PathConstraintMixTimeline.PREV_ROTATE];
       translate = frames[frames.length + PathConstraintMixTimeline.PREV_TRANSLATE];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$2.binarySearch(frames, time, PathConstraintMixTimeline.ENTRIES);
       rotate = frames[frame + PathConstraintMixTimeline.PREV_ROTATE];
       translate = frames[frame + PathConstraintMixTimeline.PREV_TRANSLATE];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / PathConstraintMixTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + PathConstraintMixTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / PathConstraintMixTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + PathConstraintMixTimeline.PREV_TIME] - frameTime),
+      );
       rotate += (frames[frame + PathConstraintMixTimeline.ROTATE] - rotate) * percent;
       translate += (frames[frame + PathConstraintMixTimeline.TRANSLATE] - translate) * percent;
     }
     if (blend == exports.MixBlend.setup) {
       constraint.rotateMix = constraint.data.rotateMix + (rotate - constraint.data.rotateMix) * alpha;
       constraint.translateMix = constraint.data.translateMix + (translate - constraint.data.translateMix) * alpha;
-    }
-    else {
+    } else {
       constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
       constraint.translateMix += (translate - constraint.translateMix) * alpha;
     }
@@ -4064,7 +4129,7 @@ var PathConstraintMixTimeline$2 = /** @class */ (function (_super) {
   PathConstraintMixTimeline.ROTATE = 1;
   PathConstraintMixTimeline.TRANSLATE = 2;
   return PathConstraintMixTimeline;
-}(CurveTimeline$2));
+})(CurveTimeline$2);
 
 /** Applies animations over time, queues animations for later playback, mixes (crossfading) between animations, and applies
  * multiple animations on top of each other (layering).
@@ -4088,7 +4153,9 @@ var AnimationState$2 = /** @class */ (function () {
     this.queue = new EventQueue$2(this);
     this.propertyIDs = new IntSet();
     this.animationsChanged = false;
-    this.trackEntryPool = new Pool(function () { return new TrackEntry$2(); });
+    this.trackEntryPool = new Pool(function () {
+      return new TrackEntry$2();
+    });
     this.data = data;
   }
   /** Increments each track entry {@link TrackEntry#trackTime()}, setting queued animations as current if needed. */
@@ -4097,15 +4164,13 @@ var AnimationState$2 = /** @class */ (function () {
     var tracks = this.tracks;
     for (var i = 0, n = tracks.length; i < n; i++) {
       var current = tracks[i];
-      if (current == null)
-        continue;
+      if (current == null) continue;
       current.animationLast = current.nextAnimationLast;
       current.trackLast = current.nextTrackLast;
       var currentDelta = delta * current.timeScale;
       if (current.delay > 0) {
         current.delay -= currentDelta;
-        if (current.delay > 0)
-          continue;
+        if (current.delay > 0) continue;
         currentDelta = -current.delay;
         current.delay = 0;
       }
@@ -4124,8 +4189,7 @@ var AnimationState$2 = /** @class */ (function () {
           }
           continue;
         }
-      }
-      else if (current.trackLast >= current.trackEnd && current.mixingFrom == null) {
+      } else if (current.trackLast >= current.trackEnd && current.mixingFrom == null) {
         tracks[i] = null;
         this.queue.end(current);
         this.disposeNext(current);
@@ -4135,8 +4199,7 @@ var AnimationState$2 = /** @class */ (function () {
         // End mixing from entries once all have completed.
         var from = current.mixingFrom;
         current.mixingFrom = null;
-        if (from != null)
-          from.mixingTo = null;
+        if (from != null) from.mixingTo = null;
         while (from != null) {
           this.queue.end(from);
           from = from.mixingFrom;
@@ -4149,8 +4212,7 @@ var AnimationState$2 = /** @class */ (function () {
   /** Returns true when all mixing from entries are complete. */
   AnimationState.prototype.updateMixingFrom = function (to, delta) {
     var from = to.mixingFrom;
-    if (from == null)
-      return true;
+    if (from == null) return true;
     var finished = this.updateMixingFrom(from, delta);
     from.animationLast = from.nextAnimationLast;
     from.trackLast = from.nextTrackLast;
@@ -4159,8 +4221,7 @@ var AnimationState$2 = /** @class */ (function () {
       // Require totalAlpha == 0 to ensure mixing is complete, unless mixDuration == 0 (the transition is a single frame).
       if (from.totalAlpha == 0 || to.mixDuration == 0) {
         to.mixingFrom = from.mixingFrom;
-        if (from.mixingFrom != null)
-          from.mixingFrom.mixingTo = to;
+        if (from.mixingFrom != null) from.mixingFrom.mixingTo = to;
         to.interruptAlpha = from.interruptAlpha;
         this.queue.end(from);
       }
@@ -4174,27 +4235,23 @@ var AnimationState$2 = /** @class */ (function () {
    * animation state can be applied to multiple skeletons to pose them identically.
    * @returns True if any animations were applied. */
   AnimationState.prototype.apply = function (skeleton) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
-    if (this.animationsChanged)
-      this._animationsChanged();
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
+    if (this.animationsChanged) this._animationsChanged();
     var events = this.events;
     var tracks = this.tracks;
     var applied = false;
     for (var i_1 = 0, n_1 = tracks.length; i_1 < n_1; i_1++) {
       var current = tracks[i_1];
-      if (current == null || current.delay > 0)
-        continue;
+      if (current == null || current.delay > 0) continue;
       applied = true;
       var blend = i_1 == 0 ? exports.MixBlend.first : current.mixBlend;
       // Apply mixing from entries first.
       var mix = current.alpha;
-      if (current.mixingFrom != null)
-        mix *= this.applyMixingFrom(current, skeleton, blend);
-      else if (current.trackTime >= current.trackEnd && current.next == null)
-        mix = 0;
+      if (current.mixingFrom != null) mix *= this.applyMixingFrom(current, skeleton, blend);
+      else if (current.trackTime >= current.trackEnd && current.next == null) mix = 0;
       // Apply current entry.
-      var animationLast = current.animationLast, animationTime = current.getAnimationTime();
+      var animationLast = current.animationLast,
+        animationTime = current.getAnimationTime();
       var timelineCount = current.animation.timelines.length;
       var timelines = current.animation.timelines;
       if ((i_1 == 0 && mix == 1) || blend == exports.MixBlend.add) {
@@ -4206,29 +4263,41 @@ var AnimationState$2 = /** @class */ (function () {
           var timeline = timelines[ii];
           if (timeline instanceof AttachmentTimeline$2)
             this.applyAttachmentTimeline(timeline, skeleton, animationTime, blend, true);
-          else
-            timeline.apply(skeleton, animationLast, animationTime, events, mix, blend, exports.MixDirection.mixIn);
+          else timeline.apply(skeleton, animationLast, animationTime, events, mix, blend, exports.MixDirection.mixIn);
         }
-      }
-      else {
+      } else {
         var timelineMode = current.timelineMode;
         var firstFrame = current.timelinesRotation.length == 0;
-        if (firstFrame)
-          Utils.setArraySize(current.timelinesRotation, timelineCount << 1, null);
+        if (firstFrame) Utils.setArraySize(current.timelinesRotation, timelineCount << 1, null);
         var timelinesRotation = current.timelinesRotation;
         for (var ii = 0; ii < timelineCount; ii++) {
           var timeline_1 = timelines[ii];
           var timelineBlend = timelineMode[ii] == AnimationState.SUBSEQUENT ? blend : exports.MixBlend.setup;
           if (timeline_1 instanceof RotateTimeline$2) {
-            this.applyRotateTimeline(timeline_1, skeleton, animationTime, mix, timelineBlend, timelinesRotation, ii << 1, firstFrame);
-          }
-          else if (timeline_1 instanceof AttachmentTimeline$2) {
+            this.applyRotateTimeline(
+              timeline_1,
+              skeleton,
+              animationTime,
+              mix,
+              timelineBlend,
+              timelinesRotation,
+              ii << 1,
+              firstFrame,
+            );
+          } else if (timeline_1 instanceof AttachmentTimeline$2) {
             this.applyAttachmentTimeline(timeline_1, skeleton, animationTime, blend, true);
-          }
-          else {
+          } else {
             // This fixes the WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
             Utils.webkit602BugfixHelper(mix, blend);
-            timeline_1.apply(skeleton, animationLast, animationTime, events, mix, timelineBlend, exports.MixDirection.mixIn);
+            timeline_1.apply(
+              skeleton,
+              animationLast,
+              animationTime,
+              events,
+              mix,
+              timelineBlend,
+              exports.MixDirection.mixIn,
+            );
           }
         }
       }
@@ -4255,37 +4324,42 @@ var AnimationState$2 = /** @class */ (function () {
   };
   AnimationState.prototype.applyMixingFrom = function (to, skeleton, blend) {
     var from = to.mixingFrom;
-    if (from.mixingFrom != null)
-      this.applyMixingFrom(from, skeleton, blend);
+    if (from.mixingFrom != null) this.applyMixingFrom(from, skeleton, blend);
     var mix = 0;
-    if (to.mixDuration == 0) { // Single frame mix to undo mixingFrom changes.
+    if (to.mixDuration == 0) {
+      // Single frame mix to undo mixingFrom changes.
       mix = 1;
-      if (blend == exports.MixBlend.first)
-        blend = exports.MixBlend.setup;
-    }
-    else {
+      if (blend == exports.MixBlend.first) blend = exports.MixBlend.setup;
+    } else {
       mix = to.mixTime / to.mixDuration;
-      if (mix > 1)
-        mix = 1;
-      if (blend != exports.MixBlend.first)
-        blend = from.mixBlend;
+      if (mix > 1) mix = 1;
+      if (blend != exports.MixBlend.first) blend = from.mixBlend;
     }
     var events = mix < from.eventThreshold ? this.events : null;
-    var attachments = mix < from.attachmentThreshold, drawOrder = mix < from.drawOrderThreshold;
-    var animationLast = from.animationLast, animationTime = from.getAnimationTime();
+    var attachments = mix < from.attachmentThreshold,
+      drawOrder = mix < from.drawOrderThreshold;
+    var animationLast = from.animationLast,
+      animationTime = from.getAnimationTime();
     var timelineCount = from.animation.timelines.length;
     var timelines = from.animation.timelines;
-    var alphaHold = from.alpha * to.interruptAlpha, alphaMix = alphaHold * (1 - mix);
+    var alphaHold = from.alpha * to.interruptAlpha,
+      alphaMix = alphaHold * (1 - mix);
     if (blend == exports.MixBlend.add) {
       for (var i = 0; i < timelineCount; i++)
-        timelines[i].apply(skeleton, animationLast, animationTime, events, alphaMix, blend, exports.MixDirection.mixOut);
-    }
-    else {
+        timelines[i].apply(
+          skeleton,
+          animationLast,
+          animationTime,
+          events,
+          alphaMix,
+          blend,
+          exports.MixDirection.mixOut,
+        );
+    } else {
       var timelineMode = from.timelineMode;
       var timelineHoldMix = from.timelineHoldMix;
       var firstFrame = from.timelinesRotation.length == 0;
-      if (firstFrame)
-        Utils.setArraySize(from.timelinesRotation, timelineCount << 1, null);
+      if (firstFrame) Utils.setArraySize(from.timelinesRotation, timelineCount << 1, null);
       var timelinesRotation = from.timelinesRotation;
       from.totalAlpha = 0;
       for (var i = 0; i < timelineCount; i++) {
@@ -4295,8 +4369,7 @@ var AnimationState$2 = /** @class */ (function () {
         var alpha = 0;
         switch (timelineMode[i]) {
           case AnimationState.SUBSEQUENT:
-            if (!drawOrder && timeline instanceof DrawOrderTimeline$2)
-              continue;
+            if (!drawOrder && timeline instanceof DrawOrderTimeline$2) continue;
             timelineBlend = blend;
             alpha = alphaMix;
             break;
@@ -4320,7 +4393,16 @@ var AnimationState$2 = /** @class */ (function () {
         }
         from.totalAlpha += alpha;
         if (timeline instanceof RotateTimeline$2)
-          this.applyRotateTimeline(timeline, skeleton, animationTime, alpha, timelineBlend, timelinesRotation, i << 1, firstFrame);
+          this.applyRotateTimeline(
+            timeline,
+            skeleton,
+            animationTime,
+            alpha,
+            timelineBlend,
+            timelinesRotation,
+            i << 1,
+            firstFrame,
+          );
         else if (timeline instanceof AttachmentTimeline$2)
           this.applyAttachmentTimeline(timeline, skeleton, animationTime, timelineBlend, attachments);
         else {
@@ -4332,8 +4414,7 @@ var AnimationState$2 = /** @class */ (function () {
         }
       }
     }
-    if (to.mixDuration > 0)
-      this.queueEvents(from, animationTime);
+    if (to.mixDuration > 0) this.queueEvents(from, animationTime);
     this.events.length = 0;
     from.nextAnimationLast = animationTime;
     from.nextTrackLast = from.trackTime;
@@ -4341,33 +4422,38 @@ var AnimationState$2 = /** @class */ (function () {
   };
   AnimationState.prototype.applyAttachmentTimeline = function (timeline, skeleton, time, blend, attachments) {
     var slot = skeleton.slots[timeline.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = timeline.frames;
-    if (time < frames[0]) { // Time is before first frame.
+    if (time < frames[0]) {
+      // Time is before first frame.
       if (blend == exports.MixBlend.setup || blend == exports.MixBlend.first)
         this.setAttachment(skeleton, slot, slot.data.attachmentName, attachments);
-    }
-    else {
+    } else {
       var frameIndex;
-      if (time >= frames[frames.length - 1]) // Time is after last frame.
+      if (time >= frames[frames.length - 1])
+        // Time is after last frame.
         frameIndex = frames.length - 1;
-      else
-        frameIndex = Animation$2.binarySearch(frames, time) - 1;
+      else frameIndex = Animation$2.binarySearch(frames, time) - 1;
       this.setAttachment(skeleton, slot, timeline.attachmentNames[frameIndex], attachments);
     }
     // If an attachment wasn't set (ie before the first frame or attachments is false), set the setup attachment later.
-    if (slot.attachmentState <= this.unkeyedState)
-      slot.attachmentState = this.unkeyedState + AnimationState.SETUP;
+    if (slot.attachmentState <= this.unkeyedState) slot.attachmentState = this.unkeyedState + AnimationState.SETUP;
   };
   AnimationState.prototype.setAttachment = function (skeleton, slot, attachmentName, attachments) {
     slot.setAttachment(attachmentName == null ? null : skeleton.getAttachment(slot.data.index, attachmentName));
-    if (attachments)
-      slot.attachmentState = this.unkeyedState + AnimationState.CURRENT;
+    if (attachments) slot.attachmentState = this.unkeyedState + AnimationState.CURRENT;
   };
-  AnimationState.prototype.applyRotateTimeline = function (timeline, skeleton, time, alpha, blend, timelinesRotation, i, firstFrame) {
-    if (firstFrame)
-      timelinesRotation[i] = 0;
+  AnimationState.prototype.applyRotateTimeline = function (
+    timeline,
+    skeleton,
+    time,
+    alpha,
+    blend,
+    timelinesRotation,
+    i,
+    firstFrame,
+  ) {
+    if (firstFrame) timelinesRotation[i] = 0;
     if (alpha == 1) {
       timeline.apply(skeleton, 0, time, null, 1, blend, exports.MixDirection.mixIn);
       return;
@@ -4375,9 +4461,9 @@ var AnimationState$2 = /** @class */ (function () {
     var rotateTimeline = timeline;
     var frames = rotateTimeline.frames;
     var bone = skeleton.bones[rotateTimeline.boneIndex];
-    if (!bone.active)
-      return;
-    var r1 = 0, r2 = 0;
+    if (!bone.active) return;
+    var r1 = 0,
+      r2 = 0;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -4388,17 +4474,20 @@ var AnimationState$2 = /** @class */ (function () {
           r1 = bone.rotation;
           r2 = bone.data.rotation;
       }
-    }
-    else {
+    } else {
       r1 = blend == exports.MixBlend.setup ? bone.data.rotation : bone.rotation;
-      if (time >= frames[frames.length - RotateTimeline$2.ENTRIES]) // Time is after last frame.
+      if (time >= frames[frames.length - RotateTimeline$2.ENTRIES])
+        // Time is after last frame.
         r2 = bone.data.rotation + frames[frames.length + RotateTimeline$2.PREV_ROTATION];
       else {
         // Interpolate between the previous frame and the current frame.
         var frame = Animation$2.binarySearch(frames, time, RotateTimeline$2.ENTRIES);
         var prevRotation = frames[frame + RotateTimeline$2.PREV_ROTATION];
         var frameTime = frames[frame];
-        var percent = rotateTimeline.getCurvePercent((frame >> 1) - 1, 1 - (time - frameTime) / (frames[frame + RotateTimeline$2.PREV_TIME] - frameTime));
+        var percent = rotateTimeline.getCurvePercent(
+          (frame >> 1) - 1,
+          1 - (time - frameTime) / (frames[frame + RotateTimeline$2.PREV_TIME] - frameTime),
+        );
         r2 = frames[frame + RotateTimeline$2.ROTATION] - prevRotation;
         r2 -= (16384 - ((16384.499999999996 - r2 / 360) | 0)) * 360;
         r2 = prevRotation + r2 * percent + bone.data.rotation;
@@ -4406,32 +4495,31 @@ var AnimationState$2 = /** @class */ (function () {
       }
     }
     // Mix between rotations using the direction of the shortest route on the first frame while detecting crosses.
-    var total = 0, diff = r2 - r1;
+    var total = 0,
+      diff = r2 - r1;
     diff -= (16384 - ((16384.499999999996 - diff / 360) | 0)) * 360;
     if (diff == 0) {
       total = timelinesRotation[i];
-    }
-    else {
-      var lastTotal = 0, lastDiff = 0;
+    } else {
+      var lastTotal = 0,
+        lastDiff = 0;
       if (firstFrame) {
         lastTotal = 0;
         lastDiff = diff;
-      }
-      else {
+      } else {
         lastTotal = timelinesRotation[i]; // Angle and direction of mix, including loops.
         lastDiff = timelinesRotation[i + 1]; // Difference between bones.
       }
-      var current = diff > 0, dir = lastTotal >= 0;
+      var current = diff > 0,
+        dir = lastTotal >= 0;
       // Detect cross at 0 (not 180).
       if (MathUtils.signum(lastDiff) != MathUtils.signum(diff) && Math.abs(lastDiff) <= 90) {
         // A cross after a 360 rotation is a loop.
-        if (Math.abs(lastTotal) > 180)
-          lastTotal += 360 * MathUtils.signum(lastTotal);
+        if (Math.abs(lastTotal) > 180) lastTotal += 360 * MathUtils.signum(lastTotal);
         dir = current;
       }
-      total = diff + lastTotal - lastTotal % 360; // Store loops as part of lastTotal.
-      if (dir != current)
-        total += 360 * MathUtils.signum(lastTotal);
+      total = diff + lastTotal - (lastTotal % 360); // Store loops as part of lastTotal.
+      if (dir != current) total += 360 * MathUtils.signum(lastTotal);
       timelinesRotation[i] = total;
     }
     timelinesRotation[i + 1] = diff;
@@ -4439,33 +4527,29 @@ var AnimationState$2 = /** @class */ (function () {
     bone.rotation = r1 - (16384 - ((16384.499999999996 - r1 / 360) | 0)) * 360;
   };
   AnimationState.prototype.queueEvents = function (entry, animationTime) {
-    var animationStart = entry.animationStart, animationEnd = entry.animationEnd;
+    var animationStart = entry.animationStart,
+      animationEnd = entry.animationEnd;
     var duration = animationEnd - animationStart;
     var trackLastWrapped = entry.trackLast % duration;
     // Queue events before complete.
     var events = this.events;
-    var i = 0, n = events.length;
+    var i = 0,
+      n = events.length;
     for (; i < n; i++) {
       var event_1 = events[i];
-      if (event_1.time < trackLastWrapped)
-        break;
-      if (event_1.time > animationEnd)
-        continue; // Discard events outside animation start/end.
+      if (event_1.time < trackLastWrapped) break;
+      if (event_1.time > animationEnd) continue; // Discard events outside animation start/end.
       this.queue.event(entry, event_1);
     }
     // Queue complete if completed a loop iteration or the animation.
     var complete = false;
-    if (entry.loop)
-      complete = duration == 0 || trackLastWrapped > entry.trackTime % duration;
-    else
-      complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
-    if (complete)
-      this.queue.complete(entry);
+    if (entry.loop) complete = duration == 0 || trackLastWrapped > entry.trackTime % duration;
+    else complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
+    if (complete) this.queue.complete(entry);
     // Queue events after complete.
     for (; i < n; i++) {
       var event_2 = events[i];
-      if (event_2.time < animationStart)
-        continue; // Discard events outside animation start/end.
+      if (event_2.time < animationStart) continue; // Discard events outside animation start/end.
       this.queue.event(entry, events[i]);
     }
   };
@@ -4476,8 +4560,7 @@ var AnimationState$2 = /** @class */ (function () {
   AnimationState.prototype.clearTracks = function () {
     var oldDrainDisabled = this.queue.drainDisabled;
     this.queue.drainDisabled = true;
-    for (var i = 0, n = this.tracks.length; i < n; i++)
-      this.clearTrack(i);
+    for (var i = 0, n = this.tracks.length; i < n; i++) this.clearTrack(i);
     this.tracks.length = 0;
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
@@ -4487,18 +4570,15 @@ var AnimationState$2 = /** @class */ (function () {
    * It may be desired to use {@link AnimationState#setEmptyAnimation()} to mix the skeletons back to the setup pose,
    * rather than leaving them in their current pose. */
   AnimationState.prototype.clearTrack = function (trackIndex) {
-    if (trackIndex >= this.tracks.length)
-      return;
+    if (trackIndex >= this.tracks.length) return;
     var current = this.tracks[trackIndex];
-    if (current == null)
-      return;
+    if (current == null) return;
     this.queue.end(current);
     this.disposeNext(current);
     var entry = current;
     while (true) {
       var from = entry.mixingFrom;
-      if (from == null)
-        break;
+      if (from == null) break;
       this.queue.end(from);
       entry.mixingFrom = null;
       entry.mixingTo = null;
@@ -4511,8 +4591,7 @@ var AnimationState$2 = /** @class */ (function () {
     var from = this.expandToIndex(index);
     this.tracks[index] = current;
     if (from != null) {
-      if (interrupt)
-        this.queue.interrupt(from);
+      if (interrupt) this.queue.interrupt(from);
       current.mixingFrom = from;
       from.mixingTo = current;
       current.mixTime = 0;
@@ -4528,8 +4607,7 @@ var AnimationState$2 = /** @class */ (function () {
    * {@link #setAnimationWith(}. */
   AnimationState.prototype.setAnimation = function (trackIndex, animationName, loop) {
     var animation = this.data.skeletonData.findAnimation(animationName);
-    if (animation == null)
-      throw new Error("Animation not found: " + animationName);
+    if (animation == null) throw new Error('Animation not found: ' + animationName);
     return this.setAnimationWith(trackIndex, animation, loop);
   };
   /** Sets the current animation for a track, discarding any queued animations. If the formerly current track entry was never
@@ -4539,8 +4617,7 @@ var AnimationState$2 = /** @class */ (function () {
    * @returns A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   AnimationState.prototype.setAnimationWith = function (trackIndex, animation, loop) {
-    if (animation == null)
-      throw new Error("animation cannot be null.");
+    if (animation == null) throw new Error('animation cannot be null.');
     var interrupt = true;
     var current = this.expandToIndex(trackIndex);
     if (current != null) {
@@ -4552,9 +4629,7 @@ var AnimationState$2 = /** @class */ (function () {
         this.disposeNext(current);
         current = current.mixingFrom;
         interrupt = false;
-      }
-      else
-        this.disposeNext(current);
+      } else this.disposeNext(current);
     }
     var entry = this.trackEntry(trackIndex, animation, loop, current);
     this.setCurrent(trackIndex, entry, interrupt);
@@ -4566,8 +4641,7 @@ var AnimationState$2 = /** @class */ (function () {
    * See {@link #addAnimationWith()}. */
   AnimationState.prototype.addAnimation = function (trackIndex, animationName, loop, delay) {
     var animation = this.data.skeletonData.findAnimation(animationName);
-    if (animation == null)
-      throw new Error("Animation not found: " + animationName);
+    if (animation == null) throw new Error('Animation not found: ' + animationName);
     return this.addAnimationWith(trackIndex, animation, loop, delay);
   };
   /** Adds an animation to be played after the current or last queued animation for a track. If the track is empty, it is
@@ -4579,31 +4653,24 @@ var AnimationState$2 = /** @class */ (function () {
    * @returns A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   AnimationState.prototype.addAnimationWith = function (trackIndex, animation, loop, delay) {
-    if (animation == null)
-      throw new Error("animation cannot be null.");
+    if (animation == null) throw new Error('animation cannot be null.');
     var last = this.expandToIndex(trackIndex);
     if (last != null) {
-      while (last.next != null)
-        last = last.next;
+      while (last.next != null) last = last.next;
     }
     var entry = this.trackEntry(trackIndex, animation, loop, last);
     if (last == null) {
       this.setCurrent(trackIndex, entry, true);
       this.queue.drain();
-    }
-    else {
+    } else {
       last.next = entry;
       if (delay <= 0) {
         var duration = last.animationEnd - last.animationStart;
         if (duration != 0) {
-          if (last.loop)
-            delay += duration * (1 + ((last.trackTime / duration) | 0));
-          else
-            delay += Math.max(duration, last.trackTime);
+          if (last.loop) delay += duration * (1 + ((last.trackTime / duration) | 0));
+          else delay += Math.max(duration, last.trackTime);
           delay -= this.data.getMix(last.animation, animation);
-        }
-        else
-          delay = last.trackTime;
+        } else delay = last.trackTime;
       }
     }
     entry.delay = delay;
@@ -4641,8 +4708,7 @@ var AnimationState$2 = /** @class */ (function () {
    * @return A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   AnimationState.prototype.addEmptyAnimation = function (trackIndex, mixDuration, delay) {
-    if (delay <= 0)
-      delay -= mixDuration;
+    if (delay <= 0) delay -= mixDuration;
     var entry = this.addAnimationWith(trackIndex, AnimationState.emptyAnimation, false, delay);
     entry.mixDuration = mixDuration;
     entry.trackEnd = mixDuration;
@@ -4655,15 +4721,13 @@ var AnimationState$2 = /** @class */ (function () {
     this.queue.drainDisabled = true;
     for (var i = 0, n = this.tracks.length; i < n; i++) {
       var current = this.tracks[i];
-      if (current != null)
-        this.setEmptyAnimation(current.trackIndex, mixDuration);
+      if (current != null) this.setEmptyAnimation(current.trackIndex, mixDuration);
     }
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
   };
   AnimationState.prototype.expandToIndex = function (index) {
-    if (index < this.tracks.length)
-      return this.tracks[index];
+    if (index < this.tracks.length) return this.tracks[index];
     Utils.ensureArrayCapacity(this.tracks, index + 1, null);
     this.tracks.length = index + 1;
     return null;
@@ -4708,13 +4772,10 @@ var AnimationState$2 = /** @class */ (function () {
     this.propertyIDs.clear();
     for (var i = 0, n = this.tracks.length; i < n; i++) {
       var entry = this.tracks[i];
-      if (entry == null)
-        continue;
-      while (entry.mixingFrom != null)
-        entry = entry.mixingFrom;
+      if (entry == null) continue;
+      while (entry.mixingFrom != null) entry = entry.mixingFrom;
       do {
-        if (entry.mixingFrom == null || entry.mixBlend != exports.MixBlend.add)
-          this.computeHold(entry);
+        if (entry.mixingFrom == null || entry.mixBlend != exports.MixBlend.add) this.computeHold(entry);
         entry = entry.mixingTo;
       } while (entry != null);
     }
@@ -4729,23 +4790,27 @@ var AnimationState$2 = /** @class */ (function () {
     var propertyIDs = this.propertyIDs;
     if (to != null && to.holdPrevious) {
       for (var i = 0; i < timelinesCount; i++) {
-        timelineMode[i] = propertyIDs.add(timelines[i].getPropertyId()) ? AnimationState.HOLD_FIRST : AnimationState.HOLD_SUBSEQUENT;
+        timelineMode[i] = propertyIDs.add(timelines[i].getPropertyId())
+          ? AnimationState.HOLD_FIRST
+          : AnimationState.HOLD_SUBSEQUENT;
       }
       return;
     }
     outer: for (var i = 0; i < timelinesCount; i++) {
       var timeline = timelines[i];
       var id = timeline.getPropertyId();
-      if (!propertyIDs.add(id))
-        timelineMode[i] = AnimationState.SUBSEQUENT;
-      else if (to == null || timeline instanceof AttachmentTimeline$2 || timeline instanceof DrawOrderTimeline$2
-        || timeline instanceof EventTimeline$2 || !to.animation.hasTimeline(id)) {
+      if (!propertyIDs.add(id)) timelineMode[i] = AnimationState.SUBSEQUENT;
+      else if (
+        to == null ||
+        timeline instanceof AttachmentTimeline$2 ||
+        timeline instanceof DrawOrderTimeline$2 ||
+        timeline instanceof EventTimeline$2 ||
+        !to.animation.hasTimeline(id)
+      ) {
         timelineMode[i] = AnimationState.FIRST;
-      }
-      else {
+      } else {
         for (var next = to.mixingTo; next != null; next = next.mixingTo) {
-          if (next.animation.hasTimeline(id))
-            continue;
+          if (next.animation.hasTimeline(id)) continue;
           if (entry.mixDuration > 0) {
             timelineMode[i] = AnimationState.HOLD_MIX;
             timelineDipMix[i] = next;
@@ -4759,21 +4824,18 @@ var AnimationState$2 = /** @class */ (function () {
   };
   /** Returns the track entry for the animation currently playing on the track, or null if no animation is currently playing. */
   AnimationState.prototype.getCurrent = function (trackIndex) {
-    if (trackIndex >= this.tracks.length)
-      return null;
+    if (trackIndex >= this.tracks.length) return null;
     return this.tracks[trackIndex];
   };
   /** Adds a listener to receive events for all track entries. */
   AnimationState.prototype.addListener = function (listener) {
-    if (listener == null)
-      throw new Error("listener cannot be null.");
+    if (listener == null) throw new Error('listener cannot be null.');
     this.listeners.push(listener);
   };
   /** Removes the listener added with {@link #addListener()}. */
   AnimationState.prototype.removeListener = function (listener) {
     var index = this.listeners.indexOf(listener);
-    if (index >= 0)
-      this.listeners.splice(index, 1);
+    if (index >= 0) this.listeners.splice(index, 1);
   };
   /** Removes all listeners added with {@link #addListener()}. */
   AnimationState.prototype.clearListeners = function () {
@@ -4788,14 +4850,18 @@ var AnimationState$2 = /** @class */ (function () {
   AnimationState.prototype.setAnimationByName = function (trackIndex, animationName, loop) {
     if (!AnimationState.deprecatedWarning1) {
       AnimationState.deprecatedWarning1 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.setAnimationByName is deprecated, please use setAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.setAnimationByName is deprecated, please use setAnimation from now on.',
+      );
     }
     this.setAnimation(trackIndex, animationName, loop);
   };
   AnimationState.prototype.addAnimationByName = function (trackIndex, animationName, loop, delay) {
     if (!AnimationState.deprecatedWarning2) {
       AnimationState.deprecatedWarning2 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.addAnimationByName is deprecated, please use addAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.addAnimationByName is deprecated, please use addAnimation from now on.',
+      );
     }
     this.addAnimation(trackIndex, animationName, loop, delay);
   };
@@ -4806,11 +4872,13 @@ var AnimationState$2 = /** @class */ (function () {
   AnimationState.prototype.hasAnimationByName = function (animationName) {
     if (!AnimationState.deprecatedWarning3) {
       AnimationState.deprecatedWarning3 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.hasAnimationByName is deprecated, please use hasAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.hasAnimationByName is deprecated, please use hasAnimation from now on.',
+      );
     }
     return this.hasAnimation(animationName);
   };
-  AnimationState.emptyAnimation = new Animation$2("<empty>", [], 0);
+  AnimationState.emptyAnimation = new Animation$2('<empty>', [], 0);
   /** 1. A previously applied timeline has set this property.
    *
    * Result: Mix from the current pose to the timeline pose. */
@@ -4851,7 +4919,7 @@ var AnimationState$2 = /** @class */ (function () {
   AnimationState.deprecatedWarning2 = false;
   AnimationState.deprecatedWarning3 = false;
   return AnimationState;
-}());
+})();
 /** Stores settings and other state for the playback of an animation on an {@link AnimationState} track.
  *
  * References to a track entry must not be kept after the {@link AnimationStateListener#dispose()} event occurs. */
@@ -4887,8 +4955,7 @@ var TrackEntry$2 = /** @class */ (function () {
   TrackEntry.prototype.getAnimationTime = function () {
     if (this.loop) {
       var duration = this.animationEnd - this.animationStart;
-      if (duration == 0)
-        return this.animationStart;
+      if (duration == 0) return this.animationStart;
       return (this.trackTime % duration) + this.animationStart;
     }
     return Math.min(this.trackTime + this.animationStart, this.animationEnd);
@@ -4913,41 +4980,41 @@ var TrackEntry$2 = /** @class */ (function () {
   TrackEntry.prototype.resetRotationDirections = function () {
     this.timelinesRotation.length = 0;
   };
-  Object.defineProperty(TrackEntry.prototype, "time", {
+  Object.defineProperty(TrackEntry.prototype, 'time', {
     get: function () {
       if (!TrackEntry.deprecatedWarning1) {
         TrackEntry.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.');
       }
       return this.trackTime;
     },
     set: function (value) {
       if (!TrackEntry.deprecatedWarning1) {
         TrackEntry.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.');
       }
       this.trackTime = value;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TrackEntry.prototype, "endTime", {
+  Object.defineProperty(TrackEntry.prototype, 'endTime', {
     get: function () {
       if (!TrackEntry.deprecatedWarning2) {
         TrackEntry.deprecatedWarning2 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.');
       }
       return this.trackTime;
     },
     set: function (value) {
       if (!TrackEntry.deprecatedWarning2) {
         TrackEntry.deprecatedWarning2 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.');
       }
       this.trackTime = value;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   TrackEntry.prototype.loopsCount = function () {
     return Math.floor(this.trackTime / this.trackEnd);
@@ -4955,7 +5022,7 @@ var TrackEntry$2 = /** @class */ (function () {
   TrackEntry.deprecatedWarning1 = false;
   TrackEntry.deprecatedWarning2 = false;
   return TrackEntry;
-}());
+})();
 /**
  * @public
  */
@@ -4995,13 +5062,14 @@ var EventQueue$2 = /** @class */ (function () {
   EventQueue.prototype.deprecateStuff = function () {
     if (!EventQueue.deprecatedWarning1) {
       EventQueue.deprecatedWarning1 = true;
-      console.warn("Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'");
+      console.warn(
+        "Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'",
+      );
     }
     return true;
   };
   EventQueue.prototype.drain = function () {
-    if (this.drainDisabled)
-      return;
+    if (this.drainDisabled) return;
     this.drainDisabled = true;
     var objects = this.objects;
     var listeners = this.animState.listeners;
@@ -5010,46 +5078,34 @@ var EventQueue$2 = /** @class */ (function () {
       var entry = objects[i + 1];
       switch (type) {
         case EventType$2.start:
-          if (entry.listener != null && entry.listener.start)
-            entry.listener.start(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].start)
-              listeners[ii].start(entry);
+          if (entry.listener != null && entry.listener.start) entry.listener.start(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].start) listeners[ii].start(entry);
           //deprecation
           entry.onStart && this.deprecateStuff() && entry.onStart(entry.trackIndex);
-          this.animState.onStart && this.deprecateStuff() && this.deprecateStuff && this.animState.onStart(entry.trackIndex);
+          this.animState.onStart &&
+            this.deprecateStuff() &&
+            this.deprecateStuff &&
+            this.animState.onStart(entry.trackIndex);
           break;
         case EventType$2.interrupt:
-          if (entry.listener != null && entry.listener.interrupt)
-            entry.listener.interrupt(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].interrupt)
-              listeners[ii].interrupt(entry);
+          if (entry.listener != null && entry.listener.interrupt) entry.listener.interrupt(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].interrupt) listeners[ii].interrupt(entry);
           break;
         case EventType$2.end:
-          if (entry.listener != null && entry.listener.end)
-            entry.listener.end(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].end)
-              listeners[ii].end(entry);
+          if (entry.listener != null && entry.listener.end) entry.listener.end(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].end) listeners[ii].end(entry);
           //deprecation
           entry.onEnd && this.deprecateStuff() && entry.onEnd(entry.trackIndex);
           this.animState.onEnd && this.deprecateStuff() && this.animState.onEnd(entry.trackIndex);
         // Fall through.
         case EventType$2.dispose:
-          if (entry.listener != null && entry.listener.dispose)
-            entry.listener.dispose(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].dispose)
-              listeners[ii].dispose(entry);
+          if (entry.listener != null && entry.listener.dispose) entry.listener.dispose(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].dispose) listeners[ii].dispose(entry);
           this.animState.trackEntryPool.free(entry);
           break;
         case EventType$2.complete:
-          if (entry.listener != null && entry.listener.complete)
-            entry.listener.complete(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].complete)
-              listeners[ii].complete(entry);
+          if (entry.listener != null && entry.listener.complete) entry.listener.complete(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].complete) listeners[ii].complete(entry);
           //deprecation
           var count = MathUtils.toInt(entry.loopsCount());
           entry.onComplete && this.deprecateStuff() && entry.onComplete(entry.trackIndex, count);
@@ -5057,11 +5113,8 @@ var EventQueue$2 = /** @class */ (function () {
           break;
         case EventType$2.event:
           var event_3 = objects[i++ + 2];
-          if (entry.listener != null && entry.listener.event)
-            entry.listener.event(entry, event_3);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].event)
-              listeners[ii].event(entry, event_3);
+          if (entry.listener != null && entry.listener.event) entry.listener.event(entry, event_3);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].event) listeners[ii].event(entry, event_3);
           //deprecation
           entry.onEvent && this.deprecateStuff() && entry.onEvent(entry.trackIndex, event_3);
           this.animState.onEvent && this.deprecateStuff() && this.animState.onEvent(entry.trackIndex, event_3);
@@ -5076,39 +5129,32 @@ var EventQueue$2 = /** @class */ (function () {
   };
   EventQueue.deprecatedWarning1 = false;
   return EventQueue;
-}());
+})();
 /**
  * @public
  */
 var EventType$2;
 (function (EventType) {
-  EventType[EventType["start"] = 0] = "start";
-  EventType[EventType["interrupt"] = 1] = "interrupt";
-  EventType[EventType["end"] = 2] = "end";
-  EventType[EventType["dispose"] = 3] = "dispose";
-  EventType[EventType["complete"] = 4] = "complete";
-  EventType[EventType["event"] = 5] = "event";
+  EventType[(EventType['start'] = 0)] = 'start';
+  EventType[(EventType['interrupt'] = 1)] = 'interrupt';
+  EventType[(EventType['end'] = 2)] = 'end';
+  EventType[(EventType['dispose'] = 3)] = 'dispose';
+  EventType[(EventType['complete'] = 4)] = 'complete';
+  EventType[(EventType['event'] = 5)] = 'event';
 })(EventType$2 || (EventType$2 = {}));
 /**
  * @public
  */
 var AnimationStateAdapter$1 = /** @class */ (function () {
-  function AnimationStateAdapter() {
-  }
-  AnimationStateAdapter.prototype.start = function (entry) {
-  };
-  AnimationStateAdapter.prototype.interrupt = function (entry) {
-  };
-  AnimationStateAdapter.prototype.end = function (entry) {
-  };
-  AnimationStateAdapter.prototype.dispose = function (entry) {
-  };
-  AnimationStateAdapter.prototype.complete = function (entry) {
-  };
-  AnimationStateAdapter.prototype.event = function (entry, event) {
-  };
+  function AnimationStateAdapter() {}
+  AnimationStateAdapter.prototype.start = function (entry) {};
+  AnimationStateAdapter.prototype.interrupt = function (entry) {};
+  AnimationStateAdapter.prototype.end = function (entry) {};
+  AnimationStateAdapter.prototype.dispose = function (entry) {};
+  AnimationStateAdapter.prototype.complete = function (entry) {};
+  AnimationStateAdapter.prototype.event = function (entry, event) {};
   return AnimationStateAdapter;
-}());
+})();
 
 /**
  * @public
@@ -5117,42 +5163,39 @@ var AnimationStateData$2 = /** @class */ (function () {
   function AnimationStateData(skeletonData) {
     this.animationToMixTime = {};
     this.defaultMix = 0;
-    if (skeletonData == null)
-      throw new Error("skeletonData cannot be null.");
+    if (skeletonData == null) throw new Error('skeletonData cannot be null.');
     this.skeletonData = skeletonData;
   }
   AnimationStateData.prototype.setMix = function (fromName, toName, duration) {
     var from = this.skeletonData.findAnimation(fromName);
-    if (from == null)
-      throw new Error("Animation not found: " + fromName);
+    if (from == null) throw new Error('Animation not found: ' + fromName);
     var to = this.skeletonData.findAnimation(toName);
-    if (to == null)
-      throw new Error("Animation not found: " + toName);
+    if (to == null) throw new Error('Animation not found: ' + toName);
     this.setMixWith(from, to, duration);
   };
   AnimationStateData.prototype.setMixByName = function (fromName, toName, duration) {
     if (!AnimationStateData.deprecatedWarning1) {
       AnimationStateData.deprecatedWarning1 = true;
-      console.warn("Deprecation Warning: AnimationStateData.setMixByName is deprecated, please use setMix from now on.");
+      console.warn(
+        'Deprecation Warning: AnimationStateData.setMixByName is deprecated, please use setMix from now on.',
+      );
     }
     this.setMix(fromName, toName, duration);
   };
   AnimationStateData.prototype.setMixWith = function (from, to, duration) {
-    if (from == null)
-      throw new Error("from cannot be null.");
-    if (to == null)
-      throw new Error("to cannot be null.");
-    var key = from.name + "." + to.name;
+    if (from == null) throw new Error('from cannot be null.');
+    if (to == null) throw new Error('to cannot be null.');
+    var key = from.name + '.' + to.name;
     this.animationToMixTime[key] = duration;
   };
   AnimationStateData.prototype.getMix = function (from, to) {
-    var key = from.name + "." + to.name;
+    var key = from.name + '.' + to.name;
     var value = this.animationToMixTime[key];
     return value === undefined ? this.defaultMix : value;
   };
   AnimationStateData.deprecatedWarning1 = false;
   return AnimationStateData;
-}());
+})();
 
 /**
  * @public
@@ -5164,8 +5207,7 @@ var AtlasAttachmentLoader$2 = /** @class */ (function () {
   /** @return May be null to not load an attachment. */
   AtlasAttachmentLoader.prototype.newRegionAttachment = function (skin, name, path) {
     var region = this.atlas.findRegion(path);
-    if (region == null)
-      throw new Error("Region not found in atlas: " + path + " (region attachment: " + name + ")");
+    if (region == null) throw new Error('Region not found in atlas: ' + path + ' (region attachment: ' + name + ')');
     var attachment = new RegionAttachment$2(name);
     attachment.region = region;
     return attachment;
@@ -5173,8 +5215,7 @@ var AtlasAttachmentLoader$2 = /** @class */ (function () {
   /** @return May be null to not load an attachment. */
   AtlasAttachmentLoader.prototype.newMeshAttachment = function (skin, name, path) {
     var region = this.atlas.findRegion(path);
-    if (region == null)
-      throw new Error("Region not found in atlas: " + path + " (mesh attachment: " + name + ")");
+    if (region == null) throw new Error('Region not found in atlas: ' + path + ' (mesh attachment: ' + name + ')');
     var attachment = new MeshAttachment$2(name);
     attachment.region = region;
     return attachment;
@@ -5194,7 +5235,7 @@ var AtlasAttachmentLoader$2 = /** @class */ (function () {
     return new ClippingAttachment$2(name);
   };
   return AtlasAttachmentLoader;
-}());
+})();
 
 /**
  * @public
@@ -5222,28 +5263,26 @@ var Bone$2 = /** @class */ (function () {
     this.appliedValid = false;
     this.sorted = false;
     this.active = false;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.skeleton = skeleton;
     this.parent = parent;
     this.setToSetupPose();
   }
-  Object.defineProperty(Bone.prototype, "worldX", {
+  Object.defineProperty(Bone.prototype, 'worldX', {
     get: function () {
       return this.matrix.tx;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(Bone.prototype, "worldY", {
+  Object.defineProperty(Bone.prototype, 'worldY', {
     get: function () {
       return this.matrix.ty;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   Bone.prototype.isActive = function () {
     return this.active;
@@ -5270,7 +5309,8 @@ var Bone$2 = /** @class */ (function () {
     var m = this.matrix;
     var sx = this.skeleton.scaleX;
     var sy = settings.yDown ? -this.skeleton.scaleY : this.skeleton.scaleY;
-    if (parent == null) { // Root bone.
+    if (parent == null) {
+      // Root bone.
       var skeleton = this.skeleton;
       var rotationY = rotation + 90 + shearY;
       m.a = MathUtils.cosDeg(rotation + shearX) * scaleX * sx;
@@ -5281,7 +5321,10 @@ var Bone$2 = /** @class */ (function () {
       m.ty = y * sy + skeleton.y;
       return;
     }
-    var pa = parent.matrix.a, pb = parent.matrix.c, pc = parent.matrix.b, pd = parent.matrix.d;
+    var pa = parent.matrix.a,
+      pb = parent.matrix.c,
+      pc = parent.matrix.b,
+      pd = parent.matrix.d;
     m.tx = pa * x + pb * y + parent.matrix.tx;
     m.ty = pc * x + pd * y + parent.matrix.ty;
     switch (this.data.transformMode) {
@@ -5315,8 +5358,7 @@ var Bone$2 = /** @class */ (function () {
           pb = pc * s;
           pd = pa * s;
           prx = Math.atan2(pc, pa) * MathUtils.radDeg;
-        }
-        else {
+        } else {
           pa = 0;
           pc = 0;
           prx = 90 - Math.atan2(pd, pb) * MathUtils.radDeg;
@@ -5340,15 +5382,17 @@ var Bone$2 = /** @class */ (function () {
         var za = (pa * cos + pb * sin) / sx;
         var zc = (pc * cos + pd * sin) / sy;
         var s = Math.sqrt(za * za + zc * zc);
-        if (s > 0.00001)
-          s = 1 / s;
+        if (s > 0.00001) s = 1 / s;
         za *= s;
         zc *= s;
         s = Math.sqrt(za * za + zc * zc);
-        if (this.data.transformMode == exports.TransformMode.NoScale
-          && (pa * pd - pb * pc < 0) != (settings.yDown ?
-            (this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0) :
-            (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)))
+        if (
+          this.data.transformMode == exports.TransformMode.NoScale &&
+          pa * pd - pb * pc < 0 !=
+            (settings.yDown
+              ? this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0
+              : this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)
+        )
           s = -s;
         var r = Math.PI / 2 + Math.atan2(zc, za);
         var zb = Math.cos(r) * s;
@@ -5413,9 +5457,10 @@ var Bone$2 = /** @class */ (function () {
     }
     var pm = parent.matrix;
     var pid = 1 / (pm.a * pm.d - pm.b * pm.c);
-    var dx = m.tx - pm.tx, dy = m.ty - pm.ty;
-    this.ax = (dx * pm.d * pid - dy * pm.c * pid);
-    this.ay = (dy * pm.a * pid - dx * pm.b * pid);
+    var dx = m.tx - pm.tx,
+      dy = m.ty - pm.ty;
+    this.ax = dx * pm.d * pid - dy * pm.c * pid;
+    this.ay = dy * pm.a * pid - dx * pm.b * pid;
     var ia = pid * pm.d;
     var id = pid * pm.a;
     var ib = pid * pm.c;
@@ -5431,8 +5476,7 @@ var Bone$2 = /** @class */ (function () {
       this.ascaleY = det / this.ascaleX;
       this.ashearY = Math.atan2(ra * rb + rc * rd, det) * MathUtils.radDeg;
       this.arotation = Math.atan2(rc, ra) * MathUtils.radDeg;
-    }
-    else {
+    } else {
       this.ascaleX = 0;
       this.ascaleY = Math.sqrt(rb * rb + rd * rd);
       this.ashearY = 0;
@@ -5441,34 +5485,45 @@ var Bone$2 = /** @class */ (function () {
   };
   Bone.prototype.worldToLocal = function (world) {
     var m = this.matrix;
-    var a = m.a, b = m.c, c = m.b, d = m.d;
+    var a = m.a,
+      b = m.c,
+      c = m.b,
+      d = m.d;
     var invDet = 1 / (a * d - b * c);
-    var x = world.x - m.tx, y = world.y - m.ty;
-    world.x = (x * d * invDet - y * b * invDet);
-    world.y = (y * a * invDet - x * c * invDet);
+    var x = world.x - m.tx,
+      y = world.y - m.ty;
+    world.x = x * d * invDet - y * b * invDet;
+    world.y = y * a * invDet - x * c * invDet;
     return world;
   };
   Bone.prototype.localToWorld = function (local) {
     var m = this.matrix;
-    var x = local.x, y = local.y;
+    var x = local.x,
+      y = local.y;
     local.x = x * m.a + y * m.c + m.tx;
     local.y = x * m.b + y * m.d + m.ty;
     return local;
   };
   Bone.prototype.worldToLocalRotation = function (worldRotation) {
-    var sin = MathUtils.sinDeg(worldRotation), cos = MathUtils.cosDeg(worldRotation);
+    var sin = MathUtils.sinDeg(worldRotation),
+      cos = MathUtils.cosDeg(worldRotation);
     var mat = this.matrix;
     return Math.atan2(mat.a * sin - mat.b * cos, mat.d * cos - mat.c * sin) * MathUtils.radDeg;
   };
   Bone.prototype.localToWorldRotation = function (localRotation) {
-    var sin = MathUtils.sinDeg(localRotation), cos = MathUtils.cosDeg(localRotation);
+    var sin = MathUtils.sinDeg(localRotation),
+      cos = MathUtils.cosDeg(localRotation);
     var mat = this.matrix;
     return Math.atan2(cos * mat.b + sin * mat.d, cos * mat.a + sin * mat.c) * MathUtils.radDeg;
   };
   Bone.prototype.rotateWorld = function (degrees) {
     var mat = this.matrix;
-    var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
-    var cos = MathUtils.cosDeg(degrees), sin = MathUtils.sinDeg(degrees);
+    var a = mat.a,
+      b = mat.c,
+      c = mat.b,
+      d = mat.d;
+    var cos = MathUtils.cosDeg(degrees),
+      sin = MathUtils.sinDeg(degrees);
     mat.a = cos * a - sin * c;
     mat.c = cos * b - sin * d;
     mat.b = sin * a + cos * c;
@@ -5476,7 +5531,7 @@ var Bone$2 = /** @class */ (function () {
     this.appliedValid = false;
   };
   return Bone;
-}());
+})();
 
 /**
  * @public
@@ -5493,16 +5548,14 @@ var BoneData$2 = /** @class */ (function () {
     this.transformMode = exports.TransformMode.Normal;
     this.skinRequired = false;
     this.color = new Color();
-    if (index < 0)
-      throw new Error("index must be >= 0.");
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (index < 0) throw new Error('index must be >= 0.');
+    if (name == null) throw new Error('name cannot be null.');
     this.index = index;
     this.name = name;
     this.parent = parent;
   }
   return BoneData;
-}());
+})();
 
 /**
  * @public
@@ -5514,20 +5567,19 @@ var ConstraintData$1 = /** @class */ (function () {
     this.skinRequired = skinRequired;
   }
   return ConstraintData;
-}());
+})();
 
 /**
  * @public
  */
 var Event$2 = /** @class */ (function () {
   function Event(time, data) {
-    if (data == null)
-      throw new Error("data cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
     this.time = time;
     this.data = data;
   }
   return Event;
-}());
+})();
 
 /**
  * @public
@@ -5537,7 +5589,7 @@ var EventData$2 = /** @class */ (function () {
     this.name = name;
   }
   return EventData;
-}());
+})();
 
 /**
  * @public
@@ -5550,10 +5602,8 @@ var IkConstraint$2 = /** @class */ (function () {
     this.mix = 1;
     this.softness = 0;
     this.active = false;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.mix = data.mix;
     this.softness = data.softness;
@@ -5561,8 +5611,7 @@ var IkConstraint$2 = /** @class */ (function () {
     this.compress = data.compress;
     this.stretch = data.stretch;
     this.bones = new Array();
-    for (var i = 0; i < data.bones.length; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findBone(data.target.name);
   }
   IkConstraint.prototype.isActive = function () {
@@ -5579,18 +5628,31 @@ var IkConstraint$2 = /** @class */ (function () {
         this.apply1(bones[0], target.worldX, target.worldY, this.compress, this.stretch, this.data.uniform, this.mix);
         break;
       case 2:
-        this.apply2(bones[0], bones[1], target.worldX, target.worldY, this.bendDirection, this.stretch, this.softness, this.mix);
+        this.apply2(
+          bones[0],
+          bones[1],
+          target.worldX,
+          target.worldY,
+          this.bendDirection,
+          this.stretch,
+          this.softness,
+          this.mix,
+        );
         break;
     }
   };
   /** Adjusts the bone rotation so the tip is as close to the target position as possible. The target is specified in the world
    * coordinate system. */
   IkConstraint.prototype.apply1 = function (bone, targetX, targetY, compress, stretch, uniform, alpha) {
-    if (!bone.appliedValid)
-      bone.updateAppliedTransform();
+    if (!bone.appliedValid) bone.updateAppliedTransform();
     var p = bone.parent.matrix;
-    var pa = p.a, pb = p.c, pc = p.b, pd = p.d;
-    var rotationIK = -bone.ashearX - bone.arotation, tx = 0, ty = 0;
+    var pa = p.a,
+      pb = p.c,
+      pc = p.b,
+      pd = p.d;
+    var rotationIK = -bone.ashearX - bone.arotation,
+      tx = 0,
+      ty = 0;
     switch (bone.data.transformMode) {
       case exports.TransformMode.OnlyTranslation:
         tx = targetX - bone.worldX;
@@ -5605,19 +5667,18 @@ var IkConstraint$2 = /** @class */ (function () {
         rotationIK += Math.atan2(sc, sa) * MathUtils.radDeg;
       // Fall through
       default:
-        var x = targetX - p.tx, y = targetY - p.ty;
+        var x = targetX - p.tx,
+          y = targetY - p.ty;
         var d = pa * pd - pb * pc;
         tx = (x * pd - y * pb) / d - bone.ax;
         ty = (y * pa - x * pc) / d - bone.ay;
     }
     rotationIK += Math.atan2(ty, tx) * MathUtils.radDeg;
-    if (bone.ascaleX < 0)
-      rotationIK += 180;
-    if (rotationIK > 180)
-      rotationIK -= 360;
-    else if (rotationIK < -180)
-      rotationIK += 360;
-    var sx = bone.ascaleX, sy = bone.ascaleY;
+    if (bone.ascaleX < 0) rotationIK += 180;
+    if (rotationIK > 180) rotationIK -= 360;
+    else if (rotationIK < -180) rotationIK += 360;
+    var sx = bone.ascaleX,
+      sy = bone.ascaleY;
     if (compress || stretch) {
       switch (bone.data.transformMode) {
         case exports.TransformMode.NoScale:
@@ -5625,15 +5686,23 @@ var IkConstraint$2 = /** @class */ (function () {
           tx = targetX - bone.worldX;
           ty = targetY - bone.worldY;
       }
-      var b = bone.data.length * sx, dd = Math.sqrt(tx * tx + ty * ty);
-      if ((compress && dd < b) || (stretch && dd > b) && b > 0.0001) {
+      var b = bone.data.length * sx,
+        dd = Math.sqrt(tx * tx + ty * ty);
+      if ((compress && dd < b) || (stretch && dd > b && b > 0.0001)) {
         var s = (dd / b - 1) * alpha + 1;
         sx *= s;
-        if (uniform)
-          sy *= s;
+        if (uniform) sy *= s;
       }
     }
-    bone.updateWorldTransformWith(bone.ax, bone.ay, bone.arotation + rotationIK * alpha, sx, sy, bone.ashearX, bone.ashearY);
+    bone.updateWorldTransformWith(
+      bone.ax,
+      bone.ay,
+      bone.arotation + rotationIK * alpha,
+      sx,
+      sy,
+      bone.ashearX,
+      bone.ashearY,
+    );
   };
   /** Adjusts the parent and child bone rotations so the tip of the child is as close to the target position as possible. The
    * target is specified in the world coordinate system.
@@ -5643,19 +5712,23 @@ var IkConstraint$2 = /** @class */ (function () {
       child.updateWorldTransform();
       return;
     }
-    if (!parent.appliedValid)
-      parent.updateAppliedTransform();
-    if (!child.appliedValid)
-      child.updateAppliedTransform();
-    var px = parent.ax, py = parent.ay, psx = parent.ascaleX, sx = psx, psy = parent.ascaleY, csx = child.ascaleX;
+    if (!parent.appliedValid) parent.updateAppliedTransform();
+    if (!child.appliedValid) child.updateAppliedTransform();
+    var px = parent.ax,
+      py = parent.ay,
+      psx = parent.ascaleX,
+      sx = psx,
+      psy = parent.ascaleY,
+      csx = child.ascaleX;
     var pmat = parent.matrix;
-    var os1 = 0, os2 = 0, s2 = 0;
+    var os1 = 0,
+      os2 = 0,
+      s2 = 0;
     if (psx < 0) {
       psx = -psx;
       os1 = 180;
       s2 = -1;
-    }
-    else {
+    } else {
       os1 = 0;
       s2 = 1;
     }
@@ -5666,17 +5739,21 @@ var IkConstraint$2 = /** @class */ (function () {
     if (csx < 0) {
       csx = -csx;
       os2 = 180;
-    }
-    else
-      os2 = 0;
-    var cx = child.ax, cy = 0, cwx = 0, cwy = 0, a = pmat.a, b = pmat.c, c = pmat.b, d = pmat.d;
+    } else os2 = 0;
+    var cx = child.ax,
+      cy = 0,
+      cwx = 0,
+      cwy = 0,
+      a = pmat.a,
+      b = pmat.c,
+      c = pmat.b,
+      d = pmat.d;
     var u = Math.abs(psx - psy) <= 0.0001;
     if (!u) {
       cy = 0;
       cwx = a * cx + pmat.tx;
       cwy = c * cx + pmat.ty;
-    }
-    else {
+    } else {
       cy = child.ay;
       cwx = a * cx + b * cy + pmat.tx;
       cwy = c * cx + d * cy + pmat.ty;
@@ -5686,9 +5763,15 @@ var IkConstraint$2 = /** @class */ (function () {
     b = pp.c;
     c = pp.b;
     d = pp.d;
-    var id = 1 / (a * d - b * c), x = cwx - pp.tx, y = cwy - pp.ty;
-    var dx = (x * d - y * b) * id - px, dy = (y * a - x * c) * id - py;
-    var l1 = Math.sqrt(dx * dx + dy * dy), l2 = child.data.length * csx, a1, a2;
+    var id = 1 / (a * d - b * c),
+      x = cwx - pp.tx,
+      y = cwy - pp.ty;
+    var dx = (x * d - y * b) * id - px,
+      dy = (y * a - x * c) * id - py;
+    var l1 = Math.sqrt(dx * dx + dy * dy),
+      l2 = child.data.length * csx,
+      a1,
+      a2;
     if (l1 < 0.0001) {
       this.apply1(parent, targetX, targetY, false, stretch, false, alpha);
       child.updateWorldTransformWith(cx, cy, 0, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
@@ -5696,11 +5779,13 @@ var IkConstraint$2 = /** @class */ (function () {
     }
     x = targetX - pp.tx;
     y = targetY - pp.ty;
-    var tx = (x * d - y * b) * id - px, ty = (y * a - x * c) * id - py;
+    var tx = (x * d - y * b) * id - px,
+      ty = (y * a - x * c) * id - py;
     var dd = tx * tx + ty * ty;
     if (softness != 0) {
-      softness *= psx * (csx + 1) / 2;
-      var td = Math.sqrt(dd), sd = td - l1 - l2 * psx + softness;
+      softness *= (psx * (csx + 1)) / 2;
+      var td = Math.sqrt(dd),
+        sd = td - l1 - l2 * psx + softness;
       if (sd > 0) {
         var p = Math.min(1, sd / (softness * 2)) - 1;
         p = (sd - softness * (1 - p * p)) / td;
@@ -5712,31 +5797,31 @@ var IkConstraint$2 = /** @class */ (function () {
     outer: if (u) {
       l2 *= psx;
       var cos = (dd - l1 * l1 - l2 * l2) / (2 * l1 * l2);
-      if (cos < -1)
-        cos = -1;
+      if (cos < -1) cos = -1;
       else if (cos > 1) {
         cos = 1;
-        if (stretch)
-          sx *= (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
+        if (stretch) sx *= (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
       }
       a2 = Math.acos(cos) * bendDir;
       a = l1 + l2 * cos;
       b = l2 * Math.sin(a2);
       a1 = Math.atan2(ty * a - tx * b, tx * a + ty * b);
-    }
-    else {
+    } else {
       a = psx * l2;
       b = psy * l2;
-      var aa = a * a, bb = b * b, ta = Math.atan2(ty, tx);
+      var aa = a * a,
+        bb = b * b,
+        ta = Math.atan2(ty, tx);
       c = bb * l1 * l1 + aa * dd - aa * bb;
-      var c1 = -2 * bb * l1, c2 = bb - aa;
+      var c1 = -2 * bb * l1,
+        c2 = bb - aa;
       d = c1 * c1 - 4 * c2 * c;
       if (d >= 0) {
         var q = Math.sqrt(d);
-        if (c1 < 0)
-          q = -q;
+        if (c1 < 0) q = -q;
         q = -(c1 + q) / 2;
-        var r0 = q / c2, r1 = c / q;
+        var r0 = q / c2,
+          r1 = c / q;
         var r = Math.abs(r0) < Math.abs(r1) ? r0 : r1;
         if (r * r <= dd) {
           y = Math.sqrt(dd - r * r) * bendDir;
@@ -5745,9 +5830,15 @@ var IkConstraint$2 = /** @class */ (function () {
           break outer;
         }
       }
-      var minAngle = MathUtils.PI, minX = l1 - a, minDist = minX * minX, minY = 0;
-      var maxAngle = 0, maxX = l1 + a, maxDist = maxX * maxX, maxY = 0;
-      c = -a * l1 / (aa - bb);
+      var minAngle = MathUtils.PI,
+        minX = l1 - a,
+        minDist = minX * minX,
+        minY = 0;
+      var maxAngle = 0,
+        maxX = l1 + a,
+        maxDist = maxX * maxX,
+        maxY = 0;
+      c = (-a * l1) / (aa - bb);
       if (c >= -1 && c <= 1) {
         c = Math.acos(c);
         x = a * Math.cos(c) + l1;
@@ -5769,8 +5860,7 @@ var IkConstraint$2 = /** @class */ (function () {
       if (dd <= (minDist + maxDist) / 2) {
         a1 = ta - Math.atan2(minY * bendDir, minX);
         a2 = minAngle * bendDir;
-      }
-      else {
+      } else {
         a1 = ta - Math.atan2(maxY * bendDir, maxX);
         a2 = maxAngle * bendDir;
       }
@@ -5778,21 +5868,25 @@ var IkConstraint$2 = /** @class */ (function () {
     var os = Math.atan2(cy, cx) * s2;
     var rotation = parent.arotation;
     a1 = (a1 - os) * MathUtils.radDeg + os1 - rotation;
-    if (a1 > 180)
-      a1 -= 360;
-    else if (a1 < -180)
-      a1 += 360;
+    if (a1 > 180) a1 -= 360;
+    else if (a1 < -180) a1 += 360;
     parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, sx, parent.ascaleY, 0, 0);
     rotation = child.arotation;
     a2 = ((a2 + os) * MathUtils.radDeg - child.ashearX) * s2 + os2 - rotation;
-    if (a2 > 180)
-      a2 -= 360;
-    else if (a2 < -180)
-      a2 += 360;
-    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
+    if (a2 > 180) a2 -= 360;
+    else if (a2 < -180) a2 += 360;
+    child.updateWorldTransformWith(
+      cx,
+      cy,
+      rotation + a2 * alpha,
+      child.ascaleX,
+      child.ascaleY,
+      child.ashearX,
+      child.ashearY,
+    );
   };
   return IkConstraint;
-}());
+})();
 
 /**
  * @public
@@ -5811,7 +5905,7 @@ var IkConstraintData$2 = /** @class */ (function (_super) {
     return _this;
   }
   return IkConstraintData;
-}(ConstraintData$1));
+})(ConstraintData$1);
 
 /**
  * @public
@@ -5824,15 +5918,15 @@ var PathConstraintData$2 = /** @class */ (function (_super) {
     return _this;
   }
   return PathConstraintData;
-}(ConstraintData$1));
+})(ConstraintData$1);
 /**
  * @public
  */
 var SpacingMode$2;
 (function (SpacingMode) {
-  SpacingMode[SpacingMode["Length"] = 0] = "Length";
-  SpacingMode[SpacingMode["Fixed"] = 1] = "Fixed";
-  SpacingMode[SpacingMode["Percent"] = 2] = "Percent";
+  SpacingMode[(SpacingMode['Length'] = 0)] = 'Length';
+  SpacingMode[(SpacingMode['Fixed'] = 1)] = 'Fixed';
+  SpacingMode[(SpacingMode['Percent'] = 2)] = 'Percent';
 })(SpacingMode$2 || (SpacingMode$2 = {}));
 
 /**
@@ -5851,14 +5945,11 @@ var PathConstraint$2 = /** @class */ (function () {
     this.lengths = new Array();
     this.segments = new Array();
     this.active = false;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.bones = new Array();
-    for (var i = 0, n = data.bones.length; i < n; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0, n = data.bones.length; i < n; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findSlot(data.target.name);
     this.position = data.position;
     this.spacing = data.spacing;
@@ -5873,50 +5964,55 @@ var PathConstraint$2 = /** @class */ (function () {
   };
   PathConstraint.prototype.update = function () {
     var attachment = this.target.getAttachment();
-    if (!(attachment instanceof PathAttachment$2))
-      return;
-    var rotateMix = this.rotateMix, translateMix = this.translateMix;
-    var translate = translateMix > 0, rotate = rotateMix > 0;
-    if (!translate && !rotate)
-      return;
+    if (!(attachment instanceof PathAttachment$2)) return;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix;
+    var translate = translateMix > 0,
+      rotate = rotateMix > 0;
+    if (!translate && !rotate) return;
     var data = this.data;
     var spacingMode = data.spacingMode;
     var lengthSpacing = spacingMode == SpacingMode$2.Length;
     var rotateMode = data.rotateMode;
-    var tangents = rotateMode == exports.RotateMode.Tangent, scale = rotateMode == exports.RotateMode.ChainScale;
-    var boneCount = this.bones.length, spacesCount = tangents ? boneCount : boneCount + 1;
+    var tangents = rotateMode == exports.RotateMode.Tangent,
+      scale = rotateMode == exports.RotateMode.ChainScale;
+    var boneCount = this.bones.length,
+      spacesCount = tangents ? boneCount : boneCount + 1;
     var bones = this.bones;
-    var spaces = Utils.setArraySize(this.spaces, spacesCount), lengths = null;
+    var spaces = Utils.setArraySize(this.spaces, spacesCount),
+      lengths = null;
     var spacing = this.spacing;
     if (scale || lengthSpacing) {
-      if (scale)
-        lengths = Utils.setArraySize(this.lengths, boneCount);
-      for (var i = 0, n = spacesCount - 1; i < n;) {
+      if (scale) lengths = Utils.setArraySize(this.lengths, boneCount);
+      for (var i = 0, n = spacesCount - 1; i < n; ) {
         var bone = bones[i];
         var setupLength = bone.data.length;
         if (setupLength < PathConstraint.epsilon) {
-          if (scale)
-            lengths[i] = 0;
+          if (scale) lengths[i] = 0;
           spaces[++i] = 0;
-        }
-        else {
-          var x = setupLength * bone.matrix.a, y = setupLength * bone.matrix.b;
+        } else {
+          var x = setupLength * bone.matrix.a,
+            y = setupLength * bone.matrix.b;
           var length_1 = Math.sqrt(x * x + y * y);
-          if (scale)
-            lengths[i] = length_1;
-          spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length_1 / setupLength;
+          if (scale) lengths[i] = length_1;
+          spaces[++i] = ((lengthSpacing ? setupLength + spacing : spacing) * length_1) / setupLength;
         }
       }
+    } else {
+      for (var i = 1; i < spacesCount; i++) spaces[i] = spacing;
     }
-    else {
-      for (var i = 1; i < spacesCount; i++)
-        spaces[i] = spacing;
-    }
-    var positions = this.computeWorldPositions(attachment, spacesCount, tangents, data.positionMode == exports.PositionMode.Percent, spacingMode == SpacingMode$2.Percent);
-    var boneX = positions[0], boneY = positions[1], offsetRotation = data.offsetRotation;
+    var positions = this.computeWorldPositions(
+      attachment,
+      spacesCount,
+      tangents,
+      data.positionMode == exports.PositionMode.Percent,
+      spacingMode == SpacingMode$2.Percent,
+    );
+    var boneX = positions[0],
+      boneY = positions[1],
+      offsetRotation = data.offsetRotation;
     var tip = false;
-    if (offsetRotation == 0)
-      tip = rotateMode == exports.RotateMode.Chain;
+    if (offsetRotation == 0) tip = rotateMode == exports.RotateMode.Chain;
     else {
       tip = false;
       var p = this.target.bone.matrix;
@@ -5927,7 +6023,10 @@ var PathConstraint$2 = /** @class */ (function () {
       var mat = bone.matrix;
       mat.tx += (boneX - mat.tx) * translateMix;
       mat.ty += (boneY - mat.ty) * translateMix;
-      var x = positions[p], y = positions[p + 1], dx = x - boneX, dy = y - boneY;
+      var x = positions[p],
+        y = positions[p + 1],
+        dx = x - boneX,
+        dy = y - boneY;
       if (scale) {
         var length_2 = lengths[i];
         if (length_2 != 0) {
@@ -5939,13 +6038,16 @@ var PathConstraint$2 = /** @class */ (function () {
       boneX = x;
       boneY = y;
       if (rotate) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d, r = 0, cos = 0, sin = 0;
-        if (tangents)
-          r = positions[p - 1];
-        else if (spaces[i + 1] == 0)
-          r = positions[p + 2];
-        else
-          r = Math.atan2(dy, dx);
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d,
+          r = 0,
+          cos = 0,
+          sin = 0;
+        if (tangents) r = positions[p - 1];
+        else if (spaces[i + 1] == 0) r = positions[p + 2];
+        else r = Math.atan2(dy, dx);
         r -= Math.atan2(c, a);
         if (tip) {
           cos = Math.cos(r);
@@ -5953,13 +6055,12 @@ var PathConstraint$2 = /** @class */ (function () {
           var length_3 = bone.data.length;
           boneX += (length_3 * (cos * a - sin * c) - dx) * rotateMix;
           boneY += (length_3 * (sin * a + cos * c) - dy) * rotateMix;
-        }
-        else {
+        } else {
           r += offsetRotation;
         }
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
         r *= rotateMix;
         cos = Math.cos(r);
@@ -5972,21 +6073,29 @@ var PathConstraint$2 = /** @class */ (function () {
       bone.appliedValid = false;
     }
   };
-  PathConstraint.prototype.computeWorldPositions = function (path, spacesCount, tangents, percentPosition, percentSpacing) {
+  PathConstraint.prototype.computeWorldPositions = function (
+    path,
+    spacesCount,
+    tangents,
+    percentPosition,
+    percentSpacing,
+  ) {
     var target = this.target;
     var position = this.position;
-    var spaces = this.spaces, out = Utils.setArraySize(this.positions, spacesCount * 3 + 2), world = null;
+    var spaces = this.spaces,
+      out = Utils.setArraySize(this.positions, spacesCount * 3 + 2),
+      world = null;
     var closed = path.closed;
-    var verticesLength = path.worldVerticesLength, curveCount = verticesLength / 6, prevCurve = PathConstraint.NONE;
+    var verticesLength = path.worldVerticesLength,
+      curveCount = verticesLength / 6,
+      prevCurve = PathConstraint.NONE;
     if (!path.constantSpeed) {
       var lengths = path.lengths;
       curveCount -= closed ? 1 : 2;
       var pathLength_1 = lengths[curveCount];
-      if (percentPosition)
-        position *= pathLength_1;
+      if (percentPosition) position *= pathLength_1;
       if (percentSpacing) {
-        for (var i = 0; i < spacesCount; i++)
-          spaces[i] *= pathLength_1;
+        for (var i = 0; i < spacesCount; i++) spaces[i] *= pathLength_1;
       }
       world = Utils.setArraySize(this.world, 8);
       for (var i = 0, o = 0, curve = 0; i < spacesCount; i++, o += 3) {
@@ -5995,19 +6104,16 @@ var PathConstraint$2 = /** @class */ (function () {
         var p = position;
         if (closed) {
           p %= pathLength_1;
-          if (p < 0)
-            p += pathLength_1;
+          if (p < 0) p += pathLength_1;
           curve = 0;
-        }
-        else if (p < 0) {
+        } else if (p < 0) {
           if (prevCurve != PathConstraint.BEFORE) {
             prevCurve = PathConstraint.BEFORE;
             path.computeWorldVertices(target, 2, 4, world, 0, 2);
           }
           this.addBeforePosition(p, world, 0, out, o);
           continue;
-        }
-        else if (p > pathLength_1) {
+        } else if (p > pathLength_1) {
           if (prevCurve != PathConstraint.AFTER) {
             prevCurve = PathConstraint.AFTER;
             path.computeWorldVertices(target, verticesLength - 6, 4, world, 0, 2);
@@ -6018,10 +6124,8 @@ var PathConstraint$2 = /** @class */ (function () {
         // Determine curve containing position.
         for (; ; curve++) {
           var length_4 = lengths[curve];
-          if (p > length_4)
-            continue;
-          if (curve == 0)
-            p /= length_4;
+          if (p > length_4) continue;
+          if (curve == 0) p /= length_4;
           else {
             var prev = lengths[curve - 1];
             p = (p - prev) / (length_4 - prev);
@@ -6033,11 +6137,22 @@ var PathConstraint$2 = /** @class */ (function () {
           if (closed && curve == curveCount) {
             path.computeWorldVertices(target, verticesLength - 4, 4, world, 0, 2);
             path.computeWorldVertices(target, 0, 4, world, 4, 2);
-          }
-          else
-            path.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
+          } else path.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
         }
-        this.addCurvePosition(p, world[0], world[1], world[2], world[3], world[4], world[5], world[6], world[7], out, o, tangents || (i > 0 && space == 0));
+        this.addCurvePosition(
+          p,
+          world[0],
+          world[1],
+          world[2],
+          world[3],
+          world[4],
+          world[5],
+          world[6],
+          world[7],
+          out,
+          o,
+          tangents || (i > 0 && space == 0),
+        );
       }
       return out;
     }
@@ -6049,8 +6164,7 @@ var PathConstraint$2 = /** @class */ (function () {
       path.computeWorldVertices(target, 0, 2, world, verticesLength - 4, 2);
       world[verticesLength - 2] = world[0];
       world[verticesLength - 1] = world[1];
-    }
-    else {
+    } else {
       curveCount--;
       verticesLength -= 4;
       world = Utils.setArraySize(this.world, verticesLength);
@@ -6059,8 +6173,22 @@ var PathConstraint$2 = /** @class */ (function () {
     // Curve lengths.
     var curves = Utils.setArraySize(this.curves, curveCount);
     var pathLength = 0;
-    var x1 = world[0], y1 = world[1], cx1 = 0, cy1 = 0, cx2 = 0, cy2 = 0, x2 = 0, y2 = 0;
-    var tmpx = 0, tmpy = 0, dddfx = 0, dddfy = 0, ddfx = 0, ddfy = 0, dfx = 0, dfy = 0;
+    var x1 = world[0],
+      y1 = world[1],
+      cx1 = 0,
+      cy1 = 0,
+      cx2 = 0,
+      cy2 = 0,
+      x2 = 0,
+      y2 = 0;
+    var tmpx = 0,
+      tmpy = 0,
+      dddfx = 0,
+      dddfy = 0,
+      ddfx = 0,
+      ddfy = 0,
+      dfx = 0,
+      dfy = 0;
     for (var i = 0, w = 2; i < curveCount; i++, w += 6) {
       cx1 = world[w];
       cy1 = world[w + 1];
@@ -6092,11 +6220,9 @@ var PathConstraint$2 = /** @class */ (function () {
       x1 = x2;
       y1 = y2;
     }
-    if (percentPosition)
-      position *= pathLength;
+    if (percentPosition) position *= pathLength;
     if (percentSpacing) {
-      for (var i = 0; i < spacesCount; i++)
-        spaces[i] *= pathLength;
+      for (var i = 0; i < spacesCount; i++) spaces[i] *= pathLength;
     }
     var segments = this.segments;
     var curveLength = 0;
@@ -6106,25 +6232,20 @@ var PathConstraint$2 = /** @class */ (function () {
       var p = position;
       if (closed) {
         p %= pathLength;
-        if (p < 0)
-          p += pathLength;
+        if (p < 0) p += pathLength;
         curve = 0;
-      }
-      else if (p < 0) {
+      } else if (p < 0) {
         this.addBeforePosition(p, world, 0, out, o);
         continue;
-      }
-      else if (p > pathLength) {
+      } else if (p > pathLength) {
         this.addAfterPosition(p - pathLength, world, verticesLength - 4, out, o);
         continue;
       }
       // Determine curve containing position.
       for (; ; curve++) {
         var length_5 = curves[curve];
-        if (p > length_5)
-          continue;
-        if (curve == 0)
-          p /= length_5;
+        if (p > length_5) continue;
+        if (curve == 0) p /= length_5;
         else {
           var prev = curves[curve - 1];
           p = (p - prev) / (length_5 - prev);
@@ -6175,10 +6296,8 @@ var PathConstraint$2 = /** @class */ (function () {
       p *= curveLength;
       for (; ; segment++) {
         var length_6 = segments[segment];
-        if (p > length_6)
-          continue;
-        if (segment == 0)
-          p /= length_6;
+        if (p > length_6) continue;
+        if (segment == 0) p /= length_6;
         else {
           var prev = segments[segment - 1];
           p = segment + (p - prev) / (length_6 - prev);
@@ -6190,23 +6309,38 @@ var PathConstraint$2 = /** @class */ (function () {
     return out;
   };
   PathConstraint.prototype.addBeforePosition = function (p, temp, i, out, o) {
-    var x1 = temp[i], y1 = temp[i + 1], dx = temp[i + 2] - x1, dy = temp[i + 3] - y1, r = Math.atan2(dy, dx);
+    var x1 = temp[i],
+      y1 = temp[i + 1],
+      dx = temp[i + 2] - x1,
+      dy = temp[i + 3] - y1,
+      r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
   };
   PathConstraint.prototype.addAfterPosition = function (p, temp, i, out, o) {
-    var x1 = temp[i + 2], y1 = temp[i + 3], dx = x1 - temp[i], dy = y1 - temp[i + 1], r = Math.atan2(dy, dx);
+    var x1 = temp[i + 2],
+      y1 = temp[i + 3],
+      dx = x1 - temp[i],
+      dy = y1 - temp[i + 1],
+      r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
   };
   PathConstraint.prototype.addCurvePosition = function (p, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents) {
-    if (p == 0 || isNaN(p))
-      p = 0.0001;
-    var tt = p * p, ttt = tt * p, u = 1 - p, uu = u * u, uuu = uu * u;
-    var ut = u * p, ut3 = ut * 3, uut3 = u * ut3, utt3 = ut3 * p;
-    var x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt, y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
+    if (p == 0 || isNaN(p)) p = 0.0001;
+    var tt = p * p,
+      ttt = tt * p,
+      u = 1 - p,
+      uu = u * u,
+      uuu = uu * u;
+    var ut = u * p,
+      ut3 = ut * 3,
+      uut3 = u * ut3,
+      utt3 = ut3 * p;
+    var x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt,
+      y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
     out[o] = x;
     out[o + 1] = y;
     if (tangents)
@@ -6217,7 +6351,7 @@ var PathConstraint$2 = /** @class */ (function () {
   PathConstraint.AFTER = -3;
   PathConstraint.epsilon = 0.00001;
   return PathConstraint;
-}());
+})();
 
 /**
  * @public
@@ -6225,10 +6359,8 @@ var PathConstraint$2 = /** @class */ (function () {
 var Slot$2 = /** @class */ (function () {
   function Slot(data, bone) {
     this.deform = new Array();
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (bone == null)
-      throw new Error("bone cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (bone == null) throw new Error('bone cannot be null.');
     this.data = data;
     this.bone = bone;
     this.color = new Color();
@@ -6243,8 +6375,7 @@ var Slot$2 = /** @class */ (function () {
   /** Sets the attachment and if it changed, resets {@link #getAttachmentTime()} and clears {@link #getAttachmentVertices()}.
    * @param attachment May be null. */
   Slot.prototype.setAttachment = function (attachment) {
-    if (this.attachment == attachment)
-      return;
+    if (this.attachment == attachment) return;
     this.attachment = attachment;
     this.attachmentTime = this.bone.skeleton.time;
     this.deform.length = 0;
@@ -6258,17 +6389,15 @@ var Slot$2 = /** @class */ (function () {
   };
   Slot.prototype.setToSetupPose = function () {
     this.color.setFromColor(this.data.color);
-    if (this.darkColor != null)
-      this.darkColor.setFromColor(this.data.darkColor);
-    if (this.data.attachmentName == null)
-      this.attachment = null;
+    if (this.darkColor != null) this.darkColor.setFromColor(this.data.darkColor);
+    if (this.data.attachmentName == null) this.attachment = null;
     else {
       this.attachment = null;
       this.setAttachment(this.bone.skeleton.getAttachment(this.data.index, this.data.attachmentName));
     }
   };
   return Slot;
-}());
+})();
 
 /**
  * @public
@@ -6281,18 +6410,15 @@ var TransformConstraint$2 = /** @class */ (function () {
     this.shearMix = 0;
     this.temp = new Vector2();
     this.active = false;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.rotateMix = data.rotateMix;
     this.translateMix = data.translateMix;
     this.scaleMix = data.scaleMix;
     this.shearMix = data.shearMix;
     this.bones = new Array();
-    for (var i = 0; i < data.bones.length; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findBone(data.target.name);
   }
   TransformConstraint.prototype.isActive = function () {
@@ -6303,23 +6429,24 @@ var TransformConstraint$2 = /** @class */ (function () {
   };
   TransformConstraint.prototype.update = function () {
     if (this.data.local) {
-      if (this.data.relative)
-        this.applyRelativeLocal();
-      else
-        this.applyAbsoluteLocal();
-    }
-    else {
-      if (this.data.relative)
-        this.applyRelativeWorld();
-      else
-        this.applyAbsoluteWorld();
+      if (this.data.relative) this.applyRelativeLocal();
+      else this.applyAbsoluteLocal();
+    } else {
+      if (this.data.relative) this.applyRelativeWorld();
+      else this.applyAbsoluteWorld();
     }
   };
   TransformConstraint.prototype.applyAbsoluteWorld = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
     var targetMat = target.matrix;
-    var ta = targetMat.a, tb = targetMat.c, tc = targetMat.b, td = targetMat.d;
+    var ta = targetMat.a,
+      tb = targetMat.c,
+      tc = targetMat.b,
+      td = targetMat.d;
     var degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
     var offsetRotation = this.data.offsetRotation * degRadReflect;
     var offsetShearY = this.data.offsetShearY * degRadReflect;
@@ -6329,14 +6456,16 @@ var TransformConstraint$2 = /** @class */ (function () {
       var modified = false;
       var mat = bone.matrix;
       if (rotateMix != 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d;
         var r = Math.atan2(tc, ta) - Math.atan2(c, a) + offsetRotation;
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
         r *= rotateMix;
-        var cos = Math.cos(r), sin = Math.sin(r);
+        var cos = Math.cos(r),
+          sin = Math.sin(r);
         mat.a = cos * a - sin * c;
         mat.c = cos * b - sin * d;
         mat.b = sin * a + cos * c;
@@ -6353,57 +6482,62 @@ var TransformConstraint$2 = /** @class */ (function () {
       if (scaleMix > 0) {
         var s = Math.sqrt(mat.a * mat.a + mat.b * mat.b);
         var ts = Math.sqrt(ta * ta + tc * tc);
-        if (s > 0.00001)
-          s = (s + (ts - s + this.data.offsetScaleX) * scaleMix) / s;
+        if (s > 0.00001) s = (s + (ts - s + this.data.offsetScaleX) * scaleMix) / s;
         mat.a *= s;
         mat.b *= s;
         s = Math.sqrt(mat.c * mat.c + mat.d * mat.d);
         ts = Math.sqrt(tb * tb + td * td);
-        if (s > 0.00001)
-          s = (s + (ts - s + this.data.offsetScaleY) * scaleMix) / s;
+        if (s > 0.00001) s = (s + (ts - s + this.data.offsetScaleY) * scaleMix) / s;
         mat.c *= s;
         mat.d *= s;
         modified = true;
       }
       if (shearMix > 0) {
-        var b = mat.c, d = mat.d;
+        var b = mat.c,
+          d = mat.d;
         var by = Math.atan2(d, b);
         var r = Math.atan2(td, tb) - Math.atan2(tc, ta) - (by - Math.atan2(mat.b, mat.a));
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
         r = by + (r + offsetShearY) * shearMix;
         var s = Math.sqrt(b * b + d * d);
         mat.c = Math.cos(r) * s;
         mat.d = Math.sin(r) * s;
         modified = true;
       }
-      if (modified)
-        bone.appliedValid = false;
+      if (modified) bone.appliedValid = false;
     }
   };
   TransformConstraint.prototype.applyRelativeWorld = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
     var targetMat = target.matrix;
-    var ta = targetMat.a, tb = targetMat.c, tc = targetMat.b, td = targetMat.d;
+    var ta = targetMat.a,
+      tb = targetMat.c,
+      tc = targetMat.b,
+      td = targetMat.d;
     var degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
-    var offsetRotation = this.data.offsetRotation * degRadReflect, offsetShearY = this.data.offsetShearY * degRadReflect;
+    var offsetRotation = this.data.offsetRotation * degRadReflect,
+      offsetShearY = this.data.offsetShearY * degRadReflect;
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
       var modified = false;
       var mat = bone.matrix;
       if (rotateMix != 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d;
         var r = Math.atan2(tc, ta) + offsetRotation;
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
         r *= rotateMix;
-        var cos = Math.cos(r), sin = Math.sin(r);
+        var cos = Math.cos(r),
+          sin = Math.sin(r);
         mat.a = cos * a - sin * c;
         mat.c = cos * b - sin * d;
         mat.b = sin * a + cos * c;
@@ -6428,43 +6562,44 @@ var TransformConstraint$2 = /** @class */ (function () {
       }
       if (shearMix > 0) {
         var r = Math.atan2(td, tb) - Math.atan2(tc, ta);
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
-        var b = mat.c, d = mat.d;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
+        var b = mat.c,
+          d = mat.d;
         r = Math.atan2(d, b) + (r - MathUtils.PI / 2 + offsetShearY) * shearMix;
         var s = Math.sqrt(b * b + d * d);
         mat.c = Math.cos(r) * s;
         mat.d = Math.sin(r) * s;
         modified = true;
       }
-      if (modified)
-        bone.appliedValid = false;
+      if (modified) bone.appliedValid = false;
     }
   };
   TransformConstraint.prototype.applyAbsoluteLocal = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
-    if (!target.appliedValid)
-      target.updateAppliedTransform();
+    if (!target.appliedValid) target.updateAppliedTransform();
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (!bone.appliedValid)
-        bone.updateAppliedTransform();
+      if (!bone.appliedValid) bone.updateAppliedTransform();
       var rotation = bone.arotation;
       if (rotateMix != 0) {
         var r = target.arotation - rotation + this.data.offsetRotation;
         r -= (16384 - ((16384.499999999996 - r / 360) | 0)) * 360;
         rotation += r * rotateMix;
       }
-      var x = bone.ax, y = bone.ay;
+      var x = bone.ax,
+        y = bone.ay;
       if (translateMix != 0) {
         x += (target.ax - x + this.data.offsetX) * translateMix;
         y += (target.ay - y + this.data.offsetY) * translateMix;
       }
-      var scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+      var scaleX = bone.ascaleX,
+        scaleY = bone.ascaleY;
       if (scaleMix > 0) {
         if (scaleX > 0.00001)
           scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * scaleMix) / scaleX;
@@ -6481,38 +6616,37 @@ var TransformConstraint$2 = /** @class */ (function () {
     }
   };
   TransformConstraint.prototype.applyRelativeLocal = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
-    if (!target.appliedValid)
-      target.updateAppliedTransform();
+    if (!target.appliedValid) target.updateAppliedTransform();
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (!bone.appliedValid)
-        bone.updateAppliedTransform();
+      if (!bone.appliedValid) bone.updateAppliedTransform();
       var rotation = bone.arotation;
-      if (rotateMix != 0)
-        rotation += (target.arotation + this.data.offsetRotation) * rotateMix;
-      var x = bone.ax, y = bone.ay;
+      if (rotateMix != 0) rotation += (target.arotation + this.data.offsetRotation) * rotateMix;
+      var x = bone.ax,
+        y = bone.ay;
       if (translateMix != 0) {
         x += (target.ax + this.data.offsetX) * translateMix;
         y += (target.ay + this.data.offsetY) * translateMix;
       }
-      var scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+      var scaleX = bone.ascaleX,
+        scaleY = bone.ascaleY;
       if (scaleMix > 0) {
-        if (scaleX > 0.00001)
-          scaleX *= ((target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix) + 1;
-        if (scaleY > 0.00001)
-          scaleY *= ((target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix) + 1;
+        if (scaleX > 0.00001) scaleX *= (target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix + 1;
+        if (scaleY > 0.00001) scaleY *= (target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix + 1;
       }
       var shearY = bone.ashearY;
-      if (shearMix > 0)
-        shearY += (target.ashearY + this.data.offsetShearY) * shearMix;
+      if (shearMix > 0) shearY += (target.ashearY + this.data.offsetShearY) * shearMix;
       bone.updateWorldTransformWith(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
     }
   };
   return TransformConstraint;
-}());
+})();
 
 /**
  * @public
@@ -6526,15 +6660,13 @@ var Skeleton$2 = /** @class */ (function () {
     this.scaleY = 1;
     this.x = 0;
     this.y = 0;
-    if (data == null)
-      throw new Error("data cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
     this.data = data;
     this.bones = new Array();
     for (var i = 0; i < data.bones.length; i++) {
       var boneData = data.bones[i];
       var bone = void 0;
-      if (boneData.parent == null)
-        bone = new Bone$2(boneData, this, null);
+      if (boneData.parent == null) bone = new Bone$2(boneData, this, null);
       else {
         var parent_1 = this.bones[boneData.parent.index];
         bone = new Bone$2(boneData, this, parent_1);
@@ -6594,7 +6726,9 @@ var Skeleton$2 = /** @class */ (function () {
     var ikConstraints = this.ikConstraints;
     var transformConstraints = this.transformConstraints;
     var pathConstraints = this.pathConstraints;
-    var ikCount = ikConstraints.length, transformCount = transformConstraints.length, pathCount = pathConstraints.length;
+    var ikCount = ikConstraints.length,
+      transformCount = transformConstraints.length,
+      pathCount = pathConstraints.length;
     var constraintCount = ikCount + transformCount + pathCount;
     outer: for (var i = 0; i < constraintCount; i++) {
       for (var ii = 0; ii < ikCount; ii++) {
@@ -6619,13 +6753,14 @@ var Skeleton$2 = /** @class */ (function () {
         }
       }
     }
-    for (var i = 0, n = bones.length; i < n; i++)
-      this.sortBone(bones[i]);
+    for (var i = 0, n = bones.length; i < n; i++) this.sortBone(bones[i]);
   };
   Skeleton.prototype.sortIkConstraint = function (constraint) {
-    constraint.active = constraint.target.isActive() && (!constraint.data.skinRequired || (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
-    if (!constraint.active)
-      return;
+    constraint.active =
+      constraint.target.isActive() &&
+      (!constraint.data.skinRequired ||
+        (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
+    if (!constraint.active) return;
     var target = constraint.target;
     this.sortBone(target);
     var constrained = constraint.bones;
@@ -6633,43 +6768,41 @@ var Skeleton$2 = /** @class */ (function () {
     this.sortBone(parent);
     if (constrained.length > 1) {
       var child = constrained[constrained.length - 1];
-      if (!(this._updateCache.indexOf(child) > -1))
-        this.updateCacheReset.push(child);
+      if (!(this._updateCache.indexOf(child) > -1)) this.updateCacheReset.push(child);
     }
     this._updateCache.push(constraint);
     this.sortReset(parent.children);
     constrained[constrained.length - 1].sorted = true;
   };
   Skeleton.prototype.sortPathConstraint = function (constraint) {
-    constraint.active = constraint.target.bone.isActive() && (!constraint.data.skinRequired || (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
-    if (!constraint.active)
-      return;
+    constraint.active =
+      constraint.target.bone.isActive() &&
+      (!constraint.data.skinRequired ||
+        (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
+    if (!constraint.active) return;
     var slot = constraint.target;
     var slotIndex = slot.data.index;
     var slotBone = slot.bone;
-    if (this.skin != null)
-      this.sortPathConstraintAttachment(this.skin, slotIndex, slotBone);
+    if (this.skin != null) this.sortPathConstraintAttachment(this.skin, slotIndex, slotBone);
     if (this.data.defaultSkin != null && this.data.defaultSkin != this.skin)
       this.sortPathConstraintAttachment(this.data.defaultSkin, slotIndex, slotBone);
     for (var i = 0, n = this.data.skins.length; i < n; i++)
       this.sortPathConstraintAttachment(this.data.skins[i], slotIndex, slotBone);
     var attachment = slot.getAttachment();
-    if (attachment instanceof PathAttachment$2)
-      this.sortPathConstraintAttachmentWith(attachment, slotBone);
+    if (attachment instanceof PathAttachment$2) this.sortPathConstraintAttachmentWith(attachment, slotBone);
     var constrained = constraint.bones;
     var boneCount = constrained.length;
-    for (var i = 0; i < boneCount; i++)
-      this.sortBone(constrained[i]);
+    for (var i = 0; i < boneCount; i++) this.sortBone(constrained[i]);
     this._updateCache.push(constraint);
-    for (var i = 0; i < boneCount; i++)
-      this.sortReset(constrained[i].children);
-    for (var i = 0; i < boneCount; i++)
-      constrained[i].sorted = true;
+    for (var i = 0; i < boneCount; i++) this.sortReset(constrained[i].children);
+    for (var i = 0; i < boneCount; i++) constrained[i].sorted = true;
   };
   Skeleton.prototype.sortTransformConstraint = function (constraint) {
-    constraint.active = constraint.target.isActive() && (!constraint.data.skinRequired || (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
-    if (!constraint.active)
-      return;
+    constraint.active =
+      constraint.target.isActive() &&
+      (!constraint.data.skinRequired ||
+        (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
+    if (!constraint.active) return;
     this.sortBone(constraint.target);
     var constrained = constraint.bones;
     var boneCount = constrained.length;
@@ -6677,35 +6810,28 @@ var Skeleton$2 = /** @class */ (function () {
       for (var i = 0; i < boneCount; i++) {
         var child = constrained[i];
         this.sortBone(child.parent);
-        if (!(this._updateCache.indexOf(child) > -1))
-          this.updateCacheReset.push(child);
+        if (!(this._updateCache.indexOf(child) > -1)) this.updateCacheReset.push(child);
       }
-    }
-    else {
+    } else {
       for (var i = 0; i < boneCount; i++) {
         this.sortBone(constrained[i]);
       }
     }
     this._updateCache.push(constraint);
-    for (var ii = 0; ii < boneCount; ii++)
-      this.sortReset(constrained[ii].children);
-    for (var ii = 0; ii < boneCount; ii++)
-      constrained[ii].sorted = true;
+    for (var ii = 0; ii < boneCount; ii++) this.sortReset(constrained[ii].children);
+    for (var ii = 0; ii < boneCount; ii++) constrained[ii].sorted = true;
   };
   Skeleton.prototype.sortPathConstraintAttachment = function (skin, slotIndex, slotBone) {
     var attachments = skin.attachments[slotIndex];
-    if (!attachments)
-      return;
+    if (!attachments) return;
     for (var key in attachments) {
       this.sortPathConstraintAttachmentWith(attachments[key], slotBone);
     }
   };
   Skeleton.prototype.sortPathConstraintAttachmentWith = function (attachment, slotBone) {
-    if (!(attachment instanceof PathAttachment$2))
-      return;
+    if (!(attachment instanceof PathAttachment$2)) return;
     var pathBones = attachment.bones;
-    if (pathBones == null)
-      this.sortBone(slotBone);
+    if (pathBones == null) this.sortBone(slotBone);
     else {
       var bones = this.bones;
       var i = 0;
@@ -6719,21 +6845,17 @@ var Skeleton$2 = /** @class */ (function () {
     }
   };
   Skeleton.prototype.sortBone = function (bone) {
-    if (bone.sorted)
-      return;
+    if (bone.sorted) return;
     var parent = bone.parent;
-    if (parent != null)
-      this.sortBone(parent);
+    if (parent != null) this.sortBone(parent);
     bone.sorted = true;
     this._updateCache.push(bone);
   };
   Skeleton.prototype.sortReset = function (bones) {
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (!bone.active)
-        continue;
-      if (bone.sorted)
-        this.sortReset(bone.children);
+      if (!bone.active) continue;
+      if (bone.sorted) this.sortReset(bone.children);
       bone.sorted = false;
     }
   };
@@ -6752,8 +6874,7 @@ var Skeleton$2 = /** @class */ (function () {
       bone.appliedValid = true;
     }
     var updateCache = this._updateCache;
-    for (var i = 0, n = updateCache.length; i < n; i++)
-      updateCache[i].update();
+    for (var i = 0, n = updateCache.length; i < n; i++) updateCache[i].update();
   };
   /** Sets the bones, constraints, and slots to their setup pose values. */
   Skeleton.prototype.setToSetupPose = function () {
@@ -6763,8 +6884,7 @@ var Skeleton$2 = /** @class */ (function () {
   /** Sets the bones and constraints to their setup pose values. */
   Skeleton.prototype.setBonesToSetupPose = function () {
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      bones[i].setToSetupPose();
+    for (var i = 0, n = bones.length; i < n; i++) bones[i].setToSetupPose();
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var constraint = ikConstraints[i];
@@ -6796,65 +6916,52 @@ var Skeleton$2 = /** @class */ (function () {
   Skeleton.prototype.setSlotsToSetupPose = function () {
     var slots = this.slots;
     Utils.arrayCopy(slots, 0, this.drawOrder, 0, slots.length);
-    for (var i = 0, n = slots.length; i < n; i++)
-      slots[i].setToSetupPose();
+    for (var i = 0, n = slots.length; i < n; i++) slots[i].setToSetupPose();
   };
   /** @return May return null. */
   Skeleton.prototype.getRootBone = function () {
-    if (this.bones.length == 0)
-      return null;
+    if (this.bones.length == 0) return null;
     return this.bones[0];
   };
   /** @return May be null. */
   Skeleton.prototype.findBone = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.data.name == boneName)
-        return bone;
+      if (bone.data.name == boneName) return bone;
     }
     return null;
   };
   /** @return -1 if the bone was not found. */
   Skeleton.prototype.findBoneIndex = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      if (bones[i].data.name == boneName)
-        return i;
+    for (var i = 0, n = bones.length; i < n; i++) if (bones[i].data.name == boneName) return i;
     return -1;
   };
   /** @return May be null. */
   Skeleton.prototype.findSlot = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
-      if (slot.data.name == slotName)
-        return slot;
+      if (slot.data.name == slotName) return slot;
     }
     return null;
   };
   /** @return -1 if the bone was not found. */
   Skeleton.prototype.findSlotIndex = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
-    for (var i = 0, n = slots.length; i < n; i++)
-      if (slots[i].data.name == slotName)
-        return i;
+    for (var i = 0, n = slots.length; i < n; i++) if (slots[i].data.name == slotName) return i;
     return -1;
   };
   /** Sets a skin by name.
    * @see #setSkin(Skin) */
   Skeleton.prototype.setSkinByName = function (skinName) {
     var skin = this.data.findSkin(skinName);
-    if (skin == null)
-      throw new Error("Skin not found: " + skinName);
+    if (skin == null) throw new Error('Skin not found: ' + skinName);
     this.setSkin(skin);
   };
   /** Sets the skin used to look up attachments before looking in the {@link SkeletonData#getDefaultSkin() default skin}.
@@ -6862,11 +6969,9 @@ var Skeleton$2 = /** @class */ (function () {
    * old skin, each slot's setup mode attachment is attached from the new skin.
    * @param newSkin May be null. */
   Skeleton.prototype.setSkin = function (newSkin) {
-    if (newSkin == this.skin)
-      return;
+    if (newSkin == this.skin) return;
     if (newSkin != null) {
-      if (this.skin != null)
-        newSkin.attachAll(this, this.skin);
+      if (this.skin != null) newSkin.attachAll(this, this.skin);
       else {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++) {
@@ -6874,8 +6979,7 @@ var Skeleton$2 = /** @class */ (function () {
           var name_1 = slot.data.attachmentName;
           if (name_1 != null) {
             var attachment = newSkin.getAttachment(i, name_1);
-            if (attachment != null)
-              slot.setAttachment(attachment);
+            if (attachment != null) slot.setAttachment(attachment);
           }
         }
       }
@@ -6889,21 +6993,17 @@ var Skeleton$2 = /** @class */ (function () {
   };
   /** @return May be null. */
   Skeleton.prototype.getAttachment = function (slotIndex, attachmentName) {
-    if (attachmentName == null)
-      throw new Error("attachmentName cannot be null.");
+    if (attachmentName == null) throw new Error('attachmentName cannot be null.');
     if (this.skin != null) {
       var attachment = this.skin.getAttachment(slotIndex, attachmentName);
-      if (attachment != null)
-        return attachment;
+      if (attachment != null) return attachment;
     }
-    if (this.data.defaultSkin != null)
-      return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
+    if (this.data.defaultSkin != null) return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
     return null;
   };
   /** @param attachmentName May be null. */
   Skeleton.prototype.setAttachment = function (slotName, attachmentName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
@@ -6912,47 +7012,41 @@ var Skeleton$2 = /** @class */ (function () {
         if (attachmentName != null) {
           attachment = this.getAttachment(i, attachmentName);
           if (attachment == null)
-            throw new Error("Attachment not found: " + attachmentName + ", for slot: " + slotName);
+            throw new Error('Attachment not found: ' + attachmentName + ', for slot: ' + slotName);
         }
         slot.setAttachment(attachment);
         return;
       }
     }
-    throw new Error("Slot not found: " + slotName);
+    throw new Error('Slot not found: ' + slotName);
   };
   /** @return May be null. */
   Skeleton.prototype.findIkConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var ikConstraint = ikConstraints[i];
-      if (ikConstraint.data.name == constraintName)
-        return ikConstraint;
+      if (ikConstraint.data.name == constraintName) return ikConstraint;
     }
     return null;
   };
   /** @return May be null. */
   Skeleton.prototype.findTransformConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var transformConstraints = this.transformConstraints;
     for (var i = 0, n = transformConstraints.length; i < n; i++) {
       var constraint = transformConstraints[i];
-      if (constraint.data.name == constraintName)
-        return constraint;
+      if (constraint.data.name == constraintName) return constraint;
     }
     return null;
   };
   /** @return May be null. */
   Skeleton.prototype.findPathConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
     for (var i = 0, n = pathConstraints.length; i < n; i++) {
       var constraint = pathConstraints[i];
-      if (constraint.data.name == constraintName)
-        return constraint;
+      if (constraint.data.name == constraintName) return constraint;
     }
     return null;
   };
@@ -6961,17 +7055,19 @@ var Skeleton$2 = /** @class */ (function () {
    * @param size The width and height of the AABB.
    * @param temp Working memory */
   Skeleton.prototype.getBounds = function (offset, size, temp) {
-    if (temp === void 0) { temp = new Array(2); }
-    if (offset == null)
-      throw new Error("offset cannot be null.");
-    if (size == null)
-      throw new Error("size cannot be null.");
+    if (temp === void 0) {
+      temp = new Array(2);
+    }
+    if (offset == null) throw new Error('offset cannot be null.');
+    if (size == null) throw new Error('size cannot be null.');
     var drawOrder = this.drawOrder;
-    var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+    var minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
+      maxX = Number.NEGATIVE_INFINITY,
+      maxY = Number.NEGATIVE_INFINITY;
     for (var i = 0, n = drawOrder.length; i < n; i++) {
       var slot = drawOrder[i];
-      if (!slot.bone.active)
-        continue;
+      if (!slot.bone.active) continue;
       var verticesLength = 0;
       var vertices = null;
       var attachment = slot.getAttachment();
@@ -6979,8 +7075,7 @@ var Skeleton$2 = /** @class */ (function () {
         verticesLength = 8;
         vertices = Utils.setArraySize(temp, verticesLength, 0);
         attachment.computeWorldVertices(slot.bone, vertices, 0, 2);
-      }
-      else if (attachment instanceof MeshAttachment$2) {
+      } else if (attachment instanceof MeshAttachment$2) {
         var mesh = attachment;
         verticesLength = mesh.worldVerticesLength;
         vertices = Utils.setArraySize(temp, verticesLength, 0);
@@ -6988,7 +7083,8 @@ var Skeleton$2 = /** @class */ (function () {
       }
       if (vertices != null) {
         for (var ii = 0, nn = vertices.length; ii < nn; ii += 2) {
-          var x = vertices[ii], y = vertices[ii + 1];
+          var x = vertices[ii],
+            y = vertices[ii + 1];
           minX = Math.min(minX, x);
           minY = Math.min(minY, y);
           maxX = Math.max(maxX, x);
@@ -7002,37 +7098,37 @@ var Skeleton$2 = /** @class */ (function () {
   Skeleton.prototype.update = function (delta) {
     this.time += delta;
   };
-  Object.defineProperty(Skeleton.prototype, "flipX", {
+  Object.defineProperty(Skeleton.prototype, 'flipX', {
     get: function () {
       return this.scaleX == -1;
     },
     set: function (value) {
       if (!Skeleton.deprecatedWarning1) {
         Skeleton.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY");
+        console.warn('Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY');
       }
       this.scaleX = value ? 1.0 : -1.0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(Skeleton.prototype, "flipY", {
+  Object.defineProperty(Skeleton.prototype, 'flipY', {
     get: function () {
       return this.scaleY == -1;
     },
     set: function (value) {
       if (!Skeleton.deprecatedWarning1) {
         Skeleton.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY");
+        console.warn('Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY');
       }
       this.scaleY = value ? 1.0 : -1.0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   Skeleton.deprecatedWarning1 = false;
   return Skeleton;
-}());
+})();
 
 /**
  * @public
@@ -7051,122 +7147,97 @@ var SkeletonData$2 = /** @class */ (function () {
     this.fps = 0;
   }
   SkeletonData.prototype.findBone = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.name == boneName)
-        return bone;
+      if (bone.name == boneName) return bone;
     }
     return null;
   };
   SkeletonData.prototype.findBoneIndex = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      if (bones[i].name == boneName)
-        return i;
+    for (var i = 0, n = bones.length; i < n; i++) if (bones[i].name == boneName) return i;
     return -1;
   };
   SkeletonData.prototype.findSlot = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
-      if (slot.name == slotName)
-        return slot;
+      if (slot.name == slotName) return slot;
     }
     return null;
   };
   SkeletonData.prototype.findSlotIndex = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
-    for (var i = 0, n = slots.length; i < n; i++)
-      if (slots[i].name == slotName)
-        return i;
+    for (var i = 0, n = slots.length; i < n; i++) if (slots[i].name == slotName) return i;
     return -1;
   };
   SkeletonData.prototype.findSkin = function (skinName) {
-    if (skinName == null)
-      throw new Error("skinName cannot be null.");
+    if (skinName == null) throw new Error('skinName cannot be null.');
     var skins = this.skins;
     for (var i = 0, n = skins.length; i < n; i++) {
       var skin = skins[i];
-      if (skin.name == skinName)
-        return skin;
+      if (skin.name == skinName) return skin;
     }
     return null;
   };
   SkeletonData.prototype.findEvent = function (eventDataName) {
-    if (eventDataName == null)
-      throw new Error("eventDataName cannot be null.");
+    if (eventDataName == null) throw new Error('eventDataName cannot be null.');
     var events = this.events;
     for (var i = 0, n = events.length; i < n; i++) {
       var event_1 = events[i];
-      if (event_1.name == eventDataName)
-        return event_1;
+      if (event_1.name == eventDataName) return event_1;
     }
     return null;
   };
   SkeletonData.prototype.findAnimation = function (animationName) {
-    if (animationName == null)
-      throw new Error("animationName cannot be null.");
+    if (animationName == null) throw new Error('animationName cannot be null.');
     var animations = this.animations;
     for (var i = 0, n = animations.length; i < n; i++) {
       var animation = animations[i];
-      if (animation.name == animationName)
-        return animation;
+      if (animation.name == animationName) return animation;
     }
     return null;
   };
   SkeletonData.prototype.findIkConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var constraint = ikConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findTransformConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var transformConstraints = this.transformConstraints;
     for (var i = 0, n = transformConstraints.length; i < n; i++) {
       var constraint = transformConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findPathConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
     for (var i = 0, n = pathConstraints.length; i < n; i++) {
       var constraint = pathConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findPathConstraintIndex = function (pathConstraintName) {
-    if (pathConstraintName == null)
-      throw new Error("pathConstraintName cannot be null.");
+    if (pathConstraintName == null) throw new Error('pathConstraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
-    for (var i = 0, n = pathConstraints.length; i < n; i++)
-      if (pathConstraints[i].name == pathConstraintName)
-        return i;
+    for (var i = 0, n = pathConstraints.length; i < n; i++) if (pathConstraints[i].name == pathConstraintName) return i;
     return -1;
   };
   return SkeletonData;
-}());
+})();
 
 /**
  * @public
@@ -7174,18 +7245,15 @@ var SkeletonData$2 = /** @class */ (function () {
 var SlotData$2 = /** @class */ (function () {
   function SlotData(index, name, boneData) {
     this.color = new Color(1, 1, 1, 1);
-    if (index < 0)
-      throw new Error("index must be >= 0.");
-    if (name == null)
-      throw new Error("name cannot be null.");
-    if (boneData == null)
-      throw new Error("boneData cannot be null.");
+    if (index < 0) throw new Error('index must be >= 0.');
+    if (name == null) throw new Error('name cannot be null.');
+    if (boneData == null) throw new Error('boneData cannot be null.');
     this.index = index;
     this.name = name;
     this.boneData = boneData;
   }
   return SlotData;
-}());
+})();
 
 /**
  * @public
@@ -7210,7 +7278,7 @@ var TransformConstraintData$2 = /** @class */ (function (_super) {
     return _this;
   }
   return TransformConstraintData;
-}(ConstraintData$1));
+})(ConstraintData$1);
 
 /**
  * @public
@@ -7222,7 +7290,7 @@ var SkinEntry$1 = /** @class */ (function () {
     this.attachment = attachment;
   }
   return SkinEntry;
-}());
+})();
 /**
  * @public
  */
@@ -7231,18 +7299,14 @@ var Skin$2 = /** @class */ (function () {
     this.attachments = new Array();
     this.bones = Array();
     this.constraints = new Array();
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
     this.name = name;
   }
   Skin.prototype.setAttachment = function (slotIndex, name, attachment) {
-    if (attachment == null)
-      throw new Error("attachment cannot be null.");
+    if (attachment == null) throw new Error('attachment cannot be null.');
     var attachments = this.attachments;
-    if (slotIndex >= attachments.length)
-      attachments.length = slotIndex + 1;
-    if (!attachments[slotIndex])
-      attachments[slotIndex] = {};
+    if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
+    if (!attachments[slotIndex]) attachments[slotIndex] = {};
     attachments[slotIndex][name] = attachment;
   };
   Skin.prototype.addSkin = function (skin) {
@@ -7255,8 +7319,7 @@ var Skin$2 = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.bones.push(bone);
+      if (!contained) this.bones.push(bone);
     }
     for (var i = 0; i < skin.constraints.length; i++) {
       var constraint = skin.constraints[i];
@@ -7267,8 +7330,7 @@ var Skin$2 = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.constraints.push(constraint);
+      if (!contained) this.constraints.push(constraint);
     }
     var attachments = skin.getAttachments();
     for (var i = 0; i < attachments.length; i++) {
@@ -7286,8 +7348,7 @@ var Skin$2 = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.bones.push(bone);
+      if (!contained) this.bones.push(bone);
     }
     for (var i = 0; i < skin.constraints.length; i++) {
       var constraint = skin.constraints[i];
@@ -7298,19 +7359,16 @@ var Skin$2 = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.constraints.push(constraint);
+      if (!contained) this.constraints.push(constraint);
     }
     var attachments = skin.getAttachments();
     for (var i = 0; i < attachments.length; i++) {
       var attachment = attachments[i];
-      if (attachment.attachment == null)
-        continue;
+      if (attachment.attachment == null) continue;
       if (attachment.attachment instanceof MeshAttachment$2) {
         attachment.attachment = attachment.attachment.newLinkedMesh();
         this.setAttachment(attachment.slotIndex, attachment.name, attachment.attachment);
-      }
-      else {
+      } else {
         attachment.attachment = attachment.attachment.copy();
         this.setAttachment(attachment.slotIndex, attachment.name, attachment.attachment);
       }
@@ -7323,8 +7381,7 @@ var Skin$2 = /** @class */ (function () {
   };
   Skin.prototype.removeAttachment = function (slotIndex, name) {
     var dictionary = this.attachments[slotIndex];
-    if (dictionary)
-      dictionary[name] = null;
+    if (dictionary) dictionary[name] = null;
   };
   Skin.prototype.getAttachments = function () {
     var entries = new Array();
@@ -7333,8 +7390,7 @@ var Skin$2 = /** @class */ (function () {
       if (slotAttachments) {
         for (var name_1 in slotAttachments) {
           var attachment = slotAttachments[name_1];
-          if (attachment)
-            entries.push(new SkinEntry$1(i, name_1, attachment));
+          if (attachment) entries.push(new SkinEntry$1(i, name_1, attachment));
         }
       }
     }
@@ -7345,8 +7401,7 @@ var Skin$2 = /** @class */ (function () {
     if (slotAttachments) {
       for (var name_2 in slotAttachments) {
         var attachment = slotAttachments[name_2];
-        if (attachment)
-          attachments.push(new SkinEntry$1(slotIndex, name_2, attachment));
+        if (attachment) attachments.push(new SkinEntry$1(slotIndex, name_2, attachment));
       }
     }
   };
@@ -7367,8 +7422,7 @@ var Skin$2 = /** @class */ (function () {
           var skinAttachment = dictionary[key];
           if (slotAttachment == skinAttachment) {
             var attachment = this.getAttachment(slotIndex, key);
-            if (attachment != null)
-              slot.setAttachment(attachment);
+            if (attachment != null) slot.setAttachment(attachment);
             break;
           }
         }
@@ -7377,7 +7431,7 @@ var Skin$2 = /** @class */ (function () {
     }
   };
   return Skin;
-}());
+})();
 
 /**
  * @public
@@ -7391,12 +7445,12 @@ var SkeletonBinary$1 = /** @class */ (function () {
   SkeletonBinary.prototype.readSkeletonData = function (binary) {
     var scale = this.scale;
     var skeletonData = new SkeletonData$2();
-    skeletonData.name = ""; // BOZO
+    skeletonData.name = ''; // BOZO
     var input = new BinaryInput(binary);
     skeletonData.hash = input.readString();
     skeletonData.version = input.readString();
     if (skeletonData.version === '3.8.75') {
-      var error = "Unsupported skeleton data, 3.8.75 is deprecated, please export with a newer version of Spine.";
+      var error = 'Unsupported skeleton data, 3.8.75 is deprecated, please export with a newer version of Spine.';
       console.error(error);
     }
     skeletonData.x = input.readFloat();
@@ -7412,8 +7466,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
     var n = 0;
     // Strings.
     n = input.readInt(true);
-    for (var i = 0; i < n; i++)
-      input.strings.push(input.readString());
+    for (var i = 0; i < n; i++) input.strings.push(input.readString());
     // Bones.
     n = input.readInt(true);
     for (var i = 0; i < n; i++) {
@@ -7430,8 +7483,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
       data.length = input.readFloat() * scale;
       data.transformMode = SkeletonBinary.TransformModeValues[input.readInt(true)];
       data.skinRequired = input.readBoolean();
-      if (nonessential)
-        Color.rgba8888ToColor(data.color, input.readInt32());
+      if (nonessential) Color.rgba8888ToColor(data.color, input.readInt32());
       skeletonData.bones.push(data);
     }
     // Slots.
@@ -7442,8 +7494,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
       var data = new SlotData$2(i, slotName, boneData);
       Color.rgba8888ToColor(data.color, input.readInt32());
       var darkColor = input.readInt32();
-      if (darkColor != -1)
-        Color.rgb888ToColor(data.darkColor = new Color(), darkColor);
+      if (darkColor != -1) Color.rgb888ToColor((data.darkColor = new Color()), darkColor);
       data.attachmentName = input.readStringRef();
       data.blendMode = SkeletonBinary.BlendModeValues[input.readInt(true)];
       skeletonData.slots.push(data);
@@ -7455,8 +7506,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (var ii = 0; ii < nn; ii++)
-        data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (var ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.bones[input.readInt(true)];
       data.mix = input.readFloat();
       data.softness = input.readFloat() * scale;
@@ -7473,8 +7523,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (var ii = 0; ii < nn; ii++)
-        data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (var ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.bones[input.readInt(true)];
       data.local = input.readBoolean();
       data.relative = input.readBoolean();
@@ -7497,19 +7546,16 @@ var SkeletonBinary$1 = /** @class */ (function () {
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (var ii = 0; ii < nn; ii++)
-        data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (var ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.slots[input.readInt(true)];
       data.positionMode = SkeletonBinary.PositionModeValues[input.readInt(true)];
       data.spacingMode = SkeletonBinary.SpacingModeValues[input.readInt(true)];
       data.rotateMode = SkeletonBinary.RotateModeValues[input.readInt(true)];
       data.offsetRotation = input.readFloat();
       data.position = input.readFloat();
-      if (data.positionMode == exports.PositionMode.Fixed)
-        data.position *= scale;
+      if (data.positionMode == exports.PositionMode.Fixed) data.position *= scale;
       data.spacing = input.readFloat();
-      if (data.spacingMode == SpacingMode$2.Length || data.spacingMode == SpacingMode$2.Fixed)
-        data.spacing *= scale;
+      if (data.spacingMode == SpacingMode$2.Length || data.spacingMode == SpacingMode$2.Fixed) data.spacing *= scale;
       data.rotateMix = input.readFloat();
       data.translateMix = input.readFloat();
       skeletonData.pathConstraints.push(data);
@@ -7523,20 +7569,17 @@ var SkeletonBinary$1 = /** @class */ (function () {
     // Skins.
     {
       var i = skeletonData.skins.length;
-      Utils.setArraySize(skeletonData.skins, n = i + input.readInt(true));
-      for (; i < n; i++)
-        skeletonData.skins[i] = this.readSkin(input, skeletonData, false, nonessential);
+      Utils.setArraySize(skeletonData.skins, (n = i + input.readInt(true)));
+      for (; i < n; i++) skeletonData.skins[i] = this.readSkin(input, skeletonData, false, nonessential);
     }
     // Linked meshes.
     n = this.linkedMeshes.length;
     for (var i = 0; i < n; i++) {
       var linkedMesh = this.linkedMeshes[i];
       var skin = linkedMesh.skin == null ? skeletonData.defaultSkin : skeletonData.findSkin(linkedMesh.skin);
-      if (skin == null)
-        throw new Error("Skin not found: " + linkedMesh.skin);
+      if (skin == null) throw new Error('Skin not found: ' + linkedMesh.skin);
       var parent_2 = skin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
-      if (parent_2 == null)
-        throw new Error("Parent mesh not found: " + linkedMesh.parent);
+      if (parent_2 == null) throw new Error('Parent mesh not found: ' + linkedMesh.parent);
       linkedMesh.mesh.deformAttachment = linkedMesh.inheritDeform ? parent_2 : linkedMesh.mesh;
       linkedMesh.mesh.setParentMesh(parent_2);
       // linkedMesh.mesh.updateUVs();
@@ -7567,15 +7610,12 @@ var SkeletonBinary$1 = /** @class */ (function () {
     var slotCount = 0;
     if (defaultSkin) {
       slotCount = input.readInt(true);
-      if (slotCount == 0)
-        return null;
-      skin = new Skin$2("default");
-    }
-    else {
+      if (slotCount == 0) return null;
+      skin = new Skin$2('default');
+    } else {
       skin = new Skin$2(input.readStringRef());
       skin.bones.length = input.readInt(true);
-      for (var i = 0, n = skin.bones.length; i < n; i++)
-        skin.bones[i] = skeletonData.bones[input.readInt(true)];
+      for (var i = 0, n = skin.bones.length; i < n; i++) skin.bones[i] = skeletonData.bones[input.readInt(true)];
       for (var i = 0, n = input.readInt(true); i < n; i++)
         skin.constraints.push(skeletonData.ikConstraints[input.readInt(true)]);
       for (var i = 0, n = input.readInt(true); i < n; i++)
@@ -7589,17 +7629,22 @@ var SkeletonBinary$1 = /** @class */ (function () {
       for (var ii = 0, nn = input.readInt(true); ii < nn; ii++) {
         var name_2 = input.readStringRef();
         var attachment = this.readAttachment(input, skeletonData, skin, slotIndex, name_2, nonessential);
-        if (attachment != null)
-          skin.setAttachment(slotIndex, name_2, attachment);
+        if (attachment != null) skin.setAttachment(slotIndex, name_2, attachment);
       }
     }
     return skin;
   };
-  SkeletonBinary.prototype.readAttachment = function (input, skeletonData, skin, slotIndex, attachmentName, nonessential) {
+  SkeletonBinary.prototype.readAttachment = function (
+    input,
+    skeletonData,
+    skin,
+    slotIndex,
+    attachmentName,
+    nonessential,
+  ) {
     var scale = this.scale;
     var name = input.readStringRef();
-    if (name == null)
-      name = attachmentName;
+    if (name == null) name = attachmentName;
     var typeIndex = input.readByte();
     var type = SkeletonBinary.AttachmentTypeValues[typeIndex];
     switch (type) {
@@ -7613,11 +7658,9 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var width = input.readFloat();
         var height = input.readFloat();
         var color = input.readInt32();
-        if (path == null)
-          path = name;
+        if (path == null) path = name;
         var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
-        if (region == null)
-          return null;
+        if (region == null) return null;
         region.path = path;
         region.x = x * scale;
         region.y = y * scale;
@@ -7635,13 +7678,11 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var vertices = this.readVertices(input, vertexCount);
         var color = nonessential ? input.readInt32() : 0;
         var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
-        if (box == null)
-          return null;
+        if (box == null) return null;
         box.worldVerticesLength = vertexCount << 1;
         box.vertices = vertices.vertices;
         box.bones = vertices.bones;
-        if (nonessential)
-          Color.rgba8888ToColor(box.color, color);
+        if (nonessential) Color.rgba8888ToColor(box.color, color);
         return box;
       }
       case exports.AttachmentType.Mesh: {
@@ -7653,17 +7694,16 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var vertices = this.readVertices(input, vertexCount);
         var hullLength = input.readInt(true);
         var edges = null;
-        var width = 0, height = 0;
+        var width = 0,
+          height = 0;
         if (nonessential) {
           edges = this.readShortArray(input);
           width = input.readFloat();
           height = input.readFloat();
         }
-        if (path == null)
-          path = name;
+        if (path == null) path = name;
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (mesh == null)
-          return null;
+        if (mesh == null) return null;
         mesh.path = path;
         Color.rgba8888ToColor(mesh.color, color);
         mesh.bones = vertices.bones;
@@ -7686,16 +7726,15 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var skinName = input.readStringRef();
         var parent_3 = input.readStringRef();
         var inheritDeform = input.readBoolean();
-        var width = 0, height = 0;
+        var width = 0,
+          height = 0;
         if (nonessential) {
           width = input.readFloat();
           height = input.readFloat();
         }
-        if (path == null)
-          path = name;
+        if (path == null) path = name;
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (mesh == null)
-          return null;
+        if (mesh == null) return null;
         mesh.path = path;
         Color.rgba8888ToColor(mesh.color, color);
         if (nonessential) {
@@ -7711,20 +7750,17 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var vertexCount = input.readInt(true);
         var vertices = this.readVertices(input, vertexCount);
         var lengths = Utils.newArray(vertexCount / 3, 0);
-        for (var i = 0, n = lengths.length; i < n; i++)
-          lengths[i] = input.readFloat() * scale;
+        for (var i = 0, n = lengths.length; i < n; i++) lengths[i] = input.readFloat() * scale;
         var color = nonessential ? input.readInt32() : 0;
         var path = this.attachmentLoader.newPathAttachment(skin, name);
-        if (path == null)
-          return null;
+        if (path == null) return null;
         path.closed = closed_1;
         path.constantSpeed = constantSpeed;
         path.worldVerticesLength = vertexCount << 1;
         path.vertices = vertices.vertices;
         path.bones = vertices.bones;
         path.lengths = lengths;
-        if (nonessential)
-          Color.rgba8888ToColor(path.color, color);
+        if (nonessential) Color.rgba8888ToColor(path.color, color);
         return path;
       }
       case exports.AttachmentType.Point: {
@@ -7733,13 +7769,11 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var y = input.readFloat();
         var color = nonessential ? input.readInt32() : 0;
         var point = this.attachmentLoader.newPointAttachment(skin, name);
-        if (point == null)
-          return null;
+        if (point == null) return null;
         point.x = x * scale;
         point.y = y * scale;
         point.rotation = rotation;
-        if (nonessential)
-          Color.rgba8888ToColor(point.color, color);
+        if (nonessential) Color.rgba8888ToColor(point.color, color);
         return point;
       }
       case exports.AttachmentType.Clipping: {
@@ -7748,14 +7782,12 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var vertices = this.readVertices(input, vertexCount);
         var color = nonessential ? input.readInt32() : 0;
         var clip = this.attachmentLoader.newClippingAttachment(skin, name);
-        if (clip == null)
-          return null;
+        if (clip == null) return null;
         clip.endSlot = skeletonData.slots[endSlotIndex];
         clip.worldVerticesLength = vertexCount << 1;
         clip.vertices = vertices.vertices;
         clip.bones = vertices.bones;
-        if (nonessential)
-          Color.rgba8888ToColor(clip.color, color);
+        if (nonessential) Color.rgba8888ToColor(clip.color, color);
         return clip;
       }
     }
@@ -7788,20 +7820,16 @@ var SkeletonBinary$1 = /** @class */ (function () {
   SkeletonBinary.prototype.readFloatArray = function (input, n, scale) {
     var array = new Array(n);
     if (scale == 1) {
-      for (var i = 0; i < n; i++)
-        array[i] = input.readFloat();
-    }
-    else {
-      for (var i = 0; i < n; i++)
-        array[i] = input.readFloat() * scale;
+      for (var i = 0; i < n; i++) array[i] = input.readFloat();
+    } else {
+      for (var i = 0; i < n; i++) array[i] = input.readFloat() * scale;
     }
     return array;
   };
   SkeletonBinary.prototype.readShortArray = function (input) {
     var n = input.readInt(true);
     var array = new Array(n);
-    for (var i = 0; i < n; i++)
-      array[i] = input.readShort();
+    for (var i = 0; i < n; i++) array[i] = input.readShort();
     return array;
   };
   SkeletonBinary.prototype.readAnimation = function (input, name, skeletonData) {
@@ -7833,8 +7861,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
               var time = input.readFloat();
               Color.rgba8888ToColor(tempColor1, input.readInt32());
               timeline.setFrame(frameIndex, time, tempColor1.r, tempColor1.g, tempColor1.b, tempColor1.a);
-              if (frameIndex < frameCount - 1)
-                this.readCurve(input, frameIndex, timeline);
+              if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(frameCount - 1) * ColorTimeline$1.ENTRIES]);
@@ -7847,9 +7874,18 @@ var SkeletonBinary$1 = /** @class */ (function () {
               var time = input.readFloat();
               Color.rgba8888ToColor(tempColor1, input.readInt32());
               Color.rgb888ToColor(tempColor2, input.readInt32());
-              timeline.setFrame(frameIndex, time, tempColor1.r, tempColor1.g, tempColor1.b, tempColor1.a, tempColor2.r, tempColor2.g, tempColor2.b);
-              if (frameIndex < frameCount - 1)
-                this.readCurve(input, frameIndex, timeline);
+              timeline.setFrame(
+                frameIndex,
+                time,
+                tempColor1.r,
+                tempColor1.g,
+                tempColor1.b,
+                tempColor1.a,
+                tempColor2.r,
+                tempColor2.g,
+                tempColor2.b,
+              );
+              if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(frameCount - 1) * TwoColorTimeline$1.ENTRIES]);
@@ -7870,8 +7906,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
             timeline.boneIndex = boneIndex;
             for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
               timeline.setFrame(frameIndex, input.readFloat(), input.readFloat());
-              if (frameIndex < frameCount - 1)
-                this.readCurve(input, frameIndex, timeline);
+              if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(frameCount - 1) * RotateTimeline$2.ENTRIES]);
@@ -7882,19 +7917,21 @@ var SkeletonBinary$1 = /** @class */ (function () {
           case SkeletonBinary.BONE_SHEAR: {
             var timeline = void 0;
             var timelineScale = 1;
-            if (timelineType == SkeletonBinary.BONE_SCALE)
-              timeline = new ScaleTimeline$2(frameCount);
-            else if (timelineType == SkeletonBinary.BONE_SHEAR)
-              timeline = new ShearTimeline$2(frameCount);
+            if (timelineType == SkeletonBinary.BONE_SCALE) timeline = new ScaleTimeline$2(frameCount);
+            else if (timelineType == SkeletonBinary.BONE_SHEAR) timeline = new ShearTimeline$2(frameCount);
             else {
               timeline = new TranslateTimeline$2(frameCount);
               timelineScale = scale;
             }
             timeline.boneIndex = boneIndex;
             for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-              timeline.setFrame(frameIndex, input.readFloat(), input.readFloat() * timelineScale, input.readFloat() * timelineScale);
-              if (frameIndex < frameCount - 1)
-                this.readCurve(input, frameIndex, timeline);
+              timeline.setFrame(
+                frameIndex,
+                input.readFloat(),
+                input.readFloat() * timelineScale,
+                input.readFloat() * timelineScale,
+              );
+              if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(frameCount - 1) * TranslateTimeline$2.ENTRIES]);
@@ -7910,9 +7947,16 @@ var SkeletonBinary$1 = /** @class */ (function () {
       var timeline = new IkConstraintTimeline$2(frameCount);
       timeline.ikConstraintIndex = index;
       for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-        timeline.setFrame(frameIndex, input.readFloat(), input.readFloat(), input.readFloat() * scale, input.readByte(), input.readBoolean(), input.readBoolean());
-        if (frameIndex < frameCount - 1)
-          this.readCurve(input, frameIndex, timeline);
+        timeline.setFrame(
+          frameIndex,
+          input.readFloat(),
+          input.readFloat(),
+          input.readFloat() * scale,
+          input.readByte(),
+          input.readBoolean(),
+          input.readBoolean(),
+        );
+        if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
       }
       timelines.push(timeline);
       duration = Math.max(duration, timeline.frames[(frameCount - 1) * IkConstraintTimeline$2.ENTRIES]);
@@ -7924,9 +7968,15 @@ var SkeletonBinary$1 = /** @class */ (function () {
       var timeline = new TransformConstraintTimeline$2(frameCount);
       timeline.transformConstraintIndex = index;
       for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-        timeline.setFrame(frameIndex, input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
-        if (frameIndex < frameCount - 1)
-          this.readCurve(input, frameIndex, timeline);
+        timeline.setFrame(
+          frameIndex,
+          input.readFloat(),
+          input.readFloat(),
+          input.readFloat(),
+          input.readFloat(),
+          input.readFloat(),
+        );
+        if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
       }
       timelines.push(timeline);
       duration = Math.max(duration, timeline.frames[(frameCount - 1) * TransformConstraintTimeline$2.ENTRIES]);
@@ -7947,17 +7997,14 @@ var SkeletonBinary$1 = /** @class */ (function () {
               timeline = new PathConstraintSpacingTimeline$2(frameCount);
               if (data.spacingMode == SpacingMode$2.Length || data.spacingMode == SpacingMode$2.Fixed)
                 timelineScale = scale;
-            }
-            else {
+            } else {
               timeline = new PathConstraintPositionTimeline$2(frameCount);
-              if (data.positionMode == exports.PositionMode.Fixed)
-                timelineScale = scale;
+              if (data.positionMode == exports.PositionMode.Fixed) timelineScale = scale;
             }
             timeline.pathConstraintIndex = index;
             for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
               timeline.setFrame(frameIndex, input.readFloat(), input.readFloat() * timelineScale);
-              if (frameIndex < frameCount - 1)
-                this.readCurve(input, frameIndex, timeline);
+              if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(frameCount - 1) * PathConstraintPositionTimeline$2.ENTRIES]);
@@ -7968,8 +8015,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
             timeline.pathConstraintIndex = index;
             for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
               timeline.setFrame(frameIndex, input.readFloat(), input.readFloat(), input.readFloat());
-              if (frameIndex < frameCount - 1)
-                this.readCurve(input, frameIndex, timeline);
+              if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(frameCount - 1) * PathConstraintMixTimeline$2.ENTRIES]);
@@ -7987,7 +8033,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
           var attachment = skin.getAttachment(slotIndex, input.readStringRef());
           var weighted = attachment.bones != null;
           var vertices = attachment.vertices;
-          var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+          var deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
           var frameCount = input.readInt(true);
           var timeline = new DeformTimeline$2(frameCount);
           timeline.slotIndex = slotIndex;
@@ -7996,28 +8042,22 @@ var SkeletonBinary$1 = /** @class */ (function () {
             var time = input.readFloat();
             var deform = void 0;
             var end = input.readInt(true);
-            if (end == 0)
-              deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+            if (end == 0) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
             else {
               deform = Utils.newFloatArray(deformLength);
               var start = input.readInt(true);
               end += start;
               if (scale == 1) {
-                for (var v = start; v < end; v++)
-                  deform[v] = input.readFloat();
-              }
-              else {
-                for (var v = start; v < end; v++)
-                  deform[v] = input.readFloat() * scale;
+                for (var v = start; v < end; v++) deform[v] = input.readFloat();
+              } else {
+                for (var v = start; v < end; v++) deform[v] = input.readFloat() * scale;
               }
               if (!weighted) {
-                for (var v = 0, vn = deform.length; v < vn; v++)
-                  deform[v] += vertices[v];
+                for (var v = 0, vn = deform.length; v < vn; v++) deform[v] += vertices[v];
               }
             }
             timeline.setFrame(frameIndex, time, deform);
-            if (frameIndex < frameCount - 1)
-              this.readCurve(input, frameIndex, timeline);
+            if (frameIndex < frameCount - 1) this.readCurve(input, frameIndex, timeline);
           }
           timelines.push(timeline);
           duration = Math.max(duration, timeline.frames[frameCount - 1]);
@@ -8033,25 +8073,22 @@ var SkeletonBinary$1 = /** @class */ (function () {
         var time = input.readFloat();
         var offsetCount = input.readInt(true);
         var drawOrder = Utils.newArray(slotCount, 0);
-        for (var ii = slotCount - 1; ii >= 0; ii--)
-          drawOrder[ii] = -1;
+        for (var ii = slotCount - 1; ii >= 0; ii--) drawOrder[ii] = -1;
         var unchanged = Utils.newArray(slotCount - offsetCount, 0);
-        var originalIndex = 0, unchangedIndex = 0;
+        var originalIndex = 0,
+          unchangedIndex = 0;
         for (var ii = 0; ii < offsetCount; ii++) {
           var slotIndex = input.readInt(true);
           // Collect unchanged items.
-          while (originalIndex != slotIndex)
-            unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
           // Set changed items.
           drawOrder[originalIndex + input.readInt(true)] = originalIndex++;
         }
         // Collect remaining unchanged items.
-        while (originalIndex < slotCount)
-          unchanged[unchangedIndex++] = originalIndex++;
+        while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
         // Fill in unchanged items.
         for (var ii = slotCount - 1; ii >= 0; ii--)
-          if (drawOrder[ii] == -1)
-            drawOrder[ii] = unchanged[--unchangedIndex];
+          if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
         timeline.setFrame(i, time, drawOrder);
       }
       timelines.push(timeline);
@@ -8092,12 +8129,31 @@ var SkeletonBinary$1 = /** @class */ (function () {
   SkeletonBinary.prototype.setCurve = function (timeline, frameIndex, cx1, cy1, cx2, cy2) {
     timeline.setCurve(frameIndex, cx1, cy1, cx2, cy2);
   };
-  SkeletonBinary.AttachmentTypeValues = [0 /*AttachmentType.Region*/, 1 /*AttachmentType.BoundingBox*/, 2 /*AttachmentType.Mesh*/, 3 /*AttachmentType.LinkedMesh*/, 4 /*AttachmentType.Path*/, 5 /*AttachmentType.Point*/, 6 /*AttachmentType.Clipping*/];
-  SkeletonBinary.TransformModeValues = [exports.TransformMode.Normal, exports.TransformMode.OnlyTranslation, exports.TransformMode.NoRotationOrReflection, exports.TransformMode.NoScale, exports.TransformMode.NoScaleOrReflection];
+  SkeletonBinary.AttachmentTypeValues = [
+    0 /*AttachmentType.Region*/, 1 /*AttachmentType.BoundingBox*/, 2 /*AttachmentType.Mesh*/,
+    3 /*AttachmentType.LinkedMesh*/, 4 /*AttachmentType.Path*/, 5 /*AttachmentType.Point*/,
+    6 /*AttachmentType.Clipping*/,
+  ];
+  SkeletonBinary.TransformModeValues = [
+    exports.TransformMode.Normal,
+    exports.TransformMode.OnlyTranslation,
+    exports.TransformMode.NoRotationOrReflection,
+    exports.TransformMode.NoScale,
+    exports.TransformMode.NoScaleOrReflection,
+  ];
   SkeletonBinary.PositionModeValues = [exports.PositionMode.Fixed, exports.PositionMode.Percent];
   SkeletonBinary.SpacingModeValues = [SpacingMode$2.Length, SpacingMode$2.Fixed, SpacingMode$2.Percent];
-  SkeletonBinary.RotateModeValues = [exports.RotateMode.Tangent, exports.RotateMode.Chain, exports.RotateMode.ChainScale];
-  SkeletonBinary.BlendModeValues = [constants.BLEND_MODES.NORMAL, constants.BLEND_MODES.ADD, constants.BLEND_MODES.MULTIPLY, constants.BLEND_MODES.SCREEN];
+  SkeletonBinary.RotateModeValues = [
+    exports.RotateMode.Tangent,
+    exports.RotateMode.Chain,
+    exports.RotateMode.ChainScale,
+  ];
+  SkeletonBinary.BlendModeValues = [
+    constants.BLEND_MODES.NORMAL,
+    constants.BLEND_MODES.ADD,
+    constants.BLEND_MODES.MULTIPLY,
+    constants.BLEND_MODES.SCREEN,
+  ];
   SkeletonBinary.BONE_ROTATE = 0;
   SkeletonBinary.BONE_TRANSLATE = 1;
   SkeletonBinary.BONE_SCALE = 2;
@@ -8112,7 +8168,7 @@ var SkeletonBinary$1 = /** @class */ (function () {
   SkeletonBinary.CURVE_STEPPED = 1;
   SkeletonBinary.CURVE_BEZIER = 2;
   return SkeletonBinary;
-}());
+})();
 var LinkedMesh$1$1 = /** @class */ (function () {
   function LinkedMesh(mesh, skin, slotIndex, parent, inheritDeform) {
     this.mesh = mesh;
@@ -8122,16 +8178,20 @@ var LinkedMesh$1$1 = /** @class */ (function () {
     this.inheritDeform = inheritDeform;
   }
   return LinkedMesh;
-}());
+})();
 var Vertices$1 = /** @class */ (function () {
   function Vertices(bones, vertices) {
-    if (bones === void 0) { bones = null; }
-    if (vertices === void 0) { vertices = null; }
+    if (bones === void 0) {
+      bones = null;
+    }
+    if (vertices === void 0) {
+      vertices = null;
+    }
     this.bones = bones;
     this.vertices = vertices;
   }
   return Vertices;
-}());
+})();
 
 /**
  * @public
@@ -8149,8 +8209,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
     });
   }
   SkeletonBounds.prototype.update = function (skeleton, updateAabb) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     var boundingBoxes = this.boundingBoxes;
     var polygons = this.polygons;
     var polygonPool = this.polygonPool;
@@ -8161,8 +8220,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
     polygons.length = 0;
     for (var i = 0; i < slotCount; i++) {
       var slot = slots[i];
-      if (!slot.bone.active)
-        continue;
+      if (!slot.bone.active) continue;
       var attachment = slot.getAttachment();
       if (attachment instanceof BoundingBoxAttachment$2) {
         var boundingBox = attachment;
@@ -8177,8 +8235,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
     }
     if (updateAabb) {
       this.aabbCompute();
-    }
-    else {
+    } else {
       this.minX = Number.POSITIVE_INFINITY;
       this.minY = Number.POSITIVE_INFINITY;
       this.maxX = Number.NEGATIVE_INFINITY;
@@ -8186,7 +8243,10 @@ var SkeletonBounds$2 = /** @class */ (function () {
     }
   };
   SkeletonBounds.prototype.aabbCompute = function () {
-    var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+    var minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
+      maxX = Number.NEGATIVE_INFINITY,
+      maxY = Number.NEGATIVE_INFINITY;
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++) {
       var polygon = polygons[i];
@@ -8215,21 +8275,22 @@ var SkeletonBounds$2 = /** @class */ (function () {
     var minY = this.minY;
     var maxX = this.maxX;
     var maxY = this.maxY;
-    if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) || (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY))
+    if (
+      (x1 <= minX && x2 <= minX) ||
+      (y1 <= minY && y2 <= minY) ||
+      (x1 >= maxX && x2 >= maxX) ||
+      (y1 >= maxY && y2 >= maxY)
+    )
       return false;
     var m = (y2 - y1) / (x2 - x1);
     var y = m * (minX - x1) + y1;
-    if (y > minY && y < maxY)
-      return true;
+    if (y > minY && y < maxY) return true;
     y = m * (maxX - x1) + y1;
-    if (y > minY && y < maxY)
-      return true;
+    if (y > minY && y < maxY) return true;
     var x = (minY - y1) / m + x1;
-    if (x > minX && x < maxX)
-      return true;
+    if (x > minX && x < maxX) return true;
     x = (maxY - y1) / m + x1;
-    if (x > minX && x < maxX)
-      return true;
+    if (x > minX && x < maxX) return true;
     return false;
   };
   /** Returns true if the axis aligned bounding box intersects the axis aligned bounding box of the specified bounds. */
@@ -8241,8 +8302,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
   SkeletonBounds.prototype.containsPoint = function (x, y) {
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++)
-      if (this.containsPointPolygon(polygons[i], x, y))
-        return this.boundingBoxes[i];
+      if (this.containsPointPolygon(polygons[i], x, y)) return this.boundingBoxes[i];
     return null;
   };
   /** Returns true if the polygon contains the point. */
@@ -8256,8 +8316,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
       var prevY = vertices[prevIndex + 1];
       if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
         var vertexX = vertices[ii];
-        if (vertexX + (y - vertexY) / (prevY - vertexY) * (vertices[prevIndex] - vertexX) < x)
-          inside = !inside;
+        if (vertexX + ((y - vertexY) / (prevY - vertexY)) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
       }
       prevIndex = ii;
     }
@@ -8269,21 +8328,24 @@ var SkeletonBounds$2 = /** @class */ (function () {
   SkeletonBounds.prototype.intersectsSegment = function (x1, y1, x2, y2) {
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++)
-      if (this.intersectsSegmentPolygon(polygons[i], x1, y1, x2, y2))
-        return this.boundingBoxes[i];
+      if (this.intersectsSegmentPolygon(polygons[i], x1, y1, x2, y2)) return this.boundingBoxes[i];
     return null;
   };
   /** Returns true if the polygon contains any part of the line segment. */
   SkeletonBounds.prototype.intersectsSegmentPolygon = function (polygon, x1, y1, x2, y2) {
     var vertices = polygon;
     var nn = polygon.length;
-    var width12 = x1 - x2, height12 = y1 - y2;
+    var width12 = x1 - x2,
+      height12 = y1 - y2;
     var det1 = x1 * y2 - y1 * x2;
-    var x3 = vertices[nn - 2], y3 = vertices[nn - 1];
+    var x3 = vertices[nn - 2],
+      y3 = vertices[nn - 1];
     for (var ii = 0; ii < nn; ii += 2) {
-      var x4 = vertices[ii], y4 = vertices[ii + 1];
+      var x4 = vertices[ii],
+        y4 = vertices[ii + 1];
       var det2 = x3 * y4 - y3 * x4;
-      var width34 = x3 - x4, height34 = y3 - y4;
+      var width34 = x3 - x4,
+        height34 = y3 - y4;
       var det3 = width12 * height34 - height12 * width34;
       var x = (det1 * width34 - width12 * det2) / det3;
       if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
@@ -8298,8 +8360,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
   };
   /** Returns the polygon for the specified bounding box, or null. */
   SkeletonBounds.prototype.getPolygon = function (boundingBox) {
-    if (boundingBox == null)
-      throw new Error("boundingBox cannot be null.");
+    if (boundingBox == null) throw new Error('boundingBox cannot be null.');
     var index = this.boundingBoxes.indexOf(boundingBox);
     return index == -1 ? null : this.polygons[index];
   };
@@ -8310,7 +8371,7 @@ var SkeletonBounds$2 = /** @class */ (function () {
     return this.maxY - this.minY;
   };
   return SkeletonBounds;
-}());
+})();
 
 /**
  * @public
@@ -8324,18 +8385,19 @@ var SkeletonJson$2 = /** @class */ (function () {
   SkeletonJson.prototype.readSkeletonData = function (json) {
     var scale = this.scale;
     var skeletonData = new SkeletonData$2();
-    var root = typeof (json) === "string" ? JSON.parse(json) : json;
+    var root = typeof json === 'string' ? JSON.parse(json) : json;
     // Skeleton
     var skeletonMap = root.skeleton;
     if (skeletonMap != null) {
       skeletonData.hash = skeletonMap.hash;
       skeletonData.version = skeletonMap.spine;
       if (skeletonData.version.substr(0, 3) !== '3.8') {
-        var error = "Spine 3.8 loader cant load version " + skeletonMap.spine + ". Please configure your pixi-spine bundle";
+        var error =
+          'Spine 3.8 loader cant load version ' + skeletonMap.spine + '. Please configure your pixi-spine bundle';
         console.error(error);
       }
       if (skeletonData.version === '3.8.75') {
-        var error = "Unsupported skeleton data, 3.8.75 is deprecated, please export with a newer version of Spine.";
+        var error = 'Unsupported skeleton data, 3.8.75 is deprecated, please export with a newer version of Spine.';
         console.error(error);
       }
       skeletonData.x = skeletonMap.x;
@@ -8350,23 +8412,22 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var i = 0; i < root.bones.length; i++) {
         var boneMap = root.bones[i];
         var parent_1 = null;
-        var parentName = this.getValue(boneMap, "parent", null);
+        var parentName = this.getValue(boneMap, 'parent', null);
         if (parentName != null) {
           parent_1 = skeletonData.findBone(parentName);
-          if (parent_1 == null)
-            throw new Error("Parent bone not found: " + parentName);
+          if (parent_1 == null) throw new Error('Parent bone not found: ' + parentName);
         }
         var data = new BoneData$2(skeletonData.bones.length, boneMap.name, parent_1);
-        data.length = this.getValue(boneMap, "length", 0) * scale;
-        data.x = this.getValue(boneMap, "x", 0) * scale;
-        data.y = this.getValue(boneMap, "y", 0) * scale;
-        data.rotation = this.getValue(boneMap, "rotation", 0);
-        data.scaleX = this.getValue(boneMap, "scaleX", 1);
-        data.scaleY = this.getValue(boneMap, "scaleY", 1);
-        data.shearX = this.getValue(boneMap, "shearX", 0);
-        data.shearY = this.getValue(boneMap, "shearY", 0);
-        data.transformMode = SkeletonJson.transformModeFromString(this.getValue(boneMap, "transform", "normal"));
-        data.skinRequired = this.getValue(boneMap, "skin", false);
+        data.length = this.getValue(boneMap, 'length', 0) * scale;
+        data.x = this.getValue(boneMap, 'x', 0) * scale;
+        data.y = this.getValue(boneMap, 'y', 0) * scale;
+        data.rotation = this.getValue(boneMap, 'rotation', 0);
+        data.scaleX = this.getValue(boneMap, 'scaleX', 1);
+        data.scaleY = this.getValue(boneMap, 'scaleY', 1);
+        data.shearX = this.getValue(boneMap, 'shearX', 0);
+        data.shearY = this.getValue(boneMap, 'shearY', 0);
+        data.transformMode = SkeletonJson.transformModeFromString(this.getValue(boneMap, 'transform', 'normal'));
+        data.skinRequired = this.getValue(boneMap, 'skin', false);
         skeletonData.bones.push(data);
       }
     }
@@ -8377,19 +8438,17 @@ var SkeletonJson$2 = /** @class */ (function () {
         var slotName = slotMap.name;
         var boneName = slotMap.bone;
         var boneData = skeletonData.findBone(boneName);
-        if (boneData == null)
-          throw new Error("Slot bone not found: " + boneName);
+        if (boneData == null) throw new Error('Slot bone not found: ' + boneName);
         var data = new SlotData$2(skeletonData.slots.length, slotName, boneData);
-        var color = this.getValue(slotMap, "color", null);
-        if (color != null)
-          data.color.setFromString(color);
-        var dark = this.getValue(slotMap, "dark", null);
+        var color = this.getValue(slotMap, 'color', null);
+        if (color != null) data.color.setFromString(color);
+        var dark = this.getValue(slotMap, 'dark', null);
         if (dark != null) {
           data.darkColor = new Color(1, 1, 1, 1);
           data.darkColor.setFromString(dark);
         }
-        data.attachmentName = this.getValue(slotMap, "attachment", null);
-        data.blendMode = SkeletonJson.blendModeFromString(this.getValue(slotMap, "blend", "normal"));
+        data.attachmentName = this.getValue(slotMap, 'attachment', null);
+        data.blendMode = SkeletonJson.blendModeFromString(this.getValue(slotMap, 'blend', 'normal'));
         skeletonData.slots.push(data);
       }
     }
@@ -8398,25 +8457,23 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var i = 0; i < root.ik.length; i++) {
         var constraintMap = root.ik[i];
         var data = new IkConstraintData$2(constraintMap.name);
-        data.order = this.getValue(constraintMap, "order", 0);
-        data.skinRequired = this.getValue(constraintMap, "skin", false);
+        data.order = this.getValue(constraintMap, 'order', 0);
+        data.skinRequired = this.getValue(constraintMap, 'skin', false);
         for (var j = 0; j < constraintMap.bones.length; j++) {
           var boneName = constraintMap.bones[j];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("IK bone not found: " + boneName);
+          if (bone == null) throw new Error('IK bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findBone(targetName);
-        if (data.target == null)
-          throw new Error("IK target bone not found: " + targetName);
-        data.mix = this.getValue(constraintMap, "mix", 1);
-        data.softness = this.getValue(constraintMap, "softness", 0) * scale;
-        data.bendDirection = this.getValue(constraintMap, "bendPositive", true) ? 1 : -1;
-        data.compress = this.getValue(constraintMap, "compress", false);
-        data.stretch = this.getValue(constraintMap, "stretch", false);
-        data.uniform = this.getValue(constraintMap, "uniform", false);
+        if (data.target == null) throw new Error('IK target bone not found: ' + targetName);
+        data.mix = this.getValue(constraintMap, 'mix', 1);
+        data.softness = this.getValue(constraintMap, 'softness', 0) * scale;
+        data.bendDirection = this.getValue(constraintMap, 'bendPositive', true) ? 1 : -1;
+        data.compress = this.getValue(constraintMap, 'compress', false);
+        data.stretch = this.getValue(constraintMap, 'stretch', false);
+        data.uniform = this.getValue(constraintMap, 'uniform', false);
         skeletonData.ikConstraints.push(data);
       }
     }
@@ -8425,31 +8482,29 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var i = 0; i < root.transform.length; i++) {
         var constraintMap = root.transform[i];
         var data = new TransformConstraintData$2(constraintMap.name);
-        data.order = this.getValue(constraintMap, "order", 0);
-        data.skinRequired = this.getValue(constraintMap, "skin", false);
+        data.order = this.getValue(constraintMap, 'order', 0);
+        data.skinRequired = this.getValue(constraintMap, 'skin', false);
         for (var j = 0; j < constraintMap.bones.length; j++) {
           var boneName = constraintMap.bones[j];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("Transform constraint bone not found: " + boneName);
+          if (bone == null) throw new Error('Transform constraint bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findBone(targetName);
-        if (data.target == null)
-          throw new Error("Transform constraint target bone not found: " + targetName);
-        data.local = this.getValue(constraintMap, "local", false);
-        data.relative = this.getValue(constraintMap, "relative", false);
-        data.offsetRotation = this.getValue(constraintMap, "rotation", 0);
-        data.offsetX = this.getValue(constraintMap, "x", 0) * scale;
-        data.offsetY = this.getValue(constraintMap, "y", 0) * scale;
-        data.offsetScaleX = this.getValue(constraintMap, "scaleX", 0);
-        data.offsetScaleY = this.getValue(constraintMap, "scaleY", 0);
-        data.offsetShearY = this.getValue(constraintMap, "shearY", 0);
-        data.rotateMix = this.getValue(constraintMap, "rotateMix", 1);
-        data.translateMix = this.getValue(constraintMap, "translateMix", 1);
-        data.scaleMix = this.getValue(constraintMap, "scaleMix", 1);
-        data.shearMix = this.getValue(constraintMap, "shearMix", 1);
+        if (data.target == null) throw new Error('Transform constraint target bone not found: ' + targetName);
+        data.local = this.getValue(constraintMap, 'local', false);
+        data.relative = this.getValue(constraintMap, 'relative', false);
+        data.offsetRotation = this.getValue(constraintMap, 'rotation', 0);
+        data.offsetX = this.getValue(constraintMap, 'x', 0) * scale;
+        data.offsetY = this.getValue(constraintMap, 'y', 0) * scale;
+        data.offsetScaleX = this.getValue(constraintMap, 'scaleX', 0);
+        data.offsetScaleY = this.getValue(constraintMap, 'scaleY', 0);
+        data.offsetShearY = this.getValue(constraintMap, 'shearY', 0);
+        data.rotateMix = this.getValue(constraintMap, 'rotateMix', 1);
+        data.translateMix = this.getValue(constraintMap, 'translateMix', 1);
+        data.scaleMix = this.getValue(constraintMap, 'scaleMix', 1);
+        data.shearMix = this.getValue(constraintMap, 'shearMix', 1);
         skeletonData.transformConstraints.push(data);
       }
     }
@@ -8458,31 +8513,29 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var i = 0; i < root.path.length; i++) {
         var constraintMap = root.path[i];
         var data = new PathConstraintData$2(constraintMap.name);
-        data.order = this.getValue(constraintMap, "order", 0);
-        data.skinRequired = this.getValue(constraintMap, "skin", false);
+        data.order = this.getValue(constraintMap, 'order', 0);
+        data.skinRequired = this.getValue(constraintMap, 'skin', false);
         for (var j = 0; j < constraintMap.bones.length; j++) {
           var boneName = constraintMap.bones[j];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("Transform constraint bone not found: " + boneName);
+          if (bone == null) throw new Error('Transform constraint bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findSlot(targetName);
-        if (data.target == null)
-          throw new Error("Path target slot not found: " + targetName);
-        data.positionMode = SkeletonJson.positionModeFromString(this.getValue(constraintMap, "positionMode", "percent"));
-        data.spacingMode = SkeletonJson.spacingModeFromString(this.getValue(constraintMap, "spacingMode", "length"));
-        data.rotateMode = SkeletonJson.rotateModeFromString(this.getValue(constraintMap, "rotateMode", "tangent"));
-        data.offsetRotation = this.getValue(constraintMap, "rotation", 0);
-        data.position = this.getValue(constraintMap, "position", 0);
-        if (data.positionMode == exports.PositionMode.Fixed)
-          data.position *= scale;
-        data.spacing = this.getValue(constraintMap, "spacing", 0);
-        if (data.spacingMode == SpacingMode$2.Length || data.spacingMode == SpacingMode$2.Fixed)
-          data.spacing *= scale;
-        data.rotateMix = this.getValue(constraintMap, "rotateMix", 1);
-        data.translateMix = this.getValue(constraintMap, "translateMix", 1);
+        if (data.target == null) throw new Error('Path target slot not found: ' + targetName);
+        data.positionMode = SkeletonJson.positionModeFromString(
+          this.getValue(constraintMap, 'positionMode', 'percent'),
+        );
+        data.spacingMode = SkeletonJson.spacingModeFromString(this.getValue(constraintMap, 'spacingMode', 'length'));
+        data.rotateMode = SkeletonJson.rotateModeFromString(this.getValue(constraintMap, 'rotateMode', 'tangent'));
+        data.offsetRotation = this.getValue(constraintMap, 'rotation', 0);
+        data.position = this.getValue(constraintMap, 'position', 0);
+        if (data.positionMode == exports.PositionMode.Fixed) data.position *= scale;
+        data.spacing = this.getValue(constraintMap, 'spacing', 0);
+        if (data.spacingMode == SpacingMode$2.Length || data.spacingMode == SpacingMode$2.Fixed) data.spacing *= scale;
+        data.rotateMix = this.getValue(constraintMap, 'rotateMix', 1);
+        data.translateMix = this.getValue(constraintMap, 'translateMix', 1);
         skeletonData.pathConstraints.push(data);
       }
     }
@@ -8494,60 +8547,51 @@ var SkeletonJson$2 = /** @class */ (function () {
         if (skinMap.bones) {
           for (var ii = 0; ii < skinMap.bones.length; ii++) {
             var bone = skeletonData.findBone(skinMap.bones[ii]);
-            if (bone == null)
-              throw new Error("Skin bone not found: " + skinMap.bones[i]);
+            if (bone == null) throw new Error('Skin bone not found: ' + skinMap.bones[i]);
             skin.bones.push(bone);
           }
         }
         if (skinMap.ik) {
           for (var ii = 0; ii < skinMap.ik.length; ii++) {
             var constraint = skeletonData.findIkConstraint(skinMap.ik[ii]);
-            if (constraint == null)
-              throw new Error("Skin IK constraint not found: " + skinMap.ik[i]);
+            if (constraint == null) throw new Error('Skin IK constraint not found: ' + skinMap.ik[i]);
             skin.constraints.push(constraint);
           }
         }
         if (skinMap.transform) {
           for (var ii = 0; ii < skinMap.transform.length; ii++) {
             var constraint = skeletonData.findTransformConstraint(skinMap.transform[ii]);
-            if (constraint == null)
-              throw new Error("Skin transform constraint not found: " + skinMap.transform[i]);
+            if (constraint == null) throw new Error('Skin transform constraint not found: ' + skinMap.transform[i]);
             skin.constraints.push(constraint);
           }
         }
         if (skinMap.path) {
           for (var ii = 0; ii < skinMap.path.length; ii++) {
             var constraint = skeletonData.findPathConstraint(skinMap.path[ii]);
-            if (constraint == null)
-              throw new Error("Skin path constraint not found: " + skinMap.path[i]);
+            if (constraint == null) throw new Error('Skin path constraint not found: ' + skinMap.path[i]);
             skin.constraints.push(constraint);
           }
         }
         for (var slotName in skinMap.attachments) {
           var slot = skeletonData.findSlot(slotName);
-          if (slot == null)
-            throw new Error("Slot not found: " + slotName);
+          if (slot == null) throw new Error('Slot not found: ' + slotName);
           var slotMap = skinMap.attachments[slotName];
           for (var entryName in slotMap) {
             var attachment = this.readAttachment(slotMap[entryName], skin, slot.index, entryName, skeletonData);
-            if (attachment != null)
-              skin.setAttachment(slot.index, entryName, attachment);
+            if (attachment != null) skin.setAttachment(slot.index, entryName, attachment);
           }
         }
         skeletonData.skins.push(skin);
-        if (skin.name == "default")
-          skeletonData.defaultSkin = skin;
+        if (skin.name == 'default') skeletonData.defaultSkin = skin;
       }
     }
     // Linked meshes.
     for (var i = 0, n = this.linkedMeshes.length; i < n; i++) {
       var linkedMesh = this.linkedMeshes[i];
       var skin = linkedMesh.skin == null ? skeletonData.defaultSkin : skeletonData.findSkin(linkedMesh.skin);
-      if (skin == null)
-        throw new Error("Skin not found: " + linkedMesh.skin);
+      if (skin == null) throw new Error('Skin not found: ' + linkedMesh.skin);
       var parent_2 = skin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
-      if (parent_2 == null)
-        throw new Error("Parent mesh not found: " + linkedMesh.parent);
+      if (parent_2 == null) throw new Error('Parent mesh not found: ' + linkedMesh.parent);
       linkedMesh.mesh.deformAttachment = linkedMesh.inheritDeform ? parent_2 : linkedMesh.mesh;
       linkedMesh.mesh.setParentMesh(parent_2);
       // linkedMesh.mesh.updateUVs();
@@ -8558,13 +8602,13 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var eventName in root.events) {
         var eventMap = root.events[eventName];
         var data = new EventData$2(eventName);
-        data.intValue = this.getValue(eventMap, "int", 0);
-        data.floatValue = this.getValue(eventMap, "float", 0);
-        data.stringValue = this.getValue(eventMap, "string", "");
-        data.audioPath = this.getValue(eventMap, "audio", null);
+        data.intValue = this.getValue(eventMap, 'int', 0);
+        data.floatValue = this.getValue(eventMap, 'float', 0);
+        data.stringValue = this.getValue(eventMap, 'string', '');
+        data.audioPath = this.getValue(eventMap, 'audio', null);
         if (data.audioPath != null) {
-          data.volume = this.getValue(eventMap, "volume", 1);
-          data.balance = this.getValue(eventMap, "balance", 0);
+          data.volume = this.getValue(eventMap, 'volume', 1);
+          data.balance = this.getValue(eventMap, 'balance', 0);
         }
         skeletonData.events.push(data);
       }
@@ -8580,53 +8624,55 @@ var SkeletonJson$2 = /** @class */ (function () {
   };
   SkeletonJson.prototype.readAttachment = function (map, skin, slotIndex, name, skeletonData) {
     var scale = this.scale;
-    name = this.getValue(map, "name", name);
-    var type = this.getValue(map, "type", "region");
+    name = this.getValue(map, 'name', name);
+    var type = this.getValue(map, 'type', 'region');
     switch (type) {
-      case "region": {
-        var path = this.getValue(map, "path", name);
+      case 'region': {
+        var path = this.getValue(map, 'path', name);
         var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
-        if (region == null)
-          return null;
+        if (region == null) return null;
         region.path = path;
-        region.x = this.getValue(map, "x", 0) * scale;
-        region.y = this.getValue(map, "y", 0) * scale;
-        region.scaleX = this.getValue(map, "scaleX", 1);
-        region.scaleY = this.getValue(map, "scaleY", 1);
-        region.rotation = this.getValue(map, "rotation", 0);
+        region.x = this.getValue(map, 'x', 0) * scale;
+        region.y = this.getValue(map, 'y', 0) * scale;
+        region.scaleX = this.getValue(map, 'scaleX', 1);
+        region.scaleY = this.getValue(map, 'scaleY', 1);
+        region.rotation = this.getValue(map, 'rotation', 0);
         region.width = map.width * scale;
         region.height = map.height * scale;
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          region.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) region.color.setFromString(color);
         // region.updateOffset();
         return region;
       }
-      case "boundingbox": {
+      case 'boundingbox': {
         var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
-        if (box == null)
-          return null;
+        if (box == null) return null;
         this.readVertices(map, box, map.vertexCount << 1);
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          box.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) box.color.setFromString(color);
         return box;
       }
-      case "mesh":
-      case "linkedmesh": {
-        var path = this.getValue(map, "path", name);
+      case 'mesh':
+      case 'linkedmesh': {
+        var path = this.getValue(map, 'path', name);
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (mesh == null)
-          return null;
+        if (mesh == null) return null;
         mesh.path = path;
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          mesh.color.setFromString(color);
-        mesh.width = this.getValue(map, "width", 0) * scale;
-        mesh.height = this.getValue(map, "height", 0) * scale;
-        var parent_3 = this.getValue(map, "parent", null);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) mesh.color.setFromString(color);
+        mesh.width = this.getValue(map, 'width', 0) * scale;
+        mesh.height = this.getValue(map, 'height', 0) * scale;
+        var parent_3 = this.getValue(map, 'parent', null);
         if (parent_3 != null) {
-          this.linkedMeshes.push(new LinkedMesh$3(mesh, this.getValue(map, "skin", null), slotIndex, parent_3, this.getValue(map, "deform", true)));
+          this.linkedMeshes.push(
+            new LinkedMesh$3(
+              mesh,
+              this.getValue(map, 'skin', null),
+              slotIndex,
+              parent_3,
+              this.getValue(map, 'deform', true),
+            ),
+          );
           return mesh;
         }
         var uvs = map.uvs;
@@ -8634,55 +8680,47 @@ var SkeletonJson$2 = /** @class */ (function () {
         mesh.triangles = map.triangles;
         mesh.regionUVs = new Float32Array(uvs);
         // mesh.updateUVs();
-        mesh.edges = this.getValue(map, "edges", null);
-        mesh.hullLength = this.getValue(map, "hull", 0) * 2;
+        mesh.edges = this.getValue(map, 'edges', null);
+        mesh.hullLength = this.getValue(map, 'hull', 0) * 2;
         return mesh;
       }
-      case "path": {
+      case 'path': {
         var path = this.attachmentLoader.newPathAttachment(skin, name);
-        if (path == null)
-          return null;
-        path.closed = this.getValue(map, "closed", false);
-        path.constantSpeed = this.getValue(map, "constantSpeed", true);
+        if (path == null) return null;
+        path.closed = this.getValue(map, 'closed', false);
+        path.constantSpeed = this.getValue(map, 'constantSpeed', true);
         var vertexCount = map.vertexCount;
         this.readVertices(map, path, vertexCount << 1);
         var lengths = Utils.newArray(vertexCount / 3, 0);
-        for (var i = 0; i < map.lengths.length; i++)
-          lengths[i] = map.lengths[i] * scale;
+        for (var i = 0; i < map.lengths.length; i++) lengths[i] = map.lengths[i] * scale;
         path.lengths = lengths;
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          path.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) path.color.setFromString(color);
         return path;
       }
-      case "point": {
+      case 'point': {
         var point = this.attachmentLoader.newPointAttachment(skin, name);
-        if (point == null)
-          return null;
-        point.x = this.getValue(map, "x", 0) * scale;
-        point.y = this.getValue(map, "y", 0) * scale;
-        point.rotation = this.getValue(map, "rotation", 0);
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          point.color.setFromString(color);
+        if (point == null) return null;
+        point.x = this.getValue(map, 'x', 0) * scale;
+        point.y = this.getValue(map, 'y', 0) * scale;
+        point.rotation = this.getValue(map, 'rotation', 0);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) point.color.setFromString(color);
         return point;
       }
-      case "clipping": {
+      case 'clipping': {
         var clip = this.attachmentLoader.newClippingAttachment(skin, name);
-        if (clip == null)
-          return null;
-        var end = this.getValue(map, "end", null);
+        if (clip == null) return null;
+        var end = this.getValue(map, 'end', null);
         if (end != null) {
           var slot = skeletonData.findSlot(end);
-          if (slot == null)
-            throw new Error("Clipping end slot not found: " + end);
+          if (slot == null) throw new Error('Clipping end slot not found: ' + end);
           clip.endSlot = slot;
         }
         var vertexCount = map.vertexCount;
         this.readVertices(map, clip, vertexCount << 1);
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          clip.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) clip.color.setFromString(color);
         return clip;
       }
     }
@@ -8695,15 +8733,14 @@ var SkeletonJson$2 = /** @class */ (function () {
     if (verticesLength == vertices.length) {
       var scaledVertices = Utils.toFloatArray(vertices);
       if (scale != 1) {
-        for (var i = 0, n = vertices.length; i < n; i++)
-          scaledVertices[i] *= scale;
+        for (var i = 0, n = vertices.length; i < n; i++) scaledVertices[i] *= scale;
       }
       attachment.vertices = scaledVertices;
       return;
     }
     var weights = new Array();
     var bones = new Array();
-    for (var i = 0, n = vertices.length; i < n;) {
+    for (var i = 0, n = vertices.length; i < n; ) {
       var boneCount = vertices[i++];
       bones.push(boneCount);
       for (var nn = i + boneCount * 4; i < nn; i += 4) {
@@ -8725,37 +8762,34 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var slotName in map.slots) {
         var slotMap = map.slots[slotName];
         var slotIndex = skeletonData.findSlotIndex(slotName);
-        if (slotIndex == -1)
-          throw new Error("Slot not found: " + slotName);
+        if (slotIndex == -1) throw new Error('Slot not found: ' + slotName);
         for (var timelineName in slotMap) {
           var timelineMap = slotMap[timelineName];
-          if (timelineName == "attachment") {
+          if (timelineName == 'attachment') {
             var timeline = new AttachmentTimeline$2(timelineMap.length);
             timeline.slotIndex = slotIndex;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              timeline.setFrame(frameIndex++, this.getValue(valueMap, "time", 0), valueMap.name);
+              timeline.setFrame(frameIndex++, this.getValue(valueMap, 'time', 0), valueMap.name);
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
-          }
-          else if (timelineName == "color") {
+          } else if (timelineName == 'color') {
             var timeline = new ColorTimeline$1(timelineMap.length);
             timeline.slotIndex = slotIndex;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
               var color = new Color();
-              color.setFromString(valueMap.color || "ffffffff");
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), color.r, color.g, color.b, color.a);
+              color.setFromString(valueMap.color || 'ffffffff');
+              timeline.setFrame(frameIndex, this.getValue(valueMap, 'time', 0), color.r, color.g, color.b, color.a);
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * ColorTimeline$1.ENTRIES]);
-          }
-          else if (timelineName == "twoColor") {
+          } else if (timelineName == 'twoColor') {
             var timeline = new TwoColorTimeline$1(timelineMap.length);
             timeline.slotIndex = slotIndex;
             var frameIndex = 0;
@@ -8765,15 +8799,23 @@ var SkeletonJson$2 = /** @class */ (function () {
               var dark = new Color();
               light.setFromString(valueMap.light);
               dark.setFromString(valueMap.dark);
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), light.r, light.g, light.b, light.a, dark.r, dark.g, dark.b);
+              timeline.setFrame(
+                frameIndex,
+                this.getValue(valueMap, 'time', 0),
+                light.r,
+                light.g,
+                light.b,
+                light.a,
+                dark.r,
+                dark.g,
+                dark.b,
+              );
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * TwoColorTimeline$1.ENTRIES]);
-          }
-          else
-            throw new Error("Invalid timeline type for a slot: " + timelineName + " (" + slotName + ")");
+          } else throw new Error('Invalid timeline type for a slot: ' + timelineName + ' (' + slotName + ')');
         }
       }
     }
@@ -8782,32 +8824,29 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var boneName in map.bones) {
         var boneMap = map.bones[boneName];
         var boneIndex = skeletonData.findBoneIndex(boneName);
-        if (boneIndex == -1)
-          throw new Error("Bone not found: " + boneName);
+        if (boneIndex == -1) throw new Error('Bone not found: ' + boneName);
         for (var timelineName in boneMap) {
           var timelineMap = boneMap[timelineName];
-          if (timelineName === "rotate") {
+          if (timelineName === 'rotate') {
             var timeline = new RotateTimeline$2(timelineMap.length);
             timeline.boneIndex = boneIndex;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), this.getValue(valueMap, "angle", 0));
+              timeline.setFrame(frameIndex, this.getValue(valueMap, 'time', 0), this.getValue(valueMap, 'angle', 0));
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * RotateTimeline$2.ENTRIES]);
-          }
-          else if (timelineName === "translate" || timelineName === "scale" || timelineName === "shear") {
+          } else if (timelineName === 'translate' || timelineName === 'scale' || timelineName === 'shear') {
             var timeline = null;
-            var timelineScale = 1, defaultValue = 0;
-            if (timelineName === "scale") {
+            var timelineScale = 1,
+              defaultValue = 0;
+            if (timelineName === 'scale') {
               timeline = new ScaleTimeline$2(timelineMap.length);
               defaultValue = 1;
-            }
-            else if (timelineName === "shear")
-              timeline = new ShearTimeline$2(timelineMap.length);
+            } else if (timelineName === 'shear') timeline = new ShearTimeline$2(timelineMap.length);
             else {
               timeline = new TranslateTimeline$2(timelineMap.length);
               timelineScale = scale;
@@ -8816,16 +8855,18 @@ var SkeletonJson$2 = /** @class */ (function () {
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              var x = this.getValue(valueMap, "x", defaultValue), y = this.getValue(valueMap, "y", defaultValue);
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), x * timelineScale, y * timelineScale);
+              var x = this.getValue(valueMap, 'x', defaultValue),
+                y = this.getValue(valueMap, 'y', defaultValue);
+              timeline.setFrame(frameIndex, this.getValue(valueMap, 'time', 0), x * timelineScale, y * timelineScale);
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * TranslateTimeline$2.ENTRIES]);
-          }
-          else
-            throw new Error("Invalid timeline type for a bone: " + timelineName + " (" + boneName + ")");
+            duration = Math.max(
+              duration,
+              timeline.frames[(timeline.getFrameCount() - 1) * TranslateTimeline$2.ENTRIES],
+            );
+          } else throw new Error('Invalid timeline type for a bone: ' + timelineName + ' (' + boneName + ')');
         }
       }
     }
@@ -8839,7 +8880,15 @@ var SkeletonJson$2 = /** @class */ (function () {
         var frameIndex = 0;
         for (var i = 0; i < constraintMap.length; i++) {
           var valueMap = constraintMap[i];
-          timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), this.getValue(valueMap, "mix", 1), this.getValue(valueMap, "softness", 0) * scale, this.getValue(valueMap, "bendPositive", true) ? 1 : -1, this.getValue(valueMap, "compress", false), this.getValue(valueMap, "stretch", false));
+          timeline.setFrame(
+            frameIndex,
+            this.getValue(valueMap, 'time', 0),
+            this.getValue(valueMap, 'mix', 1),
+            this.getValue(valueMap, 'softness', 0) * scale,
+            this.getValue(valueMap, 'bendPositive', true) ? 1 : -1,
+            this.getValue(valueMap, 'compress', false),
+            this.getValue(valueMap, 'stretch', false),
+          );
           this.readCurve(valueMap, timeline, frameIndex);
           frameIndex++;
         }
@@ -8857,12 +8906,22 @@ var SkeletonJson$2 = /** @class */ (function () {
         var frameIndex = 0;
         for (var i = 0; i < constraintMap.length; i++) {
           var valueMap = constraintMap[i];
-          timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), this.getValue(valueMap, "rotateMix", 1), this.getValue(valueMap, "translateMix", 1), this.getValue(valueMap, "scaleMix", 1), this.getValue(valueMap, "shearMix", 1));
+          timeline.setFrame(
+            frameIndex,
+            this.getValue(valueMap, 'time', 0),
+            this.getValue(valueMap, 'rotateMix', 1),
+            this.getValue(valueMap, 'translateMix', 1),
+            this.getValue(valueMap, 'scaleMix', 1),
+            this.getValue(valueMap, 'shearMix', 1),
+          );
           this.readCurve(valueMap, timeline, frameIndex);
           frameIndex++;
         }
         timelines.push(timeline);
-        duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * TransformConstraintTimeline$2.ENTRIES]);
+        duration = Math.max(
+          duration,
+          timeline.frames[(timeline.getFrameCount() - 1) * TransformConstraintTimeline$2.ENTRIES],
+        );
       }
     }
     // Path constraint timelines.
@@ -8870,47 +8929,58 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var constraintName in map.path) {
         var constraintMap = map.path[constraintName];
         var index = skeletonData.findPathConstraintIndex(constraintName);
-        if (index == -1)
-          throw new Error("Path constraint not found: " + constraintName);
+        if (index == -1) throw new Error('Path constraint not found: ' + constraintName);
         var data = skeletonData.pathConstraints[index];
         for (var timelineName in constraintMap) {
           var timelineMap = constraintMap[timelineName];
-          if (timelineName === "position" || timelineName === "spacing") {
+          if (timelineName === 'position' || timelineName === 'spacing') {
             var timeline = null;
             var timelineScale = 1;
-            if (timelineName === "spacing") {
+            if (timelineName === 'spacing') {
               timeline = new PathConstraintSpacingTimeline$2(timelineMap.length);
               if (data.spacingMode == SpacingMode$2.Length || data.spacingMode == SpacingMode$2.Fixed)
                 timelineScale = scale;
-            }
-            else {
+            } else {
               timeline = new PathConstraintPositionTimeline$2(timelineMap.length);
-              if (data.positionMode == exports.PositionMode.Fixed)
-                timelineScale = scale;
+              if (data.positionMode == exports.PositionMode.Fixed) timelineScale = scale;
             }
             timeline.pathConstraintIndex = index;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), this.getValue(valueMap, timelineName, 0) * timelineScale);
+              timeline.setFrame(
+                frameIndex,
+                this.getValue(valueMap, 'time', 0),
+                this.getValue(valueMap, timelineName, 0) * timelineScale,
+              );
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintPositionTimeline$2.ENTRIES]);
-          }
-          else if (timelineName === "mix") {
+            duration = Math.max(
+              duration,
+              timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintPositionTimeline$2.ENTRIES],
+            );
+          } else if (timelineName === 'mix') {
             var timeline = new PathConstraintMixTimeline$2(timelineMap.length);
             timeline.pathConstraintIndex = index;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), this.getValue(valueMap, "rotateMix", 1), this.getValue(valueMap, "translateMix", 1));
+              timeline.setFrame(
+                frameIndex,
+                this.getValue(valueMap, 'time', 0),
+                this.getValue(valueMap, 'rotateMix', 1),
+                this.getValue(valueMap, 'translateMix', 1),
+              );
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintMixTimeline$2.ENTRIES]);
+            duration = Math.max(
+              duration,
+              timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintMixTimeline$2.ENTRIES],
+            );
           }
         }
       }
@@ -8922,25 +8992,22 @@ var SkeletonJson$2 = /** @class */ (function () {
         var skin = skeletonData.findSkin(deformName);
         if (skin == null) {
           if (settings.FAIL_ON_NON_EXISTING_SKIN) {
-            throw new Error("Skin not found: " + deformName);
-          }
-          else {
+            throw new Error('Skin not found: ' + deformName);
+          } else {
             continue;
           }
         }
         for (var slotName in deformMap) {
           var slotMap = deformMap[slotName];
           var slotIndex = skeletonData.findSlotIndex(slotName);
-          if (slotIndex == -1)
-            throw new Error("Slot not found: " + slotMap.name);
+          if (slotIndex == -1) throw new Error('Slot not found: ' + slotMap.name);
           for (var timelineName in slotMap) {
             var timelineMap = slotMap[timelineName];
             var attachment = skin.getAttachment(slotIndex, timelineName);
-            if (attachment == null)
-              throw new Error("Deform attachment not found: " + timelineMap.name);
+            if (attachment == null) throw new Error('Deform attachment not found: ' + timelineMap.name);
             var weighted = attachment.bones != null;
             var vertices = attachment.vertices;
-            var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+            var deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
             var timeline = new DeformTimeline$2(timelineMap.length);
             timeline.slotIndex = slotIndex;
             timeline.attachment = attachment;
@@ -8948,23 +9015,20 @@ var SkeletonJson$2 = /** @class */ (function () {
             for (var j = 0; j < timelineMap.length; j++) {
               var valueMap = timelineMap[j];
               var deform = void 0;
-              var verticesValue = this.getValue(valueMap, "vertices", null);
-              if (verticesValue == null)
-                deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+              var verticesValue = this.getValue(valueMap, 'vertices', null);
+              if (verticesValue == null) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
               else {
                 deform = Utils.newFloatArray(deformLength);
-                var start = this.getValue(valueMap, "offset", 0);
+                var start = this.getValue(valueMap, 'offset', 0);
                 Utils.arrayCopy(verticesValue, 0, deform, start, verticesValue.length);
                 if (scale != 1) {
-                  for (var i = start, n = i + verticesValue.length; i < n; i++)
-                    deform[i] *= scale;
+                  for (var i = start, n = i + verticesValue.length; i < n; i++) deform[i] *= scale;
                 }
                 if (!weighted) {
-                  for (var i = 0; i < deformLength; i++)
-                    deform[i] += vertices[i];
+                  for (var i = 0; i < deformLength; i++) deform[i] += vertices[i];
                 }
               }
-              timeline.setFrame(frameIndex, this.getValue(valueMap, "time", 0), deform);
+              timeline.setFrame(frameIndex, this.getValue(valueMap, 'time', 0), deform);
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
@@ -8976,8 +9040,7 @@ var SkeletonJson$2 = /** @class */ (function () {
     }
     // Draw order timeline.
     var drawOrderNode = map.drawOrder;
-    if (drawOrderNode == null)
-      drawOrderNode = map.draworder;
+    if (drawOrderNode == null) drawOrderNode = map.draworder;
     if (drawOrderNode != null) {
       var timeline = new DrawOrderTimeline$2(drawOrderNode.length);
       var slotCount = skeletonData.slots.length;
@@ -8985,31 +9048,27 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var j = 0; j < drawOrderNode.length; j++) {
         var drawOrderMap = drawOrderNode[j];
         var drawOrder = null;
-        var offsets = this.getValue(drawOrderMap, "offsets", null);
+        var offsets = this.getValue(drawOrderMap, 'offsets', null);
         if (offsets != null) {
           drawOrder = Utils.newArray(slotCount, -1);
           var unchanged = Utils.newArray(slotCount - offsets.length, 0);
-          var originalIndex = 0, unchangedIndex = 0;
+          var originalIndex = 0,
+            unchangedIndex = 0;
           for (var i = 0; i < offsets.length; i++) {
             var offsetMap = offsets[i];
             var slotIndex = skeletonData.findSlotIndex(offsetMap.slot);
-            if (slotIndex == -1)
-              throw new Error("Slot not found: " + offsetMap.slot);
+            if (slotIndex == -1) throw new Error('Slot not found: ' + offsetMap.slot);
             // Collect unchanged items.
-            while (originalIndex != slotIndex)
-              unchanged[unchangedIndex++] = originalIndex++;
+            while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
             // Set changed items.
             drawOrder[originalIndex + offsetMap.offset] = originalIndex++;
           }
           // Collect remaining unchanged items.
-          while (originalIndex < slotCount)
-            unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
           // Fill in unchanged items.
-          for (var i = slotCount - 1; i >= 0; i--)
-            if (drawOrder[i] == -1)
-              drawOrder[i] = unchanged[--unchangedIndex];
+          for (var i = slotCount - 1; i >= 0; i--) if (drawOrder[i] == -1) drawOrder[i] = unchanged[--unchangedIndex];
         }
-        timeline.setFrame(frameIndex++, this.getValue(drawOrderMap, "time", 0), drawOrder);
+        timeline.setFrame(frameIndex++, this.getValue(drawOrderMap, 'time', 0), drawOrder);
       }
       timelines.push(timeline);
       duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
@@ -9021,15 +9080,14 @@ var SkeletonJson$2 = /** @class */ (function () {
       for (var i = 0; i < map.events.length; i++) {
         var eventMap = map.events[i];
         var eventData = skeletonData.findEvent(eventMap.name);
-        if (eventData == null)
-          throw new Error("Event not found: " + eventMap.name);
-        var event_1 = new Event$2(Utils.toSinglePrecision(this.getValue(eventMap, "time", 0)), eventData);
-        event_1.intValue = this.getValue(eventMap, "int", eventData.intValue);
-        event_1.floatValue = this.getValue(eventMap, "float", eventData.floatValue);
-        event_1.stringValue = this.getValue(eventMap, "string", eventData.stringValue);
+        if (eventData == null) throw new Error('Event not found: ' + eventMap.name);
+        var event_1 = new Event$2(Utils.toSinglePrecision(this.getValue(eventMap, 'time', 0)), eventData);
+        event_1.intValue = this.getValue(eventMap, 'int', eventData.intValue);
+        event_1.floatValue = this.getValue(eventMap, 'float', eventData.floatValue);
+        event_1.stringValue = this.getValue(eventMap, 'string', eventData.stringValue);
         if (event_1.data.audioPath != null) {
-          event_1.volume = this.getValue(eventMap, "volume", 1);
-          event_1.balance = this.getValue(eventMap, "balance", 0);
+          event_1.volume = this.getValue(eventMap, 'volume', 1);
+          event_1.balance = this.getValue(eventMap, 'balance', 0);
         }
         timeline.setFrame(frameIndex++, event_1);
       }
@@ -9037,18 +9095,22 @@ var SkeletonJson$2 = /** @class */ (function () {
       duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
     }
     if (isNaN(duration)) {
-      throw new Error("Error while parsing animation, duration is NaN");
+      throw new Error('Error while parsing animation, duration is NaN');
     }
     skeletonData.animations.push(new Animation$2(name, timelines, duration));
   };
   SkeletonJson.prototype.readCurve = function (map, timeline, frameIndex) {
-    if (!map.hasOwnProperty("curve"))
-      return;
-    if (map.curve === "stepped")
-      timeline.setStepped(frameIndex);
+    if (!map.hasOwnProperty('curve')) return;
+    if (map.curve === 'stepped') timeline.setStepped(frameIndex);
     else {
       var curve = map.curve;
-      timeline.setCurve(frameIndex, curve, this.getValue(map, "c2", 0), this.getValue(map, "c3", 1), this.getValue(map, "c4", 1));
+      timeline.setCurve(
+        frameIndex,
+        curve,
+        this.getValue(map, 'c2', 0),
+        this.getValue(map, 'c3', 1),
+        this.getValue(map, 'c4', 1),
+      );
     }
   };
   SkeletonJson.prototype.getValue = function (map, prop, defaultValue) {
@@ -9056,60 +9118,43 @@ var SkeletonJson$2 = /** @class */ (function () {
   };
   SkeletonJson.blendModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "normal")
-      return constants.BLEND_MODES.NORMAL;
-    if (str == "additive")
-      return constants.BLEND_MODES.ADD;
-    if (str == "multiply")
-      return constants.BLEND_MODES.MULTIPLY;
-    if (str == "screen")
-      return constants.BLEND_MODES.SCREEN;
-    throw new Error("Unknown blend mode: " + str);
+    if (str == 'normal') return constants.BLEND_MODES.NORMAL;
+    if (str == 'additive') return constants.BLEND_MODES.ADD;
+    if (str == 'multiply') return constants.BLEND_MODES.MULTIPLY;
+    if (str == 'screen') return constants.BLEND_MODES.SCREEN;
+    throw new Error('Unknown blend mode: ' + str);
   };
   SkeletonJson.positionModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "fixed")
-      return exports.PositionMode.Fixed;
-    if (str == "percent")
-      return exports.PositionMode.Percent;
-    throw new Error("Unknown position mode: " + str);
+    if (str == 'fixed') return exports.PositionMode.Fixed;
+    if (str == 'percent') return exports.PositionMode.Percent;
+    throw new Error('Unknown position mode: ' + str);
   };
   SkeletonJson.spacingModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "length")
-      return SpacingMode$2.Length;
-    if (str == "fixed")
-      return SpacingMode$2.Fixed;
-    if (str == "percent")
-      return SpacingMode$2.Percent;
-    throw new Error("Unknown position mode: " + str);
+    if (str == 'length') return SpacingMode$2.Length;
+    if (str == 'fixed') return SpacingMode$2.Fixed;
+    if (str == 'percent') return SpacingMode$2.Percent;
+    throw new Error('Unknown position mode: ' + str);
   };
   SkeletonJson.rotateModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "tangent")
-      return exports.RotateMode.Tangent;
-    if (str == "chain")
-      return exports.RotateMode.Chain;
-    if (str == "chainscale")
-      return exports.RotateMode.ChainScale;
-    throw new Error("Unknown rotate mode: " + str);
+    if (str == 'tangent') return exports.RotateMode.Tangent;
+    if (str == 'chain') return exports.RotateMode.Chain;
+    if (str == 'chainscale') return exports.RotateMode.ChainScale;
+    throw new Error('Unknown rotate mode: ' + str);
   };
   SkeletonJson.transformModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "normal")
-      return exports.TransformMode.Normal;
-    if (str == "onlytranslation")
-      return exports.TransformMode.OnlyTranslation;
-    if (str == "norotationorreflection")
-      return exports.TransformMode.NoRotationOrReflection;
-    if (str == "noscale")
-      return exports.TransformMode.NoScale;
-    if (str == "noscaleorreflection")
-      return exports.TransformMode.NoScaleOrReflection;
-    throw new Error("Unknown transform mode: " + str);
+    if (str == 'normal') return exports.TransformMode.Normal;
+    if (str == 'onlytranslation') return exports.TransformMode.OnlyTranslation;
+    if (str == 'norotationorreflection') return exports.TransformMode.NoRotationOrReflection;
+    if (str == 'noscale') return exports.TransformMode.NoScale;
+    if (str == 'noscaleorreflection') return exports.TransformMode.NoScaleOrReflection;
+    throw new Error('Unknown transform mode: ' + str);
   };
   return SkeletonJson;
-}());
+})();
 var LinkedMesh$3 = /** @class */ (function () {
   function LinkedMesh(mesh, skin, slotIndex, parent, inheritDeform) {
     this.mesh = mesh;
@@ -9119,7 +9164,7 @@ var LinkedMesh$3 = /** @class */ (function () {
     this.inheritDeform = inheritDeform;
   }
   return LinkedMesh;
-}());
+})();
 
 /**
  * @public
@@ -9127,7 +9172,7 @@ var LinkedMesh$3 = /** @class */ (function () {
 var Spine$3 = /** @class */ (function (_super) {
   __extends(Spine, _super);
   function Spine() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return (_super !== null && _super.apply(this, arguments)) || this;
   }
   Spine.prototype.createSkeleton = function (spineData) {
     this.skeleton = new Skeleton$2(spineData);
@@ -9136,9 +9181,9 @@ var Spine$3 = /** @class */ (function (_super) {
     this.state = new AnimationState$2(this.stateData);
   };
   return Spine;
-}(SpineBase));
+})(SpineBase);
 
-var spine38 = /*#__PURE__*/Object.freeze({
+var spine38 = /*#__PURE__*/ Object.freeze({
   __proto__: null,
   Animation: Animation$2,
   AnimationState: AnimationState$2,
@@ -9160,7 +9205,9 @@ var spine38 = /*#__PURE__*/Object.freeze({
   EventData: EventData$2,
   EventQueue: EventQueue$2,
   EventTimeline: EventTimeline$2,
-  get EventType() { return EventType$2; },
+  get EventType() {
+    return EventType$2;
+  },
   IkConstraint: IkConstraint$2,
   IkConstraintData: IkConstraintData$2,
   IkConstraintTimeline: IkConstraintTimeline$2,
@@ -9186,31 +9233,33 @@ var spine38 = /*#__PURE__*/Object.freeze({
   SkinEntry: SkinEntry$1,
   Slot: Slot$2,
   SlotData: SlotData$2,
-  get SpacingMode() { return SpacingMode$2; },
+  get SpacingMode() {
+    return SpacingMode$2;
+  },
   Spine: Spine$3,
   SwirlEffect: SwirlEffect$2,
-  get TimelineType() { return TimelineType$1; },
+  get TimelineType() {
+    return TimelineType$1;
+  },
   TrackEntry: TrackEntry$2,
   TransformConstraint: TransformConstraint$2,
   TransformConstraintData: TransformConstraintData$2,
   TransformConstraintTimeline: TransformConstraintTimeline$2,
   TranslateTimeline: TranslateTimeline$2,
   TwoColorTimeline: TwoColorTimeline$1,
-  VertexAttachment: VertexAttachment$2
+  VertexAttachment: VertexAttachment$2,
 });
-
 
 /**
  * @public
  */
 var Attachment$1 = /** @class */ (function () {
   function Attachment(name) {
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
     this.name = name;
   }
   return Attachment;
-}());
+})();
 /**
  * @public
  */
@@ -9237,20 +9286,24 @@ var VertexAttachment$1 = /** @class */ (function (_super) {
     var vertices = this.vertices;
     var bones = this.bones;
     if (bones == null) {
-      if (deformArray.length > 0)
-        vertices = deformArray;
+      if (deformArray.length > 0) vertices = deformArray;
       var mat = slot.bone.matrix;
       var x = mat.tx;
       var y = mat.ty;
-      var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+      var a = mat.a,
+        b = mat.c,
+        c = mat.b,
+        d = mat.d;
       for (var v_1 = start, w = offset; w < count; v_1 += 2, w += stride) {
-        var vx = vertices[v_1], vy = vertices[v_1 + 1];
+        var vx = vertices[v_1],
+          vy = vertices[v_1 + 1];
         worldVertices[w] = vx * a + vy * b + x;
         worldVertices[w + 1] = vx * c + vy * d + y;
       }
       return;
     }
-    var v = 0, skip = 0;
+    var v = 0,
+      skip = 0;
     for (var i = 0; i < start; i += 2) {
       var n = bones[v];
       v += n + 1;
@@ -9259,28 +9312,33 @@ var VertexAttachment$1 = /** @class */ (function (_super) {
     var skeletonBones = skeleton.bones;
     if (deformArray.length == 0) {
       for (var w = offset, b = skip * 3; w < count; w += stride) {
-        var wx = 0, wy = 0;
+        var wx = 0,
+          wy = 0;
         var n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3) {
           var mat = skeletonBones[bones[v]].matrix;
-          var vx = vertices[b], vy = vertices[b + 1], weight = vertices[b + 2];
+          var vx = vertices[b],
+            vy = vertices[b + 1],
+            weight = vertices[b + 2];
           wx += (vx * mat.a + vy * mat.c + mat.tx) * weight;
           wy += (vx * mat.b + vy * mat.d + mat.ty) * weight;
         }
         worldVertices[w] = wx;
         worldVertices[w + 1] = wy;
       }
-    }
-    else {
+    } else {
       var deform = deformArray;
       for (var w = offset, b = skip * 3, f = skip << 1; w < count; w += stride) {
-        var wx = 0, wy = 0;
+        var wx = 0,
+          wy = 0;
         var n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3, f += 2) {
           var mat = skeletonBones[bones[v]].matrix;
-          var vx = vertices[b] + deform[f], vy = vertices[b + 1] + deform[f + 1], weight = vertices[b + 2];
+          var vx = vertices[b] + deform[f],
+            vy = vertices[b + 1] + deform[f + 1],
+            weight = vertices[b + 2];
           wx += (vx * mat.a + vy * mat.c + mat.tx) * weight;
           wy += (vx * mat.b + vy * mat.d + mat.ty) * weight;
         }
@@ -9295,7 +9353,7 @@ var VertexAttachment$1 = /** @class */ (function (_super) {
   };
   VertexAttachment.nextID = 0;
   return VertexAttachment;
-}(Attachment$1));
+})(Attachment$1);
 
 /**
  * @public
@@ -9309,7 +9367,7 @@ var BoundingBoxAttachment$1 = /** @class */ (function (_super) {
     return _this;
   }
   return BoundingBoxAttachment;
-}(VertexAttachment$1));
+})(VertexAttachment$1);
 
 /**
  * @public
@@ -9324,7 +9382,7 @@ var ClippingAttachment$1 = /** @class */ (function (_super) {
     return _this;
   }
   return ClippingAttachment;
-}(VertexAttachment$1));
+})(VertexAttachment$1);
 
 /**
  * @public
@@ -9359,7 +9417,7 @@ var MeshAttachment$1 = /** @class */ (function (_super) {
     }
   };
   return MeshAttachment;
-}(VertexAttachment$1));
+})(VertexAttachment$1);
 
 /**
  * @public
@@ -9375,7 +9433,7 @@ var PathAttachment$1 = /** @class */ (function (_super) {
     return _this;
   }
   return PathAttachment;
-}(VertexAttachment$1));
+})(VertexAttachment$1);
 
 /**
  * @public
@@ -9396,13 +9454,14 @@ var PointAttachment$1 = /** @class */ (function (_super) {
   };
   PointAttachment.prototype.computeWorldRotation = function (bone) {
     var mat = bone.matrix;
-    var cos = MathUtils.cosDeg(this.rotation), sin = MathUtils.sinDeg(this.rotation);
+    var cos = MathUtils.cosDeg(this.rotation),
+      sin = MathUtils.sinDeg(this.rotation);
     var x = cos * mat.a + sin * mat.c;
     var y = cos * mat.b + sin * mat.d;
     return Math.atan2(y, x) * MathUtils.radDeg;
   };
   return PointAttachment;
-}(VertexAttachment$1));
+})(VertexAttachment$1);
 
 /**
  * @public
@@ -9426,13 +9485,13 @@ var RegionAttachment$1 = /** @class */ (function (_super) {
     return _this;
   }
   RegionAttachment.prototype.updateOffset = function () {
-    var regionScaleX = this.width / this.region.originalWidth * this.scaleX;
-    var regionScaleY = this.height / this.region.originalHeight * this.scaleY;
-    var localX = -this.width / 2 * this.scaleX + this.region.offsetX * regionScaleX;
-    var localY = -this.height / 2 * this.scaleY + this.region.offsetY * regionScaleY;
+    var regionScaleX = (this.width / this.region.originalWidth) * this.scaleX;
+    var regionScaleY = (this.height / this.region.originalHeight) * this.scaleY;
+    var localX = (-this.width / 2) * this.scaleX + this.region.offsetX * regionScaleX;
+    var localY = (-this.height / 2) * this.scaleY + this.region.offsetY * regionScaleY;
     var localX2 = localX + this.region.width * regionScaleX;
     var localY2 = localY + this.region.height * regionScaleY;
-    var radians = this.rotation * Math.PI / 180;
+    var radians = (this.rotation * Math.PI) / 180;
     var cos = Math.cos(radians);
     var sin = Math.sin(radians);
     var localXCos = localX * cos + this.x;
@@ -9465,8 +9524,7 @@ var RegionAttachment$1 = /** @class */ (function (_super) {
       uvs[7] = region.v;
       uvs[0] = region.u2;
       uvs[1] = region.v2;
-    }
-    else {
+    } else {
       uvs[0] = region.u;
       uvs[1] = region.v2;
       uvs[2] = region.u;
@@ -9480,9 +9538,14 @@ var RegionAttachment$1 = /** @class */ (function (_super) {
   RegionAttachment.prototype.computeWorldVertices = function (bone, worldVertices, offset, stride) {
     var vertexOffset = this.offset;
     var mat = bone.matrix;
-    var x = mat.tx, y = mat.ty;
-    var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
-    var offsetX = 0, offsetY = 0;
+    var x = mat.tx,
+      y = mat.ty;
+    var a = mat.a,
+      b = mat.c,
+      c = mat.b,
+      d = mat.d;
+    var offsetX = 0,
+      offsetY = 0;
     offsetX = vertexOffset[RegionAttachment.OX1];
     offsetY = vertexOffset[RegionAttachment.OY1];
     worldVertices[offset] = offsetX * a + offsetY * b + x; // br
@@ -9544,7 +9607,7 @@ var RegionAttachment$1 = /** @class */ (function (_super) {
   RegionAttachment.U4 = 30;
   RegionAttachment.V4 = 31;
   return RegionAttachment;
-}(Attachment$1));
+})(Attachment$1);
 
 /**
  * @public
@@ -9556,16 +9619,14 @@ var JitterEffect$1 = /** @class */ (function () {
     this.jitterX = jitterX;
     this.jitterY = jitterY;
   }
-  JitterEffect.prototype.begin = function (skeleton) {
-  };
+  JitterEffect.prototype.begin = function (skeleton) {};
   JitterEffect.prototype.transform = function (position, uv, light, dark) {
     position.x += MathUtils.randomTriangular(-this.jitterX, this.jitterY);
     position.y += MathUtils.randomTriangular(-this.jitterX, this.jitterY);
   };
-  JitterEffect.prototype.end = function () {
-  };
+  JitterEffect.prototype.end = function () {};
   return JitterEffect;
-}());
+})();
 
 /**
  * @public
@@ -9597,90 +9658,80 @@ var SwirlEffect$1 = /** @class */ (function () {
       position.y = sin * x + cos * y + this.worldY;
     }
   };
-  SwirlEffect.prototype.end = function () {
-  };
+  SwirlEffect.prototype.end = function () {};
   SwirlEffect.interpolation = new PowOut(2);
   return SwirlEffect;
-}());
+})();
 
 /**
  * @public
  */
 var Animation$1 = /** @class */ (function () {
   function Animation(name, timelines, duration) {
-    if (name == null)
-      throw new Error("name cannot be null.");
-    if (timelines == null)
-      throw new Error("timelines cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
+    if (timelines == null) throw new Error('timelines cannot be null.');
     this.name = name;
     this.timelines = timelines;
     this.duration = duration;
   }
   Animation.prototype.apply = function (skeleton, lastTime, time, loop, events, alpha, blend, direction) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     if (loop && this.duration != 0) {
       time %= this.duration;
-      if (lastTime > 0)
-        lastTime %= this.duration;
+      if (lastTime > 0) lastTime %= this.duration;
     }
     var timelines = this.timelines;
     for (var i = 0, n = timelines.length; i < n; i++)
       timelines[i].apply(skeleton, lastTime, time, events, alpha, blend, direction);
   };
   Animation.binarySearch = function (values, target, step) {
-    if (step === void 0) { step = 1; }
+    if (step === void 0) {
+      step = 1;
+    }
     var low = 0;
     var high = values.length / step - 2;
-    if (high == 0)
-      return step;
+    if (high == 0) return step;
     var current = high >>> 1;
     while (true) {
-      if (values[(current + 1) * step] <= target)
-        low = current + 1;
-      else
-        high = current;
-      if (low == high)
-        return (low + 1) * step;
+      if (values[(current + 1) * step] <= target) low = current + 1;
+      else high = current;
+      if (low == high) return (low + 1) * step;
       current = (low + high) >>> 1;
     }
   };
   Animation.linearSearch = function (values, target, step) {
-    for (var i = 0, last = values.length - step; i <= last; i += step)
-      if (values[i] > target)
-        return i;
+    for (var i = 0, last = values.length - step; i <= last; i += step) if (values[i] > target) return i;
     return -1;
   };
   return Animation;
-}());
+})();
 /**
  * @public
  */
 var TimelineType;
 (function (TimelineType) {
-  TimelineType[TimelineType["rotate"] = 0] = "rotate";
-  TimelineType[TimelineType["translate"] = 1] = "translate";
-  TimelineType[TimelineType["scale"] = 2] = "scale";
-  TimelineType[TimelineType["shear"] = 3] = "shear";
-  TimelineType[TimelineType["attachment"] = 4] = "attachment";
-  TimelineType[TimelineType["color"] = 5] = "color";
-  TimelineType[TimelineType["deform"] = 6] = "deform";
-  TimelineType[TimelineType["event"] = 7] = "event";
-  TimelineType[TimelineType["drawOrder"] = 8] = "drawOrder";
-  TimelineType[TimelineType["ikConstraint"] = 9] = "ikConstraint";
-  TimelineType[TimelineType["transformConstraint"] = 10] = "transformConstraint";
-  TimelineType[TimelineType["pathConstraintPosition"] = 11] = "pathConstraintPosition";
-  TimelineType[TimelineType["pathConstraintSpacing"] = 12] = "pathConstraintSpacing";
-  TimelineType[TimelineType["pathConstraintMix"] = 13] = "pathConstraintMix";
-  TimelineType[TimelineType["twoColor"] = 14] = "twoColor";
+  TimelineType[(TimelineType['rotate'] = 0)] = 'rotate';
+  TimelineType[(TimelineType['translate'] = 1)] = 'translate';
+  TimelineType[(TimelineType['scale'] = 2)] = 'scale';
+  TimelineType[(TimelineType['shear'] = 3)] = 'shear';
+  TimelineType[(TimelineType['attachment'] = 4)] = 'attachment';
+  TimelineType[(TimelineType['color'] = 5)] = 'color';
+  TimelineType[(TimelineType['deform'] = 6)] = 'deform';
+  TimelineType[(TimelineType['event'] = 7)] = 'event';
+  TimelineType[(TimelineType['drawOrder'] = 8)] = 'drawOrder';
+  TimelineType[(TimelineType['ikConstraint'] = 9)] = 'ikConstraint';
+  TimelineType[(TimelineType['transformConstraint'] = 10)] = 'transformConstraint';
+  TimelineType[(TimelineType['pathConstraintPosition'] = 11)] = 'pathConstraintPosition';
+  TimelineType[(TimelineType['pathConstraintSpacing'] = 12)] = 'pathConstraintSpacing';
+  TimelineType[(TimelineType['pathConstraintMix'] = 13)] = 'pathConstraintMix';
+  TimelineType[(TimelineType['twoColor'] = 14)] = 'twoColor';
 })(TimelineType || (TimelineType = {}));
 /**
  * @public
  */
 var CurveTimeline$1 = /** @class */ (function () {
   function CurveTimeline(frameCount) {
-    if (frameCount <= 0)
-      throw new Error("frameCount must be > 0: " + frameCount);
+    if (frameCount <= 0) throw new Error('frameCount must be > 0: ' + frameCount);
     this.curves = Utils.newFloatArray((frameCount - 1) * CurveTimeline.BEZIER_SIZE);
   }
   CurveTimeline.prototype.getFrameCount = function () {
@@ -9694,27 +9745,29 @@ var CurveTimeline$1 = /** @class */ (function () {
   };
   CurveTimeline.prototype.getCurveType = function (frameIndex) {
     var index = frameIndex * CurveTimeline.BEZIER_SIZE;
-    if (index == this.curves.length)
-      return CurveTimeline.LINEAR;
+    if (index == this.curves.length) return CurveTimeline.LINEAR;
     var type = this.curves[index];
-    if (type == CurveTimeline.LINEAR)
-      return CurveTimeline.LINEAR;
-    if (type == CurveTimeline.STEPPED)
-      return CurveTimeline.STEPPED;
+    if (type == CurveTimeline.LINEAR) return CurveTimeline.LINEAR;
+    if (type == CurveTimeline.STEPPED) return CurveTimeline.STEPPED;
     return CurveTimeline.BEZIER;
   };
   /** Sets the control handle positions for an interpolation bezier curve used to transition from this keyframe to the next.
    * cx1 and cx2 are from 0 to 1, representing the percent of time between the two keyframes. cy1 and cy2 are the percent of
    * the difference between the keyframe's values. */
   CurveTimeline.prototype.setCurve = function (frameIndex, cx1, cy1, cx2, cy2) {
-    var tmpx = (-cx1 * 2 + cx2) * 0.03, tmpy = (-cy1 * 2 + cy2) * 0.03;
-    var dddfx = ((cx1 - cx2) * 3 + 1) * 0.006, dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
-    var ddfx = tmpx * 2 + dddfx, ddfy = tmpy * 2 + dddfy;
-    var dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667, dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
+    var tmpx = (-cx1 * 2 + cx2) * 0.03,
+      tmpy = (-cy1 * 2 + cy2) * 0.03;
+    var dddfx = ((cx1 - cx2) * 3 + 1) * 0.006,
+      dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
+    var ddfx = tmpx * 2 + dddfx,
+      ddfy = tmpy * 2 + dddfy;
+    var dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667,
+      dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
     var i = frameIndex * CurveTimeline.BEZIER_SIZE;
     var curves = this.curves;
     curves[i++] = CurveTimeline.BEZIER;
-    var x = dfx, y = dfy;
+    var x = dfx,
+      y = dfy;
     for (var n = i + CurveTimeline.BEZIER_SIZE - 1; i < n; i += 2) {
       curves[i] = x;
       curves[i + 1] = y;
@@ -9731,36 +9784,34 @@ var CurveTimeline$1 = /** @class */ (function () {
     var curves = this.curves;
     var i = frameIndex * CurveTimeline.BEZIER_SIZE;
     var type = curves[i];
-    if (type == CurveTimeline.LINEAR)
-      return percent;
-    if (type == CurveTimeline.STEPPED)
-      return 0;
+    if (type == CurveTimeline.LINEAR) return percent;
+    if (type == CurveTimeline.STEPPED) return 0;
     i++;
     var x = 0;
     for (var start = i, n = i + CurveTimeline.BEZIER_SIZE - 1; i < n; i += 2) {
       x = curves[i];
       if (x >= percent) {
-        var prevX = void 0, prevY = void 0;
+        var prevX = void 0,
+          prevY = void 0;
         if (i == start) {
           prevX = 0;
           prevY = 0;
-        }
-        else {
+        } else {
           prevX = curves[i - 2];
           prevY = curves[i - 1];
         }
-        return prevY + (curves[i + 1] - prevY) * (percent - prevX) / (x - prevX);
+        return prevY + ((curves[i + 1] - prevY) * (percent - prevX)) / (x - prevX);
       }
     }
     var y = curves[i - 1];
-    return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
+    return y + ((1 - y) * (percent - x)) / (1 - x); // Last point is 1,1.
   };
   CurveTimeline.LINEAR = 0;
   CurveTimeline.STEPPED = 1;
   CurveTimeline.BEZIER = 2;
   CurveTimeline.BEZIER_SIZE = 10 * 2 - 1;
   return CurveTimeline;
-}());
+})();
 /**
  * @public
  */
@@ -9794,7 +9845,8 @@ var RotateTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    if (time >= frames[frames.length - RotateTimeline.ENTRIES]) { // Time is after last frame.
+    if (time >= frames[frames.length - RotateTimeline.ENTRIES]) {
+      // Time is after last frame.
       var r_2 = frames[frames.length + RotateTimeline.PREV_ROTATION];
       switch (blend) {
         case exports.MixBlend.setup:
@@ -9813,7 +9865,10 @@ var RotateTimeline$1 = /** @class */ (function (_super) {
     var frame = Animation$1.binarySearch(frames, time, RotateTimeline.ENTRIES);
     var prevRotation = frames[frame + RotateTimeline.PREV_ROTATION];
     var frameTime = frames[frame];
-    var percent = this.getCurvePercent((frame >> 1) - 1, 1 - (time - frameTime) / (frames[frame + RotateTimeline.PREV_TIME] - frameTime));
+    var percent = this.getCurvePercent(
+      (frame >> 1) - 1,
+      1 - (time - frameTime) / (frames[frame + RotateTimeline.PREV_TIME] - frameTime),
+    );
     var r = frames[frame + RotateTimeline.ROTATION] - prevRotation;
     r = prevRotation + (r - (16384 - ((16384.499999999996 - r / 360) | 0)) * 360) * percent;
     switch (blend) {
@@ -9832,7 +9887,7 @@ var RotateTimeline$1 = /** @class */ (function (_super) {
   RotateTimeline.PREV_ROTATION = -1;
   RotateTimeline.ROTATION = 1;
   return RotateTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -9868,18 +9923,22 @@ var TranslateTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
-    if (time >= frames[frames.length - TranslateTimeline.ENTRIES]) { // Time is after last frame.
+    var x = 0,
+      y = 0;
+    if (time >= frames[frames.length - TranslateTimeline.ENTRIES]) {
+      // Time is after last frame.
       x = frames[frames.length + TranslateTimeline.PREV_X];
       y = frames[frames.length + TranslateTimeline.PREV_Y];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, TranslateTimeline.ENTRIES);
       x = frames[frame + TranslateTimeline.PREV_X];
       y = frames[frame + TranslateTimeline.PREV_Y];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / TranslateTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + TranslateTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / TranslateTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + TranslateTimeline.PREV_TIME] - frameTime),
+      );
       x += (frames[frame + TranslateTimeline.X] - x) * percent;
       y += (frames[frame + TranslateTimeline.Y] - y) * percent;
     }
@@ -9905,7 +9964,7 @@ var TranslateTimeline$1 = /** @class */ (function (_super) {
   TranslateTimeline.X = 1;
   TranslateTimeline.Y = 2;
   return TranslateTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -9932,18 +9991,22 @@ var ScaleTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
-    if (time >= frames[frames.length - ScaleTimeline.ENTRIES]) { // Time is after last frame.
+    var x = 0,
+      y = 0;
+    if (time >= frames[frames.length - ScaleTimeline.ENTRIES]) {
+      // Time is after last frame.
       x = frames[frames.length + ScaleTimeline.PREV_X] * bone.data.scaleX;
       y = frames[frames.length + ScaleTimeline.PREV_Y] * bone.data.scaleY;
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, ScaleTimeline.ENTRIES);
       x = frames[frame + ScaleTimeline.PREV_X];
       y = frames[frame + ScaleTimeline.PREV_Y];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / ScaleTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + ScaleTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / ScaleTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + ScaleTimeline.PREV_TIME] - frameTime),
+      );
       x = (x + (frames[frame + ScaleTimeline.X] - x) * percent) * bone.data.scaleX;
       y = (y + (frames[frame + ScaleTimeline.Y] - y) * percent) * bone.data.scaleY;
     }
@@ -9951,14 +10014,13 @@ var ScaleTimeline$1 = /** @class */ (function (_super) {
       if (blend == exports.MixBlend.add) {
         bone.scaleX += x - bone.data.scaleX;
         bone.scaleY += y - bone.data.scaleY;
-      }
-      else {
+      } else {
         bone.scaleX = x;
         bone.scaleY = y;
       }
-    }
-    else {
-      var bx = 0, by = 0;
+    } else {
+      var bx = 0,
+        by = 0;
       if (direction == exports.MixDirection.mixOut) {
         switch (blend) {
           case exports.MixBlend.setup:
@@ -9980,8 +10042,7 @@ var ScaleTimeline$1 = /** @class */ (function (_super) {
             bone.scaleX = bx + (Math.abs(x) * MathUtils.signum(bx) - bone.data.scaleX) * alpha;
             bone.scaleY = by + (Math.abs(y) * MathUtils.signum(by) - bone.data.scaleY) * alpha;
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup:
             bx = Math.abs(bone.data.scaleX) * MathUtils.signum(x);
@@ -10006,7 +10067,7 @@ var ScaleTimeline$1 = /** @class */ (function (_super) {
     }
   };
   return ScaleTimeline;
-}(TranslateTimeline$1));
+})(TranslateTimeline$1);
 /**
  * @public
  */
@@ -10033,18 +10094,22 @@ var ShearTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
-    if (time >= frames[frames.length - ShearTimeline.ENTRIES]) { // Time is after last frame.
+    var x = 0,
+      y = 0;
+    if (time >= frames[frames.length - ShearTimeline.ENTRIES]) {
+      // Time is after last frame.
       x = frames[frames.length + ShearTimeline.PREV_X];
       y = frames[frames.length + ShearTimeline.PREV_Y];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, ShearTimeline.ENTRIES);
       x = frames[frame + ShearTimeline.PREV_X];
       y = frames[frame + ShearTimeline.PREV_Y];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / ShearTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + ShearTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / ShearTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + ShearTimeline.PREV_TIME] - frameTime),
+      );
       x = x + (frames[frame + ShearTimeline.X] - x) * percent;
       y = y + (frames[frame + ShearTimeline.Y] - y) * percent;
     }
@@ -10064,7 +10129,7 @@ var ShearTimeline$1 = /** @class */ (function (_super) {
     }
   };
   return ShearTimeline;
-}(TranslateTimeline$1));
+})(TranslateTimeline$1);
 /**
  * @public
  */
@@ -10096,20 +10161,29 @@ var ColorTimeline = /** @class */ (function (_super) {
           slot.color.setFromColor(slot.data.color);
           return;
         case exports.MixBlend.first:
-          var color = slot.color, setup = slot.data.color;
-          color.add((setup.r - color.r) * alpha, (setup.g - color.g) * alpha, (setup.b - color.b) * alpha, (setup.a - color.a) * alpha);
+          var color = slot.color,
+            setup = slot.data.color;
+          color.add(
+            (setup.r - color.r) * alpha,
+            (setup.g - color.g) * alpha,
+            (setup.b - color.b) * alpha,
+            (setup.a - color.a) * alpha,
+          );
       }
       return;
     }
-    var r = 0, g = 0, b = 0, a = 0;
-    if (time >= frames[frames.length - ColorTimeline.ENTRIES]) { // Time is after last frame.
+    var r = 0,
+      g = 0,
+      b = 0,
+      a = 0;
+    if (time >= frames[frames.length - ColorTimeline.ENTRIES]) {
+      // Time is after last frame.
       var i = frames.length;
       r = frames[i + ColorTimeline.PREV_R];
       g = frames[i + ColorTimeline.PREV_G];
       b = frames[i + ColorTimeline.PREV_B];
       a = frames[i + ColorTimeline.PREV_A];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, ColorTimeline.ENTRIES);
       r = frames[frame + ColorTimeline.PREV_R];
@@ -10117,18 +10191,19 @@ var ColorTimeline = /** @class */ (function (_super) {
       b = frames[frame + ColorTimeline.PREV_B];
       a = frames[frame + ColorTimeline.PREV_A];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / ColorTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + ColorTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / ColorTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + ColorTimeline.PREV_TIME] - frameTime),
+      );
       r += (frames[frame + ColorTimeline.R] - r) * percent;
       g += (frames[frame + ColorTimeline.G] - g) * percent;
       b += (frames[frame + ColorTimeline.B] - b) * percent;
       a += (frames[frame + ColorTimeline.A] - a) * percent;
     }
-    if (alpha == 1)
-      slot.color.set(r, g, b, a);
+    if (alpha == 1) slot.color.set(r, g, b, a);
     else {
       var color = slot.color;
-      if (blend == exports.MixBlend.setup)
-        color.setFromColor(slot.data.color);
+      if (blend == exports.MixBlend.setup) color.setFromColor(slot.data.color);
       color.add((r - color.r) * alpha, (g - color.g) * alpha, (b - color.b) * alpha, (a - color.a) * alpha);
     }
   };
@@ -10143,7 +10218,7 @@ var ColorTimeline = /** @class */ (function (_super) {
   ColorTimeline.B = 3;
   ColorTimeline.A = 4;
   return ColorTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -10179,14 +10254,29 @@ var TwoColorTimeline = /** @class */ (function (_super) {
           slot.darkColor.setFromColor(slot.data.darkColor);
           return;
         case exports.MixBlend.first:
-          var light = slot.color, dark = slot.darkColor, setupLight = slot.data.color, setupDark = slot.data.darkColor;
-          light.add((setupLight.r - light.r) * alpha, (setupLight.g - light.g) * alpha, (setupLight.b - light.b) * alpha, (setupLight.a - light.a) * alpha);
+          var light = slot.color,
+            dark = slot.darkColor,
+            setupLight = slot.data.color,
+            setupDark = slot.data.darkColor;
+          light.add(
+            (setupLight.r - light.r) * alpha,
+            (setupLight.g - light.g) * alpha,
+            (setupLight.b - light.b) * alpha,
+            (setupLight.a - light.a) * alpha,
+          );
           dark.add((setupDark.r - dark.r) * alpha, (setupDark.g - dark.g) * alpha, (setupDark.b - dark.b) * alpha, 0);
       }
       return;
     }
-    var r = 0, g = 0, b = 0, a = 0, r2 = 0, g2 = 0, b2 = 0;
-    if (time >= frames[frames.length - TwoColorTimeline.ENTRIES]) { // Time is after last frame.
+    var r = 0,
+      g = 0,
+      b = 0,
+      a = 0,
+      r2 = 0,
+      g2 = 0,
+      b2 = 0;
+    if (time >= frames[frames.length - TwoColorTimeline.ENTRIES]) {
+      // Time is after last frame.
       var i = frames.length;
       r = frames[i + TwoColorTimeline.PREV_R];
       g = frames[i + TwoColorTimeline.PREV_G];
@@ -10195,8 +10285,7 @@ var TwoColorTimeline = /** @class */ (function (_super) {
       r2 = frames[i + TwoColorTimeline.PREV_R2];
       g2 = frames[i + TwoColorTimeline.PREV_G2];
       b2 = frames[i + TwoColorTimeline.PREV_B2];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, TwoColorTimeline.ENTRIES);
       r = frames[frame + TwoColorTimeline.PREV_R];
@@ -10207,7 +10296,10 @@ var TwoColorTimeline = /** @class */ (function (_super) {
       g2 = frames[frame + TwoColorTimeline.PREV_G2];
       b2 = frames[frame + TwoColorTimeline.PREV_B2];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / TwoColorTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + TwoColorTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / TwoColorTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + TwoColorTimeline.PREV_TIME] - frameTime),
+      );
       r += (frames[frame + TwoColorTimeline.R] - r) * percent;
       g += (frames[frame + TwoColorTimeline.G] - g) * percent;
       b += (frames[frame + TwoColorTimeline.B] - b) * percent;
@@ -10219,9 +10311,9 @@ var TwoColorTimeline = /** @class */ (function (_super) {
     if (alpha == 1) {
       slot.color.set(r, g, b, a);
       slot.darkColor.set(r2, g2, b2, 1);
-    }
-    else {
-      var light = slot.color, dark = slot.darkColor;
+    } else {
+      var light = slot.color,
+        dark = slot.darkColor;
       if (blend == exports.MixBlend.setup) {
         light.setFromColor(slot.data.color);
         dark.setFromColor(slot.data.darkColor);
@@ -10247,7 +10339,7 @@ var TwoColorTimeline = /** @class */ (function (_super) {
   TwoColorTimeline.G2 = 6;
   TwoColorTimeline.B2 = 7;
   return TwoColorTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -10283,16 +10375,17 @@ var AttachmentTimeline$1 = /** @class */ (function () {
       return;
     }
     var frameIndex = 0;
-    if (time >= frames[frames.length - 1]) // Time is after last frame.
+    if (time >= frames[frames.length - 1])
+      // Time is after last frame.
       frameIndex = frames.length - 1;
-    else
-      frameIndex = Animation$1.binarySearch(frames, time, 1) - 1;
+    else frameIndex = Animation$1.binarySearch(frames, time, 1) - 1;
     var attachmentName = this.attachmentNames[frameIndex];
-    skeleton.slots[this.slotIndex]
-      .setAttachment(attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
+    skeleton.slots[this.slotIndex].setAttachment(
+      attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName),
+    );
   };
   return AttachmentTimeline;
-}());
+})();
 var zeros = null;
 /**
  * @public
@@ -10303,8 +10396,7 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
     var _this = _super.call(this, frameCount) || this;
     _this.frames = Utils.newFloatArray(frameCount);
     _this.frameVertices = new Array(frameCount);
-    if (zeros == null)
-      zeros = Utils.newFloatArray(64);
+    if (zeros == null) zeros = Utils.newFloatArray(64);
     return _this;
   }
   DeformTimeline.prototype.getPropertyId = function () {
@@ -10318,11 +10410,9 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
   DeformTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
     var slotAttachment = slot.getAttachment();
-    if (!(slotAttachment instanceof VertexAttachment$1) || !slotAttachment.applyDeform(this.attachment))
-      return;
+    if (!(slotAttachment instanceof VertexAttachment$1) || !slotAttachment.applyDeform(this.attachment)) return;
     var verticesArray = slot.attachmentVertices;
-    if (verticesArray.length == 0)
-      blend = exports.MixBlend.setup;
+    if (verticesArray.length == 0) blend = exports.MixBlend.setup;
     var frameVertices = this.frameVertices;
     var vertexCount = frameVertices[0].length;
     var frames = this.frames;
@@ -10341,20 +10431,18 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
           if (vertexAttachment.bones == null) {
             // Unweighted vertex positions.
             var setupVertices = vertexAttachment.vertices;
-            for (var i = 0; i < vertexCount; i++)
-              vertices_1[i] += (setupVertices[i] - vertices_1[i]) * alpha;
-          }
-          else {
+            for (var i = 0; i < vertexCount; i++) vertices_1[i] += (setupVertices[i] - vertices_1[i]) * alpha;
+          } else {
             // Weighted deform offsets.
             alpha = 1 - alpha;
-            for (var i = 0; i < vertexCount; i++)
-              vertices_1[i] *= alpha;
+            for (var i = 0; i < vertexCount; i++) vertices_1[i] *= alpha;
           }
       }
       return;
     }
     var vertices = Utils.setArraySize(verticesArray, vertexCount);
-    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+    if (time >= frames[frames.length - 1]) {
+      // Time is after last frame.
       var lastVertices = frameVertices[frames.length - 1];
       if (alpha == 1) {
         if (blend == exports.MixBlend.add) {
@@ -10365,18 +10453,14 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
             for (var i = 0; i < vertexCount; i++) {
               vertices[i] += lastVertices[i] - setupVertices[i];
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
-            for (var i = 0; i < vertexCount; i++)
-              vertices[i] += lastVertices[i];
+            for (var i = 0; i < vertexCount; i++) vertices[i] += lastVertices[i];
           }
-        }
-        else {
+        } else {
           Utils.arrayCopy(lastVertices, 0, vertices, 0, vertexCount);
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup: {
             var vertexAttachment_1 = slotAttachment;
@@ -10387,18 +10471,15 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
                 var setup = setupVertices[i];
                 vertices[i] = setup + (lastVertices[i] - setup) * alpha;
               }
-            }
-            else {
+            } else {
               // Weighted deform offsets, with alpha.
-              for (var i = 0; i < vertexCount; i++)
-                vertices[i] = lastVertices[i] * alpha;
+              for (var i = 0; i < vertexCount; i++) vertices[i] = lastVertices[i] * alpha;
             }
             break;
           }
           case exports.MixBlend.first:
           case exports.MixBlend.replace:
-            for (var i = 0; i < vertexCount; i++)
-              vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
+            for (var i = 0; i < vertexCount; i++) vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
           case exports.MixBlend.add:
             var vertexAttachment = slotAttachment;
             if (vertexAttachment.bones == null) {
@@ -10407,11 +10488,9 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
               for (var i = 0; i < vertexCount; i++) {
                 vertices[i] += (lastVertices[i] - setupVertices[i]) * alpha;
               }
-            }
-            else {
+            } else {
               // Weighted deform offsets, with alpha.
-              for (var i = 0; i < vertexCount; i++)
-                vertices[i] += lastVertices[i] * alpha;
+              for (var i = 0; i < vertexCount; i++) vertices[i] += lastVertices[i] * alpha;
             }
         }
       }
@@ -10433,23 +10512,20 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
             var prev = prevVertices[i];
             vertices[i] += prev + (nextVertices[i] - prev) * percent - setupVertices[i];
           }
-        }
-        else {
+        } else {
           // Weighted deform offsets, with alpha.
           for (var i = 0; i < vertexCount; i++) {
             var prev = prevVertices[i];
             vertices[i] += prev + (nextVertices[i] - prev) * percent;
           }
         }
-      }
-      else {
+      } else {
         for (var i = 0; i < vertexCount; i++) {
           var prev = prevVertices[i];
           vertices[i] = prev + (nextVertices[i] - prev) * percent;
         }
       }
-    }
-    else {
+    } else {
       switch (blend) {
         case exports.MixBlend.setup: {
           var vertexAttachment_2 = slotAttachment;
@@ -10457,11 +10533,11 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
             // Unweighted vertex positions, with alpha.
             var setupVertices = vertexAttachment_2.vertices;
             for (var i = 0; i < vertexCount; i++) {
-              var prev = prevVertices[i], setup = setupVertices[i];
+              var prev = prevVertices[i],
+                setup = setupVertices[i];
               vertices[i] = setup + (prev + (nextVertices[i] - prev) * percent - setup) * alpha;
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
             for (var i = 0; i < vertexCount; i++) {
               var prev = prevVertices[i];
@@ -10486,8 +10562,7 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
               var prev = prevVertices[i];
               vertices[i] += (prev + (nextVertices[i] - prev) * percent - setupVertices[i]) * alpha;
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
             for (var i = 0; i < vertexCount; i++) {
               var prev = prevVertices[i];
@@ -10498,7 +10573,7 @@ var DeformTimeline$1 = /** @class */ (function (_super) {
     }
   };
   return DeformTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -10520,35 +10595,32 @@ var EventTimeline$1 = /** @class */ (function () {
   };
   /** Fires events for frames > lastTime and <= time. */
   EventTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
-    if (firedEvents == null)
-      return;
+    if (firedEvents == null) return;
     var frames = this.frames;
     var frameCount = this.frames.length;
-    if (lastTime > time) { // Fire events after last time for looped animations.
+    if (lastTime > time) {
+      // Fire events after last time for looped animations.
       this.apply(skeleton, lastTime, Number.MAX_VALUE, firedEvents, alpha, blend, direction);
       lastTime = -1;
-    }
-    else if (lastTime >= frames[frameCount - 1]) // Last time is after last frame.
+    } else if (lastTime >= frames[frameCount - 1])
+      // Last time is after last frame.
       return;
-    if (time < frames[0])
-      return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
     var frame = 0;
-    if (lastTime < frames[0])
-      frame = 0;
+    if (lastTime < frames[0]) frame = 0;
     else {
       frame = Animation$1.binarySearch(frames, lastTime);
       var frameTime = frames[frame];
-      while (frame > 0) { // Fire multiple events with the same frame.
-        if (frames[frame - 1] != frameTime)
-          break;
+      while (frame > 0) {
+        // Fire multiple events with the same frame.
+        if (frames[frame - 1] != frameTime) break;
         frame--;
       }
     }
-    for (; frame < frameCount && time >= frames[frame]; frame++)
-      firedEvents.push(this.events[frame]);
+    for (; frame < frameCount && time >= frames[frame]; frame++) firedEvents.push(this.events[frame]);
   };
   return EventTimeline;
-}());
+})();
 /**
  * @public
  */
@@ -10583,20 +10655,18 @@ var DrawOrderTimeline$1 = /** @class */ (function () {
       return;
     }
     var frame = 0;
-    if (time >= frames[frames.length - 1]) // Time is after last frame.
+    if (time >= frames[frames.length - 1])
+      // Time is after last frame.
       frame = frames.length - 1;
-    else
-      frame = Animation$1.binarySearch(frames, time) - 1;
+    else frame = Animation$1.binarySearch(frames, time) - 1;
     var drawOrderToSetupIndex = this.drawOrders[frame];
-    if (drawOrderToSetupIndex == null)
-      Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
+    if (drawOrderToSetupIndex == null) Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
     else {
-      for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-        drawOrder[i] = slots[drawOrderToSetupIndex[i]];
+      for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++) drawOrder[i] = slots[drawOrderToSetupIndex[i]];
     }
   };
   return DrawOrderTimeline;
-}());
+})();
 /**
  * @public
  */
@@ -10638,21 +10708,21 @@ var IkConstraintTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    if (time >= frames[frames.length - IkConstraintTimeline.ENTRIES]) { // Time is after last frame.
+    if (time >= frames[frames.length - IkConstraintTimeline.ENTRIES]) {
+      // Time is after last frame.
       if (blend == exports.MixBlend.setup) {
-        constraint.mix = constraint.data.mix + (frames[frames.length + IkConstraintTimeline.PREV_MIX] - constraint.data.mix) * alpha;
+        constraint.mix =
+          constraint.data.mix + (frames[frames.length + IkConstraintTimeline.PREV_MIX] - constraint.data.mix) * alpha;
         if (direction == exports.MixDirection.mixOut) {
           constraint.bendDirection = constraint.data.bendDirection;
           constraint.compress = constraint.data.compress;
           constraint.stretch = constraint.data.stretch;
-        }
-        else {
+        } else {
           constraint.bendDirection = frames[frames.length + IkConstraintTimeline.PREV_BEND_DIRECTION];
           constraint.compress = frames[frames.length + IkConstraintTimeline.PREV_COMPRESS] != 0;
           constraint.stretch = frames[frames.length + IkConstraintTimeline.PREV_STRETCH] != 0;
         }
-      }
-      else {
+      } else {
         constraint.mix += (frames[frames.length + IkConstraintTimeline.PREV_MIX] - constraint.mix) * alpha;
         if (direction == exports.MixDirection.mixIn) {
           constraint.bendDirection = frames[frames.length + IkConstraintTimeline.PREV_BEND_DIRECTION];
@@ -10666,21 +10736,24 @@ var IkConstraintTimeline$1 = /** @class */ (function (_super) {
     var frame = Animation$1.binarySearch(frames, time, IkConstraintTimeline.ENTRIES);
     var mix = frames[frame + IkConstraintTimeline.PREV_MIX];
     var frameTime = frames[frame];
-    var percent = this.getCurvePercent(frame / IkConstraintTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + IkConstraintTimeline.PREV_TIME] - frameTime));
+    var percent = this.getCurvePercent(
+      frame / IkConstraintTimeline.ENTRIES - 1,
+      1 - (time - frameTime) / (frames[frame + IkConstraintTimeline.PREV_TIME] - frameTime),
+    );
     if (blend == exports.MixBlend.setup) {
-      constraint.mix = constraint.data.mix + (mix + (frames[frame + IkConstraintTimeline.MIX] - mix) * percent - constraint.data.mix) * alpha;
+      constraint.mix =
+        constraint.data.mix +
+        (mix + (frames[frame + IkConstraintTimeline.MIX] - mix) * percent - constraint.data.mix) * alpha;
       if (direction == exports.MixDirection.mixOut) {
         constraint.bendDirection = constraint.data.bendDirection;
         constraint.compress = constraint.data.compress;
         constraint.stretch = constraint.data.stretch;
-      }
-      else {
+      } else {
         constraint.bendDirection = frames[frame + IkConstraintTimeline.PREV_BEND_DIRECTION];
         constraint.compress = frames[frame + IkConstraintTimeline.PREV_COMPRESS] != 0;
         constraint.stretch = frames[frame + IkConstraintTimeline.PREV_STRETCH] != 0;
       }
-    }
-    else {
+    } else {
       constraint.mix += (mix + (frames[frame + IkConstraintTimeline.MIX] - mix) * percent - constraint.mix) * alpha;
       if (direction == exports.MixDirection.mixIn) {
         constraint.bendDirection = frames[frame + IkConstraintTimeline.PREV_BEND_DIRECTION];
@@ -10700,7 +10773,7 @@ var IkConstraintTimeline$1 = /** @class */ (function (_super) {
   IkConstraintTimeline.COMPRESS = 3;
   IkConstraintTimeline.STRETCH = 4;
   return IkConstraintTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -10715,7 +10788,14 @@ var TransformConstraintTimeline$1 = /** @class */ (function (_super) {
     return (TimelineType.transformConstraint << 24) + this.transformConstraintIndex;
   };
   /** Sets the time and mixes of the specified keyframe. */
-  TransformConstraintTimeline.prototype.setFrame = function (frameIndex, time, rotateMix, translateMix, scaleMix, shearMix) {
+  TransformConstraintTimeline.prototype.setFrame = function (
+    frameIndex,
+    time,
+    rotateMix,
+    translateMix,
+    scaleMix,
+    shearMix,
+  ) {
     frameIndex *= TransformConstraintTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + TransformConstraintTimeline.ROTATE] = rotateMix;
@@ -10723,7 +10803,15 @@ var TransformConstraintTimeline$1 = /** @class */ (function (_super) {
     this.frames[frameIndex + TransformConstraintTimeline.SCALE] = scaleMix;
     this.frames[frameIndex + TransformConstraintTimeline.SHEAR] = shearMix;
   };
-  TransformConstraintTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  TransformConstraintTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.transformConstraints[this.transformConstraintIndex];
     if (time < frames[0]) {
@@ -10743,15 +10831,18 @@ var TransformConstraintTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    var rotate = 0, translate = 0, scale = 0, shear = 0;
-    if (time >= frames[frames.length - TransformConstraintTimeline.ENTRIES]) { // Time is after last frame.
+    var rotate = 0,
+      translate = 0,
+      scale = 0,
+      shear = 0;
+    if (time >= frames[frames.length - TransformConstraintTimeline.ENTRIES]) {
+      // Time is after last frame.
       var i = frames.length;
       rotate = frames[i + TransformConstraintTimeline.PREV_ROTATE];
       translate = frames[i + TransformConstraintTimeline.PREV_TRANSLATE];
       scale = frames[i + TransformConstraintTimeline.PREV_SCALE];
       shear = frames[i + TransformConstraintTimeline.PREV_SHEAR];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, TransformConstraintTimeline.ENTRIES);
       rotate = frames[frame + TransformConstraintTimeline.PREV_ROTATE];
@@ -10759,7 +10850,10 @@ var TransformConstraintTimeline$1 = /** @class */ (function (_super) {
       scale = frames[frame + TransformConstraintTimeline.PREV_SCALE];
       shear = frames[frame + TransformConstraintTimeline.PREV_SHEAR];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / TransformConstraintTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + TransformConstraintTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / TransformConstraintTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + TransformConstraintTimeline.PREV_TIME] - frameTime),
+      );
       rotate += (frames[frame + TransformConstraintTimeline.ROTATE] - rotate) * percent;
       translate += (frames[frame + TransformConstraintTimeline.TRANSLATE] - translate) * percent;
       scale += (frames[frame + TransformConstraintTimeline.SCALE] - scale) * percent;
@@ -10771,8 +10865,7 @@ var TransformConstraintTimeline$1 = /** @class */ (function (_super) {
       constraint.translateMix = data.translateMix + (translate - data.translateMix) * alpha;
       constraint.scaleMix = data.scaleMix + (scale - data.scaleMix) * alpha;
       constraint.shearMix = data.shearMix + (shear - data.shearMix) * alpha;
-    }
-    else {
+    } else {
       constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
       constraint.translateMix += (translate - constraint.translateMix) * alpha;
       constraint.scaleMix += (scale - constraint.scaleMix) * alpha;
@@ -10790,7 +10883,7 @@ var TransformConstraintTimeline$1 = /** @class */ (function (_super) {
   TransformConstraintTimeline.SCALE = 3;
   TransformConstraintTimeline.SHEAR = 4;
   return TransformConstraintTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -10810,7 +10903,15 @@ var PathConstraintPositionTimeline$1 = /** @class */ (function (_super) {
     this.frames[frameIndex] = time;
     this.frames[frameIndex + PathConstraintPositionTimeline.VALUE] = value;
   };
-  PathConstraintPositionTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintPositionTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
     if (time < frames[0]) {
@@ -10824,27 +10925,30 @@ var PathConstraintPositionTimeline$1 = /** @class */ (function (_super) {
       return;
     }
     var position = 0;
-    if (time >= frames[frames.length - PathConstraintPositionTimeline.ENTRIES]) // Time is after last frame.
+    if (time >= frames[frames.length - PathConstraintPositionTimeline.ENTRIES])
+      // Time is after last frame.
       position = frames[frames.length + PathConstraintPositionTimeline.PREV_VALUE];
     else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, PathConstraintPositionTimeline.ENTRIES);
       position = frames[frame + PathConstraintPositionTimeline.PREV_VALUE];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / PathConstraintPositionTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + PathConstraintPositionTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / PathConstraintPositionTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + PathConstraintPositionTimeline.PREV_TIME] - frameTime),
+      );
       position += (frames[frame + PathConstraintPositionTimeline.VALUE] - position) * percent;
     }
     if (blend == exports.MixBlend.setup)
       constraint.position = constraint.data.position + (position - constraint.data.position) * alpha;
-    else
-      constraint.position += (position - constraint.position) * alpha;
+    else constraint.position += (position - constraint.position) * alpha;
   };
   PathConstraintPositionTimeline.ENTRIES = 2;
   PathConstraintPositionTimeline.PREV_TIME = -2;
   PathConstraintPositionTimeline.PREV_VALUE = -1;
   PathConstraintPositionTimeline.VALUE = 1;
   return PathConstraintPositionTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 /**
  * @public
  */
@@ -10856,7 +10960,15 @@ var PathConstraintSpacingTimeline$1 = /** @class */ (function (_super) {
   PathConstraintSpacingTimeline.prototype.getPropertyId = function () {
     return (TimelineType.pathConstraintSpacing << 24) + this.pathConstraintIndex;
   };
-  PathConstraintSpacingTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintSpacingTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
     if (time < frames[0]) {
@@ -10870,23 +10982,26 @@ var PathConstraintSpacingTimeline$1 = /** @class */ (function (_super) {
       return;
     }
     var spacing = 0;
-    if (time >= frames[frames.length - PathConstraintSpacingTimeline.ENTRIES]) // Time is after last frame.
+    if (time >= frames[frames.length - PathConstraintSpacingTimeline.ENTRIES])
+      // Time is after last frame.
       spacing = frames[frames.length + PathConstraintSpacingTimeline.PREV_VALUE];
     else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, PathConstraintSpacingTimeline.ENTRIES);
       spacing = frames[frame + PathConstraintSpacingTimeline.PREV_VALUE];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / PathConstraintSpacingTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + PathConstraintSpacingTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / PathConstraintSpacingTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + PathConstraintSpacingTimeline.PREV_TIME] - frameTime),
+      );
       spacing += (frames[frame + PathConstraintSpacingTimeline.VALUE] - spacing) * percent;
     }
     if (blend == exports.MixBlend.setup)
       constraint.spacing = constraint.data.spacing + (spacing - constraint.data.spacing) * alpha;
-    else
-      constraint.spacing += (spacing - constraint.spacing) * alpha;
+    else constraint.spacing += (spacing - constraint.spacing) * alpha;
   };
   return PathConstraintSpacingTimeline;
-}(PathConstraintPositionTimeline$1));
+})(PathConstraintPositionTimeline$1);
 /**
  * @public
  */
@@ -10907,7 +11022,15 @@ var PathConstraintMixTimeline$1 = /** @class */ (function (_super) {
     this.frames[frameIndex + PathConstraintMixTimeline.ROTATE] = rotateMix;
     this.frames[frameIndex + PathConstraintMixTimeline.TRANSLATE] = translateMix;
   };
-  PathConstraintMixTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintMixTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var frames = this.frames;
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
     if (time < frames[0]) {
@@ -10922,26 +11045,29 @@ var PathConstraintMixTimeline$1 = /** @class */ (function (_super) {
       }
       return;
     }
-    var rotate = 0, translate = 0;
-    if (time >= frames[frames.length - PathConstraintMixTimeline.ENTRIES]) { // Time is after last frame.
+    var rotate = 0,
+      translate = 0;
+    if (time >= frames[frames.length - PathConstraintMixTimeline.ENTRIES]) {
+      // Time is after last frame.
       rotate = frames[frames.length + PathConstraintMixTimeline.PREV_ROTATE];
       translate = frames[frames.length + PathConstraintMixTimeline.PREV_TRANSLATE];
-    }
-    else {
+    } else {
       // Interpolate between the previous frame and the current frame.
       var frame = Animation$1.binarySearch(frames, time, PathConstraintMixTimeline.ENTRIES);
       rotate = frames[frame + PathConstraintMixTimeline.PREV_ROTATE];
       translate = frames[frame + PathConstraintMixTimeline.PREV_TRANSLATE];
       var frameTime = frames[frame];
-      var percent = this.getCurvePercent(frame / PathConstraintMixTimeline.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + PathConstraintMixTimeline.PREV_TIME] - frameTime));
+      var percent = this.getCurvePercent(
+        frame / PathConstraintMixTimeline.ENTRIES - 1,
+        1 - (time - frameTime) / (frames[frame + PathConstraintMixTimeline.PREV_TIME] - frameTime),
+      );
       rotate += (frames[frame + PathConstraintMixTimeline.ROTATE] - rotate) * percent;
       translate += (frames[frame + PathConstraintMixTimeline.TRANSLATE] - translate) * percent;
     }
     if (blend == exports.MixBlend.setup) {
       constraint.rotateMix = constraint.data.rotateMix + (rotate - constraint.data.rotateMix) * alpha;
       constraint.translateMix = constraint.data.translateMix + (translate - constraint.data.translateMix) * alpha;
-    }
-    else {
+    } else {
       constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
       constraint.translateMix += (translate - constraint.translateMix) * alpha;
     }
@@ -10953,7 +11079,7 @@ var PathConstraintMixTimeline$1 = /** @class */ (function (_super) {
   PathConstraintMixTimeline.ROTATE = 1;
   PathConstraintMixTimeline.TRANSLATE = 2;
   return PathConstraintMixTimeline;
-}(CurveTimeline$1));
+})(CurveTimeline$1);
 
 /**
  * @public
@@ -10967,7 +11093,9 @@ var AnimationState$1 = /** @class */ (function () {
     this.propertyIDs = new IntSet();
     this.animationsChanged = false;
     this.timeScale = 1;
-    this.trackEntryPool = new Pool(function () { return new TrackEntry$1(); });
+    this.trackEntryPool = new Pool(function () {
+      return new TrackEntry$1();
+    });
     this.data = data;
   }
   AnimationState.prototype.update = function (delta) {
@@ -10975,15 +11103,13 @@ var AnimationState$1 = /** @class */ (function () {
     var tracks = this.tracks;
     for (var i = 0, n = tracks.length; i < n; i++) {
       var current = tracks[i];
-      if (current == null)
-        continue;
+      if (current == null) continue;
       current.animationLast = current.nextAnimationLast;
       current.trackLast = current.nextTrackLast;
       var currentDelta = delta * current.timeScale;
       if (current.delay > 0) {
         current.delay -= currentDelta;
-        if (current.delay > 0)
-          continue;
+        if (current.delay > 0) continue;
         currentDelta = -current.delay;
         current.delay = 0;
       }
@@ -11002,8 +11128,7 @@ var AnimationState$1 = /** @class */ (function () {
           }
           continue;
         }
-      }
-      else if (current.trackLast >= current.trackEnd && current.mixingFrom == null) {
+      } else if (current.trackLast >= current.trackEnd && current.mixingFrom == null) {
         tracks[i] = null;
         this.queue.end(current);
         this.disposeNext(current);
@@ -11013,8 +11138,7 @@ var AnimationState$1 = /** @class */ (function () {
         // End mixing from entries once all have completed.
         var from = current.mixingFrom;
         current.mixingFrom = null;
-        if (from != null)
-          from.mixingTo = null;
+        if (from != null) from.mixingTo = null;
         while (from != null) {
           this.queue.end(from);
           from = from.mixingFrom;
@@ -11026,8 +11150,7 @@ var AnimationState$1 = /** @class */ (function () {
   };
   AnimationState.prototype.updateMixingFrom = function (to, delta) {
     var from = to.mixingFrom;
-    if (from == null)
-      return true;
+    if (from == null) return true;
     var finished = this.updateMixingFrom(from, delta);
     from.animationLast = from.nextAnimationLast;
     from.trackLast = from.nextTrackLast;
@@ -11036,8 +11159,7 @@ var AnimationState$1 = /** @class */ (function () {
       // Require totalAlpha == 0 to ensure mixing is complete, unless mixDuration == 0 (the transition is a single frame).
       if (from.totalAlpha == 0 || to.mixDuration == 0) {
         to.mixingFrom = from.mixingFrom;
-        if (from.mixingFrom != null)
-          from.mixingFrom.mixingTo = to;
+        if (from.mixingFrom != null) from.mixingFrom.mixingTo = to;
         to.interruptAlpha = from.interruptAlpha;
         this.queue.end(from);
       }
@@ -11048,27 +11170,23 @@ var AnimationState$1 = /** @class */ (function () {
     return false;
   };
   AnimationState.prototype.apply = function (skeleton) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
-    if (this.animationsChanged)
-      this._animationsChanged();
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
+    if (this.animationsChanged) this._animationsChanged();
     var events = this.events;
     var tracks = this.tracks;
     var applied = false;
     for (var i = 0, n = tracks.length; i < n; i++) {
       var current = tracks[i];
-      if (current == null || current.delay > 0)
-        continue;
+      if (current == null || current.delay > 0) continue;
       applied = true;
       var blend = i == 0 ? exports.MixBlend.first : current.mixBlend;
       // Apply mixing from entries first.
       var mix = current.alpha;
-      if (current.mixingFrom != null)
-        mix *= this.applyMixingFrom(current, skeleton, blend);
-      else if (current.trackTime >= current.trackEnd && current.next == null)
-        mix = 0;
+      if (current.mixingFrom != null) mix *= this.applyMixingFrom(current, skeleton, blend);
+      else if (current.trackTime >= current.trackEnd && current.next == null) mix = 0;
       // Apply current entry.
-      var animationLast = current.animationLast, animationTime = current.getAnimationTime();
+      var animationLast = current.animationLast,
+        animationTime = current.getAnimationTime();
       var timelineCount = current.animation.timelines.length;
       var timelines = current.animation.timelines;
       if ((i == 0 && mix == 1) || blend == exports.MixBlend.add) {
@@ -11079,23 +11197,37 @@ var AnimationState$1 = /** @class */ (function () {
           Utils.webkit602BugfixHelper(mix, blend);
           timelines[ii].apply(skeleton, animationLast, animationTime, events, mix, blend, exports.MixDirection.mixIn);
         }
-      }
-      else {
+      } else {
         var timelineMode = current.timelineMode;
         var firstFrame = current.timelinesRotation.length == 0;
-        if (firstFrame)
-          Utils.setArraySize(current.timelinesRotation, timelineCount << 1, null);
+        if (firstFrame) Utils.setArraySize(current.timelinesRotation, timelineCount << 1, null);
         var timelinesRotation = current.timelinesRotation;
         for (var ii = 0; ii < timelineCount; ii++) {
           var timeline = timelines[ii];
           var timelineBlend = timelineMode[ii] == AnimationState.SUBSEQUENT ? blend : exports.MixBlend.setup;
           if (timeline instanceof RotateTimeline$1) {
-            this.applyRotateTimeline(timeline, skeleton, animationTime, mix, timelineBlend, timelinesRotation, ii << 1, firstFrame);
-          }
-          else {
+            this.applyRotateTimeline(
+              timeline,
+              skeleton,
+              animationTime,
+              mix,
+              timelineBlend,
+              timelinesRotation,
+              ii << 1,
+              firstFrame,
+            );
+          } else {
             // This fixes the WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
             Utils.webkit602BugfixHelper(mix, blend);
-            timeline.apply(skeleton, animationLast, animationTime, events, mix, timelineBlend, exports.MixDirection.mixIn);
+            timeline.apply(
+              skeleton,
+              animationLast,
+              animationTime,
+              events,
+              mix,
+              timelineBlend,
+              exports.MixDirection.mixIn,
+            );
           }
         }
       }
@@ -11109,37 +11241,42 @@ var AnimationState$1 = /** @class */ (function () {
   };
   AnimationState.prototype.applyMixingFrom = function (to, skeleton, blend) {
     var from = to.mixingFrom;
-    if (from.mixingFrom != null)
-      this.applyMixingFrom(from, skeleton, blend);
+    if (from.mixingFrom != null) this.applyMixingFrom(from, skeleton, blend);
     var mix = 0;
-    if (to.mixDuration == 0) { // Single frame mix to undo mixingFrom changes.
+    if (to.mixDuration == 0) {
+      // Single frame mix to undo mixingFrom changes.
       mix = 1;
-      if (blend == exports.MixBlend.first)
-        blend = exports.MixBlend.setup;
-    }
-    else {
+      if (blend == exports.MixBlend.first) blend = exports.MixBlend.setup;
+    } else {
       mix = to.mixTime / to.mixDuration;
-      if (mix > 1)
-        mix = 1;
-      if (blend != exports.MixBlend.first)
-        blend = from.mixBlend;
+      if (mix > 1) mix = 1;
+      if (blend != exports.MixBlend.first) blend = from.mixBlend;
     }
     var events = mix < from.eventThreshold ? this.events : null;
-    var attachments = mix < from.attachmentThreshold, drawOrder = mix < from.drawOrderThreshold;
-    var animationLast = from.animationLast, animationTime = from.getAnimationTime();
+    var attachments = mix < from.attachmentThreshold,
+      drawOrder = mix < from.drawOrderThreshold;
+    var animationLast = from.animationLast,
+      animationTime = from.getAnimationTime();
     var timelineCount = from.animation.timelines.length;
     var timelines = from.animation.timelines;
-    var alphaHold = from.alpha * to.interruptAlpha, alphaMix = alphaHold * (1 - mix);
+    var alphaHold = from.alpha * to.interruptAlpha,
+      alphaMix = alphaHold * (1 - mix);
     if (blend == exports.MixBlend.add) {
       for (var i = 0; i < timelineCount; i++)
-        timelines[i].apply(skeleton, animationLast, animationTime, events, alphaMix, blend, exports.MixDirection.mixOut);
-    }
-    else {
+        timelines[i].apply(
+          skeleton,
+          animationLast,
+          animationTime,
+          events,
+          alphaMix,
+          blend,
+          exports.MixDirection.mixOut,
+        );
+    } else {
       var timelineMode = from.timelineMode;
       var timelineHoldMix = from.timelineHoldMix;
       var firstFrame = from.timelinesRotation.length == 0;
-      if (firstFrame)
-        Utils.setArraySize(from.timelinesRotation, timelineCount << 1, null);
+      if (firstFrame) Utils.setArraySize(from.timelinesRotation, timelineCount << 1, null);
       var timelinesRotation = from.timelinesRotation;
       from.totalAlpha = 0;
       for (var i = 0; i < timelineCount; i++) {
@@ -11149,10 +11286,8 @@ var AnimationState$1 = /** @class */ (function () {
         var alpha = 0;
         switch (timelineMode[i]) {
           case AnimationState.SUBSEQUENT:
-            if (!attachments && timeline instanceof AttachmentTimeline$1)
-              continue;
-            if (!drawOrder && timeline instanceof DrawOrderTimeline$1)
-              continue;
+            if (!attachments && timeline instanceof AttachmentTimeline$1) continue;
+            if (!drawOrder && timeline instanceof DrawOrderTimeline$1) continue;
             timelineBlend = blend;
             alpha = alphaMix;
             break;
@@ -11172,34 +11307,47 @@ var AnimationState$1 = /** @class */ (function () {
         }
         from.totalAlpha += alpha;
         if (timeline instanceof RotateTimeline$1)
-          this.applyRotateTimeline(timeline, skeleton, animationTime, alpha, timelineBlend, timelinesRotation, i << 1, firstFrame);
+          this.applyRotateTimeline(
+            timeline,
+            skeleton,
+            animationTime,
+            alpha,
+            timelineBlend,
+            timelinesRotation,
+            i << 1,
+            firstFrame,
+          );
         else {
           // This fixes the WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
           Utils.webkit602BugfixHelper(alpha, blend);
           if (timelineBlend == exports.MixBlend.setup) {
             if (timeline instanceof AttachmentTimeline$1) {
-              if (attachments)
-                direction = exports.MixDirection.mixOut;
-            }
-            else if (timeline instanceof DrawOrderTimeline$1) {
-              if (drawOrder)
-                direction = exports.MixDirection.mixOut;
+              if (attachments) direction = exports.MixDirection.mixOut;
+            } else if (timeline instanceof DrawOrderTimeline$1) {
+              if (drawOrder) direction = exports.MixDirection.mixOut;
             }
           }
           timeline.apply(skeleton, animationLast, animationTime, events, alpha, timelineBlend, direction);
         }
       }
     }
-    if (to.mixDuration > 0)
-      this.queueEvents(from, animationTime);
+    if (to.mixDuration > 0) this.queueEvents(from, animationTime);
     this.events.length = 0;
     from.nextAnimationLast = animationTime;
     from.nextTrackLast = from.trackTime;
     return mix;
   };
-  AnimationState.prototype.applyRotateTimeline = function (timeline, skeleton, time, alpha, blend, timelinesRotation, i, firstFrame) {
-    if (firstFrame)
-      timelinesRotation[i] = 0;
+  AnimationState.prototype.applyRotateTimeline = function (
+    timeline,
+    skeleton,
+    time,
+    alpha,
+    blend,
+    timelinesRotation,
+    i,
+    firstFrame,
+  ) {
+    if (firstFrame) timelinesRotation[i] = 0;
     if (alpha == 1) {
       timeline.apply(skeleton, 0, time, null, 1, blend, exports.MixDirection.mixIn);
       return;
@@ -11207,7 +11355,8 @@ var AnimationState$1 = /** @class */ (function () {
     var rotateTimeline = timeline;
     var frames = rotateTimeline.frames;
     var bone = skeleton.bones[rotateTimeline.boneIndex];
-    var r1 = 0, r2 = 0;
+    var r1 = 0,
+      r2 = 0;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -11218,17 +11367,20 @@ var AnimationState$1 = /** @class */ (function () {
           r1 = bone.rotation;
           r2 = bone.data.rotation;
       }
-    }
-    else {
+    } else {
       r1 = blend == exports.MixBlend.setup ? bone.data.rotation : bone.rotation;
-      if (time >= frames[frames.length - RotateTimeline$1.ENTRIES]) // Time is after last frame.
+      if (time >= frames[frames.length - RotateTimeline$1.ENTRIES])
+        // Time is after last frame.
         r2 = bone.data.rotation + frames[frames.length + RotateTimeline$1.PREV_ROTATION];
       else {
         // Interpolate between the previous frame and the current frame.
         var frame = Animation$1.binarySearch(frames, time, RotateTimeline$1.ENTRIES);
         var prevRotation = frames[frame + RotateTimeline$1.PREV_ROTATION];
         var frameTime = frames[frame];
-        var percent = rotateTimeline.getCurvePercent((frame >> 1) - 1, 1 - (time - frameTime) / (frames[frame + RotateTimeline$1.PREV_TIME] - frameTime));
+        var percent = rotateTimeline.getCurvePercent(
+          (frame >> 1) - 1,
+          1 - (time - frameTime) / (frames[frame + RotateTimeline$1.PREV_TIME] - frameTime),
+        );
         r2 = frames[frame + RotateTimeline$1.ROTATION] - prevRotation;
         r2 -= (16384 - ((16384.499999999996 - r2 / 360) | 0)) * 360;
         r2 = prevRotation + r2 * percent + bone.data.rotation;
@@ -11236,32 +11388,31 @@ var AnimationState$1 = /** @class */ (function () {
       }
     }
     // Mix between rotations using the direction of the shortest route on the first frame while detecting crosses.
-    var total = 0, diff = r2 - r1;
+    var total = 0,
+      diff = r2 - r1;
     diff -= (16384 - ((16384.499999999996 - diff / 360) | 0)) * 360;
     if (diff == 0) {
       total = timelinesRotation[i];
-    }
-    else {
-      var lastTotal = 0, lastDiff = 0;
+    } else {
+      var lastTotal = 0,
+        lastDiff = 0;
       if (firstFrame) {
         lastTotal = 0;
         lastDiff = diff;
-      }
-      else {
+      } else {
         lastTotal = timelinesRotation[i]; // Angle and direction of mix, including loops.
         lastDiff = timelinesRotation[i + 1]; // Difference between bones.
       }
-      var current = diff > 0, dir = lastTotal >= 0;
+      var current = diff > 0,
+        dir = lastTotal >= 0;
       // Detect cross at 0 (not 180).
       if (MathUtils.signum(lastDiff) != MathUtils.signum(diff) && Math.abs(lastDiff) <= 90) {
         // A cross after a 360 rotation is a loop.
-        if (Math.abs(lastTotal) > 180)
-          lastTotal += 360 * MathUtils.signum(lastTotal);
+        if (Math.abs(lastTotal) > 180) lastTotal += 360 * MathUtils.signum(lastTotal);
         dir = current;
       }
-      total = diff + lastTotal - lastTotal % 360; // Store loops as part of lastTotal.
-      if (dir != current)
-        total += 360 * MathUtils.signum(lastTotal);
+      total = diff + lastTotal - (lastTotal % 360); // Store loops as part of lastTotal.
+      if (dir != current) total += 360 * MathUtils.signum(lastTotal);
       timelinesRotation[i] = total;
     }
     timelinesRotation[i + 1] = diff;
@@ -11269,58 +11420,50 @@ var AnimationState$1 = /** @class */ (function () {
     bone.rotation = r1 - (16384 - ((16384.499999999996 - r1 / 360) | 0)) * 360;
   };
   AnimationState.prototype.queueEvents = function (entry, animationTime) {
-    var animationStart = entry.animationStart, animationEnd = entry.animationEnd;
+    var animationStart = entry.animationStart,
+      animationEnd = entry.animationEnd;
     var duration = animationEnd - animationStart;
     var trackLastWrapped = entry.trackLast % duration;
     // Queue events before complete.
     var events = this.events;
-    var i = 0, n = events.length;
+    var i = 0,
+      n = events.length;
     for (; i < n; i++) {
       var event_1 = events[i];
-      if (event_1.time < trackLastWrapped)
-        break;
-      if (event_1.time > animationEnd)
-        continue; // Discard events outside animation start/end.
+      if (event_1.time < trackLastWrapped) break;
+      if (event_1.time > animationEnd) continue; // Discard events outside animation start/end.
       this.queue.event(entry, event_1);
     }
     // Queue complete if completed a loop iteration or the animation.
     var complete = false;
-    if (entry.loop)
-      complete = duration == 0 || trackLastWrapped > entry.trackTime % duration;
-    else
-      complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
-    if (complete)
-      this.queue.complete(entry);
+    if (entry.loop) complete = duration == 0 || trackLastWrapped > entry.trackTime % duration;
+    else complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
+    if (complete) this.queue.complete(entry);
     // Queue events after complete.
     for (; i < n; i++) {
       var event_2 = events[i];
-      if (event_2.time < animationStart)
-        continue; // Discard events outside animation start/end.
+      if (event_2.time < animationStart) continue; // Discard events outside animation start/end.
       this.queue.event(entry, events[i]);
     }
   };
   AnimationState.prototype.clearTracks = function () {
     var oldDrainDisabled = this.queue.drainDisabled;
     this.queue.drainDisabled = true;
-    for (var i = 0, n = this.tracks.length; i < n; i++)
-      this.clearTrack(i);
+    for (var i = 0, n = this.tracks.length; i < n; i++) this.clearTrack(i);
     this.tracks.length = 0;
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
   };
   AnimationState.prototype.clearTrack = function (trackIndex) {
-    if (trackIndex >= this.tracks.length)
-      return;
+    if (trackIndex >= this.tracks.length) return;
     var current = this.tracks[trackIndex];
-    if (current == null)
-      return;
+    if (current == null) return;
     this.queue.end(current);
     this.disposeNext(current);
     var entry = current;
     while (true) {
       var from = entry.mixingFrom;
-      if (from == null)
-        break;
+      if (from == null) break;
       this.queue.end(from);
       entry.mixingFrom = null;
       entry.mixingTo = null;
@@ -11333,8 +11476,7 @@ var AnimationState$1 = /** @class */ (function () {
     var from = this.expandToIndex(index);
     this.tracks[index] = current;
     if (from != null) {
-      if (interrupt)
-        this.queue.interrupt(from);
+      if (interrupt) this.queue.interrupt(from);
       current.mixingFrom = from;
       from.mixingTo = current;
       current.mixTime = 0;
@@ -11347,13 +11489,11 @@ var AnimationState$1 = /** @class */ (function () {
   };
   AnimationState.prototype.setAnimation = function (trackIndex, animationName, loop) {
     var animation = this.data.skeletonData.findAnimation(animationName);
-    if (animation == null)
-      throw new Error("Animation not found: " + animationName);
+    if (animation == null) throw new Error('Animation not found: ' + animationName);
     return this.setAnimationWith(trackIndex, animation, loop);
   };
   AnimationState.prototype.setAnimationWith = function (trackIndex, animation, loop) {
-    if (animation == null)
-      throw new Error("animation cannot be null.");
+    if (animation == null) throw new Error('animation cannot be null.');
     var interrupt = true;
     var current = this.expandToIndex(trackIndex);
     if (current != null) {
@@ -11365,9 +11505,7 @@ var AnimationState$1 = /** @class */ (function () {
         this.disposeNext(current);
         current = current.mixingFrom;
         interrupt = false;
-      }
-      else
-        this.disposeNext(current);
+      } else this.disposeNext(current);
     }
     var entry = this.trackEntry(trackIndex, animation, loop, current);
     this.setCurrent(trackIndex, entry, interrupt);
@@ -11376,36 +11514,28 @@ var AnimationState$1 = /** @class */ (function () {
   };
   AnimationState.prototype.addAnimation = function (trackIndex, animationName, loop, delay) {
     var animation = this.data.skeletonData.findAnimation(animationName);
-    if (animation == null)
-      throw new Error("Animation not found: " + animationName);
+    if (animation == null) throw new Error('Animation not found: ' + animationName);
     return this.addAnimationWith(trackIndex, animation, loop, delay);
   };
   AnimationState.prototype.addAnimationWith = function (trackIndex, animation, loop, delay) {
-    if (animation == null)
-      throw new Error("animation cannot be null.");
+    if (animation == null) throw new Error('animation cannot be null.');
     var last = this.expandToIndex(trackIndex);
     if (last != null) {
-      while (last.next != null)
-        last = last.next;
+      while (last.next != null) last = last.next;
     }
     var entry = this.trackEntry(trackIndex, animation, loop, last);
     if (last == null) {
       this.setCurrent(trackIndex, entry, true);
       this.queue.drain();
-    }
-    else {
+    } else {
       last.next = entry;
       if (delay <= 0) {
         var duration = last.animationEnd - last.animationStart;
         if (duration != 0) {
-          if (last.loop)
-            delay += duration * (1 + ((last.trackTime / duration) | 0));
-          else
-            delay += Math.max(duration, last.trackTime);
+          if (last.loop) delay += duration * (1 + ((last.trackTime / duration) | 0));
+          else delay += Math.max(duration, last.trackTime);
           delay -= this.data.getMix(last.animation, animation);
-        }
-        else
-          delay = last.trackTime;
+        } else delay = last.trackTime;
       }
     }
     entry.delay = delay;
@@ -11418,8 +11548,7 @@ var AnimationState$1 = /** @class */ (function () {
     return entry;
   };
   AnimationState.prototype.addEmptyAnimation = function (trackIndex, mixDuration, delay) {
-    if (delay <= 0)
-      delay -= mixDuration;
+    if (delay <= 0) delay -= mixDuration;
     var entry = this.addAnimationWith(trackIndex, AnimationState.emptyAnimation, false, delay);
     entry.mixDuration = mixDuration;
     entry.trackEnd = mixDuration;
@@ -11430,15 +11559,13 @@ var AnimationState$1 = /** @class */ (function () {
     this.queue.drainDisabled = true;
     for (var i = 0, n = this.tracks.length; i < n; i++) {
       var current = this.tracks[i];
-      if (current != null)
-        this.setEmptyAnimation(current.trackIndex, mixDuration);
+      if (current != null) this.setEmptyAnimation(current.trackIndex, mixDuration);
     }
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
   };
   AnimationState.prototype.expandToIndex = function (index) {
-    if (index < this.tracks.length)
-      return this.tracks[index];
+    if (index < this.tracks.length) return this.tracks[index];
     Utils.ensureArrayCapacity(this.tracks, index - this.tracks.length + 1, null);
     this.tracks.length = index + 1;
     return null;
@@ -11481,13 +11608,10 @@ var AnimationState$1 = /** @class */ (function () {
     this.propertyIDs.clear();
     for (var i = 0, n = this.tracks.length; i < n; i++) {
       var entry = this.tracks[i];
-      if (entry == null)
-        continue;
-      while (entry.mixingFrom != null)
-        entry = entry.mixingFrom;
+      if (entry == null) continue;
+      while (entry.mixingFrom != null) entry = entry.mixingFrom;
       do {
-        if (entry.mixingFrom == null || entry.mixBlend != exports.MixBlend.add)
-          this.setTimelineModes(entry);
+        if (entry.mixingFrom == null || entry.mixBlend != exports.MixBlend.add) this.setTimelineModes(entry);
         entry = entry.mixingTo;
       } while (entry != null);
     }
@@ -11509,14 +11633,11 @@ var AnimationState$1 = /** @class */ (function () {
     }
     outer: for (var i = 0; i < timelinesCount; i++) {
       var id = timelines[i].getPropertyId();
-      if (!propertyIDs.add(id))
-        timelineMode[i] = AnimationState.SUBSEQUENT;
-      else if (to == null || !this.hasTimeline(to, id))
-        timelineMode[i] = AnimationState.FIRST;
+      if (!propertyIDs.add(id)) timelineMode[i] = AnimationState.SUBSEQUENT;
+      else if (to == null || !this.hasTimeline(to, id)) timelineMode[i] = AnimationState.FIRST;
       else {
         for (var next = to.mixingTo; next != null; next = next.mixingTo) {
-          if (this.hasTimeline(next, id))
-            continue;
+          if (this.hasTimeline(next, id)) continue;
           if (entry.mixDuration > 0) {
             timelineMode[i] = AnimationState.HOLD_MIX;
             timelineDipMix[i] = next;
@@ -11530,26 +11651,21 @@ var AnimationState$1 = /** @class */ (function () {
   };
   AnimationState.prototype.hasTimeline = function (entry, id) {
     var timelines = entry.animation.timelines;
-    for (var i = 0, n = timelines.length; i < n; i++)
-      if (timelines[i].getPropertyId() == id)
-        return true;
+    for (var i = 0, n = timelines.length; i < n; i++) if (timelines[i].getPropertyId() == id) return true;
     return false;
   };
   AnimationState.prototype.getCurrent = function (trackIndex) {
-    if (trackIndex >= this.tracks.length)
-      return null;
+    if (trackIndex >= this.tracks.length) return null;
     return this.tracks[trackIndex];
   };
   AnimationState.prototype.addListener = function (listener) {
-    if (listener == null)
-      throw new Error("listener cannot be null.");
+    if (listener == null) throw new Error('listener cannot be null.');
     this.listeners.push(listener);
   };
   /** Removes the listener added with {@link #addListener(AnimationStateListener)}. */
   AnimationState.prototype.removeListener = function (listener) {
     var index = this.listeners.indexOf(listener);
-    if (index >= 0)
-      this.listeners.splice(index, 1);
+    if (index >= 0) this.listeners.splice(index, 1);
   };
   AnimationState.prototype.clearListeners = function () {
     this.listeners.length = 0;
@@ -11560,14 +11676,18 @@ var AnimationState$1 = /** @class */ (function () {
   AnimationState.prototype.setAnimationByName = function (trackIndex, animationName, loop) {
     if (!AnimationState.deprecatedWarning1) {
       AnimationState.deprecatedWarning1 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.setAnimationByName is deprecated, please use setAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.setAnimationByName is deprecated, please use setAnimation from now on.',
+      );
     }
     this.setAnimation(trackIndex, animationName, loop);
   };
   AnimationState.prototype.addAnimationByName = function (trackIndex, animationName, loop, delay) {
     if (!AnimationState.deprecatedWarning2) {
       AnimationState.deprecatedWarning2 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.addAnimationByName is deprecated, please use addAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.addAnimationByName is deprecated, please use addAnimation from now on.',
+      );
     }
     this.addAnimation(trackIndex, animationName, loop, delay);
   };
@@ -11578,11 +11698,13 @@ var AnimationState$1 = /** @class */ (function () {
   AnimationState.prototype.hasAnimationByName = function (animationName) {
     if (!AnimationState.deprecatedWarning3) {
       AnimationState.deprecatedWarning3 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.hasAnimationByName is deprecated, please use hasAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.hasAnimationByName is deprecated, please use hasAnimation from now on.',
+      );
     }
     return this.hasAnimation(animationName);
   };
-  AnimationState.emptyAnimation = new Animation$1("<empty>", [], 0);
+  AnimationState.emptyAnimation = new Animation$1('<empty>', [], 0);
   AnimationState.SUBSEQUENT = 0;
   AnimationState.FIRST = 1;
   AnimationState.HOLD = 2;
@@ -11591,7 +11713,7 @@ var AnimationState$1 = /** @class */ (function () {
   AnimationState.deprecatedWarning2 = false;
   AnimationState.deprecatedWarning3 = false;
   return AnimationState;
-}());
+})();
 /**
  * @public
  */
@@ -11615,8 +11737,7 @@ var TrackEntry$1 = /** @class */ (function () {
   TrackEntry.prototype.getAnimationTime = function () {
     if (this.loop) {
       var duration = this.animationEnd - this.animationStart;
-      if (duration == 0)
-        return this.animationStart;
+      if (duration == 0) return this.animationStart;
       return (this.trackTime % duration) + this.animationStart;
     }
     return Math.min(this.trackTime + this.animationStart, this.animationEnd);
@@ -11631,41 +11752,41 @@ var TrackEntry$1 = /** @class */ (function () {
   TrackEntry.prototype.resetRotationDirections = function () {
     this.timelinesRotation.length = 0;
   };
-  Object.defineProperty(TrackEntry.prototype, "time", {
+  Object.defineProperty(TrackEntry.prototype, 'time', {
     get: function () {
       if (!TrackEntry.deprecatedWarning1) {
         TrackEntry.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.');
       }
       return this.trackTime;
     },
     set: function (value) {
       if (!TrackEntry.deprecatedWarning1) {
         TrackEntry.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.');
       }
       this.trackTime = value;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TrackEntry.prototype, "endTime", {
+  Object.defineProperty(TrackEntry.prototype, 'endTime', {
     get: function () {
       if (!TrackEntry.deprecatedWarning2) {
         TrackEntry.deprecatedWarning2 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.');
       }
       return this.trackTime;
     },
     set: function (value) {
       if (!TrackEntry.deprecatedWarning2) {
         TrackEntry.deprecatedWarning2 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.');
       }
       this.trackTime = value;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   TrackEntry.prototype.loopsCount = function () {
     return Math.floor(this.trackTime / this.trackEnd);
@@ -11673,7 +11794,7 @@ var TrackEntry$1 = /** @class */ (function () {
   TrackEntry.deprecatedWarning1 = false;
   TrackEntry.deprecatedWarning2 = false;
   return TrackEntry;
-}());
+})();
 /**
  * @public
  */
@@ -11713,13 +11834,14 @@ var EventQueue$1 = /** @class */ (function () {
   EventQueue.prototype.deprecateStuff = function () {
     if (!EventQueue.deprecatedWarning1) {
       EventQueue.deprecatedWarning1 = true;
-      console.warn("Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'");
+      console.warn(
+        "Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'",
+      );
     }
     return true;
   };
   EventQueue.prototype.drain = function () {
-    if (this.drainDisabled)
-      return;
+    if (this.drainDisabled) return;
     this.drainDisabled = true;
     var objects = this.objects;
     var listeners = this.animState.listeners;
@@ -11728,46 +11850,34 @@ var EventQueue$1 = /** @class */ (function () {
       var entry = objects[i + 1];
       switch (type) {
         case EventType$1.start:
-          if (entry.listener != null && entry.listener.start)
-            entry.listener.start(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].start)
-              listeners[ii].start(entry);
+          if (entry.listener != null && entry.listener.start) entry.listener.start(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].start) listeners[ii].start(entry);
           //deprecation
           entry.onStart && this.deprecateStuff() && entry.onStart(entry.trackIndex);
-          this.animState.onStart && this.deprecateStuff() && this.deprecateStuff && this.animState.onStart(entry.trackIndex);
+          this.animState.onStart &&
+            this.deprecateStuff() &&
+            this.deprecateStuff &&
+            this.animState.onStart(entry.trackIndex);
           break;
         case EventType$1.interrupt:
-          if (entry.listener != null && entry.listener.interrupt)
-            entry.listener.interrupt(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].interrupt)
-              listeners[ii].interrupt(entry);
+          if (entry.listener != null && entry.listener.interrupt) entry.listener.interrupt(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].interrupt) listeners[ii].interrupt(entry);
           break;
         case EventType$1.end:
-          if (entry.listener != null && entry.listener.end)
-            entry.listener.end(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].end)
-              listeners[ii].end(entry);
+          if (entry.listener != null && entry.listener.end) entry.listener.end(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].end) listeners[ii].end(entry);
           //deprecation
           entry.onEnd && this.deprecateStuff() && entry.onEnd(entry.trackIndex);
           this.animState.onEnd && this.deprecateStuff() && this.animState.onEnd(entry.trackIndex);
         // Fall through.
         case EventType$1.dispose:
-          if (entry.listener != null && entry.listener.dispose)
-            entry.listener.dispose(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].dispose)
-              listeners[ii].dispose(entry);
+          if (entry.listener != null && entry.listener.dispose) entry.listener.dispose(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].dispose) listeners[ii].dispose(entry);
           this.animState.trackEntryPool.free(entry);
           break;
         case EventType$1.complete:
-          if (entry.listener != null && entry.listener.complete)
-            entry.listener.complete(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].complete)
-              listeners[ii].complete(entry);
+          if (entry.listener != null && entry.listener.complete) entry.listener.complete(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].complete) listeners[ii].complete(entry);
           //deprecation
           var count = MathUtils.toInt(entry.loopsCount());
           entry.onComplete && this.deprecateStuff() && entry.onComplete(entry.trackIndex, count);
@@ -11775,11 +11885,8 @@ var EventQueue$1 = /** @class */ (function () {
           break;
         case EventType$1.event:
           var event_3 = objects[i++ + 2];
-          if (entry.listener != null && entry.listener.event)
-            entry.listener.event(entry, event_3);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].event)
-              listeners[ii].event(entry, event_3);
+          if (entry.listener != null && entry.listener.event) entry.listener.event(entry, event_3);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].event) listeners[ii].event(entry, event_3);
           //deprecation
           entry.onEvent && this.deprecateStuff() && entry.onEvent(entry.trackIndex, event_3);
           this.animState.onEvent && this.deprecateStuff() && this.animState.onEvent(entry.trackIndex, event_3);
@@ -11794,39 +11901,32 @@ var EventQueue$1 = /** @class */ (function () {
   };
   EventQueue.deprecatedWarning1 = false;
   return EventQueue;
-}());
+})();
 /**
  * @public
  */
 var EventType$1;
 (function (EventType) {
-  EventType[EventType["start"] = 0] = "start";
-  EventType[EventType["interrupt"] = 1] = "interrupt";
-  EventType[EventType["end"] = 2] = "end";
-  EventType[EventType["dispose"] = 3] = "dispose";
-  EventType[EventType["complete"] = 4] = "complete";
-  EventType[EventType["event"] = 5] = "event";
+  EventType[(EventType['start'] = 0)] = 'start';
+  EventType[(EventType['interrupt'] = 1)] = 'interrupt';
+  EventType[(EventType['end'] = 2)] = 'end';
+  EventType[(EventType['dispose'] = 3)] = 'dispose';
+  EventType[(EventType['complete'] = 4)] = 'complete';
+  EventType[(EventType['event'] = 5)] = 'event';
 })(EventType$1 || (EventType$1 = {}));
 /**
  * @public
  */
 var AnimationStateAdapter2 = /** @class */ (function () {
-  function AnimationStateAdapter2() {
-  }
-  AnimationStateAdapter2.prototype.start = function (entry) {
-  };
-  AnimationStateAdapter2.prototype.interrupt = function (entry) {
-  };
-  AnimationStateAdapter2.prototype.end = function (entry) {
-  };
-  AnimationStateAdapter2.prototype.dispose = function (entry) {
-  };
-  AnimationStateAdapter2.prototype.complete = function (entry) {
-  };
-  AnimationStateAdapter2.prototype.event = function (entry, event) {
-  };
+  function AnimationStateAdapter2() {}
+  AnimationStateAdapter2.prototype.start = function (entry) {};
+  AnimationStateAdapter2.prototype.interrupt = function (entry) {};
+  AnimationStateAdapter2.prototype.end = function (entry) {};
+  AnimationStateAdapter2.prototype.dispose = function (entry) {};
+  AnimationStateAdapter2.prototype.complete = function (entry) {};
+  AnimationStateAdapter2.prototype.event = function (entry, event) {};
   return AnimationStateAdapter2;
-}());
+})();
 
 /**
  * @public
@@ -11835,42 +11935,39 @@ var AnimationStateData$1 = /** @class */ (function () {
   function AnimationStateData(skeletonData) {
     this.animationToMixTime = {};
     this.defaultMix = 0;
-    if (skeletonData == null)
-      throw new Error("skeletonData cannot be null.");
+    if (skeletonData == null) throw new Error('skeletonData cannot be null.');
     this.skeletonData = skeletonData;
   }
   AnimationStateData.prototype.setMix = function (fromName, toName, duration) {
     var from = this.skeletonData.findAnimation(fromName);
-    if (from == null)
-      throw new Error("Animation not found: " + fromName);
+    if (from == null) throw new Error('Animation not found: ' + fromName);
     var to = this.skeletonData.findAnimation(toName);
-    if (to == null)
-      throw new Error("Animation not found: " + toName);
+    if (to == null) throw new Error('Animation not found: ' + toName);
     this.setMixWith(from, to, duration);
   };
   AnimationStateData.prototype.setMixByName = function (fromName, toName, duration) {
     if (!AnimationStateData.deprecatedWarning1) {
       AnimationStateData.deprecatedWarning1 = true;
-      console.warn("Deprecation Warning: AnimationStateData.setMixByName is deprecated, please use setMix from now on.");
+      console.warn(
+        'Deprecation Warning: AnimationStateData.setMixByName is deprecated, please use setMix from now on.',
+      );
     }
     this.setMix(fromName, toName, duration);
   };
   AnimationStateData.prototype.setMixWith = function (from, to, duration) {
-    if (from == null)
-      throw new Error("from cannot be null.");
-    if (to == null)
-      throw new Error("to cannot be null.");
-    var key = from.name + "." + to.name;
+    if (from == null) throw new Error('from cannot be null.');
+    if (to == null) throw new Error('to cannot be null.');
+    var key = from.name + '.' + to.name;
     this.animationToMixTime[key] = duration;
   };
   AnimationStateData.prototype.getMix = function (from, to) {
-    var key = from.name + "." + to.name;
+    var key = from.name + '.' + to.name;
     var value = this.animationToMixTime[key];
     return value === undefined ? this.defaultMix : value;
   };
   AnimationStateData.deprecatedWarning1 = false;
   return AnimationStateData;
-}());
+})();
 
 /**
  * @public
@@ -11882,8 +11979,7 @@ var AtlasAttachmentLoader$1 = /** @class */ (function () {
   /** @return May be null to not load an attachment. */
   AtlasAttachmentLoader.prototype.newRegionAttachment = function (skin, name, path) {
     var region = this.atlas.findRegion(path);
-    if (region == null)
-      throw new Error("Region not found in atlas: " + path + " (region attachment: " + name + ")");
+    if (region == null) throw new Error('Region not found in atlas: ' + path + ' (region attachment: ' + name + ')');
     var attachment = new RegionAttachment$1(name);
     attachment.region = region;
     return attachment;
@@ -11891,8 +11987,7 @@ var AtlasAttachmentLoader$1 = /** @class */ (function () {
   /** @return May be null to not load an attachment. */
   AtlasAttachmentLoader.prototype.newMeshAttachment = function (skin, name, path) {
     var region = this.atlas.findRegion(path);
-    if (region == null)
-      throw new Error("Region not found in atlas: " + path + " (mesh attachment: " + name + ")");
+    if (region == null) throw new Error('Region not found in atlas: ' + path + ' (mesh attachment: ' + name + ')');
     var attachment = new MeshAttachment$1(name);
     attachment.region = region;
     return attachment;
@@ -11912,7 +12007,7 @@ var AtlasAttachmentLoader$1 = /** @class */ (function () {
     return new ClippingAttachment$1(name);
   };
   return AtlasAttachmentLoader;
-}());
+})();
 
 /**
  * @public
@@ -11939,28 +12034,26 @@ var Bone$1 = /** @class */ (function () {
     this.ashearY = 0;
     this.appliedValid = false;
     this.sorted = false;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.skeleton = skeleton;
     this.parent = parent;
     this.setToSetupPose();
   }
-  Object.defineProperty(Bone.prototype, "worldX", {
+  Object.defineProperty(Bone.prototype, 'worldX', {
     get: function () {
       return this.matrix.tx;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(Bone.prototype, "worldY", {
+  Object.defineProperty(Bone.prototype, 'worldY', {
     get: function () {
       return this.matrix.ty;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   /** Same as {@link #updateWorldTransform()}. This method exists for Bone to implement {@link Updatable}. */
   Bone.prototype.update = function () {
@@ -11984,7 +12077,8 @@ var Bone$1 = /** @class */ (function () {
     var m = this.matrix;
     var sx = this.skeleton.scaleX;
     var sy = settings.yDown ? -this.skeleton.scaleY : this.skeleton.scaleY;
-    if (parent == null) { // Root bone.
+    if (parent == null) {
+      // Root bone.
       var skeleton = this.skeleton;
       var rotationY = rotation + 90 + shearY;
       m.a = MathUtils.cosDeg(rotation + shearX) * scaleX * sx;
@@ -11995,7 +12089,10 @@ var Bone$1 = /** @class */ (function () {
       m.ty = y * sy + skeleton.y;
       return;
     }
-    var pa = parent.matrix.a, pb = parent.matrix.c, pc = parent.matrix.b, pd = parent.matrix.d;
+    var pa = parent.matrix.a,
+      pb = parent.matrix.c,
+      pc = parent.matrix.b,
+      pd = parent.matrix.d;
     m.tx = pa * x + pb * y + parent.matrix.tx;
     m.ty = pc * x + pd * y + parent.matrix.ty;
     switch (this.data.transformMode) {
@@ -12027,8 +12124,7 @@ var Bone$1 = /** @class */ (function () {
           pb = pc * s;
           pd = pa * s;
           prx = Math.atan2(pc, pa) * MathUtils.radDeg;
-        }
-        else {
+        } else {
           pa = 0;
           pc = 0;
           prx = 90 - Math.atan2(pd, pb) * MathUtils.radDeg;
@@ -12052,15 +12148,17 @@ var Bone$1 = /** @class */ (function () {
         var za = (pa * cos + pb * sin) / sx;
         var zc = (pc * cos + pd * sin) / sy;
         var s = Math.sqrt(za * za + zc * zc);
-        if (s > 0.00001)
-          s = 1 / s;
+        if (s > 0.00001) s = 1 / s;
         za *= s;
         zc *= s;
         s = Math.sqrt(za * za + zc * zc);
-        if (this.data.transformMode == exports.TransformMode.NoScale
-          && (pa * pd - pb * pc < 0) != (settings.yDown ?
-            (this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0) :
-            (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)))
+        if (
+          this.data.transformMode == exports.TransformMode.NoScale &&
+          pa * pd - pb * pc < 0 !=
+            (settings.yDown
+              ? this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0
+              : this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)
+        )
           s = -s;
         var r = Math.PI / 2 + Math.atan2(zc, za);
         var zb = Math.cos(r) * s;
@@ -12125,9 +12223,10 @@ var Bone$1 = /** @class */ (function () {
     }
     var pm = parent.matrix;
     var pid = 1 / (pm.a * pm.d - pm.b * pm.c);
-    var dx = m.tx - pm.tx, dy = m.ty - pm.ty;
-    this.ax = (dx * pm.d * pid - dy * pm.c * pid);
-    this.ay = (dy * pm.a * pid - dx * pm.b * pid);
+    var dx = m.tx - pm.tx,
+      dy = m.ty - pm.ty;
+    this.ax = dx * pm.d * pid - dy * pm.c * pid;
+    this.ay = dy * pm.a * pid - dx * pm.b * pid;
     var ia = pid * pm.d;
     var id = pid * pm.a;
     var ib = pid * pm.c;
@@ -12143,8 +12242,7 @@ var Bone$1 = /** @class */ (function () {
       this.ascaleY = det / this.ascaleX;
       this.ashearY = Math.atan2(ra * rb + rc * rd, det) * MathUtils.radDeg;
       this.arotation = Math.atan2(rc, ra) * MathUtils.radDeg;
-    }
-    else {
+    } else {
       this.ascaleX = 0;
       this.ascaleY = Math.sqrt(rb * rb + rd * rd);
       this.ashearY = 0;
@@ -12153,34 +12251,45 @@ var Bone$1 = /** @class */ (function () {
   };
   Bone.prototype.worldToLocal = function (world) {
     var m = this.matrix;
-    var a = m.a, b = m.c, c = m.b, d = m.d;
+    var a = m.a,
+      b = m.c,
+      c = m.b,
+      d = m.d;
     var invDet = 1 / (a * d - b * c);
-    var x = world.x - m.tx, y = world.y - m.ty;
-    world.x = (x * d * invDet - y * b * invDet);
-    world.y = (y * a * invDet - x * c * invDet);
+    var x = world.x - m.tx,
+      y = world.y - m.ty;
+    world.x = x * d * invDet - y * b * invDet;
+    world.y = y * a * invDet - x * c * invDet;
     return world;
   };
   Bone.prototype.localToWorld = function (local) {
     var m = this.matrix;
-    var x = local.x, y = local.y;
+    var x = local.x,
+      y = local.y;
     local.x = x * m.a + y * m.c + m.tx;
     local.y = x * m.b + y * m.d + m.ty;
     return local;
   };
   Bone.prototype.worldToLocalRotation = function (worldRotation) {
-    var sin = MathUtils.sinDeg(worldRotation), cos = MathUtils.cosDeg(worldRotation);
+    var sin = MathUtils.sinDeg(worldRotation),
+      cos = MathUtils.cosDeg(worldRotation);
     var mat = this.matrix;
     return Math.atan2(mat.a * sin - mat.b * cos, mat.d * cos - mat.c * sin) * MathUtils.radDeg;
   };
   Bone.prototype.localToWorldRotation = function (localRotation) {
-    var sin = MathUtils.sinDeg(localRotation), cos = MathUtils.cosDeg(localRotation);
+    var sin = MathUtils.sinDeg(localRotation),
+      cos = MathUtils.cosDeg(localRotation);
     var mat = this.matrix;
     return Math.atan2(cos * mat.b + sin * mat.d, cos * mat.a + sin * mat.c) * MathUtils.radDeg;
   };
   Bone.prototype.rotateWorld = function (degrees) {
     var mat = this.matrix;
-    var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
-    var cos = MathUtils.cosDeg(degrees), sin = MathUtils.sinDeg(degrees);
+    var a = mat.a,
+      b = mat.c,
+      c = mat.b,
+      d = mat.d;
+    var cos = MathUtils.cosDeg(degrees),
+      sin = MathUtils.sinDeg(degrees);
     mat.a = cos * a - sin * c;
     mat.c = cos * b - sin * d;
     mat.b = sin * a + cos * c;
@@ -12188,7 +12297,7 @@ var Bone$1 = /** @class */ (function () {
     this.appliedValid = false;
   };
   return Bone;
-}());
+})();
 
 /**
  * @public
@@ -12203,29 +12312,26 @@ var BoneData$1 = /** @class */ (function () {
     this.shearX = 0;
     this.shearY = 0;
     this.transformMode = exports.TransformMode.Normal;
-    if (index < 0)
-      throw new Error("index must be >= 0.");
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (index < 0) throw new Error('index must be >= 0.');
+    if (name == null) throw new Error('name cannot be null.');
     this.index = index;
     this.name = name;
     this.parent = parent;
   }
   return BoneData;
-}());
+})();
 
 /**
  * @public
  */
 var Event$1 = /** @class */ (function () {
   function Event(time, data) {
-    if (data == null)
-      throw new Error("data cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
     this.time = time;
     this.data = data;
   }
   return Event;
-}());
+})();
 
 /**
  * @public
@@ -12235,7 +12341,7 @@ var EventData$1 = /** @class */ (function () {
     this.name = name;
   }
   return EventData;
-}());
+})();
 
 /**
  * @public
@@ -12246,18 +12352,15 @@ var IkConstraint$1 = /** @class */ (function () {
     this.compress = false;
     this.stretch = false;
     this.mix = 1;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.mix = data.mix;
     this.bendDirection = data.bendDirection;
     this.compress = data.compress;
     this.stretch = data.stretch;
     this.bones = new Array();
-    for (var i = 0; i < data.bones.length; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findBone(data.target.name);
   }
   IkConstraint.prototype.getOrder = function () {
@@ -12281,30 +12384,37 @@ var IkConstraint$1 = /** @class */ (function () {
   /** Adjusts the bone rotation so the tip is as close to the target position as possible. The target is specified in the world
    * coordinate system. */
   IkConstraint.prototype.apply1 = function (bone, targetX, targetY, compress, stretch, uniform, alpha) {
-    if (!bone.appliedValid)
-      bone.updateAppliedTransform();
+    if (!bone.appliedValid) bone.updateAppliedTransform();
     var p = bone.parent.matrix;
     var id = 1 / (p.a * p.d - p.b * p.c);
-    var x = targetX - p.tx, y = targetY - p.ty;
-    var tx = (x * p.d - y * p.c) * id - bone.ax, ty = (y * p.a - x * p.b) * id - bone.ay;
+    var x = targetX - p.tx,
+      y = targetY - p.ty;
+    var tx = (x * p.d - y * p.c) * id - bone.ax,
+      ty = (y * p.a - x * p.b) * id - bone.ay;
     var rotationIK = Math.atan2(ty, tx) * MathUtils.radDeg - bone.ashearX - bone.arotation;
-    if (bone.ascaleX < 0)
-      rotationIK += 180;
-    if (rotationIK > 180)
-      rotationIK -= 360;
-    else if (rotationIK < -180)
-      rotationIK += 360;
-    var sx = bone.ascaleX, sy = bone.ascaleY;
+    if (bone.ascaleX < 0) rotationIK += 180;
+    if (rotationIK > 180) rotationIK -= 360;
+    else if (rotationIK < -180) rotationIK += 360;
+    var sx = bone.ascaleX,
+      sy = bone.ascaleY;
     if (compress || stretch) {
-      var b = bone.data.length * sx, dd = Math.sqrt(tx * tx + ty * ty);
-      if ((compress && dd < b) || (stretch && dd > b) && b > 0.0001) {
+      var b = bone.data.length * sx,
+        dd = Math.sqrt(tx * tx + ty * ty);
+      if ((compress && dd < b) || (stretch && dd > b && b > 0.0001)) {
         var s = (dd / b - 1) * alpha + 1;
         sx *= s;
-        if (uniform)
-          sy *= s;
+        if (uniform) sy *= s;
       }
     }
-    bone.updateWorldTransformWith(bone.ax, bone.ay, bone.arotation + rotationIK * alpha, sx, sy, bone.ashearX, bone.ashearY);
+    bone.updateWorldTransformWith(
+      bone.ax,
+      bone.ay,
+      bone.arotation + rotationIK * alpha,
+      sx,
+      sy,
+      bone.ashearX,
+      bone.ashearY,
+    );
   };
   /** Adjusts the parent and child bone rotations so the tip of the child is as close to the target position as possible. The
    * target is specified in the world coordinate system.
@@ -12314,19 +12424,23 @@ var IkConstraint$1 = /** @class */ (function () {
       child.updateWorldTransform();
       return;
     }
-    if (!parent.appliedValid)
-      parent.updateAppliedTransform();
-    if (!child.appliedValid)
-      child.updateAppliedTransform();
-    var px = parent.ax, py = parent.ay, psx = parent.ascaleX, sx = psx, psy = parent.ascaleY, csx = child.ascaleX;
+    if (!parent.appliedValid) parent.updateAppliedTransform();
+    if (!child.appliedValid) child.updateAppliedTransform();
+    var px = parent.ax,
+      py = parent.ay,
+      psx = parent.ascaleX,
+      sx = psx,
+      psy = parent.ascaleY,
+      csx = child.ascaleX;
     var pmat = parent.matrix;
-    var os1 = 0, os2 = 0, s2 = 0;
+    var os1 = 0,
+      os2 = 0,
+      s2 = 0;
     if (psx < 0) {
       psx = -psx;
       os1 = 180;
       s2 = -1;
-    }
-    else {
+    } else {
       os1 = 0;
       s2 = 1;
     }
@@ -12337,17 +12451,21 @@ var IkConstraint$1 = /** @class */ (function () {
     if (csx < 0) {
       csx = -csx;
       os2 = 180;
-    }
-    else
-      os2 = 0;
-    var cx = child.ax, cy = 0, cwx = 0, cwy = 0, a = pmat.a, b = pmat.c, c = pmat.b, d = pmat.d;
+    } else os2 = 0;
+    var cx = child.ax,
+      cy = 0,
+      cwx = 0,
+      cwy = 0,
+      a = pmat.a,
+      b = pmat.c,
+      c = pmat.b,
+      d = pmat.d;
     var u = Math.abs(psx - psy) <= 0.0001;
     if (!u) {
       cy = 0;
       cwx = a * cx + pmat.tx;
       cwy = c * cx + pmat.ty;
-    }
-    else {
+    } else {
       cy = child.ay;
       cwx = a * cx + b * cy + pmat.tx;
       cwy = c * cx + d * cy + pmat.ty;
@@ -12357,40 +12475,48 @@ var IkConstraint$1 = /** @class */ (function () {
     b = pp.c;
     c = pp.b;
     d = pp.d;
-    var id = 1 / (a * d - b * c), x = targetX - pp.tx, y = targetY - pp.ty;
-    var tx = (x * d - y * b) * id - px, ty = (y * a - x * c) * id - py, dd = tx * tx + ty * ty;
+    var id = 1 / (a * d - b * c),
+      x = targetX - pp.tx,
+      y = targetY - pp.ty;
+    var tx = (x * d - y * b) * id - px,
+      ty = (y * a - x * c) * id - py,
+      dd = tx * tx + ty * ty;
     x = cwx - pp.tx;
     y = cwy - pp.ty;
-    var dx = (x * d - y * b) * id - px, dy = (y * a - x * c) * id - py;
-    var l1 = Math.sqrt(dx * dx + dy * dy), l2 = child.data.length * csx, a1 = 0, a2 = 0;
+    var dx = (x * d - y * b) * id - px,
+      dy = (y * a - x * c) * id - py;
+    var l1 = Math.sqrt(dx * dx + dy * dy),
+      l2 = child.data.length * csx,
+      a1 = 0,
+      a2 = 0;
     outer: if (u) {
       l2 *= psx;
       var cos = (dd - l1 * l1 - l2 * l2) / (2 * l1 * l2);
-      if (cos < -1)
-        cos = -1;
+      if (cos < -1) cos = -1;
       else if (cos > 1) {
         cos = 1;
-        if (stretch && l1 + l2 > 0.0001)
-          sx *= (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
+        if (stretch && l1 + l2 > 0.0001) sx *= (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
       }
       a2 = Math.acos(cos) * bendDir;
       a = l1 + l2 * cos;
       b = l2 * Math.sin(a2);
       a1 = Math.atan2(ty * a - tx * b, tx * a + ty * b);
-    }
-    else {
+    } else {
       a = psx * l2;
       b = psy * l2;
-      var aa = a * a, bb = b * b, ta = Math.atan2(ty, tx);
+      var aa = a * a,
+        bb = b * b,
+        ta = Math.atan2(ty, tx);
       c = bb * l1 * l1 + aa * dd - aa * bb;
-      var c1 = -2 * bb * l1, c2 = bb - aa;
+      var c1 = -2 * bb * l1,
+        c2 = bb - aa;
       d = c1 * c1 - 4 * c2 * c;
       if (d >= 0) {
         var q = Math.sqrt(d);
-        if (c1 < 0)
-          q = -q;
+        if (c1 < 0) q = -q;
         q = -(c1 + q) / 2;
-        var r0 = q / c2, r1 = c / q;
+        var r0 = q / c2,
+          r1 = c / q;
         var r = Math.abs(r0) < Math.abs(r1) ? r0 : r1;
         if (r * r <= dd) {
           y = Math.sqrt(dd - r * r) * bendDir;
@@ -12399,9 +12525,15 @@ var IkConstraint$1 = /** @class */ (function () {
           break outer;
         }
       }
-      var minAngle = MathUtils.PI, minX = l1 - a, minDist = minX * minX, minY = 0;
-      var maxAngle = 0, maxX = l1 + a, maxDist = maxX * maxX, maxY = 0;
-      c = -a * l1 / (aa - bb);
+      var minAngle = MathUtils.PI,
+        minX = l1 - a,
+        minDist = minX * minX,
+        minY = 0;
+      var maxAngle = 0,
+        maxX = l1 + a,
+        maxDist = maxX * maxX,
+        maxY = 0;
+      c = (-a * l1) / (aa - bb);
       if (c >= -1 && c <= 1) {
         c = Math.acos(c);
         x = a * Math.cos(c) + l1;
@@ -12423,8 +12555,7 @@ var IkConstraint$1 = /** @class */ (function () {
       if (dd <= (minDist + maxDist) / 2) {
         a1 = ta - Math.atan2(minY * bendDir, minX);
         a2 = minAngle * bendDir;
-      }
-      else {
+      } else {
         a1 = ta - Math.atan2(maxY * bendDir, maxX);
         a2 = maxAngle * bendDir;
       }
@@ -12432,21 +12563,25 @@ var IkConstraint$1 = /** @class */ (function () {
     var os = Math.atan2(cy, cx) * s2;
     var rotation = parent.arotation;
     a1 = (a1 - os) * MathUtils.radDeg + os1 - rotation;
-    if (a1 > 180)
-      a1 -= 360;
-    else if (a1 < -180)
-      a1 += 360;
+    if (a1 > 180) a1 -= 360;
+    else if (a1 < -180) a1 += 360;
     parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, sx, parent.ascaleY, 0, 0);
     rotation = child.arotation;
     a2 = ((a2 + os) * MathUtils.radDeg - child.ashearX) * s2 + os2 - rotation;
-    if (a2 > 180)
-      a2 -= 360;
-    else if (a2 < -180)
-      a2 += 360;
-    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
+    if (a2 > 180) a2 -= 360;
+    else if (a2 < -180) a2 += 360;
+    child.updateWorldTransformWith(
+      cx,
+      cy,
+      rotation + a2 * alpha,
+      child.ascaleX,
+      child.ascaleY,
+      child.ashearX,
+      child.ashearY,
+    );
   };
   return IkConstraint;
-}());
+})();
 
 /**
  * @public
@@ -12463,7 +12598,7 @@ var IkConstraintData$1 = /** @class */ (function () {
     this.name = name;
   }
   return IkConstraintData;
-}());
+})();
 
 /**
  * @public
@@ -12475,15 +12610,15 @@ var PathConstraintData$1 = /** @class */ (function () {
     this.name = name;
   }
   return PathConstraintData;
-}());
+})();
 /**
  * @public
  */
 var SpacingMode$1;
 (function (SpacingMode) {
-  SpacingMode[SpacingMode["Length"] = 0] = "Length";
-  SpacingMode[SpacingMode["Fixed"] = 1] = "Fixed";
-  SpacingMode[SpacingMode["Percent"] = 2] = "Percent";
+  SpacingMode[(SpacingMode['Length'] = 0)] = 'Length';
+  SpacingMode[(SpacingMode['Fixed'] = 1)] = 'Fixed';
+  SpacingMode[(SpacingMode['Percent'] = 2)] = 'Percent';
 })(SpacingMode$1 || (SpacingMode$1 = {}));
 
 /**
@@ -12501,14 +12636,11 @@ var PathConstraint$1 = /** @class */ (function () {
     this.curves = new Array();
     this.lengths = new Array();
     this.segments = new Array();
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.bones = new Array();
-    for (var i = 0, n = data.bones.length; i < n; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0, n = data.bones.length; i < n; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findSlot(data.target.name);
     this.position = data.position;
     this.spacing = data.spacing;
@@ -12520,50 +12652,55 @@ var PathConstraint$1 = /** @class */ (function () {
   };
   PathConstraint.prototype.update = function () {
     var attachment = this.target.getAttachment();
-    if (!(attachment instanceof PathAttachment$1))
-      return;
-    var rotateMix = this.rotateMix, translateMix = this.translateMix;
-    var translate = translateMix > 0, rotate = rotateMix > 0;
-    if (!translate && !rotate)
-      return;
+    if (!(attachment instanceof PathAttachment$1)) return;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix;
+    var translate = translateMix > 0,
+      rotate = rotateMix > 0;
+    if (!translate && !rotate) return;
     var data = this.data;
     var spacingMode = data.spacingMode;
     var lengthSpacing = spacingMode == SpacingMode$1.Length;
     var rotateMode = data.rotateMode;
-    var tangents = rotateMode == exports.RotateMode.Tangent, scale = rotateMode == exports.RotateMode.ChainScale;
-    var boneCount = this.bones.length, spacesCount = tangents ? boneCount : boneCount + 1;
+    var tangents = rotateMode == exports.RotateMode.Tangent,
+      scale = rotateMode == exports.RotateMode.ChainScale;
+    var boneCount = this.bones.length,
+      spacesCount = tangents ? boneCount : boneCount + 1;
     var bones = this.bones;
-    var spaces = Utils.setArraySize(this.spaces, spacesCount), lengths = null;
+    var spaces = Utils.setArraySize(this.spaces, spacesCount),
+      lengths = null;
     var spacing = this.spacing;
     if (scale || lengthSpacing) {
-      if (scale)
-        lengths = Utils.setArraySize(this.lengths, boneCount);
-      for (var i = 0, n = spacesCount - 1; i < n;) {
+      if (scale) lengths = Utils.setArraySize(this.lengths, boneCount);
+      for (var i = 0, n = spacesCount - 1; i < n; ) {
         var bone = bones[i];
         var setupLength = bone.data.length;
         if (setupLength < PathConstraint.epsilon) {
-          if (scale)
-            lengths[i] = 0;
+          if (scale) lengths[i] = 0;
           spaces[++i] = 0;
-        }
-        else {
-          var x = setupLength * bone.matrix.a, y = setupLength * bone.matrix.b;
+        } else {
+          var x = setupLength * bone.matrix.a,
+            y = setupLength * bone.matrix.b;
           var length_1 = Math.sqrt(x * x + y * y);
-          if (scale)
-            lengths[i] = length_1;
-          spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length_1 / setupLength;
+          if (scale) lengths[i] = length_1;
+          spaces[++i] = ((lengthSpacing ? setupLength + spacing : spacing) * length_1) / setupLength;
         }
       }
+    } else {
+      for (var i = 1; i < spacesCount; i++) spaces[i] = spacing;
     }
-    else {
-      for (var i = 1; i < spacesCount; i++)
-        spaces[i] = spacing;
-    }
-    var positions = this.computeWorldPositions(attachment, spacesCount, tangents, data.positionMode == exports.PositionMode.Percent, spacingMode == SpacingMode$1.Percent);
-    var boneX = positions[0], boneY = positions[1], offsetRotation = data.offsetRotation;
+    var positions = this.computeWorldPositions(
+      attachment,
+      spacesCount,
+      tangents,
+      data.positionMode == exports.PositionMode.Percent,
+      spacingMode == SpacingMode$1.Percent,
+    );
+    var boneX = positions[0],
+      boneY = positions[1],
+      offsetRotation = data.offsetRotation;
     var tip = false;
-    if (offsetRotation == 0)
-      tip = rotateMode == exports.RotateMode.Chain;
+    if (offsetRotation == 0) tip = rotateMode == exports.RotateMode.Chain;
     else {
       tip = false;
       var p = this.target.bone.matrix;
@@ -12574,7 +12711,10 @@ var PathConstraint$1 = /** @class */ (function () {
       var mat = bone.matrix;
       mat.tx += (boneX - mat.tx) * translateMix;
       mat.ty += (boneY - mat.ty) * translateMix;
-      var x = positions[p], y = positions[p + 1], dx = x - boneX, dy = y - boneY;
+      var x = positions[p],
+        y = positions[p + 1],
+        dx = x - boneX,
+        dy = y - boneY;
       if (scale) {
         var length_2 = lengths[i];
         if (length_2 != 0) {
@@ -12586,13 +12726,16 @@ var PathConstraint$1 = /** @class */ (function () {
       boneX = x;
       boneY = y;
       if (rotate) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d, r = 0, cos = 0, sin = 0;
-        if (tangents)
-          r = positions[p - 1];
-        else if (spaces[i + 1] == 0)
-          r = positions[p + 2];
-        else
-          r = Math.atan2(dy, dx);
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d,
+          r = 0,
+          cos = 0,
+          sin = 0;
+        if (tangents) r = positions[p - 1];
+        else if (spaces[i + 1] == 0) r = positions[p + 2];
+        else r = Math.atan2(dy, dx);
         r -= Math.atan2(c, a);
         if (tip) {
           cos = Math.cos(r);
@@ -12600,13 +12743,12 @@ var PathConstraint$1 = /** @class */ (function () {
           var length_3 = bone.data.length;
           boneX += (length_3 * (cos * a - sin * c) - dx) * rotateMix;
           boneY += (length_3 * (sin * a + cos * c) - dy) * rotateMix;
-        }
-        else {
+        } else {
           r += offsetRotation;
         }
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
         r *= rotateMix;
         cos = Math.cos(r);
@@ -12619,21 +12761,29 @@ var PathConstraint$1 = /** @class */ (function () {
       bone.appliedValid = false;
     }
   };
-  PathConstraint.prototype.computeWorldPositions = function (path, spacesCount, tangents, percentPosition, percentSpacing) {
+  PathConstraint.prototype.computeWorldPositions = function (
+    path,
+    spacesCount,
+    tangents,
+    percentPosition,
+    percentSpacing,
+  ) {
     var target = this.target;
     var position = this.position;
-    var spaces = this.spaces, out = Utils.setArraySize(this.positions, spacesCount * 3 + 2), world = null;
+    var spaces = this.spaces,
+      out = Utils.setArraySize(this.positions, spacesCount * 3 + 2),
+      world = null;
     var closed = path.closed;
-    var verticesLength = path.worldVerticesLength, curveCount = verticesLength / 6, prevCurve = PathConstraint.NONE;
+    var verticesLength = path.worldVerticesLength,
+      curveCount = verticesLength / 6,
+      prevCurve = PathConstraint.NONE;
     if (!path.constantSpeed) {
       var lengths = path.lengths;
       curveCount -= closed ? 1 : 2;
       var pathLength_1 = lengths[curveCount];
-      if (percentPosition)
-        position *= pathLength_1;
+      if (percentPosition) position *= pathLength_1;
       if (percentSpacing) {
-        for (var i = 0; i < spacesCount; i++)
-          spaces[i] *= pathLength_1;
+        for (var i = 0; i < spacesCount; i++) spaces[i] *= pathLength_1;
       }
       world = Utils.setArraySize(this.world, 8);
       for (var i = 0, o = 0, curve = 0; i < spacesCount; i++, o += 3) {
@@ -12642,19 +12792,16 @@ var PathConstraint$1 = /** @class */ (function () {
         var p = position;
         if (closed) {
           p %= pathLength_1;
-          if (p < 0)
-            p += pathLength_1;
+          if (p < 0) p += pathLength_1;
           curve = 0;
-        }
-        else if (p < 0) {
+        } else if (p < 0) {
           if (prevCurve != PathConstraint.BEFORE) {
             prevCurve = PathConstraint.BEFORE;
             path.computeWorldVertices(target, 2, 4, world, 0, 2);
           }
           this.addBeforePosition(p, world, 0, out, o);
           continue;
-        }
-        else if (p > pathLength_1) {
+        } else if (p > pathLength_1) {
           if (prevCurve != PathConstraint.AFTER) {
             prevCurve = PathConstraint.AFTER;
             path.computeWorldVertices(target, verticesLength - 6, 4, world, 0, 2);
@@ -12665,10 +12812,8 @@ var PathConstraint$1 = /** @class */ (function () {
         // Determine curve containing position.
         for (; ; curve++) {
           var length_4 = lengths[curve];
-          if (p > length_4)
-            continue;
-          if (curve == 0)
-            p /= length_4;
+          if (p > length_4) continue;
+          if (curve == 0) p /= length_4;
           else {
             var prev = lengths[curve - 1];
             p = (p - prev) / (length_4 - prev);
@@ -12680,11 +12825,22 @@ var PathConstraint$1 = /** @class */ (function () {
           if (closed && curve == curveCount) {
             path.computeWorldVertices(target, verticesLength - 4, 4, world, 0, 2);
             path.computeWorldVertices(target, 0, 4, world, 4, 2);
-          }
-          else
-            path.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
+          } else path.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
         }
-        this.addCurvePosition(p, world[0], world[1], world[2], world[3], world[4], world[5], world[6], world[7], out, o, tangents || (i > 0 && space == 0));
+        this.addCurvePosition(
+          p,
+          world[0],
+          world[1],
+          world[2],
+          world[3],
+          world[4],
+          world[5],
+          world[6],
+          world[7],
+          out,
+          o,
+          tangents || (i > 0 && space == 0),
+        );
       }
       return out;
     }
@@ -12696,8 +12852,7 @@ var PathConstraint$1 = /** @class */ (function () {
       path.computeWorldVertices(target, 0, 2, world, verticesLength - 4, 2);
       world[verticesLength - 2] = world[0];
       world[verticesLength - 1] = world[1];
-    }
-    else {
+    } else {
       curveCount--;
       verticesLength -= 4;
       world = Utils.setArraySize(this.world, verticesLength);
@@ -12706,8 +12861,22 @@ var PathConstraint$1 = /** @class */ (function () {
     // Curve lengths.
     var curves = Utils.setArraySize(this.curves, curveCount);
     var pathLength = 0;
-    var x1 = world[0], y1 = world[1], cx1 = 0, cy1 = 0, cx2 = 0, cy2 = 0, x2 = 0, y2 = 0;
-    var tmpx = 0, tmpy = 0, dddfx = 0, dddfy = 0, ddfx = 0, ddfy = 0, dfx = 0, dfy = 0;
+    var x1 = world[0],
+      y1 = world[1],
+      cx1 = 0,
+      cy1 = 0,
+      cx2 = 0,
+      cy2 = 0,
+      x2 = 0,
+      y2 = 0;
+    var tmpx = 0,
+      tmpy = 0,
+      dddfx = 0,
+      dddfy = 0,
+      ddfx = 0,
+      ddfy = 0,
+      dfx = 0,
+      dfy = 0;
     for (var i = 0, w = 2; i < curveCount; i++, w += 6) {
       cx1 = world[w];
       cy1 = world[w + 1];
@@ -12739,11 +12908,9 @@ var PathConstraint$1 = /** @class */ (function () {
       x1 = x2;
       y1 = y2;
     }
-    if (percentPosition)
-      position *= pathLength;
+    if (percentPosition) position *= pathLength;
     if (percentSpacing) {
-      for (var i = 0; i < spacesCount; i++)
-        spaces[i] *= pathLength;
+      for (var i = 0; i < spacesCount; i++) spaces[i] *= pathLength;
     }
     var segments = this.segments;
     var curveLength = 0;
@@ -12753,25 +12920,20 @@ var PathConstraint$1 = /** @class */ (function () {
       var p = position;
       if (closed) {
         p %= pathLength;
-        if (p < 0)
-          p += pathLength;
+        if (p < 0) p += pathLength;
         curve = 0;
-      }
-      else if (p < 0) {
+      } else if (p < 0) {
         this.addBeforePosition(p, world, 0, out, o);
         continue;
-      }
-      else if (p > pathLength) {
+      } else if (p > pathLength) {
         this.addAfterPosition(p - pathLength, world, verticesLength - 4, out, o);
         continue;
       }
       // Determine curve containing position.
       for (; ; curve++) {
         var length_5 = curves[curve];
-        if (p > length_5)
-          continue;
-        if (curve == 0)
-          p /= length_5;
+        if (p > length_5) continue;
+        if (curve == 0) p /= length_5;
         else {
           var prev = curves[curve - 1];
           p = (p - prev) / (length_5 - prev);
@@ -12822,10 +12984,8 @@ var PathConstraint$1 = /** @class */ (function () {
       p *= curveLength;
       for (; ; segment++) {
         var length_6 = segments[segment];
-        if (p > length_6)
-          continue;
-        if (segment == 0)
-          p /= length_6;
+        if (p > length_6) continue;
+        if (segment == 0) p /= length_6;
         else {
           var prev = segments[segment - 1];
           p = segment + (p - prev) / (length_6 - prev);
@@ -12837,23 +12997,38 @@ var PathConstraint$1 = /** @class */ (function () {
     return out;
   };
   PathConstraint.prototype.addBeforePosition = function (p, temp, i, out, o) {
-    var x1 = temp[i], y1 = temp[i + 1], dx = temp[i + 2] - x1, dy = temp[i + 3] - y1, r = Math.atan2(dy, dx);
+    var x1 = temp[i],
+      y1 = temp[i + 1],
+      dx = temp[i + 2] - x1,
+      dy = temp[i + 3] - y1,
+      r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
   };
   PathConstraint.prototype.addAfterPosition = function (p, temp, i, out, o) {
-    var x1 = temp[i + 2], y1 = temp[i + 3], dx = x1 - temp[i], dy = y1 - temp[i + 1], r = Math.atan2(dy, dx);
+    var x1 = temp[i + 2],
+      y1 = temp[i + 3],
+      dx = x1 - temp[i],
+      dy = y1 - temp[i + 1],
+      r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
   };
   PathConstraint.prototype.addCurvePosition = function (p, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents) {
-    if (p == 0 || isNaN(p))
-      p = 0.0001;
-    var tt = p * p, ttt = tt * p, u = 1 - p, uu = u * u, uuu = uu * u;
-    var ut = u * p, ut3 = ut * 3, uut3 = u * ut3, utt3 = ut3 * p;
-    var x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt, y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
+    if (p == 0 || isNaN(p)) p = 0.0001;
+    var tt = p * p,
+      ttt = tt * p,
+      u = 1 - p,
+      uu = u * u,
+      uuu = uu * u;
+    var ut = u * p,
+      ut3 = ut * 3,
+      uut3 = u * ut3,
+      utt3 = ut3 * p;
+    var x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt,
+      y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
     out[o] = x;
     out[o + 1] = y;
     if (tangents)
@@ -12867,7 +13042,7 @@ var PathConstraint$1 = /** @class */ (function () {
   PathConstraint.AFTER = -3;
   PathConstraint.epsilon = 0.00001;
   return PathConstraint;
-}());
+})();
 
 /**
  * @public
@@ -12875,10 +13050,8 @@ var PathConstraint$1 = /** @class */ (function () {
 var Slot$1 = /** @class */ (function () {
   function Slot(data, bone) {
     this.attachmentVertices = new Array();
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (bone == null)
-      throw new Error("bone cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (bone == null) throw new Error('bone cannot be null.');
     this.data = data;
     this.bone = bone;
     this.color = new Color();
@@ -12893,8 +13066,7 @@ var Slot$1 = /** @class */ (function () {
   /** Sets the attachment and if it changed, resets {@link #getAttachmentTime()} and clears {@link #getAttachmentVertices()}.
    * @param attachment May be null. */
   Slot.prototype.setAttachment = function (attachment) {
-    if (this.attachment == attachment)
-      return;
+    if (this.attachment == attachment) return;
     this.attachment = attachment;
     this.attachmentTime = this.bone.skeleton.time;
     this.attachmentVertices.length = 0;
@@ -12908,17 +13080,15 @@ var Slot$1 = /** @class */ (function () {
   };
   Slot.prototype.setToSetupPose = function () {
     this.color.setFromColor(this.data.color);
-    if (this.darkColor != null)
-      this.darkColor.setFromColor(this.data.darkColor);
-    if (this.data.attachmentName == null)
-      this.attachment = null;
+    if (this.darkColor != null) this.darkColor.setFromColor(this.data.darkColor);
+    if (this.data.attachmentName == null) this.attachment = null;
     else {
       this.attachment = null;
       this.setAttachment(this.bone.skeleton.getAttachment(this.data.index, this.data.attachmentName));
     }
   };
   return Slot;
-}());
+})();
 
 /**
  * @public
@@ -12930,18 +13100,15 @@ var TransformConstraint$1 = /** @class */ (function () {
     this.scaleMix = 0;
     this.shearMix = 0;
     this.temp = new Vector2();
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.rotateMix = data.rotateMix;
     this.translateMix = data.translateMix;
     this.scaleMix = data.scaleMix;
     this.shearMix = data.shearMix;
     this.bones = new Array();
-    for (var i = 0; i < data.bones.length; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findBone(data.target.name);
   }
   TransformConstraint.prototype.apply = function () {
@@ -12949,23 +13116,24 @@ var TransformConstraint$1 = /** @class */ (function () {
   };
   TransformConstraint.prototype.update = function () {
     if (this.data.local) {
-      if (this.data.relative)
-        this.applyRelativeLocal();
-      else
-        this.applyAbsoluteLocal();
-    }
-    else {
-      if (this.data.relative)
-        this.applyRelativeWorld();
-      else
-        this.applyAbsoluteWorld();
+      if (this.data.relative) this.applyRelativeLocal();
+      else this.applyAbsoluteLocal();
+    } else {
+      if (this.data.relative) this.applyRelativeWorld();
+      else this.applyAbsoluteWorld();
     }
   };
   TransformConstraint.prototype.applyAbsoluteWorld = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
     var targetMat = target.matrix;
-    var ta = targetMat.a, tb = targetMat.c, tc = targetMat.b, td = targetMat.d;
+    var ta = targetMat.a,
+      tb = targetMat.c,
+      tc = targetMat.b,
+      td = targetMat.d;
     var degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
     var offsetRotation = this.data.offsetRotation * degRadReflect;
     var offsetShearY = this.data.offsetShearY * degRadReflect;
@@ -12975,14 +13143,16 @@ var TransformConstraint$1 = /** @class */ (function () {
       var modified = false;
       var mat = bone.matrix;
       if (rotateMix != 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d;
         var r = Math.atan2(tc, ta) - Math.atan2(c, a) + offsetRotation;
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
         r *= rotateMix;
-        var cos = Math.cos(r), sin = Math.sin(r);
+        var cos = Math.cos(r),
+          sin = Math.sin(r);
         mat.a = cos * a - sin * c;
         mat.c = cos * b - sin * d;
         mat.b = sin * a + cos * c;
@@ -12999,57 +13169,62 @@ var TransformConstraint$1 = /** @class */ (function () {
       if (scaleMix > 0) {
         var s = Math.sqrt(mat.a * mat.a + mat.b * mat.b);
         var ts = Math.sqrt(ta * ta + tc * tc);
-        if (s > 0.00001)
-          s = (s + (ts - s + this.data.offsetScaleX) * scaleMix) / s;
+        if (s > 0.00001) s = (s + (ts - s + this.data.offsetScaleX) * scaleMix) / s;
         mat.a *= s;
         mat.b *= s;
         s = Math.sqrt(mat.c * mat.c + mat.d * mat.d);
         ts = Math.sqrt(tb * tb + td * td);
-        if (s > 0.00001)
-          s = (s + (ts - s + this.data.offsetScaleY) * scaleMix) / s;
+        if (s > 0.00001) s = (s + (ts - s + this.data.offsetScaleY) * scaleMix) / s;
         mat.c *= s;
         mat.d *= s;
         modified = true;
       }
       if (shearMix > 0) {
-        var b = mat.c, d = mat.d;
+        var b = mat.c,
+          d = mat.d;
         var by = Math.atan2(d, b);
         var r = Math.atan2(td, tb) - Math.atan2(tc, ta) - (by - Math.atan2(mat.b, mat.a));
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
         r = by + (r + offsetShearY) * shearMix;
         var s = Math.sqrt(b * b + d * d);
         mat.c = Math.cos(r) * s;
         mat.d = Math.sin(r) * s;
         modified = true;
       }
-      if (modified)
-        bone.appliedValid = false;
+      if (modified) bone.appliedValid = false;
     }
   };
   TransformConstraint.prototype.applyRelativeWorld = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
     var targetMat = target.matrix;
-    var ta = targetMat.a, tb = targetMat.c, tc = targetMat.b, td = targetMat.d;
+    var ta = targetMat.a,
+      tb = targetMat.c,
+      tc = targetMat.b,
+      td = targetMat.d;
     var degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
-    var offsetRotation = this.data.offsetRotation * degRadReflect, offsetShearY = this.data.offsetShearY * degRadReflect;
+    var offsetRotation = this.data.offsetRotation * degRadReflect,
+      offsetShearY = this.data.offsetShearY * degRadReflect;
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
       var modified = false;
       var mat = bone.matrix;
       if (rotateMix != 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d;
         var r = Math.atan2(tc, ta) + offsetRotation;
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
         r *= rotateMix;
-        var cos = Math.cos(r), sin = Math.sin(r);
+        var cos = Math.cos(r),
+          sin = Math.sin(r);
         mat.a = cos * a - sin * c;
         mat.c = cos * b - sin * d;
         mat.b = sin * a + cos * c;
@@ -13074,43 +13249,44 @@ var TransformConstraint$1 = /** @class */ (function () {
       }
       if (shearMix > 0) {
         var r = Math.atan2(td, tb) - Math.atan2(tc, ta);
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI)
-          r += MathUtils.PI2;
-        var b = mat.c, d = mat.d;
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI) r += MathUtils.PI2;
+        var b = mat.c,
+          d = mat.d;
         r = Math.atan2(d, b) + (r - MathUtils.PI / 2 + offsetShearY) * shearMix;
         var s = Math.sqrt(b * b + d * d);
         mat.c = Math.cos(r) * s;
         mat.d = Math.sin(r) * s;
         modified = true;
       }
-      if (modified)
-        bone.appliedValid = false;
+      if (modified) bone.appliedValid = false;
     }
   };
   TransformConstraint.prototype.applyAbsoluteLocal = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
-    if (!target.appliedValid)
-      target.updateAppliedTransform();
+    if (!target.appliedValid) target.updateAppliedTransform();
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (!bone.appliedValid)
-        bone.updateAppliedTransform();
+      if (!bone.appliedValid) bone.updateAppliedTransform();
       var rotation = bone.arotation;
       if (rotateMix != 0) {
         var r = target.arotation - rotation + this.data.offsetRotation;
         r -= (16384 - ((16384.499999999996 - r / 360) | 0)) * 360;
         rotation += r * rotateMix;
       }
-      var x = bone.ax, y = bone.ay;
+      var x = bone.ax,
+        y = bone.ay;
       if (translateMix != 0) {
         x += (target.ax - x + this.data.offsetX) * translateMix;
         y += (target.ay - y + this.data.offsetY) * translateMix;
       }
-      var scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+      var scaleX = bone.ascaleX,
+        scaleY = bone.ascaleY;
       if (scaleMix > 0) {
         if (scaleX > 0.00001)
           scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * scaleMix) / scaleX;
@@ -13127,33 +13303,32 @@ var TransformConstraint$1 = /** @class */ (function () {
     }
   };
   TransformConstraint.prototype.applyRelativeLocal = function () {
-    var rotateMix = this.rotateMix, translateMix = this.translateMix, scaleMix = this.scaleMix, shearMix = this.shearMix;
+    var rotateMix = this.rotateMix,
+      translateMix = this.translateMix,
+      scaleMix = this.scaleMix,
+      shearMix = this.shearMix;
     var target = this.target;
-    if (!target.appliedValid)
-      target.updateAppliedTransform();
+    if (!target.appliedValid) target.updateAppliedTransform();
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (!bone.appliedValid)
-        bone.updateAppliedTransform();
+      if (!bone.appliedValid) bone.updateAppliedTransform();
       var rotation = bone.arotation;
-      if (rotateMix != 0)
-        rotation += (target.arotation + this.data.offsetRotation) * rotateMix;
-      var x = bone.ax, y = bone.ay;
+      if (rotateMix != 0) rotation += (target.arotation + this.data.offsetRotation) * rotateMix;
+      var x = bone.ax,
+        y = bone.ay;
       if (translateMix != 0) {
         x += (target.ax + this.data.offsetX) * translateMix;
         y += (target.ay + this.data.offsetY) * translateMix;
       }
-      var scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+      var scaleX = bone.ascaleX,
+        scaleY = bone.ascaleY;
       if (scaleMix > 0) {
-        if (scaleX > 0.00001)
-          scaleX *= ((target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix) + 1;
-        if (scaleY > 0.00001)
-          scaleY *= ((target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix) + 1;
+        if (scaleX > 0.00001) scaleX *= (target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix + 1;
+        if (scaleY > 0.00001) scaleY *= (target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix + 1;
       }
       var shearY = bone.ashearY;
-      if (shearMix > 0)
-        shearY += (target.ashearY + this.data.offsetShearY) * shearMix;
+      if (shearMix > 0) shearY += (target.ashearY + this.data.offsetShearY) * shearMix;
       bone.updateWorldTransformWith(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
     }
   };
@@ -13161,7 +13336,7 @@ var TransformConstraint$1 = /** @class */ (function () {
     return this.data.order;
   };
   return TransformConstraint;
-}());
+})();
 
 /**
  * @public
@@ -13175,15 +13350,13 @@ var Skeleton$1 = /** @class */ (function () {
     this.scaleY = 1;
     this.x = 0;
     this.y = 0;
-    if (data == null)
-      throw new Error("data cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
     this.data = data;
     this.bones = new Array();
     for (var i = 0; i < data.bones.length; i++) {
       var boneData = data.bones[i];
       var bone = void 0;
-      if (boneData.parent == null)
-        bone = new Bone$1(boneData, this, null);
+      if (boneData.parent == null) bone = new Bone$1(boneData, this, null);
       else {
         var parent_1 = this.bones[boneData.parent.index];
         bone = new Bone$1(boneData, this, parent_1);
@@ -13223,13 +13396,14 @@ var Skeleton$1 = /** @class */ (function () {
     updateCache.length = 0;
     this.updateCacheReset.length = 0;
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      bones[i].sorted = false;
+    for (var i = 0, n = bones.length; i < n; i++) bones[i].sorted = false;
     // IK first, lowest hierarchy depth first.
     var ikConstraints = this.ikConstraints;
     var transformConstraints = this.transformConstraints;
     var pathConstraints = this.pathConstraints;
-    var ikCount = ikConstraints.length, transformCount = transformConstraints.length, pathCount = pathConstraints.length;
+    var ikCount = ikConstraints.length,
+      transformCount = transformConstraints.length,
+      pathCount = pathConstraints.length;
     var constraintCount = ikCount + transformCount + pathCount;
     outer: for (var i = 0; i < constraintCount; i++) {
       for (var ii = 0; ii < ikCount; ii++) {
@@ -13254,8 +13428,7 @@ var Skeleton$1 = /** @class */ (function () {
         }
       }
     }
-    for (var i = 0, n = bones.length; i < n; i++)
-      this.sortBone(bones[i]);
+    for (var i = 0, n = bones.length; i < n; i++) this.sortBone(bones[i]);
   };
   Skeleton.prototype.sortIkConstraint = function (constraint) {
     var target = constraint.target;
@@ -13265,8 +13438,7 @@ var Skeleton$1 = /** @class */ (function () {
     this.sortBone(parent);
     if (constrained.length > 1) {
       var child = constrained[constrained.length - 1];
-      if (!(this._updateCache.indexOf(child) > -1))
-        this.updateCacheReset.push(child);
+      if (!(this._updateCache.indexOf(child) > -1)) this.updateCacheReset.push(child);
     }
     this._updateCache.push(constraint);
     this.sortReset(parent.children);
@@ -13276,24 +13448,19 @@ var Skeleton$1 = /** @class */ (function () {
     var slot = constraint.target;
     var slotIndex = slot.data.index;
     var slotBone = slot.bone;
-    if (this.skin != null)
-      this.sortPathConstraintAttachment(this.skin, slotIndex, slotBone);
+    if (this.skin != null) this.sortPathConstraintAttachment(this.skin, slotIndex, slotBone);
     if (this.data.defaultSkin != null && this.data.defaultSkin != this.skin)
       this.sortPathConstraintAttachment(this.data.defaultSkin, slotIndex, slotBone);
     for (var i = 0, n = this.data.skins.length; i < n; i++)
       this.sortPathConstraintAttachment(this.data.skins[i], slotIndex, slotBone);
     var attachment = slot.getAttachment();
-    if (attachment instanceof PathAttachment$1)
-      this.sortPathConstraintAttachmentWith(attachment, slotBone);
+    if (attachment instanceof PathAttachment$1) this.sortPathConstraintAttachmentWith(attachment, slotBone);
     var constrained = constraint.bones;
     var boneCount = constrained.length;
-    for (var i = 0; i < boneCount; i++)
-      this.sortBone(constrained[i]);
+    for (var i = 0; i < boneCount; i++) this.sortBone(constrained[i]);
     this._updateCache.push(constraint);
-    for (var i = 0; i < boneCount; i++)
-      this.sortReset(constrained[i].children);
-    for (var i = 0; i < boneCount; i++)
-      constrained[i].sorted = true;
+    for (var i = 0; i < boneCount; i++) this.sortReset(constrained[i].children);
+    for (var i = 0; i < boneCount; i++) constrained[i].sorted = true;
   };
   Skeleton.prototype.sortTransformConstraint = function (constraint) {
     this.sortBone(constraint.target);
@@ -13303,35 +13470,28 @@ var Skeleton$1 = /** @class */ (function () {
       for (var i = 0; i < boneCount; i++) {
         var child = constrained[i];
         this.sortBone(child.parent);
-        if (!(this._updateCache.indexOf(child) > -1))
-          this.updateCacheReset.push(child);
+        if (!(this._updateCache.indexOf(child) > -1)) this.updateCacheReset.push(child);
       }
-    }
-    else {
+    } else {
       for (var i = 0; i < boneCount; i++) {
         this.sortBone(constrained[i]);
       }
     }
     this._updateCache.push(constraint);
-    for (var ii = 0; ii < boneCount; ii++)
-      this.sortReset(constrained[ii].children);
-    for (var ii = 0; ii < boneCount; ii++)
-      constrained[ii].sorted = true;
+    for (var ii = 0; ii < boneCount; ii++) this.sortReset(constrained[ii].children);
+    for (var ii = 0; ii < boneCount; ii++) constrained[ii].sorted = true;
   };
   Skeleton.prototype.sortPathConstraintAttachment = function (skin, slotIndex, slotBone) {
     var attachments = skin.attachments[slotIndex];
-    if (!attachments)
-      return;
+    if (!attachments) return;
     for (var key in attachments) {
       this.sortPathConstraintAttachmentWith(attachments[key], slotBone);
     }
   };
   Skeleton.prototype.sortPathConstraintAttachmentWith = function (attachment, slotBone) {
-    if (!(attachment instanceof PathAttachment$1))
-      return;
+    if (!(attachment instanceof PathAttachment$1)) return;
     var pathBones = attachment.bones;
-    if (pathBones == null)
-      this.sortBone(slotBone);
+    if (pathBones == null) this.sortBone(slotBone);
     else {
       var bones = this.bones;
       var i = 0;
@@ -13345,19 +13505,16 @@ var Skeleton$1 = /** @class */ (function () {
     }
   };
   Skeleton.prototype.sortBone = function (bone) {
-    if (bone.sorted)
-      return;
+    if (bone.sorted) return;
     var parent = bone.parent;
-    if (parent != null)
-      this.sortBone(parent);
+    if (parent != null) this.sortBone(parent);
     bone.sorted = true;
     this._updateCache.push(bone);
   };
   Skeleton.prototype.sortReset = function (bones) {
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.sorted)
-        this.sortReset(bone.children);
+      if (bone.sorted) this.sortReset(bone.children);
       bone.sorted = false;
     }
   };
@@ -13376,8 +13533,7 @@ var Skeleton$1 = /** @class */ (function () {
       bone.appliedValid = true;
     }
     var updateCache = this._updateCache;
-    for (var i = 0, n = updateCache.length; i < n; i++)
-      updateCache[i].update();
+    for (var i = 0, n = updateCache.length; i < n; i++) updateCache[i].update();
   };
   /** Sets the bones, constraints, and slots to their setup pose values. */
   Skeleton.prototype.setToSetupPose = function () {
@@ -13387,8 +13543,7 @@ var Skeleton$1 = /** @class */ (function () {
   /** Sets the bones and constraints to their setup pose values. */
   Skeleton.prototype.setBonesToSetupPose = function () {
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      bones[i].setToSetupPose();
+    for (var i = 0, n = bones.length; i < n; i++) bones[i].setToSetupPose();
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var constraint = ikConstraints[i];
@@ -13417,65 +13572,52 @@ var Skeleton$1 = /** @class */ (function () {
   Skeleton.prototype.setSlotsToSetupPose = function () {
     var slots = this.slots;
     Utils.arrayCopy(slots, 0, this.drawOrder, 0, slots.length);
-    for (var i = 0, n = slots.length; i < n; i++)
-      slots[i].setToSetupPose();
+    for (var i = 0, n = slots.length; i < n; i++) slots[i].setToSetupPose();
   };
   /** @return May return null. */
   Skeleton.prototype.getRootBone = function () {
-    if (this.bones.length == 0)
-      return null;
+    if (this.bones.length == 0) return null;
     return this.bones[0];
   };
   /** @return May be null. */
   Skeleton.prototype.findBone = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.data.name == boneName)
-        return bone;
+      if (bone.data.name == boneName) return bone;
     }
     return null;
   };
   /** @return -1 if the bone was not found. */
   Skeleton.prototype.findBoneIndex = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      if (bones[i].data.name == boneName)
-        return i;
+    for (var i = 0, n = bones.length; i < n; i++) if (bones[i].data.name == boneName) return i;
     return -1;
   };
   /** @return May be null. */
   Skeleton.prototype.findSlot = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
-      if (slot.data.name == slotName)
-        return slot;
+      if (slot.data.name == slotName) return slot;
     }
     return null;
   };
   /** @return -1 if the bone was not found. */
   Skeleton.prototype.findSlotIndex = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
-    for (var i = 0, n = slots.length; i < n; i++)
-      if (slots[i].data.name == slotName)
-        return i;
+    for (var i = 0, n = slots.length; i < n; i++) if (slots[i].data.name == slotName) return i;
     return -1;
   };
   /** Sets a skin by name.
    * @see #setSkin(Skin) */
   Skeleton.prototype.setSkinByName = function (skinName) {
     var skin = this.data.findSkin(skinName);
-    if (skin == null)
-      throw new Error("Skin not found: " + skinName);
+    if (skin == null) throw new Error('Skin not found: ' + skinName);
     this.setSkin(skin);
   };
   /** Sets the skin used to look up attachments before looking in the {@link SkeletonData#getDefaultSkin() default skin}.
@@ -13484,8 +13626,7 @@ var Skeleton$1 = /** @class */ (function () {
    * @param newSkin May be null. */
   Skeleton.prototype.setSkin = function (newSkin) {
     if (newSkin != null) {
-      if (this.skin != null)
-        newSkin.attachAll(this, this.skin);
+      if (this.skin != null) newSkin.attachAll(this, this.skin);
       else {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++) {
@@ -13493,8 +13634,7 @@ var Skeleton$1 = /** @class */ (function () {
           var name_1 = slot.data.attachmentName;
           if (name_1 != null) {
             var attachment = newSkin.getAttachment(i, name_1);
-            if (attachment != null)
-              slot.setAttachment(attachment);
+            if (attachment != null) slot.setAttachment(attachment);
           }
         }
       }
@@ -13507,21 +13647,17 @@ var Skeleton$1 = /** @class */ (function () {
   };
   /** @return May be null. */
   Skeleton.prototype.getAttachment = function (slotIndex, attachmentName) {
-    if (attachmentName == null)
-      throw new Error("attachmentName cannot be null.");
+    if (attachmentName == null) throw new Error('attachmentName cannot be null.');
     if (this.skin != null) {
       var attachment = this.skin.getAttachment(slotIndex, attachmentName);
-      if (attachment != null)
-        return attachment;
+      if (attachment != null) return attachment;
     }
-    if (this.data.defaultSkin != null)
-      return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
+    if (this.data.defaultSkin != null) return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
     return null;
   };
   /** @param attachmentName May be null. */
   Skeleton.prototype.setAttachment = function (slotName, attachmentName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
@@ -13530,47 +13666,41 @@ var Skeleton$1 = /** @class */ (function () {
         if (attachmentName != null) {
           attachment = this.getAttachment(i, attachmentName);
           if (attachment == null)
-            throw new Error("Attachment not found: " + attachmentName + ", for slot: " + slotName);
+            throw new Error('Attachment not found: ' + attachmentName + ', for slot: ' + slotName);
         }
         slot.setAttachment(attachment);
         return;
       }
     }
-    throw new Error("Slot not found: " + slotName);
+    throw new Error('Slot not found: ' + slotName);
   };
   /** @return May be null. */
   Skeleton.prototype.findIkConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var ikConstraint = ikConstraints[i];
-      if (ikConstraint.data.name == constraintName)
-        return ikConstraint;
+      if (ikConstraint.data.name == constraintName) return ikConstraint;
     }
     return null;
   };
   /** @return May be null. */
   Skeleton.prototype.findTransformConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var transformConstraints = this.transformConstraints;
     for (var i = 0, n = transformConstraints.length; i < n; i++) {
       var constraint = transformConstraints[i];
-      if (constraint.data.name == constraintName)
-        return constraint;
+      if (constraint.data.name == constraintName) return constraint;
     }
     return null;
   };
   /** @return May be null. */
   Skeleton.prototype.findPathConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
     for (var i = 0, n = pathConstraints.length; i < n; i++) {
       var constraint = pathConstraints[i];
-      if (constraint.data.name == constraintName)
-        return constraint;
+      if (constraint.data.name == constraintName) return constraint;
     }
     return null;
   };
@@ -13579,12 +13709,13 @@ var Skeleton$1 = /** @class */ (function () {
    * @param size The width and height of the AABB.
    * @param temp Working memory */
   Skeleton.prototype.getBounds = function (offset, size, temp) {
-    if (offset == null)
-      throw new Error("offset cannot be null.");
-    if (size == null)
-      throw new Error("size cannot be null.");
+    if (offset == null) throw new Error('offset cannot be null.');
+    if (size == null) throw new Error('size cannot be null.');
     var drawOrder = this.drawOrder;
-    var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+    var minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
+      maxX = Number.NEGATIVE_INFINITY,
+      maxY = Number.NEGATIVE_INFINITY;
     for (var i = 0, n = drawOrder.length; i < n; i++) {
       var slot = drawOrder[i];
       var verticesLength = 0;
@@ -13594,8 +13725,7 @@ var Skeleton$1 = /** @class */ (function () {
         verticesLength = 8;
         vertices = Utils.setArraySize(temp, verticesLength, 0);
         attachment.computeWorldVertices(slot.bone, vertices, 0, 2);
-      }
-      else if (attachment instanceof MeshAttachment$1) {
+      } else if (attachment instanceof MeshAttachment$1) {
         var mesh = attachment;
         verticesLength = mesh.worldVerticesLength;
         vertices = Utils.setArraySize(temp, verticesLength, 0);
@@ -13603,7 +13733,8 @@ var Skeleton$1 = /** @class */ (function () {
       }
       if (vertices != null) {
         for (var ii = 0, nn = vertices.length; ii < nn; ii += 2) {
-          var x = vertices[ii], y = vertices[ii + 1];
+          var x = vertices[ii],
+            y = vertices[ii + 1];
           minX = Math.min(minX, x);
           minY = Math.min(minY, y);
           maxX = Math.max(maxX, x);
@@ -13617,37 +13748,37 @@ var Skeleton$1 = /** @class */ (function () {
   Skeleton.prototype.update = function (delta) {
     this.time += delta;
   };
-  Object.defineProperty(Skeleton.prototype, "flipX", {
+  Object.defineProperty(Skeleton.prototype, 'flipX', {
     get: function () {
       return this.scaleX == -1;
     },
     set: function (value) {
       if (!Skeleton.deprecatedWarning1) {
         Skeleton.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY");
+        console.warn('Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY');
       }
       this.scaleX = value ? 1.0 : -1.0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(Skeleton.prototype, "flipY", {
+  Object.defineProperty(Skeleton.prototype, 'flipY', {
     get: function () {
       return this.scaleY == -1;
     },
     set: function (value) {
       if (!Skeleton.deprecatedWarning1) {
         Skeleton.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY");
+        console.warn('Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY');
       }
       this.scaleY = value ? 1.0 : -1.0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   Skeleton.deprecatedWarning1 = false;
   return Skeleton;
-}());
+})();
 
 /**
  * @public
@@ -13665,8 +13796,7 @@ var SkeletonBounds$1 = /** @class */ (function () {
     });
   }
   SkeletonBounds.prototype.update = function (skeleton, updateAabb) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     var boundingBoxes = this.boundingBoxes;
     var polygons = this.polygons;
     var polygonPool = this.polygonPool;
@@ -13691,8 +13821,7 @@ var SkeletonBounds$1 = /** @class */ (function () {
     }
     if (updateAabb) {
       this.aabbCompute();
-    }
-    else {
+    } else {
       this.minX = Number.POSITIVE_INFINITY;
       this.minY = Number.POSITIVE_INFINITY;
       this.maxX = Number.NEGATIVE_INFINITY;
@@ -13700,7 +13829,10 @@ var SkeletonBounds$1 = /** @class */ (function () {
     }
   };
   SkeletonBounds.prototype.aabbCompute = function () {
-    var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+    var minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
+      maxX = Number.NEGATIVE_INFINITY,
+      maxY = Number.NEGATIVE_INFINITY;
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++) {
       var polygon = polygons[i];
@@ -13729,21 +13861,22 @@ var SkeletonBounds$1 = /** @class */ (function () {
     var minY = this.minY;
     var maxX = this.maxX;
     var maxY = this.maxY;
-    if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) || (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY))
+    if (
+      (x1 <= minX && x2 <= minX) ||
+      (y1 <= minY && y2 <= minY) ||
+      (x1 >= maxX && x2 >= maxX) ||
+      (y1 >= maxY && y2 >= maxY)
+    )
       return false;
     var m = (y2 - y1) / (x2 - x1);
     var y = m * (minX - x1) + y1;
-    if (y > minY && y < maxY)
-      return true;
+    if (y > minY && y < maxY) return true;
     y = m * (maxX - x1) + y1;
-    if (y > minY && y < maxY)
-      return true;
+    if (y > minY && y < maxY) return true;
     var x = (minY - y1) / m + x1;
-    if (x > minX && x < maxX)
-      return true;
+    if (x > minX && x < maxX) return true;
     x = (maxY - y1) / m + x1;
-    if (x > minX && x < maxX)
-      return true;
+    if (x > minX && x < maxX) return true;
     return false;
   };
   /** Returns true if the axis aligned bounding box intersects the axis aligned bounding box of the specified bounds. */
@@ -13755,8 +13888,7 @@ var SkeletonBounds$1 = /** @class */ (function () {
   SkeletonBounds.prototype.containsPoint = function (x, y) {
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++)
-      if (this.containsPointPolygon(polygons[i], x, y))
-        return this.boundingBoxes[i];
+      if (this.containsPointPolygon(polygons[i], x, y)) return this.boundingBoxes[i];
     return null;
   };
   /** Returns true if the polygon contains the point. */
@@ -13770,8 +13902,7 @@ var SkeletonBounds$1 = /** @class */ (function () {
       var prevY = vertices[prevIndex + 1];
       if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
         var vertexX = vertices[ii];
-        if (vertexX + (y - vertexY) / (prevY - vertexY) * (vertices[prevIndex] - vertexX) < x)
-          inside = !inside;
+        if (vertexX + ((y - vertexY) / (prevY - vertexY)) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
       }
       prevIndex = ii;
     }
@@ -13783,21 +13914,24 @@ var SkeletonBounds$1 = /** @class */ (function () {
   SkeletonBounds.prototype.intersectsSegment = function (x1, y1, x2, y2) {
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++)
-      if (this.intersectsSegmentPolygon(polygons[i], x1, y1, x2, y2))
-        return this.boundingBoxes[i];
+      if (this.intersectsSegmentPolygon(polygons[i], x1, y1, x2, y2)) return this.boundingBoxes[i];
     return null;
   };
   /** Returns true if the polygon contains any part of the line segment. */
   SkeletonBounds.prototype.intersectsSegmentPolygon = function (polygon, x1, y1, x2, y2) {
     var vertices = polygon;
     var nn = polygon.length;
-    var width12 = x1 - x2, height12 = y1 - y2;
+    var width12 = x1 - x2,
+      height12 = y1 - y2;
     var det1 = x1 * y2 - y1 * x2;
-    var x3 = vertices[nn - 2], y3 = vertices[nn - 1];
+    var x3 = vertices[nn - 2],
+      y3 = vertices[nn - 1];
     for (var ii = 0; ii < nn; ii += 2) {
-      var x4 = vertices[ii], y4 = vertices[ii + 1];
+      var x4 = vertices[ii],
+        y4 = vertices[ii + 1];
       var det2 = x3 * y4 - y3 * x4;
-      var width34 = x3 - x4, height34 = y3 - y4;
+      var width34 = x3 - x4,
+        height34 = y3 - y4;
       var det3 = width12 * height34 - height12 * width34;
       var x = (det1 * width34 - width12 * det2) / det3;
       if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
@@ -13812,8 +13946,7 @@ var SkeletonBounds$1 = /** @class */ (function () {
   };
   /** Returns the polygon for the specified bounding box, or null. */
   SkeletonBounds.prototype.getPolygon = function (boundingBox) {
-    if (boundingBox == null)
-      throw new Error("boundingBox cannot be null.");
+    if (boundingBox == null) throw new Error('boundingBox cannot be null.');
     var index = this.boundingBoxes.indexOf(boundingBox);
     return index == -1 ? null : this.polygons[index];
   };
@@ -13824,7 +13957,7 @@ var SkeletonBounds$1 = /** @class */ (function () {
     return this.maxY - this.minY;
   };
   return SkeletonBounds;
-}());
+})();
 
 /**
  * @public
@@ -13843,122 +13976,97 @@ var SkeletonData$1 = /** @class */ (function () {
     this.fps = 0;
   }
   SkeletonData.prototype.findBone = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.name == boneName)
-        return bone;
+      if (bone.name == boneName) return bone;
     }
     return null;
   };
   SkeletonData.prototype.findBoneIndex = function (boneName) {
-    if (boneName == null)
-      throw new Error("boneName cannot be null.");
+    if (boneName == null) throw new Error('boneName cannot be null.');
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      if (bones[i].name == boneName)
-        return i;
+    for (var i = 0, n = bones.length; i < n; i++) if (bones[i].name == boneName) return i;
     return -1;
   };
   SkeletonData.prototype.findSlot = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
-      if (slot.name == slotName)
-        return slot;
+      if (slot.name == slotName) return slot;
     }
     return null;
   };
   SkeletonData.prototype.findSlotIndex = function (slotName) {
-    if (slotName == null)
-      throw new Error("slotName cannot be null.");
+    if (slotName == null) throw new Error('slotName cannot be null.');
     var slots = this.slots;
-    for (var i = 0, n = slots.length; i < n; i++)
-      if (slots[i].name == slotName)
-        return i;
+    for (var i = 0, n = slots.length; i < n; i++) if (slots[i].name == slotName) return i;
     return -1;
   };
   SkeletonData.prototype.findSkin = function (skinName) {
-    if (skinName == null)
-      throw new Error("skinName cannot be null.");
+    if (skinName == null) throw new Error('skinName cannot be null.');
     var skins = this.skins;
     for (var i = 0, n = skins.length; i < n; i++) {
       var skin = skins[i];
-      if (skin.name == skinName)
-        return skin;
+      if (skin.name == skinName) return skin;
     }
     return null;
   };
   SkeletonData.prototype.findEvent = function (eventDataName) {
-    if (eventDataName == null)
-      throw new Error("eventDataName cannot be null.");
+    if (eventDataName == null) throw new Error('eventDataName cannot be null.');
     var events = this.events;
     for (var i = 0, n = events.length; i < n; i++) {
       var event_1 = events[i];
-      if (event_1.name == eventDataName)
-        return event_1;
+      if (event_1.name == eventDataName) return event_1;
     }
     return null;
   };
   SkeletonData.prototype.findAnimation = function (animationName) {
-    if (animationName == null)
-      throw new Error("animationName cannot be null.");
+    if (animationName == null) throw new Error('animationName cannot be null.');
     var animations = this.animations;
     for (var i = 0, n = animations.length; i < n; i++) {
       var animation = animations[i];
-      if (animation.name == animationName)
-        return animation;
+      if (animation.name == animationName) return animation;
     }
     return null;
   };
   SkeletonData.prototype.findIkConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var constraint = ikConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findTransformConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var transformConstraints = this.transformConstraints;
     for (var i = 0, n = transformConstraints.length; i < n; i++) {
       var constraint = transformConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findPathConstraint = function (constraintName) {
-    if (constraintName == null)
-      throw new Error("constraintName cannot be null.");
+    if (constraintName == null) throw new Error('constraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
     for (var i = 0, n = pathConstraints.length; i < n; i++) {
       var constraint = pathConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findPathConstraintIndex = function (pathConstraintName) {
-    if (pathConstraintName == null)
-      throw new Error("pathConstraintName cannot be null.");
+    if (pathConstraintName == null) throw new Error('pathConstraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
-    for (var i = 0, n = pathConstraints.length; i < n; i++)
-      if (pathConstraints[i].name == pathConstraintName)
-        return i;
+    for (var i = 0, n = pathConstraints.length; i < n; i++) if (pathConstraints[i].name == pathConstraintName) return i;
     return -1;
   };
   return SkeletonData;
-}());
+})();
 
 /**
  * @public
@@ -13966,18 +14074,15 @@ var SkeletonData$1 = /** @class */ (function () {
 var SlotData$1 = /** @class */ (function () {
   function SlotData(index, name, boneData) {
     this.color = new Color(1, 1, 1, 1);
-    if (index < 0)
-      throw new Error("index must be >= 0.");
-    if (name == null)
-      throw new Error("name cannot be null.");
-    if (boneData == null)
-      throw new Error("boneData cannot be null.");
+    if (index < 0) throw new Error('index must be >= 0.');
+    if (name == null) throw new Error('name cannot be null.');
+    if (boneData == null) throw new Error('boneData cannot be null.');
     this.index = index;
     this.name = name;
     this.boneData = boneData;
   }
   return SlotData;
-}());
+})();
 
 /**
  * @public
@@ -13998,12 +14103,11 @@ var TransformConstraintData$1 = /** @class */ (function () {
     this.offsetShearY = 0;
     this.relative = false;
     this.local = false;
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
     this.name = name;
   }
   return TransformConstraintData;
-}());
+})();
 
 /**
  * @public
@@ -14011,18 +14115,14 @@ var TransformConstraintData$1 = /** @class */ (function () {
 var Skin$1 = /** @class */ (function () {
   function Skin(name) {
     this.attachments = new Array();
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (name == null) throw new Error('name cannot be null.');
     this.name = name;
   }
   Skin.prototype.addAttachment = function (slotIndex, name, attachment) {
-    if (attachment == null)
-      throw new Error("attachment cannot be null.");
+    if (attachment == null) throw new Error('attachment cannot be null.');
     var attachments = this.attachments;
-    if (slotIndex >= attachments.length)
-      attachments.length = slotIndex + 1;
-    if (!attachments[slotIndex])
-      attachments[slotIndex] = {};
+    if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
+    if (!attachments[slotIndex]) attachments[slotIndex] = {};
     attachments[slotIndex][name] = attachment;
   };
   /** @return May be null. */
@@ -14042,8 +14142,7 @@ var Skin$1 = /** @class */ (function () {
           var skinAttachment = dictionary[key];
           if (slotAttachment == skinAttachment) {
             var attachment = this.getAttachment(slotIndex, key);
-            if (attachment != null)
-              slot.setAttachment(attachment);
+            if (attachment != null) slot.setAttachment(attachment);
             break;
           }
         }
@@ -14052,7 +14151,7 @@ var Skin$1 = /** @class */ (function () {
     }
   };
   return Skin;
-}());
+})();
 
 /**
  * @public
@@ -14066,7 +14165,7 @@ var SkeletonJson$1 = /** @class */ (function () {
   SkeletonJson.prototype.readSkeletonData = function (json) {
     var scale = this.scale;
     var skeletonData = new SkeletonData$1();
-    var root = typeof (json) === "string" ? JSON.parse(json) : json;
+    var root = typeof json === 'string' ? JSON.parse(json) : json;
     // Skeleton
     var skeletonMap = root.skeleton;
     if (skeletonMap != null) {
@@ -14082,22 +14181,21 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var i = 0; i < root.bones.length; i++) {
         var boneMap = root.bones[i];
         var parent_1 = null;
-        var parentName = this.getValue(boneMap, "parent", null);
+        var parentName = this.getValue(boneMap, 'parent', null);
         if (parentName != null) {
           parent_1 = skeletonData.findBone(parentName);
-          if (parent_1 == null)
-            throw new Error("Parent bone not found: " + parentName);
+          if (parent_1 == null) throw new Error('Parent bone not found: ' + parentName);
         }
         var data = new BoneData$1(skeletonData.bones.length, boneMap.name, parent_1);
-        data.length = this.getValue(boneMap, "length", 0) * scale;
-        data.x = this.getValue(boneMap, "x", 0) * scale;
-        data.y = this.getValue(boneMap, "y", 0) * scale;
-        data.rotation = this.getValue(boneMap, "rotation", 0);
-        data.scaleX = this.getValue(boneMap, "scaleX", 1);
-        data.scaleY = this.getValue(boneMap, "scaleY", 1);
-        data.shearX = this.getValue(boneMap, "shearX", 0);
-        data.shearY = this.getValue(boneMap, "shearY", 0);
-        data.transformMode = SkeletonJson.transformModeFromString(this.getValue(boneMap, "transform", "normal"));
+        data.length = this.getValue(boneMap, 'length', 0) * scale;
+        data.x = this.getValue(boneMap, 'x', 0) * scale;
+        data.y = this.getValue(boneMap, 'y', 0) * scale;
+        data.rotation = this.getValue(boneMap, 'rotation', 0);
+        data.scaleX = this.getValue(boneMap, 'scaleX', 1);
+        data.scaleY = this.getValue(boneMap, 'scaleY', 1);
+        data.shearX = this.getValue(boneMap, 'shearX', 0);
+        data.shearY = this.getValue(boneMap, 'shearY', 0);
+        data.transformMode = SkeletonJson.transformModeFromString(this.getValue(boneMap, 'transform', 'normal'));
         skeletonData.bones.push(data);
       }
     }
@@ -14108,19 +14206,17 @@ var SkeletonJson$1 = /** @class */ (function () {
         var slotName = slotMap.name;
         var boneName = slotMap.bone;
         var boneData = skeletonData.findBone(boneName);
-        if (boneData == null)
-          throw new Error("Slot bone not found: " + boneName);
+        if (boneData == null) throw new Error('Slot bone not found: ' + boneName);
         var data = new SlotData$1(skeletonData.slots.length, slotName, boneData);
-        var color = this.getValue(slotMap, "color", null);
-        if (color != null)
-          data.color.setFromString(color);
-        var dark = this.getValue(slotMap, "dark", null);
+        var color = this.getValue(slotMap, 'color', null);
+        if (color != null) data.color.setFromString(color);
+        var dark = this.getValue(slotMap, 'dark', null);
         if (dark != null) {
           data.darkColor = new Color(1, 1, 1, 1);
           data.darkColor.setFromString(dark);
         }
-        data.attachmentName = this.getValue(slotMap, "attachment", null);
-        data.blendMode = SkeletonJson.blendModeFromString(this.getValue(slotMap, "blend", "normal"));
+        data.attachmentName = this.getValue(slotMap, 'attachment', null);
+        data.blendMode = SkeletonJson.blendModeFromString(this.getValue(slotMap, 'blend', 'normal'));
         skeletonData.slots.push(data);
       }
     }
@@ -14129,20 +14225,18 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var i = 0; i < root.ik.length; i++) {
         var constraintMap = root.ik[i];
         var data = new IkConstraintData$1(constraintMap.name);
-        data.order = this.getValue(constraintMap, "order", 0);
+        data.order = this.getValue(constraintMap, 'order', 0);
         for (var j = 0; j < constraintMap.bones.length; j++) {
           var boneName = constraintMap.bones[j];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("IK bone not found: " + boneName);
+          if (bone == null) throw new Error('IK bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findBone(targetName);
-        if (data.target == null)
-          throw new Error("IK target bone not found: " + targetName);
-        data.bendDirection = this.getValue(constraintMap, "bendPositive", true) ? 1 : -1;
-        data.mix = this.getValue(constraintMap, "mix", 1);
+        if (data.target == null) throw new Error('IK target bone not found: ' + targetName);
+        data.bendDirection = this.getValue(constraintMap, 'bendPositive', true) ? 1 : -1;
+        data.mix = this.getValue(constraintMap, 'mix', 1);
         skeletonData.ikConstraints.push(data);
       }
     }
@@ -14151,30 +14245,28 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var i = 0; i < root.transform.length; i++) {
         var constraintMap = root.transform[i];
         var data = new TransformConstraintData$1(constraintMap.name);
-        data.order = this.getValue(constraintMap, "order", 0);
+        data.order = this.getValue(constraintMap, 'order', 0);
         for (var j = 0; j < constraintMap.bones.length; j++) {
           var boneName = constraintMap.bones[j];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("Transform constraint bone not found: " + boneName);
+          if (bone == null) throw new Error('Transform constraint bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findBone(targetName);
-        if (data.target == null)
-          throw new Error("Transform constraint target bone not found: " + targetName);
-        data.local = this.getValue(constraintMap, "local", false);
-        data.relative = this.getValue(constraintMap, "relative", false);
-        data.offsetRotation = this.getValue(constraintMap, "rotation", 0);
-        data.offsetX = this.getValue(constraintMap, "x", 0) * scale;
-        data.offsetY = this.getValue(constraintMap, "y", 0) * scale;
-        data.offsetScaleX = this.getValue(constraintMap, "scaleX", 0);
-        data.offsetScaleY = this.getValue(constraintMap, "scaleY", 0);
-        data.offsetShearY = this.getValue(constraintMap, "shearY", 0);
-        data.rotateMix = this.getValue(constraintMap, "rotateMix", 1);
-        data.translateMix = this.getValue(constraintMap, "translateMix", 1);
-        data.scaleMix = this.getValue(constraintMap, "scaleMix", 1);
-        data.shearMix = this.getValue(constraintMap, "shearMix", 1);
+        if (data.target == null) throw new Error('Transform constraint target bone not found: ' + targetName);
+        data.local = this.getValue(constraintMap, 'local', false);
+        data.relative = this.getValue(constraintMap, 'relative', false);
+        data.offsetRotation = this.getValue(constraintMap, 'rotation', 0);
+        data.offsetX = this.getValue(constraintMap, 'x', 0) * scale;
+        data.offsetY = this.getValue(constraintMap, 'y', 0) * scale;
+        data.offsetScaleX = this.getValue(constraintMap, 'scaleX', 0);
+        data.offsetScaleY = this.getValue(constraintMap, 'scaleY', 0);
+        data.offsetShearY = this.getValue(constraintMap, 'shearY', 0);
+        data.rotateMix = this.getValue(constraintMap, 'rotateMix', 1);
+        data.translateMix = this.getValue(constraintMap, 'translateMix', 1);
+        data.scaleMix = this.getValue(constraintMap, 'scaleMix', 1);
+        data.shearMix = this.getValue(constraintMap, 'shearMix', 1);
         skeletonData.transformConstraints.push(data);
       }
     }
@@ -14183,30 +14275,28 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var i = 0; i < root.path.length; i++) {
         var constraintMap = root.path[i];
         var data = new PathConstraintData$1(constraintMap.name);
-        data.order = this.getValue(constraintMap, "order", 0);
+        data.order = this.getValue(constraintMap, 'order', 0);
         for (var j = 0; j < constraintMap.bones.length; j++) {
           var boneName = constraintMap.bones[j];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("Transform constraint bone not found: " + boneName);
+          if (bone == null) throw new Error('Transform constraint bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findSlot(targetName);
-        if (data.target == null)
-          throw new Error("Path target slot not found: " + targetName);
-        data.positionMode = SkeletonJson.positionModeFromString(this.getValue(constraintMap, "positionMode", "percent"));
-        data.spacingMode = SkeletonJson.spacingModeFromString(this.getValue(constraintMap, "spacingMode", "length"));
-        data.rotateMode = SkeletonJson.rotateModeFromString(this.getValue(constraintMap, "rotateMode", "tangent"));
-        data.offsetRotation = this.getValue(constraintMap, "rotation", 0);
-        data.position = this.getValue(constraintMap, "position", 0);
-        if (data.positionMode == exports.PositionMode.Fixed)
-          data.position *= scale;
-        data.spacing = this.getValue(constraintMap, "spacing", 0);
-        if (data.spacingMode == SpacingMode$1.Length || data.spacingMode == SpacingMode$1.Fixed)
-          data.spacing *= scale;
-        data.rotateMix = this.getValue(constraintMap, "rotateMix", 1);
-        data.translateMix = this.getValue(constraintMap, "translateMix", 1);
+        if (data.target == null) throw new Error('Path target slot not found: ' + targetName);
+        data.positionMode = SkeletonJson.positionModeFromString(
+          this.getValue(constraintMap, 'positionMode', 'percent'),
+        );
+        data.spacingMode = SkeletonJson.spacingModeFromString(this.getValue(constraintMap, 'spacingMode', 'length'));
+        data.rotateMode = SkeletonJson.rotateModeFromString(this.getValue(constraintMap, 'rotateMode', 'tangent'));
+        data.offsetRotation = this.getValue(constraintMap, 'rotation', 0);
+        data.position = this.getValue(constraintMap, 'position', 0);
+        if (data.positionMode == exports.PositionMode.Fixed) data.position *= scale;
+        data.spacing = this.getValue(constraintMap, 'spacing', 0);
+        if (data.spacingMode == SpacingMode$1.Length || data.spacingMode == SpacingMode$1.Fixed) data.spacing *= scale;
+        data.rotateMix = this.getValue(constraintMap, 'rotateMix', 1);
+        data.translateMix = this.getValue(constraintMap, 'translateMix', 1);
         skeletonData.pathConstraints.push(data);
       }
     }
@@ -14217,29 +14307,24 @@ var SkeletonJson$1 = /** @class */ (function () {
         var skin = new Skin$1(skinName);
         for (var slotName in skinMap) {
           var slotIndex = skeletonData.findSlotIndex(slotName);
-          if (slotIndex == -1)
-            throw new Error("Slot not found: " + slotName);
+          if (slotIndex == -1) throw new Error('Slot not found: ' + slotName);
           var slotMap = skinMap[slotName];
           for (var entryName in slotMap) {
             var attachment = this.readAttachment(slotMap[entryName], skin, slotIndex, entryName, skeletonData);
-            if (attachment != null)
-              skin.addAttachment(slotIndex, entryName, attachment);
+            if (attachment != null) skin.addAttachment(slotIndex, entryName, attachment);
           }
         }
         skeletonData.skins.push(skin);
-        if (skin.name == "default")
-          skeletonData.defaultSkin = skin;
+        if (skin.name == 'default') skeletonData.defaultSkin = skin;
       }
     }
     // Linked meshes.
     for (var i = 0, n = this.linkedMeshes.length; i < n; i++) {
       var linkedMesh = this.linkedMeshes[i];
       var skin = linkedMesh.skin == null ? skeletonData.defaultSkin : skeletonData.findSkin(linkedMesh.skin);
-      if (skin == null)
-        throw new Error("Skin not found: " + linkedMesh.skin);
+      if (skin == null) throw new Error('Skin not found: ' + linkedMesh.skin);
       var parent_2 = skin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
-      if (parent_2 == null)
-        throw new Error("Parent mesh not found: " + linkedMesh.parent);
+      if (parent_2 == null) throw new Error('Parent mesh not found: ' + linkedMesh.parent);
       linkedMesh.mesh.setParentMesh(parent_2);
       //linkedMesh.mesh.updateUVs();
     }
@@ -14249,13 +14334,13 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var eventName in root.events) {
         var eventMap = root.events[eventName];
         var data = new EventData$1(eventName);
-        data.intValue = this.getValue(eventMap, "int", 0);
-        data.floatValue = this.getValue(eventMap, "float", 0);
-        data.stringValue = this.getValue(eventMap, "string", "");
-        data.audioPath = this.getValue(eventMap, "audio", null);
+        data.intValue = this.getValue(eventMap, 'int', 0);
+        data.floatValue = this.getValue(eventMap, 'float', 0);
+        data.stringValue = this.getValue(eventMap, 'string', '');
+        data.audioPath = this.getValue(eventMap, 'audio', null);
         if (data.audioPath != null) {
-          data.volume = this.getValue(eventMap, "volume", 1);
-          data.balance = this.getValue(eventMap, "balance", 0);
+          data.volume = this.getValue(eventMap, 'volume', 1);
+          data.balance = this.getValue(eventMap, 'balance', 0);
         }
         skeletonData.events.push(data);
       }
@@ -14271,52 +14356,46 @@ var SkeletonJson$1 = /** @class */ (function () {
   };
   SkeletonJson.prototype.readAttachment = function (map, skin, slotIndex, name, skeletonData) {
     var scale = this.scale;
-    name = this.getValue(map, "name", name);
-    var type = this.getValue(map, "type", "region");
+    name = this.getValue(map, 'name', name);
+    var type = this.getValue(map, 'type', 'region');
     switch (type) {
-      case "region": {
-        var path = this.getValue(map, "path", name);
+      case 'region': {
+        var path = this.getValue(map, 'path', name);
         var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
-        if (region == null)
-          return null;
+        if (region == null) return null;
         region.path = path;
-        region.x = this.getValue(map, "x", 0) * scale;
-        region.y = this.getValue(map, "y", 0) * scale;
-        region.scaleX = this.getValue(map, "scaleX", 1);
-        region.scaleY = this.getValue(map, "scaleY", 1);
-        region.rotation = this.getValue(map, "rotation", 0);
+        region.x = this.getValue(map, 'x', 0) * scale;
+        region.y = this.getValue(map, 'y', 0) * scale;
+        region.scaleX = this.getValue(map, 'scaleX', 1);
+        region.scaleY = this.getValue(map, 'scaleY', 1);
+        region.rotation = this.getValue(map, 'rotation', 0);
         region.width = map.width * scale;
         region.height = map.height * scale;
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          region.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) region.color.setFromString(color);
         //region.updateOffset();
         return region;
       }
-      case "boundingbox": {
+      case 'boundingbox': {
         var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
-        if (box == null)
-          return null;
+        if (box == null) return null;
         this.readVertices(map, box, map.vertexCount << 1);
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          box.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) box.color.setFromString(color);
         return box;
       }
-      case "mesh":
-      case "linkedmesh": {
-        var path = this.getValue(map, "path", name);
+      case 'mesh':
+      case 'linkedmesh': {
+        var path = this.getValue(map, 'path', name);
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (mesh == null)
-          return null;
+        if (mesh == null) return null;
         mesh.path = path;
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          mesh.color.setFromString(color);
-        var parent_3 = this.getValue(map, "parent", null);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) mesh.color.setFromString(color);
+        var parent_3 = this.getValue(map, 'parent', null);
         if (parent_3 != null) {
-          mesh.inheritDeform = this.getValue(map, "deform", true);
-          this.linkedMeshes.push(new LinkedMesh$2(mesh, this.getValue(map, "skin", null), slotIndex, parent_3));
+          mesh.inheritDeform = this.getValue(map, 'deform', true);
+          this.linkedMeshes.push(new LinkedMesh$2(mesh, this.getValue(map, 'skin', null), slotIndex, parent_3));
           return mesh;
         }
         var uvs = map.uvs;
@@ -14324,54 +14403,46 @@ var SkeletonJson$1 = /** @class */ (function () {
         mesh.triangles = map.triangles;
         mesh.regionUVs = new Float32Array(uvs);
         //mesh.updateUVs();
-        mesh.hullLength = this.getValue(map, "hull", 0) * 2;
+        mesh.hullLength = this.getValue(map, 'hull', 0) * 2;
         return mesh;
       }
-      case "path": {
+      case 'path': {
         var path = this.attachmentLoader.newPathAttachment(skin, name);
-        if (path == null)
-          return null;
-        path.closed = this.getValue(map, "closed", false);
-        path.constantSpeed = this.getValue(map, "constantSpeed", true);
+        if (path == null) return null;
+        path.closed = this.getValue(map, 'closed', false);
+        path.constantSpeed = this.getValue(map, 'constantSpeed', true);
         var vertexCount = map.vertexCount;
         this.readVertices(map, path, vertexCount << 1);
         var lengths = Utils.newArray(vertexCount / 3, 0);
-        for (var i = 0; i < map.lengths.length; i++)
-          lengths[i] = map.lengths[i] * scale;
+        for (var i = 0; i < map.lengths.length; i++) lengths[i] = map.lengths[i] * scale;
         path.lengths = lengths;
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          path.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) path.color.setFromString(color);
         return path;
       }
-      case "point": {
+      case 'point': {
         var point = this.attachmentLoader.newPointAttachment(skin, name);
-        if (point == null)
-          return null;
-        point.x = this.getValue(map, "x", 0) * scale;
-        point.y = this.getValue(map, "y", 0) * scale;
-        point.rotation = this.getValue(map, "rotation", 0);
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          point.color.setFromString(color);
+        if (point == null) return null;
+        point.x = this.getValue(map, 'x', 0) * scale;
+        point.y = this.getValue(map, 'y', 0) * scale;
+        point.rotation = this.getValue(map, 'rotation', 0);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) point.color.setFromString(color);
         return point;
       }
-      case "clipping": {
+      case 'clipping': {
         var clip = this.attachmentLoader.newClippingAttachment(skin, name);
-        if (clip == null)
-          return null;
-        var end = this.getValue(map, "end", null);
+        if (clip == null) return null;
+        var end = this.getValue(map, 'end', null);
         if (end != null) {
           var slot = skeletonData.findSlot(end);
-          if (slot == null)
-            throw new Error("Clipping end slot not found: " + end);
+          if (slot == null) throw new Error('Clipping end slot not found: ' + end);
           clip.endSlot = slot;
         }
         var vertexCount = map.vertexCount;
         this.readVertices(map, clip, vertexCount << 1);
-        var color = this.getValue(map, "color", null);
-        if (color != null)
-          clip.color.setFromString(color);
+        var color = this.getValue(map, 'color', null);
+        if (color != null) clip.color.setFromString(color);
         return clip;
       }
     }
@@ -14384,15 +14455,14 @@ var SkeletonJson$1 = /** @class */ (function () {
     if (verticesLength == vertices.length) {
       var scaledVertices = Utils.toFloatArray(vertices);
       if (scale != 1) {
-        for (var i = 0, n = vertices.length; i < n; i++)
-          scaledVertices[i] *= scale;
+        for (var i = 0, n = vertices.length; i < n; i++) scaledVertices[i] *= scale;
       }
       attachment.vertices = scaledVertices;
       return;
     }
     var weights = new Array();
     var bones = new Array();
-    for (var i = 0, n = vertices.length; i < n;) {
+    for (var i = 0, n = vertices.length; i < n; ) {
       var boneCount = vertices[i++];
       bones.push(boneCount);
       for (var nn = i + boneCount * 4; i < nn; i += 4) {
@@ -14414,11 +14484,10 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var slotName in map.slots) {
         var slotMap = map.slots[slotName];
         var slotIndex = skeletonData.findSlotIndex(slotName);
-        if (slotIndex == -1)
-          throw new Error("Slot not found: " + slotName);
+        if (slotIndex == -1) throw new Error('Slot not found: ' + slotName);
         for (var timelineName in slotMap) {
           var timelineMap = slotMap[timelineName];
-          if (timelineName == "attachment") {
+          if (timelineName == 'attachment') {
             var timeline = new AttachmentTimeline$1(timelineMap.length);
             timeline.slotIndex = slotIndex;
             var frameIndex = 0;
@@ -14428,23 +14497,21 @@ var SkeletonJson$1 = /** @class */ (function () {
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
-          }
-          else if (timelineName == "color") {
+          } else if (timelineName == 'color') {
             var timeline = new ColorTimeline(timelineMap.length);
             timeline.slotIndex = slotIndex;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
               var color = new Color();
-              color.setFromString(valueMap.color || "ffffffff");
+              color.setFromString(valueMap.color || 'ffffffff');
               timeline.setFrame(frameIndex, valueMap.time, color.r, color.g, color.b, color.a);
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * ColorTimeline.ENTRIES]);
-          }
-          else if (timelineName == "twoColor") {
+          } else if (timelineName == 'twoColor') {
             var timeline = new TwoColorTimeline(timelineMap.length);
             timeline.slotIndex = slotIndex;
             var frameIndex = 0;
@@ -14460,9 +14527,7 @@ var SkeletonJson$1 = /** @class */ (function () {
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * TwoColorTimeline.ENTRIES]);
-          }
-          else
-            throw new Error("Invalid timeline type for a slot: " + timelineName + " (" + slotName + ")");
+          } else throw new Error('Invalid timeline type for a slot: ' + timelineName + ' (' + slotName + ')');
         }
       }
     }
@@ -14471,11 +14536,10 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var boneName in map.bones) {
         var boneMap = map.bones[boneName];
         var boneIndex = skeletonData.findBoneIndex(boneName);
-        if (boneIndex == -1)
-          throw new Error("Bone not found: " + boneName);
+        if (boneIndex == -1) throw new Error('Bone not found: ' + boneName);
         for (var timelineName in boneMap) {
           var timelineMap = boneMap[timelineName];
-          if (timelineName === "rotate") {
+          if (timelineName === 'rotate') {
             var timeline = new RotateTimeline$1(timelineMap.length);
             timeline.boneIndex = boneIndex;
             var frameIndex = 0;
@@ -14487,14 +14551,11 @@ var SkeletonJson$1 = /** @class */ (function () {
             }
             timelines.push(timeline);
             duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * RotateTimeline$1.ENTRIES]);
-          }
-          else if (timelineName === "translate" || timelineName === "scale" || timelineName === "shear") {
+          } else if (timelineName === 'translate' || timelineName === 'scale' || timelineName === 'shear') {
             var timeline = null;
             var timelineScale = 1;
-            if (timelineName === "scale")
-              timeline = new ScaleTimeline$1(timelineMap.length);
-            else if (timelineName === "shear")
-              timeline = new ShearTimeline$1(timelineMap.length);
+            if (timelineName === 'scale') timeline = new ScaleTimeline$1(timelineMap.length);
+            else if (timelineName === 'shear') timeline = new ShearTimeline$1(timelineMap.length);
             else {
               timeline = new TranslateTimeline$1(timelineMap.length);
               timelineScale = scale;
@@ -14503,16 +14564,18 @@ var SkeletonJson$1 = /** @class */ (function () {
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              var x = this.getValue(valueMap, "x", 0), y = this.getValue(valueMap, "y", 0);
+              var x = this.getValue(valueMap, 'x', 0),
+                y = this.getValue(valueMap, 'y', 0);
               timeline.setFrame(frameIndex, valueMap.time, x * timelineScale, y * timelineScale);
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * TranslateTimeline$1.ENTRIES]);
-          }
-          else
-            throw new Error("Invalid timeline type for a bone: " + timelineName + " (" + boneName + ")");
+            duration = Math.max(
+              duration,
+              timeline.frames[(timeline.getFrameCount() - 1) * TranslateTimeline$1.ENTRIES],
+            );
+          } else throw new Error('Invalid timeline type for a bone: ' + timelineName + ' (' + boneName + ')');
         }
       }
     }
@@ -14526,7 +14589,14 @@ var SkeletonJson$1 = /** @class */ (function () {
         var frameIndex = 0;
         for (var i = 0; i < constraintMap.length; i++) {
           var valueMap = constraintMap[i];
-          timeline.setFrame(frameIndex, valueMap.time, this.getValue(valueMap, "mix", 1), this.getValue(valueMap, "bendPositive", true) ? 1 : -1, this.getValue(valueMap, "compress", false), this.getValue(valueMap, "stretch", false));
+          timeline.setFrame(
+            frameIndex,
+            valueMap.time,
+            this.getValue(valueMap, 'mix', 1),
+            this.getValue(valueMap, 'bendPositive', true) ? 1 : -1,
+            this.getValue(valueMap, 'compress', false),
+            this.getValue(valueMap, 'stretch', false),
+          );
           this.readCurve(valueMap, timeline, frameIndex);
           frameIndex++;
         }
@@ -14544,12 +14614,22 @@ var SkeletonJson$1 = /** @class */ (function () {
         var frameIndex = 0;
         for (var i = 0; i < constraintMap.length; i++) {
           var valueMap = constraintMap[i];
-          timeline.setFrame(frameIndex, valueMap.time, this.getValue(valueMap, "rotateMix", 1), this.getValue(valueMap, "translateMix", 1), this.getValue(valueMap, "scaleMix", 1), this.getValue(valueMap, "shearMix", 1));
+          timeline.setFrame(
+            frameIndex,
+            valueMap.time,
+            this.getValue(valueMap, 'rotateMix', 1),
+            this.getValue(valueMap, 'translateMix', 1),
+            this.getValue(valueMap, 'scaleMix', 1),
+            this.getValue(valueMap, 'shearMix', 1),
+          );
           this.readCurve(valueMap, timeline, frameIndex);
           frameIndex++;
         }
         timelines.push(timeline);
-        duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * TransformConstraintTimeline$1.ENTRIES]);
+        duration = Math.max(
+          duration,
+          timeline.frames[(timeline.getFrameCount() - 1) * TransformConstraintTimeline$1.ENTRIES],
+        );
       }
     }
     // Path constraint timelines.
@@ -14557,23 +14637,20 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var constraintName in map.paths) {
         var constraintMap = map.paths[constraintName];
         var index = skeletonData.findPathConstraintIndex(constraintName);
-        if (index == -1)
-          throw new Error("Path constraint not found: " + constraintName);
+        if (index == -1) throw new Error('Path constraint not found: ' + constraintName);
         var data = skeletonData.pathConstraints[index];
         for (var timelineName in constraintMap) {
           var timelineMap = constraintMap[timelineName];
-          if (timelineName === "position" || timelineName === "spacing") {
+          if (timelineName === 'position' || timelineName === 'spacing') {
             var timeline = null;
             var timelineScale = 1;
-            if (timelineName === "spacing") {
+            if (timelineName === 'spacing') {
               timeline = new PathConstraintSpacingTimeline$1(timelineMap.length);
               if (data.spacingMode == SpacingMode$1.Length || data.spacingMode == SpacingMode$1.Fixed)
                 timelineScale = scale;
-            }
-            else {
+            } else {
               timeline = new PathConstraintPositionTimeline$1(timelineMap.length);
-              if (data.positionMode == exports.PositionMode.Fixed)
-                timelineScale = scale;
+              if (data.positionMode == exports.PositionMode.Fixed) timelineScale = scale;
             }
             timeline.pathConstraintIndex = index;
             var frameIndex = 0;
@@ -14584,20 +14661,30 @@ var SkeletonJson$1 = /** @class */ (function () {
               frameIndex++;
             }
             timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintPositionTimeline$1.ENTRIES]);
-          }
-          else if (timelineName === "mix") {
+            duration = Math.max(
+              duration,
+              timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintPositionTimeline$1.ENTRIES],
+            );
+          } else if (timelineName === 'mix') {
             var timeline = new PathConstraintMixTimeline$1(timelineMap.length);
             timeline.pathConstraintIndex = index;
             var frameIndex = 0;
             for (var i = 0; i < timelineMap.length; i++) {
               var valueMap = timelineMap[i];
-              timeline.setFrame(frameIndex, valueMap.time, this.getValue(valueMap, "rotateMix", 1), this.getValue(valueMap, "translateMix", 1));
+              timeline.setFrame(
+                frameIndex,
+                valueMap.time,
+                this.getValue(valueMap, 'rotateMix', 1),
+                this.getValue(valueMap, 'translateMix', 1),
+              );
               this.readCurve(valueMap, timeline, frameIndex);
               frameIndex++;
             }
             timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintMixTimeline$1.ENTRIES]);
+            duration = Math.max(
+              duration,
+              timeline.frames[(timeline.getFrameCount() - 1) * PathConstraintMixTimeline$1.ENTRIES],
+            );
           }
         }
       }
@@ -14609,25 +14696,22 @@ var SkeletonJson$1 = /** @class */ (function () {
         var skin = skeletonData.findSkin(deformName);
         if (skin == null) {
           if (settings.FAIL_ON_NON_EXISTING_SKIN) {
-            throw new Error("Skin not found: " + deformName);
-          }
-          else {
+            throw new Error('Skin not found: ' + deformName);
+          } else {
             continue;
           }
         }
         for (var slotName in deformMap) {
           var slotMap = deformMap[slotName];
           var slotIndex = skeletonData.findSlotIndex(slotName);
-          if (slotIndex == -1)
-            throw new Error("Slot not found: " + slotMap.name);
+          if (slotIndex == -1) throw new Error('Slot not found: ' + slotMap.name);
           for (var timelineName in slotMap) {
             var timelineMap = slotMap[timelineName];
             var attachment = skin.getAttachment(slotIndex, timelineName);
-            if (attachment == null)
-              throw new Error("Deform attachment not found: " + timelineMap.name);
+            if (attachment == null) throw new Error('Deform attachment not found: ' + timelineMap.name);
             var weighted = attachment.bones != null;
             var vertices = attachment.vertices;
-            var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+            var deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
             var timeline = new DeformTimeline$1(timelineMap.length);
             timeline.slotIndex = slotIndex;
             timeline.attachment = attachment;
@@ -14635,20 +14719,17 @@ var SkeletonJson$1 = /** @class */ (function () {
             for (var j = 0; j < timelineMap.length; j++) {
               var valueMap = timelineMap[j];
               var deform = void 0;
-              var verticesValue = this.getValue(valueMap, "vertices", null);
-              if (verticesValue == null)
-                deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+              var verticesValue = this.getValue(valueMap, 'vertices', null);
+              if (verticesValue == null) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
               else {
                 deform = Utils.newFloatArray(deformLength);
-                var start = this.getValue(valueMap, "offset", 0);
+                var start = this.getValue(valueMap, 'offset', 0);
                 Utils.arrayCopy(verticesValue, 0, deform, start, verticesValue.length);
                 if (scale != 1) {
-                  for (var i = start, n = i + verticesValue.length; i < n; i++)
-                    deform[i] *= scale;
+                  for (var i = start, n = i + verticesValue.length; i < n; i++) deform[i] *= scale;
                 }
                 if (!weighted) {
-                  for (var i = 0; i < deformLength; i++)
-                    deform[i] += vertices[i];
+                  for (var i = 0; i < deformLength; i++) deform[i] += vertices[i];
                 }
               }
               timeline.setFrame(frameIndex, valueMap.time, deform);
@@ -14663,8 +14744,7 @@ var SkeletonJson$1 = /** @class */ (function () {
     }
     // Draw order timeline.
     var drawOrderNode = map.drawOrder;
-    if (drawOrderNode == null)
-      drawOrderNode = map.draworder;
+    if (drawOrderNode == null) drawOrderNode = map.draworder;
     if (drawOrderNode != null) {
       var timeline = new DrawOrderTimeline$1(drawOrderNode.length);
       var slotCount = skeletonData.slots.length;
@@ -14672,29 +14752,25 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var j = 0; j < drawOrderNode.length; j++) {
         var drawOrderMap = drawOrderNode[j];
         var drawOrder = null;
-        var offsets = this.getValue(drawOrderMap, "offsets", null);
+        var offsets = this.getValue(drawOrderMap, 'offsets', null);
         if (offsets != null) {
           drawOrder = Utils.newArray(slotCount, -1);
           var unchanged = Utils.newArray(slotCount - offsets.length, 0);
-          var originalIndex = 0, unchangedIndex = 0;
+          var originalIndex = 0,
+            unchangedIndex = 0;
           for (var i = 0; i < offsets.length; i++) {
             var offsetMap = offsets[i];
             var slotIndex = skeletonData.findSlotIndex(offsetMap.slot);
-            if (slotIndex == -1)
-              throw new Error("Slot not found: " + offsetMap.slot);
+            if (slotIndex == -1) throw new Error('Slot not found: ' + offsetMap.slot);
             // Collect unchanged items.
-            while (originalIndex != slotIndex)
-              unchanged[unchangedIndex++] = originalIndex++;
+            while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
             // Set changed items.
             drawOrder[originalIndex + offsetMap.offset] = originalIndex++;
           }
           // Collect remaining unchanged items.
-          while (originalIndex < slotCount)
-            unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
           // Fill in unchanged items.
-          for (var i = slotCount - 1; i >= 0; i--)
-            if (drawOrder[i] == -1)
-              drawOrder[i] = unchanged[--unchangedIndex];
+          for (var i = slotCount - 1; i >= 0; i--) if (drawOrder[i] == -1) drawOrder[i] = unchanged[--unchangedIndex];
         }
         timeline.setFrame(frameIndex++, drawOrderMap.time, drawOrder);
       }
@@ -14708,15 +14784,14 @@ var SkeletonJson$1 = /** @class */ (function () {
       for (var i = 0; i < map.events.length; i++) {
         var eventMap = map.events[i];
         var eventData = skeletonData.findEvent(eventMap.name);
-        if (eventData == null)
-          throw new Error("Event not found: " + eventMap.name);
+        if (eventData == null) throw new Error('Event not found: ' + eventMap.name);
         var event_1 = new Event$1(Utils.toSinglePrecision(eventMap.time), eventData);
-        event_1.intValue = this.getValue(eventMap, "int", eventData.intValue);
-        event_1.floatValue = this.getValue(eventMap, "float", eventData.floatValue);
-        event_1.stringValue = this.getValue(eventMap, "string", eventData.stringValue);
+        event_1.intValue = this.getValue(eventMap, 'int', eventData.intValue);
+        event_1.floatValue = this.getValue(eventMap, 'float', eventData.floatValue);
+        event_1.stringValue = this.getValue(eventMap, 'string', eventData.stringValue);
         if (event_1.data.audioPath != null) {
-          event_1.volume = this.getValue(eventMap, "volume", 1);
-          event_1.balance = this.getValue(eventMap, "balance", 0);
+          event_1.volume = this.getValue(eventMap, 'volume', 1);
+          event_1.balance = this.getValue(eventMap, 'balance', 0);
         }
         timeline.setFrame(frameIndex++, event_1);
       }
@@ -14724,15 +14799,13 @@ var SkeletonJson$1 = /** @class */ (function () {
       duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
     }
     if (isNaN(duration)) {
-      throw new Error("Error while parsing animation, duration is NaN");
+      throw new Error('Error while parsing animation, duration is NaN');
     }
     skeletonData.animations.push(new Animation$1(name, timelines, duration));
   };
   SkeletonJson.prototype.readCurve = function (map, timeline, frameIndex) {
-    if (!map.curve)
-      return;
-    if (map.curve === "stepped")
-      timeline.setStepped(frameIndex);
+    if (!map.curve) return;
+    if (map.curve === 'stepped') timeline.setStepped(frameIndex);
     else if (Object.prototype.toString.call(map.curve) === '[object Array]') {
       var curve = map.curve;
       timeline.setCurve(frameIndex, curve[0], curve[1], curve[2], curve[3]);
@@ -14743,60 +14816,43 @@ var SkeletonJson$1 = /** @class */ (function () {
   };
   SkeletonJson.blendModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "normal")
-      return constants.BLEND_MODES.NORMAL;
-    if (str == "additive")
-      return constants.BLEND_MODES.ADD;
-    if (str == "multiply")
-      return constants.BLEND_MODES.MULTIPLY;
-    if (str == "screen")
-      return constants.BLEND_MODES.SCREEN;
-    throw new Error("Unknown blend mode: " + str);
+    if (str == 'normal') return constants.BLEND_MODES.NORMAL;
+    if (str == 'additive') return constants.BLEND_MODES.ADD;
+    if (str == 'multiply') return constants.BLEND_MODES.MULTIPLY;
+    if (str == 'screen') return constants.BLEND_MODES.SCREEN;
+    throw new Error('Unknown blend mode: ' + str);
   };
   SkeletonJson.positionModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "fixed")
-      return exports.PositionMode.Fixed;
-    if (str == "percent")
-      return exports.PositionMode.Percent;
-    throw new Error("Unknown position mode: " + str);
+    if (str == 'fixed') return exports.PositionMode.Fixed;
+    if (str == 'percent') return exports.PositionMode.Percent;
+    throw new Error('Unknown position mode: ' + str);
   };
   SkeletonJson.spacingModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "length")
-      return SpacingMode$1.Length;
-    if (str == "fixed")
-      return SpacingMode$1.Fixed;
-    if (str == "percent")
-      return SpacingMode$1.Percent;
-    throw new Error("Unknown position mode: " + str);
+    if (str == 'length') return SpacingMode$1.Length;
+    if (str == 'fixed') return SpacingMode$1.Fixed;
+    if (str == 'percent') return SpacingMode$1.Percent;
+    throw new Error('Unknown position mode: ' + str);
   };
   SkeletonJson.rotateModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "tangent")
-      return exports.RotateMode.Tangent;
-    if (str == "chain")
-      return exports.RotateMode.Chain;
-    if (str == "chainscale")
-      return exports.RotateMode.ChainScale;
-    throw new Error("Unknown rotate mode: " + str);
+    if (str == 'tangent') return exports.RotateMode.Tangent;
+    if (str == 'chain') return exports.RotateMode.Chain;
+    if (str == 'chainscale') return exports.RotateMode.ChainScale;
+    throw new Error('Unknown rotate mode: ' + str);
   };
   SkeletonJson.transformModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "normal")
-      return exports.TransformMode.Normal;
-    if (str == "onlytranslation")
-      return exports.TransformMode.OnlyTranslation;
-    if (str == "norotationorreflection")
-      return exports.TransformMode.NoRotationOrReflection;
-    if (str == "noscale")
-      return exports.TransformMode.NoScale;
-    if (str == "noscaleorreflection")
-      return exports.TransformMode.NoScaleOrReflection;
-    throw new Error("Unknown transform mode: " + str);
+    if (str == 'normal') return exports.TransformMode.Normal;
+    if (str == 'onlytranslation') return exports.TransformMode.OnlyTranslation;
+    if (str == 'norotationorreflection') return exports.TransformMode.NoRotationOrReflection;
+    if (str == 'noscale') return exports.TransformMode.NoScale;
+    if (str == 'noscaleorreflection') return exports.TransformMode.NoScaleOrReflection;
+    throw new Error('Unknown transform mode: ' + str);
   };
   return SkeletonJson;
-}());
+})();
 var LinkedMesh$2 = /** @class */ (function () {
   function LinkedMesh(mesh, skin, slotIndex, parent) {
     this.mesh = mesh;
@@ -14805,7 +14861,7 @@ var LinkedMesh$2 = /** @class */ (function () {
     this.parent = parent;
   }
   return LinkedMesh;
-}());
+})();
 
 /**
  * @public
@@ -14813,7 +14869,7 @@ var LinkedMesh$2 = /** @class */ (function () {
 var Spine$2 = /** @class */ (function (_super) {
   __extends(Spine, _super);
   function Spine() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return (_super !== null && _super.apply(this, arguments)) || this;
   }
   Spine.prototype.createSkeleton = function (spineData) {
     this.skeleton = new Skeleton$1(spineData);
@@ -14822,9 +14878,9 @@ var Spine$2 = /** @class */ (function (_super) {
     this.state = new AnimationState$1(this.stateData);
   };
   return Spine;
-}(SpineBase));
+})(SpineBase);
 
-var spine37 = /*#__PURE__*/Object.freeze({
+var spine37 = /*#__PURE__*/ Object.freeze({
   __proto__: null,
   Animation: Animation$1,
   AnimationState: AnimationState$1,
@@ -14845,7 +14901,9 @@ var spine37 = /*#__PURE__*/Object.freeze({
   EventData: EventData$1,
   EventQueue: EventQueue$1,
   EventTimeline: EventTimeline$1,
-  get EventType() { return EventType$1; },
+  get EventType() {
+    return EventType$1;
+  },
   IkConstraint: IkConstraint$1,
   IkConstraintData: IkConstraintData$1,
   IkConstraintTimeline: IkConstraintTimeline$1,
@@ -14869,17 +14927,21 @@ var spine37 = /*#__PURE__*/Object.freeze({
   Skin: Skin$1,
   Slot: Slot$1,
   SlotData: SlotData$1,
-  get SpacingMode() { return SpacingMode$1; },
+  get SpacingMode() {
+    return SpacingMode$1;
+  },
   Spine: Spine$2,
   SwirlEffect: SwirlEffect$1,
-  get TimelineType() { return TimelineType; },
+  get TimelineType() {
+    return TimelineType;
+  },
   TrackEntry: TrackEntry$1,
   TransformConstraint: TransformConstraint$1,
   TransformConstraintData: TransformConstraintData$1,
   TransformConstraintTimeline: TransformConstraintTimeline$1,
   TranslateTimeline: TranslateTimeline$1,
   TwoColorTimeline: TwoColorTimeline,
-  VertexAttachment: VertexAttachment$1
+  VertexAttachment: VertexAttachment$1,
 });
 
 /* eslint-disable */
@@ -14900,19 +14962,17 @@ PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-
 /**
  * The base class for all attachments.
  * @public
  */
 var Attachment = /** @class */ (function () {
   function Attachment(name) {
-    if (!name)
-      throw new Error("name cannot be null.");
+    if (!name) throw new Error('name cannot be null.');
     this.name = name;
   }
   return Attachment;
-}());
+})();
 /**
  * Base class for an attachment with vertices that are transformed by one or more bones and can be deformed by a slot's
  * {@link Slot#deform}.
@@ -14952,20 +15012,24 @@ var VertexAttachment = /** @class */ (function (_super) {
     var vertices = this.vertices;
     var bones = this.bones;
     if (!bones) {
-      if (deformArray.length > 0)
-        vertices = deformArray;
+      if (deformArray.length > 0) vertices = deformArray;
       var mat = slot.bone.matrix;
       var x = mat.tx;
       var y = mat.ty;
-      var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+      var a = mat.a,
+        b = mat.c,
+        c = mat.b,
+        d = mat.d;
       for (var v_1 = start, w = offset; w < count; v_1 += 2, w += stride) {
-        var vx = vertices[v_1], vy = vertices[v_1 + 1];
+        var vx = vertices[v_1],
+          vy = vertices[v_1 + 1];
         worldVertices[w] = vx * a + vy * b + x;
         worldVertices[w + 1] = vx * c + vy * d + y;
       }
       return;
     }
-    var v = 0, skip = 0;
+    var v = 0,
+      skip = 0;
     for (var i = 0; i < start; i += 2) {
       var n = bones[v];
       v += n + 1;
@@ -14974,28 +15038,33 @@ var VertexAttachment = /** @class */ (function (_super) {
     var skeletonBones = skeleton.bones;
     if (deformArray.length == 0) {
       for (var w = offset, b = skip * 3; w < count; w += stride) {
-        var wx = 0, wy = 0;
+        var wx = 0,
+          wy = 0;
         var n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3) {
           var mat = skeletonBones[bones[v]].matrix;
-          var vx = vertices[b], vy = vertices[b + 1], weight = vertices[b + 2];
+          var vx = vertices[b],
+            vy = vertices[b + 1],
+            weight = vertices[b + 2];
           wx += (vx * mat.a + vy * mat.c + mat.tx) * weight;
           wy += (vx * mat.b + vy * mat.d + mat.ty) * weight;
         }
         worldVertices[w] = wx;
         worldVertices[w + 1] = wy;
       }
-    }
-    else {
+    } else {
       var deform = deformArray;
       for (var w = offset, b = skip * 3, f = skip << 1; w < count; w += stride) {
-        var wx = 0, wy = 0;
+        var wx = 0,
+          wy = 0;
         var n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3, f += 2) {
           var mat = skeletonBones[bones[v]].matrix;
-          var vx = vertices[b] + deform[f], vy = vertices[b + 1] + deform[f + 1], weight = vertices[b + 2];
+          var vx = vertices[b] + deform[f],
+            vy = vertices[b + 1] + deform[f + 1],
+            weight = vertices[b + 2];
           wx += (vx * mat.a + vy * mat.c + mat.tx) * weight;
           wy += (vx * mat.b + vy * mat.d + mat.ty) * weight;
         }
@@ -15009,21 +15078,17 @@ var VertexAttachment = /** @class */ (function (_super) {
     if (this.bones) {
       attachment.bones = new Array(this.bones.length);
       Utils.arrayCopy(this.bones, 0, attachment.bones, 0, this.bones.length);
-    }
-    else
-      attachment.bones = null;
+    } else attachment.bones = null;
     if (this.vertices) {
       attachment.vertices = Utils.newFloatArray(this.vertices.length);
       Utils.arrayCopy(this.vertices, 0, attachment.vertices, 0, this.vertices.length);
-    }
-    else
-      attachment.vertices = null;
+    } else attachment.vertices = null;
     attachment.worldVerticesLength = this.worldVerticesLength;
     attachment.deformAttachment = this.deformAttachment;
   };
   VertexAttachment.nextID = 0;
   return VertexAttachment;
-}(Attachment));
+})(Attachment);
 
 /**
  * @public
@@ -15043,7 +15108,7 @@ var BoundingBoxAttachment = /** @class */ (function (_super) {
     return copy;
   };
   return BoundingBoxAttachment;
-}(VertexAttachment));
+})(VertexAttachment);
 
 /**
  * @public
@@ -15067,7 +15132,7 @@ var ClippingAttachment = /** @class */ (function (_super) {
     return copy;
   };
   return ClippingAttachment;
-}(VertexAttachment));
+})(VertexAttachment);
 
 /**
  * @public
@@ -15102,8 +15167,7 @@ var MeshAttachment = /** @class */ (function (_super) {
     }
   };
   MeshAttachment.prototype.copy = function () {
-    if (this.parentMesh)
-      return this.newLinkedMesh();
+    if (this.parentMesh) return this.newLinkedMesh();
     var copy = new MeshAttachment(this.name);
     copy.region = this.region;
     copy.path = this.path;
@@ -15135,7 +15199,7 @@ var MeshAttachment = /** @class */ (function (_super) {
     return copy;
   };
   return MeshAttachment;
-}(VertexAttachment));
+})(VertexAttachment);
 
 /**
  * @public
@@ -15166,7 +15230,7 @@ var PathAttachment = /** @class */ (function (_super) {
     return copy;
   };
   return PathAttachment;
-}(VertexAttachment));
+})(VertexAttachment);
 
 /**
  * @public
@@ -15189,7 +15253,8 @@ var PointAttachment = /** @class */ (function (_super) {
   };
   PointAttachment.prototype.computeWorldRotation = function (bone) {
     var mat = bone.matrix;
-    var cos = MathUtils.cosDeg(this.rotation), sin = MathUtils.sinDeg(this.rotation);
+    var cos = MathUtils.cosDeg(this.rotation),
+      sin = MathUtils.sinDeg(this.rotation);
     var x = cos * mat.a + sin * mat.c;
     var y = cos * mat.b + sin * mat.d;
     return Math.atan2(y, x) * MathUtils.radDeg;
@@ -15203,7 +15268,7 @@ var PointAttachment = /** @class */ (function (_super) {
     return copy;
   };
   return PointAttachment;
-}(VertexAttachment));
+})(VertexAttachment);
 
 /**
  * @public
@@ -15239,13 +15304,13 @@ var RegionAttachment = /** @class */ (function (_super) {
   }
   /** Calculates the {@link #offset} using the region settings. Must be called after changing region settings. */
   RegionAttachment.prototype.updateOffset = function () {
-    var regionScaleX = this.width / this.region.originalWidth * this.scaleX;
-    var regionScaleY = this.height / this.region.originalHeight * this.scaleY;
-    var localX = -this.width / 2 * this.scaleX + this.region.offsetX * regionScaleX;
-    var localY = -this.height / 2 * this.scaleY + this.region.offsetY * regionScaleY;
+    var regionScaleX = (this.width / this.region.originalWidth) * this.scaleX;
+    var regionScaleY = (this.height / this.region.originalHeight) * this.scaleY;
+    var localX = (-this.width / 2) * this.scaleX + this.region.offsetX * regionScaleX;
+    var localY = (-this.height / 2) * this.scaleY + this.region.offsetY * regionScaleY;
     var localX2 = localX + this.region.width * regionScaleX;
     var localY2 = localY + this.region.height * regionScaleY;
-    var radians = this.rotation * Math.PI / 180;
+    var radians = (this.rotation * Math.PI) / 180;
     var cos = Math.cos(radians);
     var sin = Math.sin(radians);
     var localXCos = localX * cos + this.x;
@@ -15278,8 +15343,7 @@ var RegionAttachment = /** @class */ (function (_super) {
       uvs[7] = region.v;
       uvs[0] = region.u2;
       uvs[1] = region.v2;
-    }
-    else {
+    } else {
       uvs[0] = region.u;
       uvs[1] = region.v2;
       uvs[2] = region.u;
@@ -15300,9 +15364,14 @@ var RegionAttachment = /** @class */ (function (_super) {
   RegionAttachment.prototype.computeWorldVertices = function (bone, worldVertices, offset, stride) {
     var vertexOffset = this.offset;
     var mat = bone.matrix;
-    var x = mat.tx, y = mat.ty;
-    var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
-    var offsetX = 0, offsetY = 0;
+    var x = mat.tx,
+      y = mat.ty;
+    var a = mat.a,
+      b = mat.c,
+      c = mat.b,
+      d = mat.d;
+    var offsetX = 0,
+      offsetY = 0;
     offsetX = vertexOffset[RegionAttachment.OX1];
     offsetY = vertexOffset[RegionAttachment.OY1];
     worldVertices[offset] = offsetX * a + offsetY * b + x; // br
@@ -15381,7 +15450,7 @@ var RegionAttachment = /** @class */ (function (_super) {
   RegionAttachment.U4 = 30;
   RegionAttachment.V4 = 31;
   return RegionAttachment;
-}(Attachment));
+})(Attachment);
 
 /**
  * @public
@@ -15394,17 +15463,15 @@ var JitterEffect = /** @class */ (function () {
     this.jitterY = jitterY;
   }
   //@ts-ignore
-  JitterEffect.prototype.begin = function (skeleton) {
-  };
+  JitterEffect.prototype.begin = function (skeleton) {};
   //@ts-ignore
   JitterEffect.prototype.transform = function (position, uv, light, dark) {
     position.x += MathUtils.randomTriangular(-this.jitterX, this.jitterY);
     position.y += MathUtils.randomTriangular(-this.jitterX, this.jitterY);
   };
-  JitterEffect.prototype.end = function () {
-  };
+  JitterEffect.prototype.end = function () {};
   return JitterEffect;
-}());
+})();
 
 /**
  * @public
@@ -15437,11 +15504,10 @@ var SwirlEffect = /** @class */ (function () {
       position.y = sin * x + cos * y + this.worldY;
     }
   };
-  SwirlEffect.prototype.end = function () {
-  };
+  SwirlEffect.prototype.end = function () {};
   SwirlEffect.interpolation = new PowOut(2);
   return SwirlEffect;
-}());
+})();
 
 /**
  * A simple container for a list of timelines and a name.
@@ -15449,24 +15515,19 @@ var SwirlEffect = /** @class */ (function () {
  * */
 var Animation = /** @class */ (function () {
   function Animation(name, timelines, duration) {
-    if (!name)
-      throw new Error("name cannot be null.");
+    if (!name) throw new Error('name cannot be null.');
     this.name = name;
     this.setTimelines(timelines);
     this.duration = duration;
   }
   Animation.prototype.setTimelines = function (timelines) {
-    if (!timelines)
-      throw new Error("timelines cannot be null.");
+    if (!timelines) throw new Error('timelines cannot be null.');
     this.timelines = timelines;
     this.timelineIds = new StringSet();
-    for (var i = 0; i < timelines.length; i++)
-      this.timelineIds.addAll(timelines[i].getPropertyIds());
+    for (var i = 0; i < timelines.length; i++) this.timelineIds.addAll(timelines[i].getPropertyIds());
   };
   Animation.prototype.hasTimeline = function (ids) {
-    for (var i = 0; i < ids.length; i++)
-      if (this.timelineIds.contains(ids[i]))
-        return true;
+    for (var i = 0; i < ids.length; i++) if (this.timelineIds.contains(ids[i])) return true;
     return false;
   };
   /** Applies all the animation's timelines to the specified skeleton.
@@ -15475,19 +15536,17 @@ var Animation = /** @class */ (function () {
    * @param loop If true, the animation repeats after {@link #getDuration()}.
    * @param events May be null to ignore fired events. */
   Animation.prototype.apply = function (skeleton, lastTime, time, loop, events, alpha, blend, direction) {
-    if (!skeleton)
-      throw new Error("skeleton cannot be null.");
+    if (!skeleton) throw new Error('skeleton cannot be null.');
     if (loop && this.duration != 0) {
       time %= this.duration;
-      if (lastTime > 0)
-        lastTime %= this.duration;
+      if (lastTime > 0) lastTime %= this.duration;
     }
     var timelines = this.timelines;
     for (var i = 0, n = timelines.length; i < n; i++)
       timelines[i].apply(skeleton, lastTime, time, events, alpha, blend, direction);
   };
   return Animation;
-}());
+})();
 var Property = {
   rotate: 0,
   x: 1,
@@ -15507,7 +15566,7 @@ var Property = {
   transformConstraint: 15,
   pathConstraintPosition: 16,
   pathConstraintSpacing: 17,
-  pathConstraintMix: 18
+  pathConstraintMix: 18,
 };
 /** The interface for all timelines.
  * @public
@@ -15531,20 +15590,16 @@ var Timeline = /** @class */ (function () {
   };
   Timeline.search1 = function (frames, time) {
     var n = frames.length;
-    for (var i = 1; i < n; i++)
-      if (frames[i] > time)
-        return i - 1;
+    for (var i = 1; i < n; i++) if (frames[i] > time) return i - 1;
     return n - 1;
   };
   Timeline.search = function (frames, time, step) {
     var n = frames.length;
-    for (var i = step; i < n; i += step)
-      if (frames[i] > time)
-        return i - step;
+    for (var i = step; i < n; i += step) if (frames[i] > time) return i - step;
     return n - step;
   };
   return Timeline;
-}());
+})();
 /** The base class for timelines that use interpolation between key frame values.
  * @public
  * */
@@ -15567,7 +15622,7 @@ var CurveTimeline = /** @class */ (function (_super) {
   /** Shrinks the storage for Bezier curves, for use when <code>bezierCount</code> (specified in the constructor) was larger
    * than the actual number of Bezier curves. */
   CurveTimeline.prototype.shrink = function (bezierCount) {
-    var size = this.getFrameCount() + bezierCount * 18 /*BEZIER_SIZE*/;
+    var size = this.getFrameCount() + bezierCount * 18; /*BEZIER_SIZE*/
     if (this.curves.length > size) {
       var newCurves = Utils.newFloatArray(size);
       Utils.arrayCopy(this.curves, 0, newCurves, 0, size);
@@ -15588,16 +15643,32 @@ var CurveTimeline = /** @class */ (function (_super) {
    * @param cy2 The value for the second Bezier handle.
    * @param time2 The time for the second key.
    * @param value2 The value for the second key. */
-  CurveTimeline.prototype.setBezier = function (bezier, frame, value, time1, value1, cx1, cy1, cx2, cy2, time2, value2) {
+  CurveTimeline.prototype.setBezier = function (
+    bezier,
+    frame,
+    value,
+    time1,
+    value1,
+    cx1,
+    cy1,
+    cx2,
+    cy2,
+    time2,
+    value2,
+  ) {
     var curves = this.curves;
-    var i = this.getFrameCount() + bezier * 18 /*BEZIER_SIZE*/;
-    if (value == 0)
-      curves[frame] = 2 /*BEZIER*/ + i;
-    var tmpx = (time1 - cx1 * 2 + cx2) * 0.03, tmpy = (value1 - cy1 * 2 + cy2) * 0.03;
-    var dddx = ((cx1 - cx2) * 3 - time1 + time2) * 0.006, dddy = ((cy1 - cy2) * 3 - value1 + value2) * 0.006;
-    var ddx = tmpx * 2 + dddx, ddy = tmpy * 2 + dddy;
-    var dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667, dy = (cy1 - value1) * 0.3 + tmpy + dddy * 0.16666667;
-    var x = time1 + dx, y = value1 + dy;
+    var i = this.getFrameCount() + bezier * 18; /*BEZIER_SIZE*/
+    if (value == 0) curves[frame] = 2 /*BEZIER*/ + i;
+    var tmpx = (time1 - cx1 * 2 + cx2) * 0.03,
+      tmpy = (value1 - cy1 * 2 + cy2) * 0.03;
+    var dddx = ((cx1 - cx2) * 3 - time1 + time2) * 0.006,
+      dddy = ((cy1 - cy2) * 3 - value1 + value2) * 0.006;
+    var ddx = tmpx * 2 + dddx,
+      ddy = tmpy * 2 + dddy;
+    var dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667,
+      dy = (cy1 - value1) * 0.3 + tmpy + dddy * 0.16666667;
+    var x = time1 + dx,
+      y = value1 + dy;
     for (var n = i + 18 /*BEZIER_SIZE*/; i < n; i += 2) {
       curves[i] = x;
       curves[i + 1] = y;
@@ -15616,22 +15687,25 @@ var CurveTimeline = /** @class */ (function (_super) {
   CurveTimeline.prototype.getBezierValue = function (time, frameIndex, valueOffset, i) {
     var curves = this.curves;
     if (curves[i] > time) {
-      var x_1 = this.frames[frameIndex], y_1 = this.frames[frameIndex + valueOffset];
-      return y_1 + (time - x_1) / (curves[i] - x_1) * (curves[i + 1] - y_1);
+      var x_1 = this.frames[frameIndex],
+        y_1 = this.frames[frameIndex + valueOffset];
+      return y_1 + ((time - x_1) / (curves[i] - x_1)) * (curves[i + 1] - y_1);
     }
-    var n = i + 18 /*BEZIER_SIZE*/;
+    var n = i + 18; /*BEZIER_SIZE*/
     for (i += 2; i < n; i += 2) {
       if (curves[i] >= time) {
-        var x_2 = curves[i - 2], y_2 = curves[i - 1];
-        return y_2 + (time - x_2) / (curves[i] - x_2) * (curves[i + 1] - y_2);
+        var x_2 = curves[i - 2],
+          y_2 = curves[i - 1];
+        return y_2 + ((time - x_2) / (curves[i] - x_2)) * (curves[i + 1] - y_2);
       }
     }
     frameIndex += this.getFrameEntries();
-    var x = curves[n - 2], y = curves[n - 1];
-    return y + (time - x) / (this.frames[frameIndex] - x) * (this.frames[frameIndex + valueOffset] - y);
+    var x = curves[n - 2],
+      y = curves[n - 1];
+    return y + ((time - x) / (this.frames[frameIndex] - x)) * (this.frames[frameIndex + valueOffset] - y);
   };
   return CurveTimeline;
-}(Timeline));
+})(Timeline);
 /**
  * @public
  */
@@ -15664,15 +15738,19 @@ var CurveTimeline1 = /** @class */ (function (_super) {
     var curveType = this.curves[i >> 1];
     switch (curveType) {
       case 0 /*LINEAR*/:
-        var before = frames[i], value = frames[i + 1 /*VALUE*/];
-        return value + (time - before) / (frames[i + 2 /*ENTRIES*/] - before) * (frames[i + 2 /*ENTRIES*/ + 1 /*VALUE*/] - value);
+        var before = frames[i],
+          value = frames[i + 1 /*VALUE*/];
+        return (
+          value +
+          ((time - before) / (frames[i + 2 /*ENTRIES*/] - before)) * (frames[i + 2 /*ENTRIES*/ + 1 /*VALUE*/] - value)
+        );
       case 1 /*STEPPED*/:
         return frames[i + 1 /*VALUE*/];
     }
     return this.getBezierValue(time, i, 1 /*VALUE*/, curveType - 2 /*BEZIER*/);
   };
   return CurveTimeline1;
-}(CurveTimeline));
+})(CurveTimeline);
 /** The base class for a {@link CurveTimeline} which sets two properties.
  * @public
  * */
@@ -15696,22 +15774,21 @@ var CurveTimeline2 = /** @class */ (function (_super) {
     this.frames[frame + 2 /*VALUE2*/] = value2;
   };
   return CurveTimeline2;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a bone's local {@link Bone#rotation}.
  * @public
  * */
 var RotateTimeline = /** @class */ (function (_super) {
   __extends(RotateTimeline, _super);
   function RotateTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.rotate + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.rotate + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   RotateTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -15736,22 +15813,22 @@ var RotateTimeline = /** @class */ (function (_super) {
     }
   };
   return RotateTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a bone's local {@link Bone#x} and {@link Bone#y}.
  * @public
  * */
 var TranslateTimeline = /** @class */ (function (_super) {
   __extends(TranslateTimeline, _super);
   function TranslateTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.x + "|" + boneIndex, Property.y + "|" + boneIndex) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, Property.x + '|' + boneIndex, Property.y + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   TranslateTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -15765,7 +15842,8 @@ var TranslateTimeline = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
+    var x = 0,
+      y = 0;
     var i = Timeline.search(frames, time, 3 /*ENTRIES*/);
     var curveType = this.curves[i / 3 /*ENTRIES*/];
     switch (curveType) {
@@ -15801,22 +15879,21 @@ var TranslateTimeline = /** @class */ (function (_super) {
     }
   };
   return TranslateTimeline;
-}(CurveTimeline2));
+})(CurveTimeline2);
 /** Changes a bone's local {@link Bone#x}.
  * @public
  * */
 var TranslateXTimeline = /** @class */ (function (_super) {
   __extends(TranslateXTimeline, _super);
   function TranslateXTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.x + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.x + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   TranslateXTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -15842,22 +15919,21 @@ var TranslateXTimeline = /** @class */ (function (_super) {
     }
   };
   return TranslateXTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a bone's local {@link Bone#x}.
  * @public
  * */
 var TranslateYTimeline = /** @class */ (function (_super) {
   __extends(TranslateYTimeline, _super);
   function TranslateYTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.y + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.y + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   TranslateYTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -15883,22 +15959,28 @@ var TranslateYTimeline = /** @class */ (function (_super) {
     }
   };
   return TranslateYTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a bone's local {@link Bone#scaleX)} and {@link Bone#scaleY}.
  * @public
  * */
 var ScaleTimeline = /** @class */ (function (_super) {
   __extends(ScaleTimeline, _super);
   function ScaleTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.scaleX + "|" + boneIndex, Property.scaleY + "|" + boneIndex) || this;
+    var _this =
+      _super.call(
+        this,
+        frameCount,
+        bezierCount,
+        Property.scaleX + '|' + boneIndex,
+        Property.scaleY + '|' + boneIndex,
+      ) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   ScaleTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -15938,14 +16020,13 @@ var ScaleTimeline = /** @class */ (function (_super) {
       if (blend == exports.MixBlend.add) {
         bone.scaleX += x - bone.data.scaleX;
         bone.scaleY += y - bone.data.scaleY;
-      }
-      else {
+      } else {
         bone.scaleX = x;
         bone.scaleY = y;
       }
-    }
-    else {
-      var bx = 0, by = 0;
+    } else {
+      var bx = 0,
+        by = 0;
       if (direction == exports.MixDirection.mixOut) {
         switch (blend) {
           case exports.MixBlend.setup:
@@ -15967,8 +16048,7 @@ var ScaleTimeline = /** @class */ (function (_super) {
             bone.scaleX = bx + (Math.abs(x) * MathUtils.signum(bx) - bone.data.scaleX) * alpha;
             bone.scaleY = by + (Math.abs(y) * MathUtils.signum(by) - bone.data.scaleY) * alpha;
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup:
             bx = Math.abs(bone.data.scaleX) * MathUtils.signum(x);
@@ -15993,22 +16073,21 @@ var ScaleTimeline = /** @class */ (function (_super) {
     }
   };
   return ScaleTimeline;
-}(CurveTimeline2));
+})(CurveTimeline2);
 /** Changes a bone's local {@link Bone#scaleX)} and {@link Bone#scaleY}.
  * @public
  * */
 var ScaleXTimeline = /** @class */ (function (_super) {
   __extends(ScaleXTimeline, _super);
   function ScaleXTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.scaleX + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.scaleX + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   ScaleXTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -16022,12 +16101,9 @@ var ScaleXTimeline = /** @class */ (function (_super) {
     }
     var x = this.getCurveValue(time) * bone.data.scaleX;
     if (alpha == 1) {
-      if (blend == exports.MixBlend.add)
-        bone.scaleX += x - bone.data.scaleX;
-      else
-        bone.scaleX = x;
-    }
-    else {
+      if (blend == exports.MixBlend.add) bone.scaleX += x - bone.data.scaleX;
+      else bone.scaleX = x;
+    } else {
       // Mixing out uses sign of setup or current pose, else use sign of key.
       var bx = 0;
       if (direction == exports.MixDirection.mixOut) {
@@ -16045,8 +16121,7 @@ var ScaleXTimeline = /** @class */ (function (_super) {
             bx = bone.scaleX;
             bone.scaleX = bx + (Math.abs(x) * MathUtils.signum(bx) - bone.data.scaleX) * alpha;
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup:
             bx = Math.abs(bone.data.scaleX) * MathUtils.signum(x);
@@ -16065,22 +16140,21 @@ var ScaleXTimeline = /** @class */ (function (_super) {
     }
   };
   return ScaleXTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a bone's local {@link Bone#scaleX)} and {@link Bone#scaleY}.
  * @public
  * */
 var ScaleYTimeline = /** @class */ (function (_super) {
   __extends(ScaleYTimeline, _super);
   function ScaleYTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.scaleY + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.scaleY + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   ScaleYTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -16094,12 +16168,9 @@ var ScaleYTimeline = /** @class */ (function (_super) {
     }
     var y = this.getCurveValue(time) * bone.data.scaleY;
     if (alpha == 1) {
-      if (blend == exports.MixBlend.add)
-        bone.scaleY += y - bone.data.scaleY;
-      else
-        bone.scaleY = y;
-    }
-    else {
+      if (blend == exports.MixBlend.add) bone.scaleY += y - bone.data.scaleY;
+      else bone.scaleY = y;
+    } else {
       // Mixing out uses sign of setup or current pose, else use sign of key.
       var by = 0;
       if (direction == exports.MixDirection.mixOut) {
@@ -16117,8 +16188,7 @@ var ScaleYTimeline = /** @class */ (function (_super) {
             by = bone.scaleY;
             bone.scaleY = by + (Math.abs(y) * MathUtils.signum(by) - bone.data.scaleY) * alpha;
         }
-      }
-      else {
+      } else {
         switch (blend) {
           case exports.MixBlend.setup:
             by = Math.abs(bone.data.scaleY) * MathUtils.signum(y);
@@ -16137,22 +16207,28 @@ var ScaleYTimeline = /** @class */ (function (_super) {
     }
   };
   return ScaleYTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a bone's local {@link Bone#shearX} and {@link Bone#shearY}.
  * @public
  * */
 var ShearTimeline = /** @class */ (function (_super) {
   __extends(ShearTimeline, _super);
   function ShearTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.shearX + "|" + boneIndex, Property.shearY + "|" + boneIndex) || this;
+    var _this =
+      _super.call(
+        this,
+        frameCount,
+        bezierCount,
+        Property.shearX + '|' + boneIndex,
+        Property.shearY + '|' + boneIndex,
+      ) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   ShearTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -16166,7 +16242,8 @@ var ShearTimeline = /** @class */ (function (_super) {
       }
       return;
     }
-    var x = 0, y = 0;
+    var x = 0,
+      y = 0;
     var i = Timeline.search(frames, time, 3 /*ENTRIES*/);
     var curveType = this.curves[i / 3 /*ENTRIES*/];
     switch (curveType) {
@@ -16202,22 +16279,21 @@ var ShearTimeline = /** @class */ (function (_super) {
     }
   };
   return ShearTimeline;
-}(CurveTimeline2));
+})(CurveTimeline2);
 /** Changes a bone's local {@link Bone#shearX} and {@link Bone#shearY}.
  * @public
  * */
 var ShearXTimeline = /** @class */ (function (_super) {
   __extends(ShearXTimeline, _super);
   function ShearXTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.shearX + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.shearX + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   ShearXTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -16243,22 +16319,21 @@ var ShearXTimeline = /** @class */ (function (_super) {
     }
   };
   return ShearXTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a bone's local {@link Bone#shearX} and {@link Bone#shearY}.
  * @public
  * */
 var ShearYTimeline = /** @class */ (function (_super) {
   __extends(ShearYTimeline, _super);
   function ShearYTimeline(frameCount, bezierCount, boneIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.shearY + "|" + boneIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.shearY + '|' + boneIndex) || this;
     _this.boneIndex = 0;
     _this.boneIndex = boneIndex;
     return _this;
   }
   ShearYTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var bone = skeleton.bones[this.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -16284,17 +16359,16 @@ var ShearYTimeline = /** @class */ (function (_super) {
     }
   };
   return ShearYTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a slot's {@link Slot#color}.
  * @public
  * */
 var RGBATimeline = /** @class */ (function (_super) {
   __extends(RGBATimeline, _super);
   function RGBATimeline(frameCount, bezierCount, slotIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.rgb + "|" + slotIndex,
-      Property.alpha + "|" + slotIndex
-    ]) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, [Property.rgb + '|' + slotIndex, Property.alpha + '|' + slotIndex]) ||
+      this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     return _this;
@@ -16313,8 +16387,7 @@ var RGBATimeline = /** @class */ (function (_super) {
   };
   RGBATimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = this.frames;
     var color = slot.color;
     if (time < frames[0]) {
@@ -16324,11 +16397,19 @@ var RGBATimeline = /** @class */ (function (_super) {
           color.setFromColor(setup);
           return;
         case exports.MixBlend.first:
-          color.add((setup.r - color.r) * alpha, (setup.g - color.g) * alpha, (setup.b - color.b) * alpha, (setup.a - color.a) * alpha);
+          color.add(
+            (setup.r - color.r) * alpha,
+            (setup.g - color.g) * alpha,
+            (setup.b - color.b) * alpha,
+            (setup.a - color.a) * alpha,
+          );
       }
       return;
     }
-    var r = 0, g = 0, b = 0, a = 0;
+    var r = 0,
+      g = 0,
+      b = 0,
+      a = 0;
     var i = Timeline.search(frames, time, 5 /*ENTRIES*/);
     var curveType = this.curves[i / 5 /*ENTRIES*/];
     switch (curveType) {
@@ -16356,25 +16437,21 @@ var RGBATimeline = /** @class */ (function (_super) {
         b = this.getBezierValue(time, i, 3 /*B*/, curveType + 18 /*BEZIER_SIZE*/ * 2 - 2 /*BEZIER*/);
         a = this.getBezierValue(time, i, 4 /*A*/, curveType + 18 /*BEZIER_SIZE*/ * 3 - 2 /*BEZIER*/);
     }
-    if (alpha == 1)
-      color.set(r, g, b, a);
+    if (alpha == 1) color.set(r, g, b, a);
     else {
-      if (blend == exports.MixBlend.setup)
-        color.setFromColor(slot.data.color);
+      if (blend == exports.MixBlend.setup) color.setFromColor(slot.data.color);
       color.add((r - color.r) * alpha, (g - color.g) * alpha, (b - color.b) * alpha, (a - color.a) * alpha);
     }
   };
   return RGBATimeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a slot's {@link Slot#color}.
  * @public
  * */
 var RGBTimeline = /** @class */ (function (_super) {
   __extends(RGBTimeline, _super);
   function RGBTimeline(frameCount, bezierCount, slotIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.rgb + "|" + slotIndex
-    ]) || this;
+    var _this = _super.call(this, frameCount, bezierCount, [Property.rgb + '|' + slotIndex]) || this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     return _this;
@@ -16392,8 +16469,7 @@ var RGBTimeline = /** @class */ (function (_super) {
   };
   RGBTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = this.frames;
     var color = slot.color;
     if (time < frames[0]) {
@@ -16411,7 +16487,9 @@ var RGBTimeline = /** @class */ (function (_super) {
       }
       return;
     }
-    var r = 0, g = 0, b = 0;
+    var r = 0,
+      g = 0,
+      b = 0;
     var i = Timeline.search(frames, time, 4 /*ENTRIES*/);
     var curveType = this.curves[i >> 2];
     switch (curveType) {
@@ -16439,8 +16517,7 @@ var RGBTimeline = /** @class */ (function (_super) {
       color.r = r;
       color.g = g;
       color.b = b;
-    }
-    else {
+    } else {
       if (blend == exports.MixBlend.setup) {
         var setup = slot.data.color;
         color.r = setup.r;
@@ -16453,24 +16530,24 @@ var RGBTimeline = /** @class */ (function (_super) {
     }
   };
   return RGBTimeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a bone's local {@link Bone#shearX} and {@link Bone#shearY}.
  * @public
  * */
 var AlphaTimeline = /** @class */ (function (_super) {
   __extends(AlphaTimeline, _super);
   function AlphaTimeline(frameCount, bezierCount, slotIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.alpha + "|" + slotIndex) || this;
+    var _this = _super.call(this, frameCount, bezierCount, Property.alpha + '|' + slotIndex) || this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     return _this;
   }
   AlphaTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var color = slot.color;
-    if (time < this.frames[0]) { // Time is before first frame.
+    if (time < this.frames[0]) {
+      // Time is before first frame.
       var setup = slot.data.color;
       switch (blend) {
         case exports.MixBlend.setup:
@@ -16482,27 +16559,26 @@ var AlphaTimeline = /** @class */ (function (_super) {
       return;
     }
     var a = this.getCurveValue(time);
-    if (alpha == 1)
-      color.a = a;
+    if (alpha == 1) color.a = a;
     else {
-      if (blend == exports.MixBlend.setup)
-        color.a = slot.data.color.a;
+      if (blend == exports.MixBlend.setup) color.a = slot.data.color.a;
       color.a += (a - color.a) * alpha;
     }
   };
   return AlphaTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a slot's {@link Slot#color} and {@link Slot#darkColor} for two color tinting.
  * @public
  * */
 var RGBA2Timeline = /** @class */ (function (_super) {
   __extends(RGBA2Timeline, _super);
   function RGBA2Timeline(frameCount, bezierCount, slotIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.rgb + "|" + slotIndex,
-      Property.alpha + "|" + slotIndex,
-      Property.rgb2 + "|" + slotIndex
-    ]) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, [
+        Property.rgb + '|' + slotIndex,
+        Property.alpha + '|' + slotIndex,
+        Property.rgb2 + '|' + slotIndex,
+      ]) || this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     return _this;
@@ -16524,12 +16600,13 @@ var RGBA2Timeline = /** @class */ (function (_super) {
   };
   RGBA2Timeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = this.frames;
-    var light = slot.color, dark = slot.darkColor;
+    var light = slot.color,
+      dark = slot.darkColor;
     if (time < frames[0]) {
-      var setupLight = slot.data.color, setupDark = slot.data.darkColor;
+      var setupLight = slot.data.color,
+        setupDark = slot.data.darkColor;
       switch (blend) {
         case exports.MixBlend.setup:
           light.setFromColor(setupLight);
@@ -16538,14 +16615,25 @@ var RGBA2Timeline = /** @class */ (function (_super) {
           dark.b = setupDark.b;
           return;
         case exports.MixBlend.first:
-          light.add((setupLight.r - light.r) * alpha, (setupLight.g - light.g) * alpha, (setupLight.b - light.b) * alpha, (setupLight.a - light.a) * alpha);
+          light.add(
+            (setupLight.r - light.r) * alpha,
+            (setupLight.g - light.g) * alpha,
+            (setupLight.b - light.b) * alpha,
+            (setupLight.a - light.a) * alpha,
+          );
           dark.r += (setupDark.r - dark.r) * alpha;
           dark.g += (setupDark.g - dark.g) * alpha;
           dark.b += (setupDark.b - dark.b) * alpha;
       }
       return;
     }
-    var r = 0, g = 0, b = 0, a = 0, r2 = 0, g2 = 0, b2 = 0;
+    var r = 0,
+      g = 0,
+      b = 0,
+      a = 0,
+      r2 = 0,
+      g2 = 0,
+      b2 = 0;
     var i = Timeline.search(frames, time, 8 /*ENTRIES*/);
     var curveType = this.curves[i >> 3];
     switch (curveType) {
@@ -16590,8 +16678,7 @@ var RGBA2Timeline = /** @class */ (function (_super) {
       dark.r = r2;
       dark.g = g2;
       dark.b = b2;
-    }
-    else {
+    } else {
       if (blend == exports.MixBlend.setup) {
         light.setFromColor(slot.data.color);
         var setupDark = slot.data.darkColor;
@@ -16606,17 +16693,16 @@ var RGBA2Timeline = /** @class */ (function (_super) {
     }
   };
   return RGBA2Timeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a slot's {@link Slot#color} and {@link Slot#darkColor} for two color tinting.
  * @public
  * */
 var RGB2Timeline = /** @class */ (function (_super) {
   __extends(RGB2Timeline, _super);
   function RGB2Timeline(frameCount, bezierCount, slotIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.rgb + "|" + slotIndex,
-      Property.rgb2 + "|" + slotIndex
-    ]) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, [Property.rgb + '|' + slotIndex, Property.rgb2 + '|' + slotIndex]) ||
+      this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     return _this;
@@ -16637,12 +16723,13 @@ var RGB2Timeline = /** @class */ (function (_super) {
   };
   RGB2Timeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var frames = this.frames;
-    var light = slot.color, dark = slot.darkColor;
+    var light = slot.color,
+      dark = slot.darkColor;
     if (time < frames[0]) {
-      var setupLight = slot.data.color, setupDark = slot.data.darkColor;
+      var setupLight = slot.data.color,
+        setupDark = slot.data.darkColor;
       switch (blend) {
         case exports.MixBlend.setup:
           light.r = setupLight.r;
@@ -16662,7 +16749,12 @@ var RGB2Timeline = /** @class */ (function (_super) {
       }
       return;
     }
-    var r = 0, g = 0, b = 0, r2 = 0, g2 = 0, b2 = 0;
+    var r = 0,
+      g = 0,
+      b = 0,
+      r2 = 0,
+      g2 = 0,
+      b2 = 0;
     var i = Timeline.search(frames, time, 7 /*ENTRIES*/);
     var curveType = this.curves[i / 7 /*ENTRIES*/];
     switch (curveType) {
@@ -16705,10 +16797,10 @@ var RGB2Timeline = /** @class */ (function (_super) {
       dark.r = r2;
       dark.g = g2;
       dark.b = b2;
-    }
-    else {
+    } else {
       if (blend == exports.MixBlend.setup) {
-        var setupLight = slot.data.color, setupDark = slot.data.darkColor;
+        var setupLight = slot.data.color,
+          setupDark = slot.data.darkColor;
         light.r = setupLight.r;
         light.g = setupLight.g;
         light.b = setupLight.b;
@@ -16725,16 +16817,14 @@ var RGB2Timeline = /** @class */ (function (_super) {
     }
   };
   return RGB2Timeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a slot's {@link Slot#attachment}.
  * @public
  * */
 var AttachmentTimeline = /** @class */ (function (_super) {
   __extends(AttachmentTimeline, _super);
   function AttachmentTimeline(frameCount, slotIndex) {
-    var _this = _super.call(this, frameCount, [
-      Property.attachment + "|" + slotIndex
-    ]) || this;
+    var _this = _super.call(this, frameCount, [Property.attachment + '|' + slotIndex]) || this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     _this.attachmentNames = new Array(frameCount);
@@ -16750,11 +16840,9 @@ var AttachmentTimeline = /** @class */ (function (_super) {
   };
   AttachmentTimeline.prototype.apply = function (skeleton, lastTime, time, events, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     if (direction == exports.MixDirection.mixOut) {
-      if (blend == exports.MixBlend.setup)
-        this.setAttachment(skeleton, slot, slot.data.attachmentName);
+      if (blend == exports.MixBlend.setup) this.setAttachment(skeleton, slot, slot.data.attachmentName);
       return;
     }
     if (time < this.frames[0]) {
@@ -16768,16 +16856,15 @@ var AttachmentTimeline = /** @class */ (function (_super) {
     slot.setAttachment(!attachmentName ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
   };
   return AttachmentTimeline;
-}(Timeline));
+})(Timeline);
 /** Changes a slot's {@link Slot#deform} to deform a {@link VertexAttachment}.
  * @public
  * */
 var DeformTimeline = /** @class */ (function (_super) {
   __extends(DeformTimeline, _super);
   function DeformTimeline(frameCount, bezierCount, slotIndex, attachment) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.deform + "|" + slotIndex + "|" + attachment.id
-    ]) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, [Property.deform + '|' + slotIndex + '|' + attachment.id]) || this;
     _this.slotIndex = 0;
     _this.slotIndex = slotIndex;
     _this.attachment = attachment;
@@ -16795,16 +16882,32 @@ var DeformTimeline = /** @class */ (function (_super) {
   };
   /** @param value1 Ignored (0 is used for a deform timeline).
    * @param value2 Ignored (1 is used for a deform timeline). */
-  DeformTimeline.prototype.setBezier = function (bezier, frame, value, time1, value1, cx1, cy1, cx2, cy2, time2, value2) {
+  DeformTimeline.prototype.setBezier = function (
+    bezier,
+    frame,
+    value,
+    time1,
+    value1,
+    cx1,
+    cy1,
+    cx2,
+    cy2,
+    time2,
+    value2,
+  ) {
     var curves = this.curves;
-    var i = this.getFrameCount() + bezier * 18 /*BEZIER_SIZE*/;
-    if (value == 0)
-      curves[frame] = 2 /*BEZIER*/ + i;
-    var tmpx = (time1 - cx1 * 2 + cx2) * 0.03, tmpy = cy2 * 0.03 - cy1 * 0.06;
-    var dddx = ((cx1 - cx2) * 3 - time1 + time2) * 0.006, dddy = (cy1 - cy2 + 0.33333333) * 0.018;
-    var ddx = tmpx * 2 + dddx, ddy = tmpy * 2 + dddy;
-    var dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667, dy = cy1 * 0.3 + tmpy + dddy * 0.16666667;
-    var x = time1 + dx, y = dy;
+    var i = this.getFrameCount() + bezier * 18; /*BEZIER_SIZE*/
+    if (value == 0) curves[frame] = 2 /*BEZIER*/ + i;
+    var tmpx = (time1 - cx1 * 2 + cx2) * 0.03,
+      tmpy = cy2 * 0.03 - cy1 * 0.06;
+    var dddx = ((cx1 - cx2) * 3 - time1 + time2) * 0.006,
+      dddy = (cy1 - cy2 + 0.33333333) * 0.018;
+    var ddx = tmpx * 2 + dddx,
+      ddy = tmpy * 2 + dddy;
+    var dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667,
+      dy = cy1 * 0.3 + tmpy + dddy * 0.16666667;
+    var x = time1 + dx,
+      y = dy;
     for (var n = i + 18 /*BEZIER_SIZE*/; i < n; i += 2) {
       curves[i] = x;
       curves[i + 1] = y;
@@ -16829,28 +16932,27 @@ var DeformTimeline = /** @class */ (function (_super) {
     i -= 2 /*BEZIER*/;
     if (curves[i] > time) {
       var x_4 = this.frames[frame];
-      return curves[i + 1] * (time - x_4) / (curves[i] - x_4);
+      return (curves[i + 1] * (time - x_4)) / (curves[i] - x_4);
     }
-    var n = i + 18 /*BEZIER_SIZE*/;
+    var n = i + 18; /*BEZIER_SIZE*/
     for (i += 2; i < n; i += 2) {
       if (curves[i] >= time) {
-        var x_5 = curves[i - 2], y_3 = curves[i - 1];
-        return y_3 + (time - x_5) / (curves[i] - x_5) * (curves[i + 1] - y_3);
+        var x_5 = curves[i - 2],
+          y_3 = curves[i - 1];
+        return y_3 + ((time - x_5) / (curves[i] - x_5)) * (curves[i + 1] - y_3);
       }
     }
-    var x = curves[n - 2], y = curves[n - 1];
-    return y + (1 - y) * (time - x) / (this.frames[frame + this.getFrameEntries()] - x);
+    var x = curves[n - 2],
+      y = curves[n - 1];
+    return y + ((1 - y) * (time - x)) / (this.frames[frame + this.getFrameEntries()] - x);
   };
   DeformTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
     var slot = skeleton.slots[this.slotIndex];
-    if (!slot.bone.active)
-      return;
+    if (!slot.bone.active) return;
     var slotAttachment = slot.getAttachment();
-    if (!(slotAttachment instanceof VertexAttachment) || slotAttachment.deformAttachment != this.attachment)
-      return;
+    if (!(slotAttachment instanceof VertexAttachment) || slotAttachment.deformAttachment != this.attachment) return;
     var deform = slot.deform;
-    if (deform.length == 0)
-      blend = exports.MixBlend.setup;
+    if (deform.length == 0) blend = exports.MixBlend.setup;
     var vertices = this.vertices;
     var vertexCount = vertices[0].length;
     var frames = this.frames;
@@ -16869,20 +16971,18 @@ var DeformTimeline = /** @class */ (function (_super) {
           if (!vertexAttachment.bones) {
             // Unweighted vertex positions.
             var setupVertices = vertexAttachment.vertices;
-            for (var i = 0; i < vertexCount; i++)
-              deform[i] += (setupVertices[i] - deform[i]) * alpha;
-          }
-          else {
+            for (var i = 0; i < vertexCount; i++) deform[i] += (setupVertices[i] - deform[i]) * alpha;
+          } else {
             // Weighted deform offsets.
             alpha = 1 - alpha;
-            for (var i = 0; i < vertexCount; i++)
-              deform[i] *= alpha;
+            for (var i = 0; i < vertexCount; i++) deform[i] *= alpha;
           }
       }
       return;
     }
     deform.length = vertexCount;
-    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+    if (time >= frames[frames.length - 1]) {
+      // Time is after last frame.
       var lastVertices = vertices[frames.length - 1];
       if (alpha == 1) {
         if (blend == exports.MixBlend.add) {
@@ -16890,19 +16990,13 @@ var DeformTimeline = /** @class */ (function (_super) {
           if (!vertexAttachment.bones) {
             // Unweighted vertex positions, with alpha.
             var setupVertices = vertexAttachment.vertices;
-            for (var i_1 = 0; i_1 < vertexCount; i_1++)
-              deform[i_1] += lastVertices[i_1] - setupVertices[i_1];
-          }
-          else {
+            for (var i_1 = 0; i_1 < vertexCount; i_1++) deform[i_1] += lastVertices[i_1] - setupVertices[i_1];
+          } else {
             // Weighted deform offsets, with alpha.
-            for (var i_2 = 0; i_2 < vertexCount; i_2++)
-              deform[i_2] += lastVertices[i_2];
+            for (var i_2 = 0; i_2 < vertexCount; i_2++) deform[i_2] += lastVertices[i_2];
           }
-        }
-        else
-          Utils.arrayCopy(lastVertices, 0, deform, 0, vertexCount);
-      }
-      else {
+        } else Utils.arrayCopy(lastVertices, 0, deform, 0, vertexCount);
+      } else {
         switch (blend) {
           case exports.MixBlend.setup: {
             var vertexAttachment_1 = slotAttachment;
@@ -16913,18 +17007,15 @@ var DeformTimeline = /** @class */ (function (_super) {
                 var setup = setupVertices[i_3];
                 deform[i_3] = setup + (lastVertices[i_3] - setup) * alpha;
               }
-            }
-            else {
+            } else {
               // Weighted deform offsets, with alpha.
-              for (var i_4 = 0; i_4 < vertexCount; i_4++)
-                deform[i_4] = lastVertices[i_4] * alpha;
+              for (var i_4 = 0; i_4 < vertexCount; i_4++) deform[i_4] = lastVertices[i_4] * alpha;
             }
             break;
           }
           case exports.MixBlend.first:
           case exports.MixBlend.replace:
-            for (var i_5 = 0; i_5 < vertexCount; i_5++)
-              deform[i_5] += (lastVertices[i_5] - deform[i_5]) * alpha;
+            for (var i_5 = 0; i_5 < vertexCount; i_5++) deform[i_5] += (lastVertices[i_5] - deform[i_5]) * alpha;
             break;
           case exports.MixBlend.add:
             var vertexAttachment = slotAttachment;
@@ -16933,11 +17024,9 @@ var DeformTimeline = /** @class */ (function (_super) {
               var setupVertices = vertexAttachment.vertices;
               for (var i_6 = 0; i_6 < vertexCount; i_6++)
                 deform[i_6] += (lastVertices[i_6] - setupVertices[i_6]) * alpha;
-            }
-            else {
+            } else {
               // Weighted deform offsets, with alpha.
-              for (var i_7 = 0; i_7 < vertexCount; i_7++)
-                deform[i_7] += lastVertices[i_7] * alpha;
+              for (var i_7 = 0; i_7 < vertexCount; i_7++) deform[i_7] += lastVertices[i_7] * alpha;
             }
         }
       }
@@ -16958,23 +17047,20 @@ var DeformTimeline = /** @class */ (function (_super) {
             var prev = prevVertices[i_8];
             deform[i_8] += prev + (nextVertices[i_8] - prev) * percent - setupVertices[i_8];
           }
-        }
-        else {
+        } else {
           // Weighted deform offsets, with alpha.
           for (var i_9 = 0; i_9 < vertexCount; i_9++) {
             var prev = prevVertices[i_9];
             deform[i_9] += prev + (nextVertices[i_9] - prev) * percent;
           }
         }
-      }
-      else {
+      } else {
         for (var i_10 = 0; i_10 < vertexCount; i_10++) {
           var prev = prevVertices[i_10];
           deform[i_10] = prev + (nextVertices[i_10] - prev) * percent;
         }
       }
-    }
-    else {
+    } else {
       switch (blend) {
         case exports.MixBlend.setup: {
           var vertexAttachment_2 = slotAttachment;
@@ -16982,11 +17068,11 @@ var DeformTimeline = /** @class */ (function (_super) {
             // Unweighted vertex positions, with alpha.
             var setupVertices = vertexAttachment_2.vertices;
             for (var i_11 = 0; i_11 < vertexCount; i_11++) {
-              var prev = prevVertices[i_11], setup = setupVertices[i_11];
+              var prev = prevVertices[i_11],
+                setup = setupVertices[i_11];
               deform[i_11] = setup + (prev + (nextVertices[i_11] - prev) * percent - setup) * alpha;
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
             for (var i_12 = 0; i_12 < vertexCount; i_12++) {
               var prev = prevVertices[i_12];
@@ -17011,8 +17097,7 @@ var DeformTimeline = /** @class */ (function (_super) {
               var prev = prevVertices[i_14];
               deform[i_14] += (prev + (nextVertices[i_14] - prev) * percent - setupVertices[i_14]) * alpha;
             }
-          }
-          else {
+          } else {
             // Weighted deform offsets, with alpha.
             for (var i_15 = 0; i_15 < vertexCount; i_15++) {
               var prev = prevVertices[i_15];
@@ -17023,7 +17108,7 @@ var DeformTimeline = /** @class */ (function (_super) {
     }
   };
   return DeformTimeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Fires an {@link Event} when specific animation times are reached.
  * @public
  * */
@@ -17044,36 +17129,33 @@ var EventTimeline = /** @class */ (function (_super) {
   };
   /** Fires events for frames > `lastTime` and <= `time`. */
   EventTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
-    if (!firedEvents)
-      return;
+    if (!firedEvents) return;
     var frames = this.frames;
     var frameCount = this.frames.length;
-    if (lastTime > time) { // Fire events after last time for looped animations.
+    if (lastTime > time) {
+      // Fire events after last time for looped animations.
       this.apply(skeleton, lastTime, Number.MAX_VALUE, firedEvents, alpha, blend, direction);
       lastTime = -1;
-    }
-    else if (lastTime >= frames[frameCount - 1]) // Last time is after last frame.
+    } else if (lastTime >= frames[frameCount - 1])
+      // Last time is after last frame.
       return;
-    if (time < frames[0])
-      return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
     var i = 0;
-    if (lastTime < frames[0])
-      i = 0;
+    if (lastTime < frames[0]) i = 0;
     else {
       i = Timeline.search1(frames, lastTime) + 1;
       var frameTime = frames[i];
-      while (i > 0) { // Fire multiple events with the same frame.
-        if (frames[i - 1] != frameTime)
-          break;
+      while (i > 0) {
+        // Fire multiple events with the same frame.
+        if (frames[i - 1] != frameTime) break;
         i--;
       }
     }
-    for (; i < frameCount && time >= frames[i]; i++)
-      firedEvents.push(this.events[i]);
+    for (; i < frameCount && time >= frames[i]; i++) firedEvents.push(this.events[i]);
   };
-  EventTimeline.propertyIds = ["" + Property.event];
+  EventTimeline.propertyIds = ['' + Property.event];
   return EventTimeline;
-}(Timeline));
+})(Timeline);
 /** Changes a skeleton's {@link Skeleton#drawOrder}.
  * @public
  * */
@@ -17106,18 +17188,16 @@ var DrawOrderTimeline = /** @class */ (function (_super) {
       return;
     }
     var drawOrderToSetupIndex = this.drawOrders[Timeline.search1(this.frames, time)];
-    if (!drawOrderToSetupIndex)
-      Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
+    if (!drawOrderToSetupIndex) Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
     else {
       var drawOrder = skeleton.drawOrder;
       var slots = skeleton.slots;
-      for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-        drawOrder[i] = slots[drawOrderToSetupIndex[i]];
+      for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++) drawOrder[i] = slots[drawOrderToSetupIndex[i]];
     }
   };
-  DrawOrderTimeline.propertyIds = ["" + Property.drawOrder];
+  DrawOrderTimeline.propertyIds = ['' + Property.drawOrder];
   return DrawOrderTimeline;
-}(Timeline));
+})(Timeline);
 /** Changes an IK constraint's {@link IkConstraint#mix}, {@link IkConstraint#softness},
  * {@link IkConstraint#bendDirection}, {@link IkConstraint#stretch}, and {@link IkConstraint#compress}.
  * @public
@@ -17125,9 +17205,7 @@ var DrawOrderTimeline = /** @class */ (function (_super) {
 var IkConstraintTimeline = /** @class */ (function (_super) {
   __extends(IkConstraintTimeline, _super);
   function IkConstraintTimeline(frameCount, bezierCount, ikConstraintIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.ikConstraint + "|" + ikConstraintIndex
-    ]) || this;
+    var _this = _super.call(this, frameCount, bezierCount, [Property.ikConstraint + '|' + ikConstraintIndex]) || this;
     _this.ikConstraintIndex = ikConstraintIndex;
     return _this;
   }
@@ -17146,8 +17224,7 @@ var IkConstraintTimeline = /** @class */ (function (_super) {
   };
   IkConstraintTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
     var constraint = skeleton.ikConstraints[this.ikConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -17167,7 +17244,8 @@ var IkConstraintTimeline = /** @class */ (function (_super) {
       }
       return;
     }
-    var mix = 0, softness = 0;
+    var mix = 0,
+      softness = 0;
     var i = Timeline.search(frames, time, 6 /*ENTRIES*/);
     var curveType = this.curves[i / 6 /*ENTRIES*/];
     switch (curveType) {
@@ -17194,14 +17272,12 @@ var IkConstraintTimeline = /** @class */ (function (_super) {
         constraint.bendDirection = constraint.data.bendDirection;
         constraint.compress = constraint.data.compress;
         constraint.stretch = constraint.data.stretch;
-      }
-      else {
+      } else {
         constraint.bendDirection = frames[i + 3 /*BEND_DIRECTION*/];
         constraint.compress = frames[i + 4 /*COMPRESS*/] != 0;
         constraint.stretch = frames[i + 5 /*STRETCH*/] != 0;
       }
-    }
-    else {
+    } else {
       constraint.mix += (mix - constraint.mix) * alpha;
       constraint.softness += (softness - constraint.softness) * alpha;
       if (direction == exports.MixDirection.mixIn) {
@@ -17212,7 +17288,7 @@ var IkConstraintTimeline = /** @class */ (function (_super) {
     }
   };
   return IkConstraintTimeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a transform constraint's {@link TransformConstraint#rotateMix}, {@link TransformConstraint#translateMix},
  * {@link TransformConstraint#scaleMix}, and {@link TransformConstraint#shearMix}.
  * @public
@@ -17220,9 +17296,9 @@ var IkConstraintTimeline = /** @class */ (function (_super) {
 var TransformConstraintTimeline = /** @class */ (function (_super) {
   __extends(TransformConstraintTimeline, _super);
   function TransformConstraintTimeline(frameCount, bezierCount, transformConstraintIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.transformConstraint + "|" + transformConstraintIndex
-    ]) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, [Property.transformConstraint + '|' + transformConstraintIndex]) ||
+      this;
     _this.transformConstraintIndex = transformConstraintIndex;
     return _this;
   }
@@ -17230,7 +17306,16 @@ var TransformConstraintTimeline = /** @class */ (function (_super) {
     return 7 /*ENTRIES*/;
   };
   /** The time in seconds, rotate mix, translate mix, scale mix, and shear mix for the specified key frame. */
-  TransformConstraintTimeline.prototype.setFrame = function (frame, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY) {
+  TransformConstraintTimeline.prototype.setFrame = function (
+    frame,
+    time,
+    mixRotate,
+    mixX,
+    mixY,
+    mixScaleX,
+    mixScaleY,
+    mixShearY,
+  ) {
     var frames = this.frames;
     frame *= 7 /*ENTRIES*/;
     frames[frame] = time;
@@ -17241,10 +17326,17 @@ var TransformConstraintTimeline = /** @class */ (function (_super) {
     frames[frame + 5 /*SCALEY*/] = mixScaleY;
     frames[frame + 6 /*SHEARY*/] = mixShearY;
   };
-  TransformConstraintTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  TransformConstraintTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var constraint = skeleton.transformConstraints[this.transformConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       var data = constraint.data;
@@ -17311,8 +17403,7 @@ var TransformConstraintTimeline = /** @class */ (function (_super) {
       constraint.mixScaleX = data.mixScaleX + (scaleX - data.mixScaleX) * alpha;
       constraint.mixScaleY = data.mixScaleY + (scaleY - data.mixScaleY) * alpha;
       constraint.mixShearY = data.mixShearY + (shearY - data.mixShearY) * alpha;
-    }
-    else {
+    } else {
       constraint.mixRotate += (rotate - constraint.mixRotate) * alpha;
       constraint.mixX += (x - constraint.mixX) * alpha;
       constraint.mixY += (y - constraint.mixY) * alpha;
@@ -17322,21 +17413,29 @@ var TransformConstraintTimeline = /** @class */ (function (_super) {
     }
   };
   return TransformConstraintTimeline;
-}(CurveTimeline));
+})(CurveTimeline);
 /** Changes a path constraint's {@link PathConstraint#position}.
  * @public
  * */
 var PathConstraintPositionTimeline = /** @class */ (function (_super) {
   __extends(PathConstraintPositionTimeline, _super);
   function PathConstraintPositionTimeline(frameCount, bezierCount, pathConstraintIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.pathConstraintPosition + "|" + pathConstraintIndex) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, Property.pathConstraintPosition + '|' + pathConstraintIndex) || this;
     _this.pathConstraintIndex = pathConstraintIndex;
     return _this;
   }
-  PathConstraintPositionTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintPositionTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -17351,27 +17450,34 @@ var PathConstraintPositionTimeline = /** @class */ (function (_super) {
     var position = this.getCurveValue(time);
     if (blend == exports.MixBlend.setup)
       constraint.position = constraint.data.position + (position - constraint.data.position) * alpha;
-    else
-      constraint.position += (position - constraint.position) * alpha;
+    else constraint.position += (position - constraint.position) * alpha;
   };
   return PathConstraintPositionTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a path constraint's {@link PathConstraint#spacing}.
  * @public
  * */
 var PathConstraintSpacingTimeline = /** @class */ (function (_super) {
   __extends(PathConstraintSpacingTimeline, _super);
   function PathConstraintSpacingTimeline(frameCount, bezierCount, pathConstraintIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, Property.pathConstraintSpacing + "|" + pathConstraintIndex) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, Property.pathConstraintSpacing + '|' + pathConstraintIndex) || this;
     /** The index of the path constraint slot in {@link Skeleton#getPathConstraints()} that will be changed. */
     _this.pathConstraintIndex = 0;
     _this.pathConstraintIndex = pathConstraintIndex;
     return _this;
   }
-  PathConstraintSpacingTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintSpacingTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -17386,11 +17492,10 @@ var PathConstraintSpacingTimeline = /** @class */ (function (_super) {
     var spacing = this.getCurveValue(time);
     if (blend == exports.MixBlend.setup)
       constraint.spacing = constraint.data.spacing + (spacing - constraint.data.spacing) * alpha;
-    else
-      constraint.spacing += (spacing - constraint.spacing) * alpha;
+    else constraint.spacing += (spacing - constraint.spacing) * alpha;
   };
   return PathConstraintSpacingTimeline;
-}(CurveTimeline1));
+})(CurveTimeline1);
 /** Changes a transform constraint's {@link PathConstraint#getMixRotate()}, {@link PathConstraint#getMixX()}, and
  * {@link PathConstraint#getMixY()}.
  * @public
@@ -17398,9 +17503,8 @@ var PathConstraintSpacingTimeline = /** @class */ (function (_super) {
 var PathConstraintMixTimeline = /** @class */ (function (_super) {
   __extends(PathConstraintMixTimeline, _super);
   function PathConstraintMixTimeline(frameCount, bezierCount, pathConstraintIndex) {
-    var _this = _super.call(this, frameCount, bezierCount, [
-      Property.pathConstraintMix + "|" + pathConstraintIndex
-    ]) || this;
+    var _this =
+      _super.call(this, frameCount, bezierCount, [Property.pathConstraintMix + '|' + pathConstraintIndex]) || this;
     /** The index of the path constraint slot in {@link Skeleton#getPathConstraints()} that will be changed. */
     _this.pathConstraintIndex = 0;
     _this.pathConstraintIndex = pathConstraintIndex;
@@ -17417,10 +17521,17 @@ var PathConstraintMixTimeline = /** @class */ (function (_super) {
     frames[frame + 2 /*X*/] = mixX;
     frames[frame + 3 /*Y*/] = mixY;
   };
-  PathConstraintMixTimeline.prototype.apply = function (skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
+  PathConstraintMixTimeline.prototype.apply = function (
+    skeleton,
+    lastTime,
+    time,
+    firedEvents,
+    alpha,
+    blend,
+    direction,
+  ) {
     var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-    if (!constraint.active)
-      return;
+    if (!constraint.active) return;
     var frames = this.frames;
     if (time < frames[0]) {
       switch (blend) {
@@ -17465,15 +17576,14 @@ var PathConstraintMixTimeline = /** @class */ (function (_super) {
       constraint.mixRotate = data.mixRotate + (rotate - data.mixRotate) * alpha;
       constraint.mixX = data.mixX + (x - data.mixX) * alpha;
       constraint.mixY = data.mixY + (y - data.mixY) * alpha;
-    }
-    else {
+    } else {
       constraint.mixRotate += (rotate - constraint.mixRotate) * alpha;
       constraint.mixX += (x - constraint.mixX) * alpha;
       constraint.mixY += (y - constraint.mixY) * alpha;
     }
   };
   return PathConstraintMixTimeline;
-}(CurveTimeline));
+})(CurveTimeline);
 
 /** Applies animations over time, queues animations for later playback, mixes (crossfading) between animations, and applies
  * multiple animations on top of each other (layering).
@@ -17496,12 +17606,13 @@ var AnimationState = /** @class */ (function () {
     this.queue = new EventQueue(this);
     this.propertyIDs = new StringSet();
     this.animationsChanged = false;
-    this.trackEntryPool = new Pool(function () { return new TrackEntry(); });
+    this.trackEntryPool = new Pool(function () {
+      return new TrackEntry();
+    });
     this.data = data;
   }
   AnimationState.emptyAnimation = function () {
-    if (!_emptyAnimation)
-      _emptyAnimation = new Animation("<empty>", [], 0);
+    if (!_emptyAnimation) _emptyAnimation = new Animation('<empty>', [], 0);
     return _emptyAnimation;
   };
   /** Increments each track entry {@link TrackEntry#trackTime()}, setting queued animations as current if needed. */
@@ -17510,15 +17621,13 @@ var AnimationState = /** @class */ (function () {
     var tracks = this.tracks;
     for (var i = 0, n = tracks.length; i < n; i++) {
       var current = tracks[i];
-      if (!current)
-        continue;
+      if (!current) continue;
       current.animationLast = current.nextAnimationLast;
       current.trackLast = current.nextTrackLast;
       var currentDelta = delta * current.timeScale;
       if (current.delay > 0) {
         current.delay -= currentDelta;
-        if (current.delay > 0)
-          continue;
+        if (current.delay > 0) continue;
         currentDelta = -current.delay;
         current.delay = 0;
       }
@@ -17537,8 +17646,7 @@ var AnimationState = /** @class */ (function () {
           }
           continue;
         }
-      }
-      else if (current.trackLast >= current.trackEnd && !current.mixingFrom) {
+      } else if (current.trackLast >= current.trackEnd && !current.mixingFrom) {
         tracks[i] = null;
         this.queue.end(current);
         this.clearNext(current);
@@ -17548,8 +17656,7 @@ var AnimationState = /** @class */ (function () {
         // End mixing from entries once all have completed.
         var from = current.mixingFrom;
         current.mixingFrom = null;
-        if (from)
-          from.mixingTo = null;
+        if (from) from.mixingTo = null;
         while (from) {
           this.queue.end(from);
           from = from.mixingFrom;
@@ -17562,8 +17669,7 @@ var AnimationState = /** @class */ (function () {
   /** Returns true when all mixing from entries are complete. */
   AnimationState.prototype.updateMixingFrom = function (to, delta) {
     var from = to.mixingFrom;
-    if (!from)
-      return true;
+    if (!from) return true;
     var finished = this.updateMixingFrom(from, delta);
     from.animationLast = from.nextAnimationLast;
     from.trackLast = from.nextTrackLast;
@@ -17572,8 +17678,7 @@ var AnimationState = /** @class */ (function () {
       // Require totalAlpha == 0 to ensure mixing is complete, unless mixDuration == 0 (the transition is a single frame).
       if (from.totalAlpha == 0 || to.mixDuration == 0) {
         to.mixingFrom = from.mixingFrom;
-        if (from.mixingFrom)
-          from.mixingFrom.mixingTo = to;
+        if (from.mixingFrom) from.mixingFrom.mixingTo = to;
         to.interruptAlpha = from.interruptAlpha;
         this.queue.end(from);
       }
@@ -17587,27 +17692,24 @@ var AnimationState = /** @class */ (function () {
    * animation state can be applied to multiple skeletons to pose them identically.
    * @returns True if any animations were applied. */
   AnimationState.prototype.apply = function (skeleton) {
-    if (!skeleton)
-      throw new Error("skeleton cannot be null.");
-    if (this.animationsChanged)
-      this._animationsChanged();
+    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (this.animationsChanged) this._animationsChanged();
     var events = this.events;
     var tracks = this.tracks;
     var applied = false;
     for (var i_1 = 0, n_1 = tracks.length; i_1 < n_1; i_1++) {
       var current = tracks[i_1];
-      if (!current || current.delay > 0)
-        continue;
+      if (!current || current.delay > 0) continue;
       applied = true;
       var blend = i_1 == 0 ? exports.MixBlend.first : current.mixBlend;
       // Apply mixing from entries first.
       var mix = current.alpha;
-      if (current.mixingFrom)
-        mix *= this.applyMixingFrom(current, skeleton, blend);
-      else if (current.trackTime >= current.trackEnd && !current.next)
-        mix = 0;
+      if (current.mixingFrom) mix *= this.applyMixingFrom(current, skeleton, blend);
+      else if (current.trackTime >= current.trackEnd && !current.next) mix = 0;
       // Apply current entry.
-      var animationLast = current.animationLast, animationTime = current.getAnimationTime(), applyTime = animationTime;
+      var animationLast = current.animationLast,
+        animationTime = current.getAnimationTime(),
+        applyTime = animationTime;
       var applyEvents = events;
       if (current.reverse) {
         applyTime = current.animation.duration - applyTime;
@@ -17624,28 +17726,40 @@ var AnimationState = /** @class */ (function () {
           var timeline = timelines[ii];
           if (timeline instanceof AttachmentTimeline)
             this.applyAttachmentTimeline(timeline, skeleton, applyTime, blend, true);
-          else
-            timeline.apply(skeleton, animationLast, applyTime, applyEvents, mix, blend, exports.MixDirection.mixIn);
+          else timeline.apply(skeleton, animationLast, applyTime, applyEvents, mix, blend, exports.MixDirection.mixIn);
         }
-      }
-      else {
+      } else {
         var timelineMode = current.timelineMode;
         var firstFrame = current.timelinesRotation.length != timelineCount << 1;
-        if (firstFrame)
-          current.timelinesRotation.length = timelineCount << 1;
+        if (firstFrame) current.timelinesRotation.length = timelineCount << 1;
         for (var ii = 0; ii < timelineCount; ii++) {
           var timeline_1 = timelines[ii];
           var timelineBlend = timelineMode[ii] == SUBSEQUENT ? blend : exports.MixBlend.setup;
           if (timeline_1 instanceof RotateTimeline) {
-            this.applyRotateTimeline(timeline_1, skeleton, applyTime, mix, timelineBlend, current.timelinesRotation, ii << 1, firstFrame);
-          }
-          else if (timeline_1 instanceof AttachmentTimeline) {
+            this.applyRotateTimeline(
+              timeline_1,
+              skeleton,
+              applyTime,
+              mix,
+              timelineBlend,
+              current.timelinesRotation,
+              ii << 1,
+              firstFrame,
+            );
+          } else if (timeline_1 instanceof AttachmentTimeline) {
             this.applyAttachmentTimeline(timeline_1, skeleton, applyTime, blend, true);
-          }
-          else {
+          } else {
             // This fixes the WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
             Utils.webkit602BugfixHelper(mix, blend);
-            timeline_1.apply(skeleton, animationLast, applyTime, applyEvents, mix, timelineBlend, exports.MixDirection.mixIn);
+            timeline_1.apply(
+              skeleton,
+              animationLast,
+              applyTime,
+              applyEvents,
+              mix,
+              timelineBlend,
+              exports.MixDirection.mixIn,
+            );
           }
         }
       }
@@ -17672,41 +17786,37 @@ var AnimationState = /** @class */ (function () {
   };
   AnimationState.prototype.applyMixingFrom = function (to, skeleton, blend) {
     var from = to.mixingFrom;
-    if (from.mixingFrom)
-      this.applyMixingFrom(from, skeleton, blend);
+    if (from.mixingFrom) this.applyMixingFrom(from, skeleton, blend);
     var mix = 0;
-    if (to.mixDuration == 0) { // Single frame mix to undo mixingFrom changes.
+    if (to.mixDuration == 0) {
+      // Single frame mix to undo mixingFrom changes.
       mix = 1;
-      if (blend == exports.MixBlend.first)
-        blend = exports.MixBlend.setup;
-    }
-    else {
+      if (blend == exports.MixBlend.first) blend = exports.MixBlend.setup;
+    } else {
       mix = to.mixTime / to.mixDuration;
-      if (mix > 1)
-        mix = 1;
-      if (blend != exports.MixBlend.first)
-        blend = from.mixBlend;
+      if (mix > 1) mix = 1;
+      if (blend != exports.MixBlend.first) blend = from.mixBlend;
     }
-    var attachments = mix < from.attachmentThreshold, drawOrder = mix < from.drawOrderThreshold;
+    var attachments = mix < from.attachmentThreshold,
+      drawOrder = mix < from.drawOrderThreshold;
     var timelines = from.animation.timelines;
     var timelineCount = timelines.length;
-    var alphaHold = from.alpha * to.interruptAlpha, alphaMix = alphaHold * (1 - mix);
-    var animationLast = from.animationLast, animationTime = from.getAnimationTime(), applyTime = animationTime;
+    var alphaHold = from.alpha * to.interruptAlpha,
+      alphaMix = alphaHold * (1 - mix);
+    var animationLast = from.animationLast,
+      animationTime = from.getAnimationTime(),
+      applyTime = animationTime;
     var events = null;
-    if (from.reverse)
-      applyTime = from.animation.duration - applyTime;
-    else if (mix < from.eventThreshold)
-      events = this.events;
+    if (from.reverse) applyTime = from.animation.duration - applyTime;
+    else if (mix < from.eventThreshold) events = this.events;
     if (blend == exports.MixBlend.add) {
       for (var i = 0; i < timelineCount; i++)
         timelines[i].apply(skeleton, animationLast, applyTime, events, alphaMix, blend, exports.MixDirection.mixOut);
-    }
-    else {
+    } else {
       var timelineMode = from.timelineMode;
       var timelineHoldMix = from.timelineHoldMix;
       var firstFrame = from.timelinesRotation.length != timelineCount << 1;
-      if (firstFrame)
-        from.timelinesRotation.length = timelineCount << 1;
+      if (firstFrame) from.timelinesRotation.length = timelineCount << 1;
       from.totalAlpha = 0;
       for (var i = 0; i < timelineCount; i++) {
         var timeline = timelines[i];
@@ -17715,8 +17825,7 @@ var AnimationState = /** @class */ (function () {
         var alpha = 0;
         switch (timelineMode[i]) {
           case SUBSEQUENT:
-            if (!drawOrder && timeline instanceof DrawOrderTimeline)
-              continue;
+            if (!drawOrder && timeline instanceof DrawOrderTimeline) continue;
             timelineBlend = blend;
             alpha = alphaMix;
             break;
@@ -17740,7 +17849,16 @@ var AnimationState = /** @class */ (function () {
         }
         from.totalAlpha += alpha;
         if (timeline instanceof RotateTimeline)
-          this.applyRotateTimeline(timeline, skeleton, applyTime, alpha, timelineBlend, from.timelinesRotation, i << 1, firstFrame);
+          this.applyRotateTimeline(
+            timeline,
+            skeleton,
+            applyTime,
+            alpha,
+            timelineBlend,
+            from.timelinesRotation,
+            i << 1,
+            firstFrame,
+          );
         else if (timeline instanceof AttachmentTimeline)
           this.applyAttachmentTimeline(timeline, skeleton, applyTime, timelineBlend, attachments);
         else {
@@ -17752,8 +17870,7 @@ var AnimationState = /** @class */ (function () {
         }
       }
     }
-    if (to.mixDuration > 0)
-      this.queueEvents(from, animationTime);
+    if (to.mixDuration > 0) this.queueEvents(from, animationTime);
     this.events.length = 0;
     from.nextAnimationLast = animationTime;
     from.nextTrackLast = from.trackTime;
@@ -17761,35 +17878,45 @@ var AnimationState = /** @class */ (function () {
   };
   AnimationState.prototype.applyAttachmentTimeline = function (timeline, skeleton, time, blend, attachments) {
     var slot = skeleton.slots[timeline.slotIndex];
-    if (!slot.bone.active)
-      return;
-    if (time < timeline.frames[0]) { // Time is before first frame.
+    if (!slot.bone.active) return;
+    if (time < timeline.frames[0]) {
+      // Time is before first frame.
       if (blend == exports.MixBlend.setup || blend == exports.MixBlend.first)
         this.setAttachment(skeleton, slot, slot.data.attachmentName, attachments);
-    }
-    else
-      this.setAttachment(skeleton, slot, timeline.attachmentNames[Timeline.search1(timeline.frames, time)], attachments);
+    } else
+      this.setAttachment(
+        skeleton,
+        slot,
+        timeline.attachmentNames[Timeline.search1(timeline.frames, time)],
+        attachments,
+      );
     // If an attachment wasn't set (ie before the first frame or attachments is false), set the setup attachment later.
-    if (slot.attachmentState <= this.unkeyedState)
-      slot.attachmentState = this.unkeyedState + SETUP;
+    if (slot.attachmentState <= this.unkeyedState) slot.attachmentState = this.unkeyedState + SETUP;
   };
   AnimationState.prototype.setAttachment = function (skeleton, slot, attachmentName, attachments) {
     slot.setAttachment(!attachmentName ? null : skeleton.getAttachment(slot.data.index, attachmentName));
-    if (attachments)
-      slot.attachmentState = this.unkeyedState + CURRENT;
+    if (attachments) slot.attachmentState = this.unkeyedState + CURRENT;
   };
-  AnimationState.prototype.applyRotateTimeline = function (timeline, skeleton, time, alpha, blend, timelinesRotation, i, firstFrame) {
-    if (firstFrame)
-      timelinesRotation[i] = 0;
+  AnimationState.prototype.applyRotateTimeline = function (
+    timeline,
+    skeleton,
+    time,
+    alpha,
+    blend,
+    timelinesRotation,
+    i,
+    firstFrame,
+  ) {
+    if (firstFrame) timelinesRotation[i] = 0;
     if (alpha == 1) {
       timeline.apply(skeleton, 0, time, null, 1, blend, exports.MixDirection.mixIn);
       return;
     }
     var bone = skeleton.bones[timeline.boneIndex];
-    if (!bone.active)
-      return;
+    if (!bone.active) return;
     var frames = timeline.frames;
-    var r1 = 0, r2 = 0;
+    var r1 = 0,
+      r2 = 0;
     if (time < frames[0]) {
       switch (blend) {
         case exports.MixBlend.setup:
@@ -17800,71 +17927,65 @@ var AnimationState = /** @class */ (function () {
           r1 = bone.rotation;
           r2 = bone.data.rotation;
       }
-    }
-    else {
+    } else {
       r1 = blend == exports.MixBlend.setup ? bone.data.rotation : bone.rotation;
       r2 = bone.data.rotation + timeline.getCurveValue(time);
     }
     // Mix between rotations using the direction of the shortest route on the first frame while detecting crosses.
-    var total = 0, diff = r2 - r1;
+    var total = 0,
+      diff = r2 - r1;
     diff -= (16384 - ((16384.499999999996 - diff / 360) | 0)) * 360;
     if (diff == 0) {
       total = timelinesRotation[i];
-    }
-    else {
-      var lastTotal = 0, lastDiff = 0;
+    } else {
+      var lastTotal = 0,
+        lastDiff = 0;
       if (firstFrame) {
         lastTotal = 0;
         lastDiff = diff;
-      }
-      else {
+      } else {
         lastTotal = timelinesRotation[i]; // Angle and direction of mix, including loops.
         lastDiff = timelinesRotation[i + 1]; // Difference between bones.
       }
-      var current = diff > 0, dir = lastTotal >= 0;
+      var current = diff > 0,
+        dir = lastTotal >= 0;
       // Detect cross at 0 (not 180).
       if (MathUtils.signum(lastDiff) != MathUtils.signum(diff) && Math.abs(lastDiff) <= 90) {
         // A cross after a 360 rotation is a loop.
-        if (Math.abs(lastTotal) > 180)
-          lastTotal += 360 * MathUtils.signum(lastTotal);
+        if (Math.abs(lastTotal) > 180) lastTotal += 360 * MathUtils.signum(lastTotal);
         dir = current;
       }
-      total = diff + lastTotal - lastTotal % 360; // Store loops as part of lastTotal.
-      if (dir != current)
-        total += 360 * MathUtils.signum(lastTotal);
+      total = diff + lastTotal - (lastTotal % 360); // Store loops as part of lastTotal.
+      if (dir != current) total += 360 * MathUtils.signum(lastTotal);
       timelinesRotation[i] = total;
     }
     timelinesRotation[i + 1] = diff;
     bone.rotation = r1 + total * alpha;
   };
   AnimationState.prototype.queueEvents = function (entry, animationTime) {
-    var animationStart = entry.animationStart, animationEnd = entry.animationEnd;
+    var animationStart = entry.animationStart,
+      animationEnd = entry.animationEnd;
     var duration = animationEnd - animationStart;
     var trackLastWrapped = entry.trackLast % duration;
     // Queue events before complete.
     var events = this.events;
-    var i = 0, n = events.length;
+    var i = 0,
+      n = events.length;
     for (; i < n; i++) {
       var event_1 = events[i];
-      if (event_1.time < trackLastWrapped)
-        break;
-      if (event_1.time > animationEnd)
-        continue; // Discard events outside animation start/end.
+      if (event_1.time < trackLastWrapped) break;
+      if (event_1.time > animationEnd) continue; // Discard events outside animation start/end.
       this.queue.event(entry, event_1);
     }
     // Queue complete if completed a loop iteration or the animation.
     var complete = false;
-    if (entry.loop)
-      complete = duration == 0 || trackLastWrapped > entry.trackTime % duration;
-    else
-      complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
-    if (complete)
-      this.queue.complete(entry);
+    if (entry.loop) complete = duration == 0 || trackLastWrapped > entry.trackTime % duration;
+    else complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
+    if (complete) this.queue.complete(entry);
     // Queue events after complete.
     for (; i < n; i++) {
       var event_2 = events[i];
-      if (event_2.time < animationStart)
-        continue; // Discard events outside animation start/end.
+      if (event_2.time < animationStart) continue; // Discard events outside animation start/end.
       this.queue.event(entry, event_2);
     }
   };
@@ -17875,8 +17996,7 @@ var AnimationState = /** @class */ (function () {
   AnimationState.prototype.clearTracks = function () {
     var oldDrainDisabled = this.queue.drainDisabled;
     this.queue.drainDisabled = true;
-    for (var i = 0, n = this.tracks.length; i < n; i++)
-      this.clearTrack(i);
+    for (var i = 0, n = this.tracks.length; i < n; i++) this.clearTrack(i);
     this.tracks.length = 0;
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
@@ -17886,18 +18006,15 @@ var AnimationState = /** @class */ (function () {
    * It may be desired to use {@link AnimationState#setEmptyAnimation()} to mix the skeletons back to the setup pose,
    * rather than leaving them in their current pose. */
   AnimationState.prototype.clearTrack = function (trackIndex) {
-    if (trackIndex >= this.tracks.length)
-      return;
+    if (trackIndex >= this.tracks.length) return;
     var current = this.tracks[trackIndex];
-    if (!current)
-      return;
+    if (!current) return;
     this.queue.end(current);
     this.clearNext(current);
     var entry = current;
     while (true) {
       var from = entry.mixingFrom;
-      if (!from)
-        break;
+      if (!from) break;
       this.queue.end(from);
       entry.mixingFrom = null;
       entry.mixingTo = null;
@@ -17911,8 +18028,7 @@ var AnimationState = /** @class */ (function () {
     this.tracks[index] = current;
     current.previous = null;
     if (from) {
-      if (interrupt)
-        this.queue.interrupt(from);
+      if (interrupt) this.queue.interrupt(from);
       current.mixingFrom = from;
       from.mixingTo = current;
       current.mixTime = 0;
@@ -17927,10 +18043,11 @@ var AnimationState = /** @class */ (function () {
    *
    * See {@link #setAnimationWith()}. */
   AnimationState.prototype.setAnimation = function (trackIndex, animationName, loop) {
-    if (loop === void 0) { loop = false; }
+    if (loop === void 0) {
+      loop = false;
+    }
     var animation = this.data.skeletonData.findAnimation(animationName);
-    if (!animation)
-      throw new Error("Animation not found: " + animationName);
+    if (!animation) throw new Error('Animation not found: ' + animationName);
     return this.setAnimationWith(trackIndex, animation, loop);
   };
   /** Sets the current animation for a track, discarding any queued animations. If the formerly current track entry was never
@@ -17940,9 +18057,10 @@ var AnimationState = /** @class */ (function () {
    * @returns A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   AnimationState.prototype.setAnimationWith = function (trackIndex, animation, loop) {
-    if (loop === void 0) { loop = false; }
-    if (!animation)
-      throw new Error("animation cannot be null.");
+    if (loop === void 0) {
+      loop = false;
+    }
+    if (!animation) throw new Error('animation cannot be null.');
     var interrupt = true;
     var current = this.expandToIndex(trackIndex);
     if (current) {
@@ -17954,9 +18072,7 @@ var AnimationState = /** @class */ (function () {
         this.clearNext(current);
         current = current.mixingFrom;
         interrupt = false;
-      }
-      else
-        this.clearNext(current);
+      } else this.clearNext(current);
     }
     var entry = this.trackEntry(trackIndex, animation, loop, current);
     this.setCurrent(trackIndex, entry, interrupt);
@@ -17967,11 +18083,14 @@ var AnimationState = /** @class */ (function () {
    *
    * See {@link #addAnimationWith()}. */
   AnimationState.prototype.addAnimation = function (trackIndex, animationName, loop, delay) {
-    if (loop === void 0) { loop = false; }
-    if (delay === void 0) { delay = 0; }
+    if (loop === void 0) {
+      loop = false;
+    }
+    if (delay === void 0) {
+      delay = 0;
+    }
     var animation = this.data.skeletonData.findAnimation(animationName);
-    if (!animation)
-      throw new Error("Animation not found: " + animationName);
+    if (!animation) throw new Error('Animation not found: ' + animationName);
     return this.addAnimationWith(trackIndex, animation, loop, delay);
   };
   /** Adds an animation to be played after the current or last queued animation for a track. If the track is empty, it is
@@ -17983,25 +18102,25 @@ var AnimationState = /** @class */ (function () {
    * @returns A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   AnimationState.prototype.addAnimationWith = function (trackIndex, animation, loop, delay) {
-    if (loop === void 0) { loop = false; }
-    if (delay === void 0) { delay = 0; }
-    if (!animation)
-      throw new Error("animation cannot be null.");
+    if (loop === void 0) {
+      loop = false;
+    }
+    if (delay === void 0) {
+      delay = 0;
+    }
+    if (!animation) throw new Error('animation cannot be null.');
     var last = this.expandToIndex(trackIndex);
     if (last) {
-      while (last.next)
-        last = last.next;
+      while (last.next) last = last.next;
     }
     var entry = this.trackEntry(trackIndex, animation, loop, last);
     if (!last) {
       this.setCurrent(trackIndex, entry, true);
       this.queue.drain();
-    }
-    else {
+    } else {
       last.next = entry;
       entry.previous = last;
-      if (delay <= 0)
-        delay += last.getTrackComplete() - entry.mixDuration;
+      if (delay <= 0) delay += last.getTrackComplete() - entry.mixDuration;
     }
     entry.delay = delay;
     return entry;
@@ -18021,7 +18140,9 @@ var AnimationState = /** @class */ (function () {
    * more over the mix duration. Properties keyed in the new animation transition from the value from lower tracks or from the
    * setup pose value if no lower tracks key the property to the value keyed in the new animation. */
   AnimationState.prototype.setEmptyAnimation = function (trackIndex, mixDuration) {
-    if (mixDuration === void 0) { mixDuration = 0; }
+    if (mixDuration === void 0) {
+      mixDuration = 0;
+    }
     var entry = this.setAnimationWith(trackIndex, AnimationState.emptyAnimation(), false);
     entry.mixDuration = mixDuration;
     entry.trackEnd = mixDuration;
@@ -18039,11 +18160,14 @@ var AnimationState = /** @class */ (function () {
    * @return A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   AnimationState.prototype.addEmptyAnimation = function (trackIndex, mixDuration, delay) {
-    if (mixDuration === void 0) { mixDuration = 0; }
-    if (delay === void 0) { delay = 0; }
+    if (mixDuration === void 0) {
+      mixDuration = 0;
+    }
+    if (delay === void 0) {
+      delay = 0;
+    }
     var entry = this.addAnimationWith(trackIndex, AnimationState.emptyAnimation(), false, delay);
-    if (delay <= 0)
-      entry.delay += entry.mixDuration - mixDuration;
+    if (delay <= 0) entry.delay += entry.mixDuration - mixDuration;
     entry.mixDuration = mixDuration;
     entry.trackEnd = mixDuration;
     return entry;
@@ -18051,20 +18175,20 @@ var AnimationState = /** @class */ (function () {
   /** Sets an empty animation for every track, discarding any queued animations, and mixes to it over the specified mix
    * duration. */
   AnimationState.prototype.setEmptyAnimations = function (mixDuration) {
-    if (mixDuration === void 0) { mixDuration = 0; }
+    if (mixDuration === void 0) {
+      mixDuration = 0;
+    }
     var oldDrainDisabled = this.queue.drainDisabled;
     this.queue.drainDisabled = true;
     for (var i = 0, n = this.tracks.length; i < n; i++) {
       var current = this.tracks[i];
-      if (current)
-        this.setEmptyAnimation(current.trackIndex, mixDuration);
+      if (current) this.setEmptyAnimation(current.trackIndex, mixDuration);
     }
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
   };
   AnimationState.prototype.expandToIndex = function (index) {
-    if (index < this.tracks.length)
-      return this.tracks[index];
+    if (index < this.tracks.length) return this.tracks[index];
     Utils.ensureArrayCapacity(this.tracks, index + 1, null);
     this.tracks.length = index + 1;
     return null;
@@ -18111,13 +18235,10 @@ var AnimationState = /** @class */ (function () {
     var tracks = this.tracks;
     for (var i = 0, n = tracks.length; i < n; i++) {
       var entry = tracks[i];
-      if (!entry)
-        continue;
-      while (entry.mixingFrom)
-        entry = entry.mixingFrom;
+      if (!entry) continue;
+      while (entry.mixingFrom) entry = entry.mixingFrom;
       do {
-        if (!entry.mixingTo || entry.mixBlend != exports.MixBlend.add)
-          this.computeHold(entry);
+        if (!entry.mixingTo || entry.mixBlend != exports.MixBlend.add) this.computeHold(entry);
         entry = entry.mixingTo;
       } while (entry);
     }
@@ -18139,16 +18260,18 @@ var AnimationState = /** @class */ (function () {
     outer: for (var i = 0; i < timelinesCount; i++) {
       var timeline = timelines[i];
       var ids = timeline.getPropertyIds();
-      if (!propertyIDs.addAll(ids))
-        timelineMode[i] = SUBSEQUENT;
-      else if (!to || timeline instanceof AttachmentTimeline || timeline instanceof DrawOrderTimeline
-        || timeline instanceof EventTimeline || !to.animation.hasTimeline(ids)) {
+      if (!propertyIDs.addAll(ids)) timelineMode[i] = SUBSEQUENT;
+      else if (
+        !to ||
+        timeline instanceof AttachmentTimeline ||
+        timeline instanceof DrawOrderTimeline ||
+        timeline instanceof EventTimeline ||
+        !to.animation.hasTimeline(ids)
+      ) {
         timelineMode[i] = FIRST;
-      }
-      else {
+      } else {
         for (var next = to.mixingTo; next; next = next.mixingTo) {
-          if (next.animation.hasTimeline(ids))
-            continue;
+          if (next.animation.hasTimeline(ids)) continue;
           if (entry.mixDuration > 0) {
             timelineMode[i] = HOLD_MIX;
             timelineHoldMix[i] = next;
@@ -18162,21 +18285,18 @@ var AnimationState = /** @class */ (function () {
   };
   /** Returns the track entry for the animation currently playing on the track, or null if no animation is currently playing. */
   AnimationState.prototype.getCurrent = function (trackIndex) {
-    if (trackIndex >= this.tracks.length)
-      return null;
+    if (trackIndex >= this.tracks.length) return null;
     return this.tracks[trackIndex];
   };
   /** Adds a listener to receive events for all track entries. */
   AnimationState.prototype.addListener = function (listener) {
-    if (!listener)
-      throw new Error("listener cannot be null.");
+    if (!listener) throw new Error('listener cannot be null.');
     this.listeners.push(listener);
   };
   /** Removes the listener added with {@link #addListener()}. */
   AnimationState.prototype.removeListener = function (listener) {
     var index = this.listeners.indexOf(listener);
-    if (index >= 0)
-      this.listeners.splice(index, 1);
+    if (index >= 0) this.listeners.splice(index, 1);
   };
   /** Removes all listeners added with {@link #addListener()}. */
   AnimationState.prototype.clearListeners = function () {
@@ -18191,14 +18311,18 @@ var AnimationState = /** @class */ (function () {
   AnimationState.prototype.setAnimationByName = function (trackIndex, animationName, loop) {
     if (!AnimationState.deprecatedWarning1) {
       AnimationState.deprecatedWarning1 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.setAnimationByName is deprecated, please use setAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.setAnimationByName is deprecated, please use setAnimation from now on.',
+      );
     }
     this.setAnimation(trackIndex, animationName, loop);
   };
   AnimationState.prototype.addAnimationByName = function (trackIndex, animationName, loop, delay) {
     if (!AnimationState.deprecatedWarning2) {
       AnimationState.deprecatedWarning2 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.addAnimationByName is deprecated, please use addAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.addAnimationByName is deprecated, please use addAnimation from now on.',
+      );
     }
     this.addAnimation(trackIndex, animationName, loop, delay);
   };
@@ -18209,7 +18333,9 @@ var AnimationState = /** @class */ (function () {
   AnimationState.prototype.hasAnimationByName = function (animationName) {
     if (!AnimationState.deprecatedWarning3) {
       AnimationState.deprecatedWarning3 = true;
-      console.warn("Spine Deprecation Warning: AnimationState.hasAnimationByName is deprecated, please use hasAnimation from now on.");
+      console.warn(
+        'Spine Deprecation Warning: AnimationState.hasAnimationByName is deprecated, please use hasAnimation from now on.',
+      );
     }
     return this.hasAnimation(animationName);
   };
@@ -18217,7 +18343,7 @@ var AnimationState = /** @class */ (function () {
   AnimationState.deprecatedWarning2 = false;
   AnimationState.deprecatedWarning3 = false;
   return AnimationState;
-}());
+})();
 /** Stores settings and other state for the playback of an animation on an {@link AnimationState} track.
  *
  * References to a track entry must not be kept after the {@link AnimationStateListener#dispose()} event occurs.
@@ -18253,8 +18379,7 @@ var TrackEntry = /** @class */ (function () {
   TrackEntry.prototype.getAnimationTime = function () {
     if (this.loop) {
       var duration = this.animationEnd - this.animationStart;
-      if (duration == 0)
-        return this.animationStart;
+      if (duration == 0) return this.animationStart;
       return (this.trackTime % duration) + this.animationStart;
     }
     return Math.min(this.trackTime + this.animationStart, this.animationEnd);
@@ -18282,48 +18407,46 @@ var TrackEntry = /** @class */ (function () {
   TrackEntry.prototype.getTrackComplete = function () {
     var duration = this.animationEnd - this.animationStart;
     if (duration != 0) {
-      if (this.loop)
-        return duration * (1 + ((this.trackTime / duration) | 0)); // Completion of next loop.
-      if (this.trackTime < duration)
-        return duration; // Before duration.
+      if (this.loop) return duration * (1 + ((this.trackTime / duration) | 0)); // Completion of next loop.
+      if (this.trackTime < duration) return duration; // Before duration.
     }
     return this.trackTime; // Next update.
   };
-  Object.defineProperty(TrackEntry.prototype, "time", {
+  Object.defineProperty(TrackEntry.prototype, 'time', {
     get: function () {
       if (!TrackEntry.deprecatedWarning1) {
         TrackEntry.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.');
       }
       return this.trackTime;
     },
     set: function (value) {
       if (!TrackEntry.deprecatedWarning1) {
         TrackEntry.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.time is deprecated, please use trackTime from now on.');
       }
       this.trackTime = value;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(TrackEntry.prototype, "endTime", {
+  Object.defineProperty(TrackEntry.prototype, 'endTime', {
     get: function () {
       if (!TrackEntry.deprecatedWarning2) {
         TrackEntry.deprecatedWarning2 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.');
       }
       return this.trackTime;
     },
     set: function (value) {
       if (!TrackEntry.deprecatedWarning2) {
         TrackEntry.deprecatedWarning2 = true;
-        console.warn("Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.");
+        console.warn('Spine Deprecation Warning: TrackEntry.endTime is deprecated, please use trackEnd from now on.');
       }
       this.trackTime = value;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   TrackEntry.prototype.loopsCount = function () {
     return Math.floor(this.trackTime / this.trackEnd);
@@ -18331,7 +18454,7 @@ var TrackEntry = /** @class */ (function () {
   TrackEntry.deprecatedWarning1 = false;
   TrackEntry.deprecatedWarning2 = false;
   return TrackEntry;
-}());
+})();
 /**
  * @public
  */
@@ -18369,8 +18492,7 @@ var EventQueue = /** @class */ (function () {
     this.objects.push(event);
   };
   EventQueue.prototype.drain = function () {
-    if (this.drainDisabled)
-      return;
+    if (this.drainDisabled) return;
     this.drainDisabled = true;
     var objects = this.objects;
     var listeners = this.animState.listeners;
@@ -18379,48 +18501,30 @@ var EventQueue = /** @class */ (function () {
       var entry = objects[i + 1];
       switch (type) {
         case EventType.start:
-          if (entry.listener != null && entry.listener.start)
-            entry.listener.start(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].start)
-              listeners[ii].start(entry);
+          if (entry.listener != null && entry.listener.start) entry.listener.start(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].start) listeners[ii].start(entry);
           break;
         case EventType.interrupt:
-          if (entry.listener != null && entry.listener.interrupt)
-            entry.listener.interrupt(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].interrupt)
-              listeners[ii].interrupt(entry);
+          if (entry.listener != null && entry.listener.interrupt) entry.listener.interrupt(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].interrupt) listeners[ii].interrupt(entry);
           break;
         case EventType.end:
-          if (entry.listener != null && entry.listener.end)
-            entry.listener.end(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].end)
-              listeners[ii].end(entry);
+          if (entry.listener != null && entry.listener.end) entry.listener.end(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].end) listeners[ii].end(entry);
         // Fall through.
         case EventType.dispose:
-          if (entry.listener != null && entry.listener.dispose)
-            entry.listener.dispose(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].dispose)
-              listeners[ii].dispose(entry);
+          if (entry.listener != null && entry.listener.dispose) entry.listener.dispose(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].dispose) listeners[ii].dispose(entry);
           this.animState.trackEntryPool.free(entry);
           break;
         case EventType.complete:
-          if (entry.listener != null && entry.listener.complete)
-            entry.listener.complete(entry);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].complete)
-              listeners[ii].complete(entry);
+          if (entry.listener != null && entry.listener.complete) entry.listener.complete(entry);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].complete) listeners[ii].complete(entry);
           break;
         case EventType.event:
           var event_3 = objects[i++ + 2];
-          if (entry.listener != null && entry.listener.event)
-            entry.listener.event(entry, event_3);
-          for (var ii = 0; ii < listeners.length; ii++)
-            if (listeners[ii].event)
-              listeners[ii].event(entry, event_3);
+          if (entry.listener != null && entry.listener.event) entry.listener.event(entry, event_3);
+          for (var ii = 0; ii < listeners.length; ii++) if (listeners[ii].event) listeners[ii].event(entry, event_3);
           break;
       }
     }
@@ -18431,39 +18535,32 @@ var EventQueue = /** @class */ (function () {
     this.objects.length = 0;
   };
   return EventQueue;
-}());
+})();
 /**
  * @public
  */
 var EventType;
 (function (EventType) {
-  EventType[EventType["start"] = 0] = "start";
-  EventType[EventType["interrupt"] = 1] = "interrupt";
-  EventType[EventType["end"] = 2] = "end";
-  EventType[EventType["dispose"] = 3] = "dispose";
-  EventType[EventType["complete"] = 4] = "complete";
-  EventType[EventType["event"] = 5] = "event";
+  EventType[(EventType['start'] = 0)] = 'start';
+  EventType[(EventType['interrupt'] = 1)] = 'interrupt';
+  EventType[(EventType['end'] = 2)] = 'end';
+  EventType[(EventType['dispose'] = 3)] = 'dispose';
+  EventType[(EventType['complete'] = 4)] = 'complete';
+  EventType[(EventType['event'] = 5)] = 'event';
 })(EventType || (EventType = {}));
 /**
  * @public
  */
 var AnimationStateAdapter = /** @class */ (function () {
-  function AnimationStateAdapter() {
-  }
-  AnimationStateAdapter.prototype.start = function (entry) {
-  };
-  AnimationStateAdapter.prototype.interrupt = function (entry) {
-  };
-  AnimationStateAdapter.prototype.end = function (entry) {
-  };
-  AnimationStateAdapter.prototype.dispose = function (entry) {
-  };
-  AnimationStateAdapter.prototype.complete = function (entry) {
-  };
-  AnimationStateAdapter.prototype.event = function (entry, event) {
-  };
+  function AnimationStateAdapter() {}
+  AnimationStateAdapter.prototype.start = function (entry) {};
+  AnimationStateAdapter.prototype.interrupt = function (entry) {};
+  AnimationStateAdapter.prototype.end = function (entry) {};
+  AnimationStateAdapter.prototype.dispose = function (entry) {};
+  AnimationStateAdapter.prototype.complete = function (entry) {};
+  AnimationStateAdapter.prototype.event = function (entry, event) {};
   return AnimationStateAdapter;
-}());
+})();
 /** 1. A previously applied timeline has set this property.
  *
  * Result: Mix from the current pose to the timeline pose. */
@@ -18510,8 +18607,7 @@ var AnimationStateData = /** @class */ (function () {
     this.animationToMixTime = {};
     /** The mix duration to use when no mix duration has been defined between two animations. */
     this.defaultMix = 0;
-    if (skeletonData == null)
-      throw new Error("skeletonData cannot be null.");
+    if (skeletonData == null) throw new Error('skeletonData cannot be null.');
     this.skeletonData = skeletonData;
   }
   /** Sets a mix duration by animation name.
@@ -18519,33 +18615,29 @@ var AnimationStateData = /** @class */ (function () {
    * See {@link #setMixWith()}. */
   AnimationStateData.prototype.setMix = function (fromName, toName, duration) {
     var from = this.skeletonData.findAnimation(fromName);
-    if (from == null)
-      throw new Error("Animation not found: " + fromName);
+    if (from == null) throw new Error('Animation not found: ' + fromName);
     var to = this.skeletonData.findAnimation(toName);
-    if (to == null)
-      throw new Error("Animation not found: " + toName);
+    if (to == null) throw new Error('Animation not found: ' + toName);
     this.setMixWith(from, to, duration);
   };
   /** Sets the mix duration when changing from the specified animation to the other.
    *
    * See {@link TrackEntry#mixDuration}. */
   AnimationStateData.prototype.setMixWith = function (from, to, duration) {
-    if (from == null)
-      throw new Error("from cannot be null.");
-    if (to == null)
-      throw new Error("to cannot be null.");
-    var key = from.name + "." + to.name;
+    if (from == null) throw new Error('from cannot be null.');
+    if (to == null) throw new Error('to cannot be null.');
+    var key = from.name + '.' + to.name;
     this.animationToMixTime[key] = duration;
   };
   /** Returns the mix duration to use when changing from the specified animation to the other, or the {@link #defaultMix} if
    * no mix duration has been set. */
   AnimationStateData.prototype.getMix = function (from, to) {
-    var key = from.name + "." + to.name;
+    var key = from.name + '.' + to.name;
     var value = this.animationToMixTime[key];
     return value === undefined ? this.defaultMix : value;
   };
   return AnimationStateData;
-}());
+})();
 
 /**
  * @public
@@ -18558,8 +18650,7 @@ var AtlasAttachmentLoader = /** @class */ (function () {
   // @ts-ignore
   AtlasAttachmentLoader.prototype.newRegionAttachment = function (skin, name, path) {
     var region = this.atlas.findRegion(path);
-    if (region == null)
-      throw new Error("Region not found in atlas: " + path + " (region attachment: " + name + ")");
+    if (region == null) throw new Error('Region not found in atlas: ' + path + ' (region attachment: ' + name + ')');
     var attachment = new RegionAttachment(name);
     attachment.region = region;
     return attachment;
@@ -18568,8 +18659,7 @@ var AtlasAttachmentLoader = /** @class */ (function () {
   // @ts-ignore
   AtlasAttachmentLoader.prototype.newMeshAttachment = function (skin, name, path) {
     var region = this.atlas.findRegion(path);
-    if (region == null)
-      throw new Error("Region not found in atlas: " + path + " (mesh attachment: " + name + ")");
+    if (region == null) throw new Error('Region not found in atlas: ' + path + ' (mesh attachment: ' + name + ')');
     var attachment = new MeshAttachment(name);
     attachment.region = region;
     return attachment;
@@ -18593,7 +18683,7 @@ var AtlasAttachmentLoader = /** @class */ (function () {
     return new ClippingAttachment(name);
   };
   return AtlasAttachmentLoader;
-}());
+})();
 
 /** Stores a bone's current pose.
  *
@@ -18639,28 +18729,26 @@ var Bone = /** @class */ (function () {
     this.ashearY = 0;
     this.sorted = false;
     this.active = false;
-    if (!data)
-      throw new Error("data cannot be null.");
-    if (!skeleton)
-      throw new Error("skeleton cannot be null.");
+    if (!data) throw new Error('data cannot be null.');
+    if (!skeleton) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.skeleton = skeleton;
     this.parent = parent;
     this.setToSetupPose();
   }
-  Object.defineProperty(Bone.prototype, "worldX", {
+  Object.defineProperty(Bone.prototype, 'worldX', {
     get: function () {
       return this.matrix.tx;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(Bone.prototype, "worldY", {
+  Object.defineProperty(Bone.prototype, 'worldY', {
     get: function () {
       return this.matrix.ty;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   /** Returns false when the bone has not been computed because {@link BoneData#skinRequired} is true and the
    * {@link Skeleton#skin active skin} does not {@link Skin#bones contain} this bone. */
@@ -18669,7 +18757,15 @@ var Bone = /** @class */ (function () {
   };
   /** Computes the world transform using the parent bone and this bone's local applied transform. */
   Bone.prototype.update = function () {
-    this.updateWorldTransformWith(this.ax, this.ay, this.arotation, this.ascaleX, this.ascaleY, this.ashearX, this.ashearY);
+    this.updateWorldTransformWith(
+      this.ax,
+      this.ay,
+      this.arotation,
+      this.ascaleX,
+      this.ascaleY,
+      this.ashearX,
+      this.ashearY,
+    );
   };
   /** Computes the world transform using the parent bone and this bone's local transform.
    *
@@ -18694,7 +18790,8 @@ var Bone = /** @class */ (function () {
     var m = this.matrix;
     var sx = this.skeleton.scaleX;
     var sy = settings.yDown ? -this.skeleton.scaleY : this.skeleton.scaleY;
-    if (!parent) { // Root bone.
+    if (!parent) {
+      // Root bone.
       var skeleton = this.skeleton;
       var rotationY = rotation + 90 + shearY;
       m.a = MathUtils.cosDeg(rotation + shearX) * scaleX * sx;
@@ -18705,7 +18802,10 @@ var Bone = /** @class */ (function () {
       m.ty = y * sy + skeleton.y;
       return;
     }
-    var pa = parent.matrix.a, pb = parent.matrix.c, pc = parent.matrix.b, pd = parent.matrix.d;
+    var pa = parent.matrix.a,
+      pb = parent.matrix.c,
+      pc = parent.matrix.b,
+      pd = parent.matrix.d;
     m.tx = pa * x + pb * y + parent.matrix.tx;
     m.ty = pc * x + pd * y + parent.matrix.ty;
     switch (this.data.transformMode) {
@@ -18739,8 +18839,7 @@ var Bone = /** @class */ (function () {
           pb = pc * s;
           pd = pa * s;
           prx = Math.atan2(pc, pa) * MathUtils.radDeg;
-        }
-        else {
+        } else {
           pa = 0;
           pc = 0;
           prx = 90 - Math.atan2(pd, pb) * MathUtils.radDeg;
@@ -18764,15 +18863,17 @@ var Bone = /** @class */ (function () {
         var za = (pa * cos + pb * sin) / sx;
         var zc = (pc * cos + pd * sin) / sy;
         var s = Math.sqrt(za * za + zc * zc);
-        if (s > 0.00001)
-          s = 1 / s;
+        if (s > 0.00001) s = 1 / s;
         za *= s;
         zc *= s;
         s = Math.sqrt(za * za + zc * zc);
-        if (this.data.transformMode == exports.TransformMode.NoScale
-          && (pa * pd - pb * pc < 0) != (settings.yDown ?
-            (this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0) :
-            (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)))
+        if (
+          this.data.transformMode == exports.TransformMode.NoScale &&
+          pa * pd - pb * pc < 0 !=
+            (settings.yDown
+              ? this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0
+              : this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)
+        )
           s = -s;
         var r = Math.PI / 2 + Math.atan2(zc, za);
         var zb = Math.cos(r) * s;
@@ -18845,9 +18946,10 @@ var Bone = /** @class */ (function () {
     }
     var pm = parent.matrix;
     var pid = 1 / (pm.a * pm.d - pm.b * pm.c);
-    var dx = m.tx - pm.tx, dy = m.ty - pm.ty;
-    this.ax = (dx * pm.d * pid - dy * pm.c * pid);
-    this.ay = (dy * pm.a * pid - dx * pm.b * pid);
+    var dx = m.tx - pm.tx,
+      dy = m.ty - pm.ty;
+    this.ax = dx * pm.d * pid - dy * pm.c * pid;
+    this.ay = dy * pm.a * pid - dx * pm.b * pid;
     var ia = pid * pm.d;
     var id = pid * pm.a;
     var ib = pid * pm.c;
@@ -18863,8 +18965,7 @@ var Bone = /** @class */ (function () {
       this.ascaleY = det / this.ascaleX;
       this.ashearY = Math.atan2(ra * rb + rc * rd, det) * MathUtils.radDeg;
       this.arotation = Math.atan2(rc, ra) * MathUtils.radDeg;
-    }
-    else {
+    } else {
       this.ascaleX = 0;
       this.ascaleY = Math.sqrt(rb * rb + rd * rd);
       this.ashearY = 0;
@@ -18874,31 +18975,38 @@ var Bone = /** @class */ (function () {
   /** Transforms a point from world coordinates to the bone's local coordinates. */
   Bone.prototype.worldToLocal = function (world) {
     var m = this.matrix;
-    var a = m.a, b = m.c, c = m.b, d = m.d;
+    var a = m.a,
+      b = m.c,
+      c = m.b,
+      d = m.d;
     var invDet = 1 / (a * d - b * c);
-    var x = world.x - m.tx, y = world.y - m.ty;
-    world.x = (x * d * invDet - y * b * invDet);
-    world.y = (y * a * invDet - x * c * invDet);
+    var x = world.x - m.tx,
+      y = world.y - m.ty;
+    world.x = x * d * invDet - y * b * invDet;
+    world.y = y * a * invDet - x * c * invDet;
     return world;
   };
   /** Transforms a point from the bone's local coordinates to world coordinates. */
   Bone.prototype.localToWorld = function (local) {
     var m = this.matrix;
-    var x = local.x, y = local.y;
+    var x = local.x,
+      y = local.y;
     local.x = x * m.a + y * m.c + m.tx;
     local.y = x * m.b + y * m.d + m.ty;
     return local;
   };
   /** Transforms a world rotation to a local rotation. */
   Bone.prototype.worldToLocalRotation = function (worldRotation) {
-    var sin = MathUtils.sinDeg(worldRotation), cos = MathUtils.cosDeg(worldRotation);
+    var sin = MathUtils.sinDeg(worldRotation),
+      cos = MathUtils.cosDeg(worldRotation);
     var mat = this.matrix;
     return Math.atan2(mat.a * sin - mat.b * cos, mat.d * cos - mat.c * sin) * MathUtils.radDeg;
   };
   /** Transforms a local rotation to a world rotation. */
   Bone.prototype.localToWorldRotation = function (localRotation) {
     localRotation -= this.rotation - this.shearX;
-    var sin = MathUtils.sinDeg(localRotation), cos = MathUtils.cosDeg(localRotation);
+    var sin = MathUtils.sinDeg(localRotation),
+      cos = MathUtils.cosDeg(localRotation);
     var mat = this.matrix;
     return Math.atan2(cos * mat.b + sin * mat.d, cos * mat.a + sin * mat.c) * MathUtils.radDeg;
   };
@@ -18908,15 +19016,19 @@ var Bone = /** @class */ (function () {
    * need to be called on any child bones, recursively. */
   Bone.prototype.rotateWorld = function (degrees) {
     var mat = this.matrix;
-    var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
-    var cos = MathUtils.cosDeg(degrees), sin = MathUtils.sinDeg(degrees);
+    var a = mat.a,
+      b = mat.c,
+      c = mat.b,
+      d = mat.d;
+    var cos = MathUtils.cosDeg(degrees),
+      sin = MathUtils.sinDeg(degrees);
     mat.a = cos * a - sin * c;
     mat.c = cos * b - sin * d;
     mat.b = sin * a + cos * c;
     mat.d = sin * b + cos * d;
   };
   return Bone;
-}());
+})();
 
 /** Stores the setup pose for a {@link Bone}.
  * @public
@@ -18946,16 +19058,14 @@ var BoneData = /** @class */ (function () {
     /** The color of the bone as it was in Spine. Available only when nonessential data was exported. Bones are not usually
      * rendered at runtime. */
     this.color = new Color();
-    if (index < 0)
-      throw new Error("index must be >= 0.");
-    if (name == null)
-      throw new Error("name cannot be null.");
+    if (index < 0) throw new Error('index must be >= 0.');
+    if (name == null) throw new Error('name cannot be null.');
     this.index = index;
     this.name = name;
     this.parent = parent;
   }
   return BoneData;
-}());
+})();
 
 /** The base class for all constraint datas.
  * @public
@@ -18967,7 +19077,7 @@ var ConstraintData = /** @class */ (function () {
     this.skinRequired = skinRequired;
   }
   return ConstraintData;
-}());
+})();
 
 /** Stores the current pose values for an {@link Event}.
  *
@@ -18978,13 +19088,12 @@ var ConstraintData = /** @class */ (function () {
  * */
 var Event = /** @class */ (function () {
   function Event(time, data) {
-    if (data == null)
-      throw new Error("data cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
     this.time = time;
     this.data = data;
   }
   return Event;
-}());
+})();
 
 /** Stores the setup pose values for an {@link Event}.
  *
@@ -18996,7 +19105,7 @@ var EventData = /** @class */ (function () {
     this.name = name;
   }
   return EventData;
-}());
+})();
 
 /** Stores the current pose for an IK constraint. An IK constraint adjusts the rotation of 1 or 2 constrained bones so the tip of
  * the last bone is as close to the target bone as possible.
@@ -19018,10 +19127,8 @@ var IkConstraint = /** @class */ (function () {
     /** For two bone IK, the distance from the maximum reach of the bones that rotation will slow. */
     this.softness = 0;
     this.active = false;
-    if (!data)
-      throw new Error("data cannot be null.");
-    if (!skeleton)
-      throw new Error("skeleton cannot be null.");
+    if (!data) throw new Error('data cannot be null.');
+    if (!skeleton) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.mix = data.mix;
     this.softness = data.softness;
@@ -19029,16 +19136,14 @@ var IkConstraint = /** @class */ (function () {
     this.compress = data.compress;
     this.stretch = data.stretch;
     this.bones = new Array();
-    for (var i = 0; i < data.bones.length; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findBone(data.target.name);
   }
   IkConstraint.prototype.isActive = function () {
     return this.active;
   };
   IkConstraint.prototype.update = function () {
-    if (this.mix == 0)
-      return;
+    if (this.mix == 0) return;
     var target = this.target;
     var bones = this.bones;
     switch (bones.length) {
@@ -19046,15 +19151,30 @@ var IkConstraint = /** @class */ (function () {
         this.apply1(bones[0], target.worldX, target.worldY, this.compress, this.stretch, this.data.uniform, this.mix);
         break;
       case 2:
-        this.apply2(bones[0], bones[1], target.worldX, target.worldY, this.bendDirection, this.stretch, this.data.uniform, this.softness, this.mix);
+        this.apply2(
+          bones[0],
+          bones[1],
+          target.worldX,
+          target.worldY,
+          this.bendDirection,
+          this.stretch,
+          this.data.uniform,
+          this.softness,
+          this.mix,
+        );
         break;
     }
   };
   /** Applies 1 bone IK. The target is specified in the world coordinate system. */
   IkConstraint.prototype.apply1 = function (bone, targetX, targetY, compress, stretch, uniform, alpha) {
     var p = bone.parent.matrix;
-    var pa = p.a, pb = p.c, pc = p.b, pd = p.d;
-    var rotationIK = -bone.ashearX - bone.arotation, tx = 0, ty = 0;
+    var pa = p.a,
+      pb = p.c,
+      pc = p.b,
+      pd = p.d;
+    var rotationIK = -bone.ashearX - bone.arotation,
+      tx = 0,
+      ty = 0;
     switch (bone.data.transformMode) {
       case exports.TransformMode.OnlyTranslation:
         tx = targetX - bone.worldX;
@@ -19069,19 +19189,18 @@ var IkConstraint = /** @class */ (function () {
         rotationIK += Math.atan2(sc, sa) * MathUtils.radDeg;
       // Fall through
       default:
-        var x = targetX - p.tx, y = targetY - p.ty;
+        var x = targetX - p.tx,
+          y = targetY - p.ty;
         var d = pa * pd - pb * pc;
         tx = (x * pd - y * pb) / d - bone.ax;
         ty = (y * pa - x * pc) / d - bone.ay;
     }
     rotationIK += Math.atan2(ty, tx) * MathUtils.radDeg;
-    if (bone.ascaleX < 0)
-      rotationIK += 180;
-    if (rotationIK > 180)
-      rotationIK -= 360;
-    else if (rotationIK < -180)
-      rotationIK += 360;
-    var sx = bone.ascaleX, sy = bone.ascaleY;
+    if (bone.ascaleX < 0) rotationIK += 180;
+    if (rotationIK > 180) rotationIK -= 360;
+    else if (rotationIK < -180) rotationIK += 360;
+    var sx = bone.ascaleX,
+      sy = bone.ascaleY;
     if (compress || stretch) {
       switch (bone.data.transformMode) {
         case exports.TransformMode.NoScale:
@@ -19089,28 +19208,53 @@ var IkConstraint = /** @class */ (function () {
           tx = targetX - bone.worldX;
           ty = targetY - bone.worldY;
       }
-      var b = bone.data.length * sx, dd = Math.sqrt(tx * tx + ty * ty);
-      if ((compress && dd < b) || (stretch && dd > b) && b > 0.0001) {
+      var b = bone.data.length * sx,
+        dd = Math.sqrt(tx * tx + ty * ty);
+      if ((compress && dd < b) || (stretch && dd > b && b > 0.0001)) {
         var s = (dd / b - 1) * alpha + 1;
         sx *= s;
-        if (uniform)
-          sy *= s;
+        if (uniform) sy *= s;
       }
     }
-    bone.updateWorldTransformWith(bone.ax, bone.ay, bone.arotation + rotationIK * alpha, sx, sy, bone.ashearX, bone.ashearY);
+    bone.updateWorldTransformWith(
+      bone.ax,
+      bone.ay,
+      bone.arotation + rotationIK * alpha,
+      sx,
+      sy,
+      bone.ashearX,
+      bone.ashearY,
+    );
   };
   /** Applies 2 bone IK. The target is specified in the world coordinate system.
    * @param child A direct descendant of the parent bone. */
-  IkConstraint.prototype.apply2 = function (parent, child, targetX, targetY, bendDir, stretch, uniform, softness, alpha) {
-    var px = parent.ax, py = parent.ay, psx = parent.ascaleX, psy = parent.ascaleY, sx = psx, sy = psy, csx = child.ascaleX;
+  IkConstraint.prototype.apply2 = function (
+    parent,
+    child,
+    targetX,
+    targetY,
+    bendDir,
+    stretch,
+    uniform,
+    softness,
+    alpha,
+  ) {
+    var px = parent.ax,
+      py = parent.ay,
+      psx = parent.ascaleX,
+      psy = parent.ascaleY,
+      sx = psx,
+      sy = psy,
+      csx = child.ascaleX;
     var pmat = parent.matrix;
-    var os1 = 0, os2 = 0, s2 = 0;
+    var os1 = 0,
+      os2 = 0,
+      s2 = 0;
     if (psx < 0) {
       psx = -psx;
       os1 = 180;
       s2 = -1;
-    }
-    else {
+    } else {
       os1 = 0;
       s2 = 1;
     }
@@ -19121,17 +19265,21 @@ var IkConstraint = /** @class */ (function () {
     if (csx < 0) {
       csx = -csx;
       os2 = 180;
-    }
-    else
-      os2 = 0;
-    var cx = child.ax, cy = 0, cwx = 0, cwy = 0, a = pmat.a, b = pmat.c, c = pmat.b, d = pmat.d;
+    } else os2 = 0;
+    var cx = child.ax,
+      cy = 0,
+      cwx = 0,
+      cwy = 0,
+      a = pmat.a,
+      b = pmat.c,
+      c = pmat.b,
+      d = pmat.d;
     var u = Math.abs(psx - psy) <= 0.0001;
     if (!u || stretch) {
       cy = 0;
       cwx = a * cx + pmat.tx;
       cwy = c * cx + pmat.ty;
-    }
-    else {
+    } else {
       cy = child.ay;
       cwx = a * cx + b * cy + pmat.tx;
       cwy = c * cx + d * cy + pmat.ty;
@@ -19141,9 +19289,15 @@ var IkConstraint = /** @class */ (function () {
     b = pp.c;
     c = pp.b;
     d = pp.d;
-    var id = 1 / (a * d - b * c), x = cwx - pp.tx, y = cwy - pp.ty;
-    var dx = (x * d - y * b) * id - px, dy = (y * a - x * c) * id - py;
-    var l1 = Math.sqrt(dx * dx + dy * dy), l2 = child.data.length * csx, a1, a2;
+    var id = 1 / (a * d - b * c),
+      x = cwx - pp.tx,
+      y = cwy - pp.ty;
+    var dx = (x * d - y * b) * id - px,
+      dy = (y * a - x * c) * id - py;
+    var l1 = Math.sqrt(dx * dx + dy * dy),
+      l2 = child.data.length * csx,
+      a1,
+      a2;
     if (l1 < 0.0001) {
       this.apply1(parent, targetX, targetY, false, stretch, false, alpha);
       child.updateWorldTransformWith(cx, cy, 0, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
@@ -19151,11 +19305,13 @@ var IkConstraint = /** @class */ (function () {
     }
     x = targetX - pp.tx;
     y = targetY - pp.ty;
-    var tx = (x * d - y * b) * id - px, ty = (y * a - x * c) * id - py;
+    var tx = (x * d - y * b) * id - px,
+      ty = (y * a - x * c) * id - py;
     var dd = tx * tx + ty * ty;
     if (softness != 0) {
       softness *= psx * (csx + 1) * 0.5;
-      var td = Math.sqrt(dd), sd = td - l1 - l2 * psx + softness;
+      var td = Math.sqrt(dd),
+        sd = td - l1 - l2 * psx + softness;
       if (sd > 0) {
         var p = Math.min(1, sd / (softness * 2)) - 1;
         p = (sd - softness * (1 - p * p)) / td;
@@ -19170,36 +19326,34 @@ var IkConstraint = /** @class */ (function () {
       if (cos < -1) {
         cos = -1;
         a2 = Math.PI * bendDir;
-      }
-      else if (cos > 1) {
+      } else if (cos > 1) {
         cos = 1;
         a2 = 0;
         if (stretch) {
           a = (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
           sx *= a;
-          if (uniform)
-            sy *= a;
+          if (uniform) sy *= a;
         }
-      }
-      else
-        a2 = Math.acos(cos) * bendDir;
+      } else a2 = Math.acos(cos) * bendDir;
       a = l1 + l2 * cos;
       b = l2 * Math.sin(a2);
       a1 = Math.atan2(ty * a - tx * b, tx * a + ty * b);
-    }
-    else {
+    } else {
       a = psx * l2;
       b = psy * l2;
-      var aa = a * a, bb = b * b, ta = Math.atan2(ty, tx);
+      var aa = a * a,
+        bb = b * b,
+        ta = Math.atan2(ty, tx);
       c = bb * l1 * l1 + aa * dd - aa * bb;
-      var c1 = -2 * bb * l1, c2 = bb - aa;
+      var c1 = -2 * bb * l1,
+        c2 = bb - aa;
       d = c1 * c1 - 4 * c2 * c;
       if (d >= 0) {
         var q = Math.sqrt(d);
-        if (c1 < 0)
-          q = -q;
+        if (c1 < 0) q = -q;
         q = -(c1 + q) * 0.5;
-        var r0 = q / c2, r1 = c / q;
+        var r0 = q / c2,
+          r1 = c / q;
         var r = Math.abs(r0) < Math.abs(r1) ? r0 : r1;
         if (r * r <= dd) {
           y = Math.sqrt(dd - r * r) * bendDir;
@@ -19208,9 +19362,15 @@ var IkConstraint = /** @class */ (function () {
           break outer;
         }
       }
-      var minAngle = MathUtils.PI, minX = l1 - a, minDist = minX * minX, minY = 0;
-      var maxAngle = 0, maxX = l1 + a, maxDist = maxX * maxX, maxY = 0;
-      c = -a * l1 / (aa - bb);
+      var minAngle = MathUtils.PI,
+        minX = l1 - a,
+        minDist = minX * minX,
+        minY = 0;
+      var maxAngle = 0,
+        maxX = l1 + a,
+        maxDist = maxX * maxX,
+        maxY = 0;
+      c = (-a * l1) / (aa - bb);
       if (c >= -1 && c <= 1) {
         c = Math.acos(c);
         x = a * Math.cos(c) + l1;
@@ -19232,8 +19392,7 @@ var IkConstraint = /** @class */ (function () {
       if (dd <= (minDist + maxDist) * 0.5) {
         a1 = ta - Math.atan2(minY * bendDir, minX);
         a2 = minAngle * bendDir;
-      }
-      else {
+      } else {
         a1 = ta - Math.atan2(maxY * bendDir, maxX);
         a2 = maxAngle * bendDir;
       }
@@ -19241,21 +19400,29 @@ var IkConstraint = /** @class */ (function () {
     var os = Math.atan2(cy, cx) * s2;
     var rotation = parent.arotation;
     a1 = (a1 - os) * MathUtils.radDeg + os1 - rotation;
-    if (a1 > 180)
-      a1 -= 360;
-    else if (a1 < -180) //
+    if (a1 > 180) a1 -= 360;
+    else if (a1 < -180)
+      //
       a1 += 360;
     parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, sx, sy, 0, 0);
     rotation = child.arotation;
     a2 = ((a2 + os) * MathUtils.radDeg - child.ashearX) * s2 + os2 - rotation;
-    if (a2 > 180)
-      a2 -= 360;
-    else if (a2 < -180) //
+    if (a2 > 180) a2 -= 360;
+    else if (a2 < -180)
+      //
       a2 += 360;
-    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
+    child.updateWorldTransformWith(
+      cx,
+      cy,
+      rotation + a2 * alpha,
+      child.ascaleX,
+      child.ascaleY,
+      child.ashearX,
+      child.ashearY,
+    );
   };
   return IkConstraint;
-}());
+})();
 
 /** Stores the setup pose for an {@link IkConstraint}.
  * <p>
@@ -19285,7 +19452,7 @@ var IkConstraintData = /** @class */ (function (_super) {
     return _this;
   }
   return IkConstraintData;
-}(ConstraintData));
+})(ConstraintData);
 
 /** Stores the setup pose for a {@link PathConstraint}.
  *
@@ -19304,7 +19471,7 @@ var PathConstraintData = /** @class */ (function (_super) {
     return _this;
   }
   return PathConstraintData;
-}(ConstraintData));
+})(ConstraintData);
 /** Controls how bones after the first bone are positioned along the path.
  *
  * [Spacing mode](http://esotericsoftware.com/spine-path-constraints#Spacing-mode) in the Spine User Guide.
@@ -19312,10 +19479,10 @@ var PathConstraintData = /** @class */ (function (_super) {
  * */
 var SpacingMode;
 (function (SpacingMode) {
-  SpacingMode[SpacingMode["Length"] = 0] = "Length";
-  SpacingMode[SpacingMode["Fixed"] = 1] = "Fixed";
-  SpacingMode[SpacingMode["Percent"] = 2] = "Percent";
-  SpacingMode[SpacingMode["Proportional"] = 3] = "Proportional";
+  SpacingMode[(SpacingMode['Length'] = 0)] = 'Length';
+  SpacingMode[(SpacingMode['Fixed'] = 1)] = 'Fixed';
+  SpacingMode[(SpacingMode['Percent'] = 2)] = 'Percent';
+  SpacingMode[(SpacingMode['Proportional'] = 3)] = 'Proportional';
 })(SpacingMode || (SpacingMode = {}));
 
 /** Stores the current pose for a path constraint. A path constraint adjusts the rotation, translation, and scale of the
@@ -19340,14 +19507,11 @@ var PathConstraint = /** @class */ (function () {
     this.lengths = new Array();
     this.segments = new Array();
     this.active = false;
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.bones = new Array();
-    for (var i = 0, n = data.bones.length; i < n; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0, n = data.bones.length; i < n; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findSlot(data.target.name);
     this.position = data.position;
     this.spacing = data.spacing;
@@ -19360,16 +19524,19 @@ var PathConstraint = /** @class */ (function () {
   };
   PathConstraint.prototype.update = function () {
     var attachment = this.target.getAttachment();
-    if (!(attachment instanceof PathAttachment))
-      return;
-    var mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY;
-    if (mixRotate == 0 && mixX == 0 && mixY == 0)
-      return;
+    if (!(attachment instanceof PathAttachment)) return;
+    var mixRotate = this.mixRotate,
+      mixX = this.mixX,
+      mixY = this.mixY;
+    if (mixRotate == 0 && mixX == 0 && mixY == 0) return;
     var data = this.data;
-    var tangents = data.rotateMode == exports.RotateMode.Tangent, scale = data.rotateMode == exports.RotateMode.ChainScale;
-    var boneCount = this.bones.length, spacesCount = tangents ? boneCount : boneCount + 1;
+    var tangents = data.rotateMode == exports.RotateMode.Tangent,
+      scale = data.rotateMode == exports.RotateMode.ChainScale;
+    var boneCount = this.bones.length,
+      spacesCount = tangents ? boneCount : boneCount + 1;
     var bones = this.bones;
-    var spaces = Utils.setArraySize(this.spaces, spacesCount), lengths = scale ? this.lengths = Utils.setArraySize(this.lengths, boneCount) : null;
+    var spaces = Utils.setArraySize(this.spaces, spacesCount),
+      lengths = scale ? (this.lengths = Utils.setArraySize(this.lengths, boneCount)) : null;
     var spacing = this.spacing;
     switch (data.spacingMode) {
       case SpacingMode.Percent:
@@ -19377,10 +19544,10 @@ var PathConstraint = /** @class */ (function () {
           for (var i = 0, n = spacesCount - 1; i < n; i++) {
             var bone = bones[i];
             var setupLength = bone.data.length;
-            if (setupLength < PathConstraint.epsilon)
-              lengths[i] = 0;
+            if (setupLength < PathConstraint.epsilon) lengths[i] = 0;
             else {
-              var x = setupLength * bone.matrix.a, y = setupLength * bone.matrix.b;
+              var x = setupLength * bone.matrix.a,
+                y = setupLength * bone.matrix.b;
               lengths[i] = Math.sqrt(x * x + y * y);
             }
           }
@@ -19389,53 +19556,49 @@ var PathConstraint = /** @class */ (function () {
         break;
       case SpacingMode.Proportional:
         var sum = 0;
-        for (var i = 0, n = spacesCount - 1; i < n;) {
+        for (var i = 0, n = spacesCount - 1; i < n; ) {
           var bone = bones[i];
           var setupLength = bone.data.length;
           if (setupLength < PathConstraint.epsilon) {
-            if (scale)
-              lengths[i] = 0;
+            if (scale) lengths[i] = 0;
             spaces[++i] = spacing;
-          }
-          else {
-            var x = setupLength * bone.matrix.a, y = setupLength * bone.matrix.b;
+          } else {
+            var x = setupLength * bone.matrix.a,
+              y = setupLength * bone.matrix.b;
             var length_1 = Math.sqrt(x * x + y * y);
-            if (scale)
-              lengths[i] = length_1;
+            if (scale) lengths[i] = length_1;
             spaces[++i] = length_1;
             sum += length_1;
           }
         }
         if (sum > 0) {
-          sum = spacesCount / sum * spacing;
-          for (var i = 1; i < spacesCount; i++)
-            spaces[i] *= sum;
+          sum = (spacesCount / sum) * spacing;
+          for (var i = 1; i < spacesCount; i++) spaces[i] *= sum;
         }
         break;
       default:
         var lengthSpacing = data.spacingMode == SpacingMode.Length;
-        for (var i = 0, n = spacesCount - 1; i < n;) {
+        for (var i = 0, n = spacesCount - 1; i < n; ) {
           var bone = bones[i];
           var setupLength = bone.data.length;
           if (setupLength < PathConstraint.epsilon) {
-            if (scale)
-              lengths[i] = 0;
+            if (scale) lengths[i] = 0;
             spaces[++i] = spacing;
-          }
-          else {
-            var x = setupLength * bone.matrix.a, y = setupLength * bone.matrix.b;
+          } else {
+            var x = setupLength * bone.matrix.a,
+              y = setupLength * bone.matrix.b;
             var length_2 = Math.sqrt(x * x + y * y);
-            if (scale)
-              lengths[i] = length_2;
-            spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length_2 / setupLength;
+            if (scale) lengths[i] = length_2;
+            spaces[++i] = ((lengthSpacing ? setupLength + spacing : spacing) * length_2) / setupLength;
           }
         }
     }
     var positions = this.computeWorldPositions(attachment, spacesCount, tangents);
-    var boneX = positions[0], boneY = positions[1], offsetRotation = data.offsetRotation;
+    var boneX = positions[0],
+      boneY = positions[1],
+      offsetRotation = data.offsetRotation;
     var tip = false;
-    if (offsetRotation == 0)
-      tip = data.rotateMode == exports.RotateMode.Chain;
+    if (offsetRotation == 0) tip = data.rotateMode == exports.RotateMode.Chain;
     else {
       tip = false;
       var p = this.target.bone.matrix;
@@ -19446,7 +19609,10 @@ var PathConstraint = /** @class */ (function () {
       var mat = bone.matrix;
       mat.tx += (boneX - mat.tx) * mixX;
       mat.ty += (boneY - mat.ty) * mixY;
-      var x = positions[p], y = positions[p + 1], dx = x - boneX, dy = y - boneY;
+      var x = positions[p],
+        y = positions[p + 1],
+        dx = x - boneX,
+        dy = y - boneY;
       if (scale) {
         var length_3 = lengths[i];
         if (length_3 != 0) {
@@ -19458,13 +19624,16 @@ var PathConstraint = /** @class */ (function () {
       boneX = x;
       boneY = y;
       if (mixRotate > 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d, r = 0, cos = 0, sin = 0;
-        if (tangents)
-          r = positions[p - 1];
-        else if (spaces[i + 1] == 0)
-          r = positions[p + 2];
-        else
-          r = Math.atan2(dy, dx);
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d,
+          r = 0,
+          cos = 0,
+          sin = 0;
+        if (tangents) r = positions[p - 1];
+        else if (spaces[i + 1] == 0) r = positions[p + 2];
+        else r = Math.atan2(dy, dx);
         r -= Math.atan2(c, a);
         if (tip) {
           cos = Math.cos(r);
@@ -19472,13 +19641,12 @@ var PathConstraint = /** @class */ (function () {
           var length_4 = bone.data.length;
           boneX += (length_4 * (cos * a - sin * c) - dx) * mixRotate;
           boneY += (length_4 * (sin * a + cos * c) - dy) * mixRotate;
-        }
-        else {
+        } else {
           r += offsetRotation;
         }
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
         r *= mixRotate;
         cos = Math.cos(r);
@@ -19494,15 +19662,18 @@ var PathConstraint = /** @class */ (function () {
   PathConstraint.prototype.computeWorldPositions = function (path, spacesCount, tangents) {
     var target = this.target;
     var position = this.position;
-    var spaces = this.spaces, out = Utils.setArraySize(this.positions, spacesCount * 3 + 2), world = null;
+    var spaces = this.spaces,
+      out = Utils.setArraySize(this.positions, spacesCount * 3 + 2),
+      world = null;
     var closed = path.closed;
-    var verticesLength = path.worldVerticesLength, curveCount = verticesLength / 6, prevCurve = PathConstraint.NONE;
+    var verticesLength = path.worldVerticesLength,
+      curveCount = verticesLength / 6,
+      prevCurve = PathConstraint.NONE;
     if (!path.constantSpeed) {
       var lengths = path.lengths;
       curveCount -= closed ? 1 : 2;
       var pathLength_1 = lengths[curveCount];
-      if (this.data.positionMode == exports.PositionMode.Percent)
-        position *= pathLength_1;
+      if (this.data.positionMode == exports.PositionMode.Percent) position *= pathLength_1;
       var multiplier_1;
       switch (this.data.spacingMode) {
         case SpacingMode.Percent:
@@ -19521,19 +19692,16 @@ var PathConstraint = /** @class */ (function () {
         var p = position;
         if (closed) {
           p %= pathLength_1;
-          if (p < 0)
-            p += pathLength_1;
+          if (p < 0) p += pathLength_1;
           curve = 0;
-        }
-        else if (p < 0) {
+        } else if (p < 0) {
           if (prevCurve != PathConstraint.BEFORE) {
             prevCurve = PathConstraint.BEFORE;
             path.computeWorldVertices(target, 2, 4, world, 0, 2);
           }
           this.addBeforePosition(p, world, 0, out, o);
           continue;
-        }
-        else if (p > pathLength_1) {
+        } else if (p > pathLength_1) {
           if (prevCurve != PathConstraint.AFTER) {
             prevCurve = PathConstraint.AFTER;
             path.computeWorldVertices(target, verticesLength - 6, 4, world, 0, 2);
@@ -19544,10 +19712,8 @@ var PathConstraint = /** @class */ (function () {
         // Determine curve containing position.
         for (; ; curve++) {
           var length_5 = lengths[curve];
-          if (p > length_5)
-            continue;
-          if (curve == 0)
-            p /= length_5;
+          if (p > length_5) continue;
+          if (curve == 0) p /= length_5;
           else {
             var prev = lengths[curve - 1];
             p = (p - prev) / (length_5 - prev);
@@ -19559,11 +19725,22 @@ var PathConstraint = /** @class */ (function () {
           if (closed && curve == curveCount) {
             path.computeWorldVertices(target, verticesLength - 4, 4, world, 0, 2);
             path.computeWorldVertices(target, 0, 4, world, 4, 2);
-          }
-          else
-            path.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
+          } else path.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
         }
-        this.addCurvePosition(p, world[0], world[1], world[2], world[3], world[4], world[5], world[6], world[7], out, o, tangents || (i > 0 && space == 0));
+        this.addCurvePosition(
+          p,
+          world[0],
+          world[1],
+          world[2],
+          world[3],
+          world[4],
+          world[5],
+          world[6],
+          world[7],
+          out,
+          o,
+          tangents || (i > 0 && space == 0),
+        );
       }
       return out;
     }
@@ -19575,8 +19752,7 @@ var PathConstraint = /** @class */ (function () {
       path.computeWorldVertices(target, 0, 2, world, verticesLength - 4, 2);
       world[verticesLength - 2] = world[0];
       world[verticesLength - 1] = world[1];
-    }
-    else {
+    } else {
       curveCount--;
       verticesLength -= 4;
       world = Utils.setArraySize(this.world, verticesLength);
@@ -19585,8 +19761,22 @@ var PathConstraint = /** @class */ (function () {
     // Curve lengths.
     var curves = Utils.setArraySize(this.curves, curveCount);
     var pathLength = 0;
-    var x1 = world[0], y1 = world[1], cx1 = 0, cy1 = 0, cx2 = 0, cy2 = 0, x2 = 0, y2 = 0;
-    var tmpx = 0, tmpy = 0, dddfx = 0, dddfy = 0, ddfx = 0, ddfy = 0, dfx = 0, dfy = 0;
+    var x1 = world[0],
+      y1 = world[1],
+      cx1 = 0,
+      cy1 = 0,
+      cx2 = 0,
+      cy2 = 0,
+      x2 = 0,
+      y2 = 0;
+    var tmpx = 0,
+      tmpy = 0,
+      dddfx = 0,
+      dddfy = 0,
+      ddfx = 0,
+      ddfy = 0,
+      dfx = 0,
+      dfy = 0;
     for (var i = 0, w = 2; i < curveCount; i++, w += 6) {
       cx1 = world[w];
       cy1 = world[w + 1];
@@ -19618,8 +19808,7 @@ var PathConstraint = /** @class */ (function () {
       x1 = x2;
       y1 = y2;
     }
-    if (this.data.positionMode == exports.PositionMode.Percent)
-      position *= pathLength;
+    if (this.data.positionMode == exports.PositionMode.Percent) position *= pathLength;
     var multiplier = 0;
     switch (this.data.spacingMode) {
       case SpacingMode.Percent:
@@ -19639,25 +19828,20 @@ var PathConstraint = /** @class */ (function () {
       var p = position;
       if (closed) {
         p %= pathLength;
-        if (p < 0)
-          p += pathLength;
+        if (p < 0) p += pathLength;
         curve = 0;
-      }
-      else if (p < 0) {
+      } else if (p < 0) {
         this.addBeforePosition(p, world, 0, out, o);
         continue;
-      }
-      else if (p > pathLength) {
+      } else if (p > pathLength) {
         this.addAfterPosition(p - pathLength, world, verticesLength - 4, out, o);
         continue;
       }
       // Determine curve containing position.
       for (; ; curve++) {
         var length_6 = curves[curve];
-        if (p > length_6)
-          continue;
-        if (curve == 0)
-          p /= length_6;
+        if (p > length_6) continue;
+        if (curve == 0) p /= length_6;
         else {
           var prev = curves[curve - 1];
           p = (p - prev) / (length_6 - prev);
@@ -19708,10 +19892,8 @@ var PathConstraint = /** @class */ (function () {
       p *= curveLength;
       for (; ; segment++) {
         var length_7 = segments[segment];
-        if (p > length_7)
-          continue;
-        if (segment == 0)
-          p /= length_7;
+        if (p > length_7) continue;
+        if (segment == 0) p /= length_7;
         else {
           var prev = segments[segment - 1];
           p = segment + (p - prev) / (length_7 - prev);
@@ -19723,13 +19905,21 @@ var PathConstraint = /** @class */ (function () {
     return out;
   };
   PathConstraint.prototype.addBeforePosition = function (p, temp, i, out, o) {
-    var x1 = temp[i], y1 = temp[i + 1], dx = temp[i + 2] - x1, dy = temp[i + 3] - y1, r = Math.atan2(dy, dx);
+    var x1 = temp[i],
+      y1 = temp[i + 1],
+      dx = temp[i + 2] - x1,
+      dy = temp[i + 3] - y1,
+      r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
   };
   PathConstraint.prototype.addAfterPosition = function (p, temp, i, out, o) {
-    var x1 = temp[i + 2], y1 = temp[i + 3], dx = x1 - temp[i], dy = y1 - temp[i + 1], r = Math.atan2(dy, dx);
+    var x1 = temp[i + 2],
+      y1 = temp[i + 3],
+      dx = x1 - temp[i],
+      dy = y1 - temp[i + 1],
+      r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
@@ -19741,16 +19931,22 @@ var PathConstraint = /** @class */ (function () {
       out[o + 2] = Math.atan2(cy1 - y1, cx1 - x1);
       return;
     }
-    var tt = p * p, ttt = tt * p, u = 1 - p, uu = u * u, uuu = uu * u;
-    var ut = u * p, ut3 = ut * 3, uut3 = u * ut3, utt3 = ut3 * p;
-    var x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt, y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
+    var tt = p * p,
+      ttt = tt * p,
+      u = 1 - p,
+      uu = u * u,
+      uuu = uu * u;
+    var ut = u * p,
+      ut3 = ut * 3,
+      uut3 = u * ut3,
+      utt3 = ut3 * p;
+    var x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt,
+      y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
     out[o] = x;
     out[o + 1] = y;
     if (tangents) {
-      if (p < 0.001)
-        out[o + 2] = Math.atan2(cy1 - y1, cx1 - x1);
-      else
-        out[o + 2] = Math.atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
+      if (p < 0.001) out[o + 2] = Math.atan2(cy1 - y1, cx1 - x1);
+      else out[o + 2] = Math.atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
     }
   };
   PathConstraint.NONE = -1;
@@ -19758,7 +19954,7 @@ var PathConstraint = /** @class */ (function () {
   PathConstraint.AFTER = -3;
   PathConstraint.epsilon = 0.00001;
   return PathConstraint;
-}());
+})();
 
 /** Stores a slot's current pose. Slots organize attachments for {@link Skeleton#drawOrder} purposes and provide a place to store
  * state for an attachment. State cannot be stored in an attachment itself because attachments are stateless and may be shared
@@ -19772,10 +19968,8 @@ var Slot = /** @class */ (function () {
      *
      * See {@link VertexAttachment#computeWorldVertices()} and {@link DeformTimeline}. */
     this.deform = new Array();
-    if (data == null)
-      throw new Error("data cannot be null.");
-    if (bone == null)
-      throw new Error("bone cannot be null.");
+    if (data == null) throw new Error('data cannot be null.');
+    if (bone == null) throw new Error('bone cannot be null.');
     this.data = data;
     this.bone = bone;
     this.color = new Color();
@@ -19794,8 +19988,7 @@ var Slot = /** @class */ (function () {
   /** Sets the slot's attachment and, if the attachment changed, resets {@link #attachmentTime} and clears {@link #deform}.
    * @param attachment May be null. */
   Slot.prototype.setAttachment = function (attachment) {
-    if (this.attachment == attachment)
-      return;
+    if (this.attachment == attachment) return;
     this.attachment = attachment;
     this.attachmentTime = this.bone.skeleton.time;
     this.deform.length = 0;
@@ -19811,17 +20004,15 @@ var Slot = /** @class */ (function () {
   /** Sets this slot to the setup pose. */
   Slot.prototype.setToSetupPose = function () {
     this.color.setFromColor(this.data.color);
-    if (this.darkColor != null)
-      this.darkColor.setFromColor(this.data.darkColor);
-    if (this.data.attachmentName == null)
-      this.attachment = null;
+    if (this.darkColor != null) this.darkColor.setFromColor(this.data.darkColor);
+    if (this.data.attachmentName == null) this.attachment = null;
     else {
       this.attachment = null;
       this.setAttachment(this.bone.skeleton.getAttachment(this.data.index, this.data.attachmentName));
     }
   };
   return Slot;
-}());
+})();
 
 /** Stores the current pose for a transform constraint. A transform constraint adjusts the world transform of the constrained
  * bones to match that of the target bone.
@@ -19839,10 +20030,8 @@ var TransformConstraint = /** @class */ (function () {
     this.mixShearY = 0;
     this.temp = new Vector2();
     this.active = false;
-    if (!data)
-      throw new Error("data cannot be null.");
-    if (!skeleton)
-      throw new Error("skeleton cannot be null.");
+    if (!data) throw new Error('data cannot be null.');
+    if (!skeleton) throw new Error('skeleton cannot be null.');
     this.data = data;
     this.mixRotate = data.mixRotate;
     this.mixX = data.mixX;
@@ -19851,35 +20040,44 @@ var TransformConstraint = /** @class */ (function () {
     this.mixScaleY = data.mixScaleY;
     this.mixShearY = data.mixShearY;
     this.bones = new Array();
-    for (var i = 0; i < data.bones.length; i++)
-      this.bones.push(skeleton.findBone(data.bones[i].name));
+    for (var i = 0; i < data.bones.length; i++) this.bones.push(skeleton.findBone(data.bones[i].name));
     this.target = skeleton.findBone(data.target.name);
   }
   TransformConstraint.prototype.isActive = function () {
     return this.active;
   };
   TransformConstraint.prototype.update = function () {
-    if (this.mixRotate == 0 && this.mixX == 0 && this.mixY == 0 && this.mixScaleX == 0 && this.mixScaleX == 0 && this.mixShearY == 0)
+    if (
+      this.mixRotate == 0 &&
+      this.mixX == 0 &&
+      this.mixY == 0 &&
+      this.mixScaleX == 0 &&
+      this.mixScaleX == 0 &&
+      this.mixShearY == 0
+    )
       return;
     if (this.data.local) {
-      if (this.data.relative)
-        this.applyRelativeLocal();
-      else
-        this.applyAbsoluteLocal();
-    }
-    else {
-      if (this.data.relative)
-        this.applyRelativeWorld();
-      else
-        this.applyAbsoluteWorld();
+      if (this.data.relative) this.applyRelativeLocal();
+      else this.applyAbsoluteLocal();
+    } else {
+      if (this.data.relative) this.applyRelativeWorld();
+      else this.applyAbsoluteWorld();
     }
   };
   TransformConstraint.prototype.applyAbsoluteWorld = function () {
-    var mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
+    var mixRotate = this.mixRotate,
+      mixX = this.mixX,
+      mixY = this.mixY,
+      mixScaleX = this.mixScaleX,
+      mixScaleY = this.mixScaleY,
+      mixShearY = this.mixShearY;
     var translate = mixX != 0 || mixY != 0;
     var target = this.target;
     var targetMat = target.matrix;
-    var ta = targetMat.a, tb = targetMat.c, tc = targetMat.b, td = targetMat.d;
+    var ta = targetMat.a,
+      tb = targetMat.c,
+      tc = targetMat.b,
+      td = targetMat.d;
     var degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
     var offsetRotation = this.data.offsetRotation * degRadReflect;
     var offsetShearY = this.data.offsetShearY * degRadReflect;
@@ -19888,14 +20086,18 @@ var TransformConstraint = /** @class */ (function () {
       var bone = bones[i];
       var mat = bone.matrix;
       if (mixRotate != 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d;
         var r = Math.atan2(tc, ta) - Math.atan2(c, a) + offsetRotation;
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
         r *= mixRotate;
-        var cos = Math.cos(r), sin = Math.sin(r);
+        var cos = Math.cos(r),
+          sin = Math.sin(r);
         mat.a = cos * a - sin * c;
         mat.c = cos * b - sin * d;
         mat.b = sin * a + cos * c;
@@ -19909,25 +20111,24 @@ var TransformConstraint = /** @class */ (function () {
       }
       if (mixScaleX != 0) {
         var s = Math.sqrt(mat.a * mat.a + mat.b * mat.b);
-        if (s != 0)
-          s = (s + (Math.sqrt(ta * ta + tc * tc) - s + this.data.offsetScaleX) * mixScaleX) / s;
+        if (s != 0) s = (s + (Math.sqrt(ta * ta + tc * tc) - s + this.data.offsetScaleX) * mixScaleX) / s;
         mat.a *= s;
         mat.b *= s;
       }
       if (mixScaleY != 0) {
         var s = Math.sqrt(mat.c * mat.c + mat.d * mat.d);
-        if (s != 0)
-          s = (s + (Math.sqrt(tb * tb + td * td) - s + this.data.offsetScaleY) * mixScaleY) / s;
+        if (s != 0) s = (s + (Math.sqrt(tb * tb + td * td) - s + this.data.offsetScaleY) * mixScaleY) / s;
         mat.c *= s;
         mat.d *= s;
       }
       if (mixShearY > 0) {
-        var b = mat.c, d = mat.d;
+        var b = mat.c,
+          d = mat.d;
         var by = Math.atan2(d, b);
         var r = Math.atan2(td, tb) - Math.atan2(tc, ta) - (by - Math.atan2(mat.b, mat.a));
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
         r = by + (r + offsetShearY) * mixShearY;
         var s = Math.sqrt(b * b + d * d);
@@ -19938,26 +20139,39 @@ var TransformConstraint = /** @class */ (function () {
     }
   };
   TransformConstraint.prototype.applyRelativeWorld = function () {
-    var mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
+    var mixRotate = this.mixRotate,
+      mixX = this.mixX,
+      mixY = this.mixY,
+      mixScaleX = this.mixScaleX,
+      mixScaleY = this.mixScaleY,
+      mixShearY = this.mixShearY;
     var translate = mixX != 0 || mixY != 0;
     var target = this.target;
     var targetMat = target.matrix;
-    var ta = targetMat.a, tb = targetMat.c, tc = targetMat.b, td = targetMat.d;
+    var ta = targetMat.a,
+      tb = targetMat.c,
+      tc = targetMat.b,
+      td = targetMat.d;
     var degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
-    var offsetRotation = this.data.offsetRotation * degRadReflect, offsetShearY = this.data.offsetShearY * degRadReflect;
+    var offsetRotation = this.data.offsetRotation * degRadReflect,
+      offsetShearY = this.data.offsetShearY * degRadReflect;
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
       var mat = bone.matrix;
       if (mixRotate != 0) {
-        var a = mat.a, b = mat.c, c = mat.b, d = mat.d;
+        var a = mat.a,
+          b = mat.c,
+          c = mat.b,
+          d = mat.d;
         var r = Math.atan2(tc, ta) + offsetRotation;
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
         r *= mixRotate;
-        var cos = Math.cos(r), sin = Math.sin(r);
+        var cos = Math.cos(r),
+          sin = Math.sin(r);
         mat.a = cos * a - sin * c;
         mat.c = cos * b - sin * d;
         mat.b = sin * a + cos * c;
@@ -19981,11 +20195,12 @@ var TransformConstraint = /** @class */ (function () {
       }
       if (mixShearY > 0) {
         var r = Math.atan2(td, tb) - Math.atan2(tc, ta);
-        if (r > MathUtils.PI)
-          r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) //
+        if (r > MathUtils.PI) r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          //
           r += MathUtils.PI2;
-        var b = mat.c, d = mat.d;
+        var b = mat.c,
+          d = mat.d;
         r = Math.atan2(d, b) + (r - MathUtils.PI / 2 + offsetShearY) * mixShearY;
         var s = Math.sqrt(b * b + d * d);
         mat.c = Math.cos(r) * s;
@@ -19995,7 +20210,12 @@ var TransformConstraint = /** @class */ (function () {
     }
   };
   TransformConstraint.prototype.applyAbsoluteLocal = function () {
-    var mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
+    var mixRotate = this.mixRotate,
+      mixX = this.mixX,
+      mixY = this.mixY,
+      mixScaleX = this.mixScaleX,
+      mixScaleY = this.mixScaleY,
+      mixShearY = this.mixShearY;
     var target = this.target;
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
@@ -20006,10 +20226,12 @@ var TransformConstraint = /** @class */ (function () {
         r -= (16384 - ((16384.499999999996 - r / 360) | 0)) * 360;
         rotation += r * mixRotate;
       }
-      var x = bone.ax, y = bone.ay;
+      var x = bone.ax,
+        y = bone.ay;
       x += (target.ax - x + this.data.offsetX) * mixX;
       y += (target.ay - y + this.data.offsetY) * mixY;
-      var scaleX = bone.ascaleX, scaleY = bone.ascaleY;
+      var scaleX = bone.ascaleX,
+        scaleY = bone.ascaleY;
       if (mixScaleX != 0 && scaleX != 0)
         scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * mixScaleX) / scaleX;
       if (mixScaleY != 0 && scaleY != 0)
@@ -20024,7 +20246,12 @@ var TransformConstraint = /** @class */ (function () {
     }
   };
   TransformConstraint.prototype.applyRelativeLocal = function () {
-    var mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
+    var mixRotate = this.mixRotate,
+      mixX = this.mixX,
+      mixY = this.mixY,
+      mixScaleX = this.mixScaleX,
+      mixScaleY = this.mixScaleY,
+      mixShearY = this.mixShearY;
     var target = this.target;
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
@@ -20032,14 +20259,14 @@ var TransformConstraint = /** @class */ (function () {
       var rotation = bone.arotation + (target.arotation + this.data.offsetRotation) * mixRotate;
       var x = bone.ax + (target.ax + this.data.offsetX) * mixX;
       var y = bone.ay + (target.ay + this.data.offsetY) * mixY;
-      var scaleX = (bone.ascaleX * ((target.ascaleX - 1 + this.data.offsetScaleX) * mixScaleX) + 1);
-      var scaleY = (bone.ascaleY * ((target.ascaleY - 1 + this.data.offsetScaleY) * mixScaleY) + 1);
+      var scaleX = bone.ascaleX * ((target.ascaleX - 1 + this.data.offsetScaleX) * mixScaleX) + 1;
+      var scaleY = bone.ascaleY * ((target.ascaleY - 1 + this.data.offsetScaleY) * mixScaleY) + 1;
       var shearY = bone.ashearY + (target.ashearY + this.data.offsetShearY) * mixShearY;
       bone.updateWorldTransformWith(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
     }
   };
   return TransformConstraint;
-}());
+})();
 
 /** Stores the current pose for a skeleton.
  *
@@ -20064,15 +20291,13 @@ var Skeleton = /** @class */ (function () {
     this.x = 0;
     /** Sets the skeleton Y position, which is added to the root bone worldY position. */
     this.y = 0;
-    if (!data)
-      throw new Error("data cannot be null.");
+    if (!data) throw new Error('data cannot be null.');
     this.data = data;
     this.bones = new Array();
     for (var i = 0; i < data.bones.length; i++) {
       var boneData = data.bones[i];
       var bone = void 0;
-      if (!boneData.parent)
-        bone = new Bone(boneData, this, null);
+      if (!boneData.parent) bone = new Bone(boneData, this, null);
       else {
         var parent_1 = this.bones[boneData.parent.index];
         bone = new Bone(boneData, this, parent_1);
@@ -20133,7 +20358,9 @@ var Skeleton = /** @class */ (function () {
     var ikConstraints = this.ikConstraints;
     var transformConstraints = this.transformConstraints;
     var pathConstraints = this.pathConstraints;
-    var ikCount = ikConstraints.length, transformCount = transformConstraints.length, pathCount = pathConstraints.length;
+    var ikCount = ikConstraints.length,
+      transformCount = transformConstraints.length,
+      pathCount = pathConstraints.length;
     var constraintCount = ikCount + transformCount + pathCount;
     outer: for (var i = 0; i < constraintCount; i++) {
       for (var ii = 0; ii < ikCount; ii++) {
@@ -20158,13 +20385,13 @@ var Skeleton = /** @class */ (function () {
         }
       }
     }
-    for (var i = 0, n = bones.length; i < n; i++)
-      this.sortBone(bones[i]);
+    for (var i = 0, n = bones.length; i < n; i++) this.sortBone(bones[i]);
   };
   Skeleton.prototype.sortIkConstraint = function (constraint) {
-    constraint.active = constraint.target.isActive() && (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
-    if (!constraint.active)
-      return;
+    constraint.active =
+      constraint.target.isActive() &&
+      (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
+    if (!constraint.active) return;
     var target = constraint.target;
     this.sortBone(target);
     var constrained = constraint.bones;
@@ -20173,8 +20400,7 @@ var Skeleton = /** @class */ (function () {
     if (constrained.length == 1) {
       this._updateCache.push(constraint);
       this.sortReset(parent.children);
-    }
-    else {
+    } else {
       var child = constrained[constrained.length - 1];
       this.sortBone(child);
       this._updateCache.push(constraint);
@@ -20183,35 +20409,32 @@ var Skeleton = /** @class */ (function () {
     }
   };
   Skeleton.prototype.sortPathConstraint = function (constraint) {
-    constraint.active = constraint.target.bone.isActive() && (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
-    if (!constraint.active)
-      return;
+    constraint.active =
+      constraint.target.bone.isActive() &&
+      (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
+    if (!constraint.active) return;
     var slot = constraint.target;
     var slotIndex = slot.data.index;
     var slotBone = slot.bone;
-    if (this.skin)
-      this.sortPathConstraintAttachment(this.skin, slotIndex, slotBone);
+    if (this.skin) this.sortPathConstraintAttachment(this.skin, slotIndex, slotBone);
     if (this.data.defaultSkin && this.data.defaultSkin != this.skin)
       this.sortPathConstraintAttachment(this.data.defaultSkin, slotIndex, slotBone);
     for (var i = 0, n = this.data.skins.length; i < n; i++)
       this.sortPathConstraintAttachment(this.data.skins[i], slotIndex, slotBone);
     var attachment = slot.getAttachment();
-    if (attachment instanceof PathAttachment)
-      this.sortPathConstraintAttachmentWith(attachment, slotBone);
+    if (attachment instanceof PathAttachment) this.sortPathConstraintAttachmentWith(attachment, slotBone);
     var constrained = constraint.bones;
     var boneCount = constrained.length;
-    for (var i = 0; i < boneCount; i++)
-      this.sortBone(constrained[i]);
+    for (var i = 0; i < boneCount; i++) this.sortBone(constrained[i]);
     this._updateCache.push(constraint);
-    for (var i = 0; i < boneCount; i++)
-      this.sortReset(constrained[i].children);
-    for (var i = 0; i < boneCount; i++)
-      constrained[i].sorted = true;
+    for (var i = 0; i < boneCount; i++) this.sortReset(constrained[i].children);
+    for (var i = 0; i < boneCount; i++) constrained[i].sorted = true;
   };
   Skeleton.prototype.sortTransformConstraint = function (constraint) {
-    constraint.active = constraint.target.isActive() && (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
-    if (!constraint.active)
-      return;
+    constraint.active =
+      constraint.target.isActive() &&
+      (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
+    if (!constraint.active) return;
     this.sortBone(constraint.target);
     var constrained = constraint.bones;
     var boneCount = constrained.length;
@@ -20221,58 +20444,47 @@ var Skeleton = /** @class */ (function () {
         this.sortBone(child.parent);
         this.sortBone(child);
       }
-    }
-    else {
+    } else {
       for (var i = 0; i < boneCount; i++) {
         this.sortBone(constrained[i]);
       }
     }
     this._updateCache.push(constraint);
-    for (var i = 0; i < boneCount; i++)
-      this.sortReset(constrained[i].children);
-    for (var i = 0; i < boneCount; i++)
-      constrained[i].sorted = true;
+    for (var i = 0; i < boneCount; i++) this.sortReset(constrained[i].children);
+    for (var i = 0; i < boneCount; i++) constrained[i].sorted = true;
   };
   Skeleton.prototype.sortPathConstraintAttachment = function (skin, slotIndex, slotBone) {
     var attachments = skin.attachments[slotIndex];
-    if (!attachments)
-      return;
+    if (!attachments) return;
     for (var key in attachments) {
       this.sortPathConstraintAttachmentWith(attachments[key], slotBone);
     }
   };
   Skeleton.prototype.sortPathConstraintAttachmentWith = function (attachment, slotBone) {
-    if (!(attachment instanceof PathAttachment))
-      return;
+    if (!(attachment instanceof PathAttachment)) return;
     var pathBones = attachment.bones;
-    if (!pathBones)
-      this.sortBone(slotBone);
+    if (!pathBones) this.sortBone(slotBone);
     else {
       var bones = this.bones;
-      for (var i = 0, n = pathBones.length; i < n;) {
+      for (var i = 0, n = pathBones.length; i < n; ) {
         var nn = pathBones[i++];
         nn += i;
-        while (i < nn)
-          this.sortBone(bones[pathBones[i++]]);
+        while (i < nn) this.sortBone(bones[pathBones[i++]]);
       }
     }
   };
   Skeleton.prototype.sortBone = function (bone) {
-    if (bone.sorted)
-      return;
+    if (bone.sorted) return;
     var parent = bone.parent;
-    if (parent)
-      this.sortBone(parent);
+    if (parent) this.sortBone(parent);
     bone.sorted = true;
     this._updateCache.push(bone);
   };
   Skeleton.prototype.sortReset = function (bones) {
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (!bone.active)
-        continue;
-      if (bone.sorted)
-        this.sortReset(bone.children);
+      if (!bone.active) continue;
+      if (bone.sorted) this.sortReset(bone.children);
       bone.sorted = false;
     }
   };
@@ -20293,13 +20505,15 @@ var Skeleton = /** @class */ (function () {
       bone.ashearY = bone.shearY;
     }
     var updateCache = this._updateCache;
-    for (var i = 0, n = updateCache.length; i < n; i++)
-      updateCache[i].update();
+    for (var i = 0, n = updateCache.length; i < n; i++) updateCache[i].update();
   };
   Skeleton.prototype.updateWorldTransformWith = function (parent) {
     // Apply the parent bone transform to the root bone. The root bone always inherits scale, rotation and reflection.
     var rootBone = this.getRootBone();
-    var pa = parent.matrix.a, pb = parent.matrix.c, pc = parent.matrix.b, pd = parent.matrix.d;
+    var pa = parent.matrix.a,
+      pb = parent.matrix.c,
+      pc = parent.matrix.b,
+      pd = parent.matrix.d;
     rootBone.matrix.tx = pa * this.x + pb * this.y + parent.worldX;
     rootBone.matrix.ty = pc * this.x + pd * this.y + parent.worldY;
     var rotationY = rootBone.rotation + 90 + rootBone.shearY;
@@ -20317,8 +20531,7 @@ var Skeleton = /** @class */ (function () {
     var updateCache = this._updateCache;
     for (var i = 0, n = updateCache.length; i < n; i++) {
       var updatable = updateCache[i];
-      if (updatable != rootBone)
-        updatable.update();
+      if (updatable != rootBone) updatable.update();
     }
   };
   /** Sets the bones, constraints, and slots to their setup pose values. */
@@ -20329,8 +20542,7 @@ var Skeleton = /** @class */ (function () {
   /** Sets the bones and constraints to their setup pose values. */
   Skeleton.prototype.setBonesToSetupPose = function () {
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      bones[i].setToSetupPose();
+    for (var i = 0, n = bones.length; i < n; i++) bones[i].setToSetupPose();
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var constraint = ikConstraints[i];
@@ -20366,59 +20578,47 @@ var Skeleton = /** @class */ (function () {
   Skeleton.prototype.setSlotsToSetupPose = function () {
     var slots = this.slots;
     Utils.arrayCopy(slots, 0, this.drawOrder, 0, slots.length);
-    for (var i = 0, n = slots.length; i < n; i++)
-      slots[i].setToSetupPose();
+    for (var i = 0, n = slots.length; i < n; i++) slots[i].setToSetupPose();
   };
   /** @returns May return null. */
   Skeleton.prototype.getRootBone = function () {
-    if (this.bones.length == 0)
-      return null;
+    if (this.bones.length == 0) return null;
     return this.bones[0];
   };
   /** @returns May be null. */
   Skeleton.prototype.findBone = function (boneName) {
-    if (!boneName)
-      throw new Error("boneName cannot be null.");
+    if (!boneName) throw new Error('boneName cannot be null.');
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.data.name == boneName)
-        return bone;
+      if (bone.data.name == boneName) return bone;
     }
     return null;
   };
   /** @returns -1 if the bone was not found. */
   Skeleton.prototype.findBoneIndex = function (boneName) {
-    if (!boneName)
-      throw new Error("boneName cannot be null.");
+    if (!boneName) throw new Error('boneName cannot be null.');
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      if (bones[i].data.name == boneName)
-        return i;
+    for (var i = 0, n = bones.length; i < n; i++) if (bones[i].data.name == boneName) return i;
     return -1;
   };
   /** Finds a slot by comparing each slot's name. It is more efficient to cache the results of this method than to call it
    * repeatedly.
    * @returns May be null. */
   Skeleton.prototype.findSlot = function (slotName) {
-    if (!slotName)
-      throw new Error("slotName cannot be null.");
+    if (!slotName) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
-      if (slot.data.name == slotName)
-        return slot;
+      if (slot.data.name == slotName) return slot;
     }
     return null;
   };
   /** @returns -1 if the bone was not found. */
   Skeleton.prototype.findSlotIndex = function (slotName) {
-    if (!slotName)
-      throw new Error("slotName cannot be null.");
+    if (!slotName) throw new Error('slotName cannot be null.');
     var slots = this.slots;
-    for (var i = 0, n = slots.length; i < n; i++)
-      if (slots[i].data.name == slotName)
-        return i;
+    for (var i = 0, n = slots.length; i < n; i++) if (slots[i].data.name == slotName) return i;
     return -1;
   };
   /** Sets a skin by name.
@@ -20426,8 +20626,7 @@ var Skeleton = /** @class */ (function () {
    * See {@link #setSkin()}. */
   Skeleton.prototype.setSkinByName = function (skinName) {
     var skin = this.data.findSkin(skinName);
-    if (!skin)
-      throw new Error("Skin not found: " + skinName);
+    if (!skin) throw new Error('Skin not found: ' + skinName);
     this.setSkin(skin);
   };
   /** Sets the skin used to look up attachments before looking in the {@link SkeletonData#defaultSkin default skin}. If the
@@ -20441,11 +20640,9 @@ var Skeleton = /** @class */ (function () {
    * skeleton is rendered to allow any attachment keys in the current animation(s) to hide or show attachments from the new skin.
    * @param newSkin May be null. */
   Skeleton.prototype.setSkin = function (newSkin) {
-    if (newSkin == this.skin)
-      return;
+    if (newSkin == this.skin) return;
     if (newSkin) {
-      if (this.skin)
-        newSkin.attachAll(this, this.skin);
+      if (this.skin) newSkin.attachAll(this, this.skin);
       else {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++) {
@@ -20453,8 +20650,7 @@ var Skeleton = /** @class */ (function () {
           var name_1 = slot.data.attachmentName;
           if (name_1) {
             var attachment = newSkin.getAttachment(i, name_1);
-            if (attachment)
-              slot.setAttachment(attachment);
+            if (attachment) slot.setAttachment(attachment);
           }
         }
       }
@@ -20476,23 +20672,19 @@ var Skeleton = /** @class */ (function () {
    * See [Runtime skins](http://esotericsoftware.com/spine-runtime-skins) in the Spine Runtimes Guide.
    * @returns May be null. */
   Skeleton.prototype.getAttachment = function (slotIndex, attachmentName) {
-    if (!attachmentName)
-      throw new Error("attachmentName cannot be null.");
+    if (!attachmentName) throw new Error('attachmentName cannot be null.');
     if (this.skin) {
       var attachment = this.skin.getAttachment(slotIndex, attachmentName);
-      if (attachment)
-        return attachment;
+      if (attachment) return attachment;
     }
-    if (this.data.defaultSkin)
-      return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
+    if (this.data.defaultSkin) return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
     return null;
   };
   /** A convenience method to set an attachment by finding the slot with {@link #findSlot()}, finding the attachment with
    * {@link #getAttachment()}, then setting the slot's {@link Slot#attachment}.
    * @param attachmentName May be null to clear the slot's attachment. */
   Skeleton.prototype.setAttachment = function (slotName, attachmentName) {
-    if (!slotName)
-      throw new Error("slotName cannot be null.");
+    if (!slotName) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
@@ -20500,26 +20692,23 @@ var Skeleton = /** @class */ (function () {
         var attachment = null;
         if (attachmentName) {
           attachment = this.getAttachment(i, attachmentName);
-          if (!attachment)
-            throw new Error("Attachment not found: " + attachmentName + ", for slot: " + slotName);
+          if (!attachment) throw new Error('Attachment not found: ' + attachmentName + ', for slot: ' + slotName);
         }
         slot.setAttachment(attachment);
         return;
       }
     }
-    throw new Error("Slot not found: " + slotName);
+    throw new Error('Slot not found: ' + slotName);
   };
   /** Finds an IK constraint by comparing each IK constraint's name. It is more efficient to cache the results of this method
    * than to call it repeatedly.
    * @return May be null. */
   Skeleton.prototype.findIkConstraint = function (constraintName) {
-    if (!constraintName)
-      throw new Error("constraintName cannot be null.");
+    if (!constraintName) throw new Error('constraintName cannot be null.');
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var ikConstraint = ikConstraints[i];
-      if (ikConstraint.data.name == constraintName)
-        return ikConstraint;
+      if (ikConstraint.data.name == constraintName) return ikConstraint;
     }
     return null;
   };
@@ -20527,13 +20716,11 @@ var Skeleton = /** @class */ (function () {
    * this method than to call it repeatedly.
    * @return May be null. */
   Skeleton.prototype.findTransformConstraint = function (constraintName) {
-    if (!constraintName)
-      throw new Error("constraintName cannot be null.");
+    if (!constraintName) throw new Error('constraintName cannot be null.');
     var transformConstraints = this.transformConstraints;
     for (var i = 0, n = transformConstraints.length; i < n; i++) {
       var constraint = transformConstraints[i];
-      if (constraint.data.name == constraintName)
-        return constraint;
+      if (constraint.data.name == constraintName) return constraint;
     }
     return null;
   };
@@ -20541,13 +20728,11 @@ var Skeleton = /** @class */ (function () {
    * than to call it repeatedly.
    * @return May be null. */
   Skeleton.prototype.findPathConstraint = function (constraintName) {
-    if (!constraintName)
-      throw new Error("constraintName cannot be null.");
+    if (!constraintName) throw new Error('constraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
     for (var i = 0, n = pathConstraints.length; i < n; i++) {
       var constraint = pathConstraints[i];
-      if (constraint.data.name == constraintName)
-        return constraint;
+      if (constraint.data.name == constraintName) return constraint;
     }
     return null;
   };
@@ -20556,17 +20741,19 @@ var Skeleton = /** @class */ (function () {
    * @param size An output value, the width and height of the AABB.
    * @param temp Working memory to temporarily store attachments' computed world vertices. */
   Skeleton.prototype.getBounds = function (offset, size, temp) {
-    if (temp === void 0) { temp = new Array(2); }
-    if (!offset)
-      throw new Error("offset cannot be null.");
-    if (!size)
-      throw new Error("size cannot be null.");
+    if (temp === void 0) {
+      temp = new Array(2);
+    }
+    if (!offset) throw new Error('offset cannot be null.');
+    if (!size) throw new Error('size cannot be null.');
     var drawOrder = this.drawOrder;
-    var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+    var minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
+      maxX = Number.NEGATIVE_INFINITY,
+      maxY = Number.NEGATIVE_INFINITY;
     for (var i = 0, n = drawOrder.length; i < n; i++) {
       var slot = drawOrder[i];
-      if (!slot.bone.active)
-        continue;
+      if (!slot.bone.active) continue;
       var verticesLength = 0;
       var vertices = null;
       var attachment = slot.getAttachment();
@@ -20574,8 +20761,7 @@ var Skeleton = /** @class */ (function () {
         verticesLength = 8;
         vertices = Utils.setArraySize(temp, verticesLength, 0);
         attachment.computeWorldVertices(slot.bone, vertices, 0, 2);
-      }
-      else if (attachment instanceof MeshAttachment) {
+      } else if (attachment instanceof MeshAttachment) {
         var mesh = attachment;
         verticesLength = mesh.worldVerticesLength;
         vertices = Utils.setArraySize(temp, verticesLength, 0);
@@ -20583,7 +20769,8 @@ var Skeleton = /** @class */ (function () {
       }
       if (vertices) {
         for (var ii = 0, nn = vertices.length; ii < nn; ii += 2) {
-          var x = vertices[ii], y = vertices[ii + 1];
+          var x = vertices[ii],
+            y = vertices[ii + 1];
           minX = Math.min(minX, x);
           minY = Math.min(minY, y);
           maxX = Math.max(maxX, x);
@@ -20598,37 +20785,37 @@ var Skeleton = /** @class */ (function () {
   Skeleton.prototype.update = function (delta) {
     this.time += delta;
   };
-  Object.defineProperty(Skeleton.prototype, "flipX", {
+  Object.defineProperty(Skeleton.prototype, 'flipX', {
     get: function () {
       return this.scaleX == -1;
     },
     set: function (value) {
       if (!Skeleton.deprecatedWarning1) {
         Skeleton.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY");
+        console.warn('Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY');
       }
       this.scaleX = value ? 1.0 : -1.0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
-  Object.defineProperty(Skeleton.prototype, "flipY", {
+  Object.defineProperty(Skeleton.prototype, 'flipY', {
     get: function () {
       return this.scaleY == -1;
     },
     set: function (value) {
       if (!Skeleton.deprecatedWarning1) {
         Skeleton.deprecatedWarning1 = true;
-        console.warn("Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY");
+        console.warn('Spine Deprecation Warning: `Skeleton.flipX/flipY` was deprecated, please use scaleX/scaleY');
       }
       this.scaleY = value ? 1.0 : -1.0;
     },
     enumerable: false,
-    configurable: true
+    configurable: true,
   });
   Skeleton.deprecatedWarning1 = false;
   return Skeleton;
-}());
+})();
 
 /** Stores the setup pose and all of the stateless data for a skeleton.
  *
@@ -20661,59 +20848,47 @@ var SkeletonData = /** @class */ (function () {
    * multiple times.
    * @returns May be null. */
   SkeletonData.prototype.findBone = function (boneName) {
-    if (!boneName)
-      throw new Error("boneName cannot be null.");
+    if (!boneName) throw new Error('boneName cannot be null.');
     var bones = this.bones;
     for (var i = 0, n = bones.length; i < n; i++) {
       var bone = bones[i];
-      if (bone.name == boneName)
-        return bone;
+      if (bone.name == boneName) return bone;
     }
     return null;
   };
   SkeletonData.prototype.findBoneIndex = function (boneName) {
-    if (!boneName)
-      throw new Error("boneName cannot be null.");
+    if (!boneName) throw new Error('boneName cannot be null.');
     var bones = this.bones;
-    for (var i = 0, n = bones.length; i < n; i++)
-      if (bones[i].name == boneName)
-        return i;
+    for (var i = 0, n = bones.length; i < n; i++) if (bones[i].name == boneName) return i;
     return -1;
   };
   /** Finds a slot by comparing each slot's name. It is more efficient to cache the results of this method than to call it
    * multiple times.
    * @returns May be null. */
   SkeletonData.prototype.findSlot = function (slotName) {
-    if (!slotName)
-      throw new Error("slotName cannot be null.");
+    if (!slotName) throw new Error('slotName cannot be null.');
     var slots = this.slots;
     for (var i = 0, n = slots.length; i < n; i++) {
       var slot = slots[i];
-      if (slot.name == slotName)
-        return slot;
+      if (slot.name == slotName) return slot;
     }
     return null;
   };
   SkeletonData.prototype.findSlotIndex = function (slotName) {
-    if (!slotName)
-      throw new Error("slotName cannot be null.");
+    if (!slotName) throw new Error('slotName cannot be null.');
     var slots = this.slots;
-    for (var i = 0, n = slots.length; i < n; i++)
-      if (slots[i].name == slotName)
-        return i;
+    for (var i = 0, n = slots.length; i < n; i++) if (slots[i].name == slotName) return i;
     return -1;
   };
   /** Finds a skin by comparing each skin's name. It is more efficient to cache the results of this method than to call it
    * multiple times.
    * @returns May be null. */
   SkeletonData.prototype.findSkin = function (skinName) {
-    if (!skinName)
-      throw new Error("skinName cannot be null.");
+    if (!skinName) throw new Error('skinName cannot be null.');
     var skins = this.skins;
     for (var i = 0, n = skins.length; i < n; i++) {
       var skin = skins[i];
-      if (skin.name == skinName)
-        return skin;
+      if (skin.name == skinName) return skin;
     }
     return null;
   };
@@ -20721,13 +20896,11 @@ var SkeletonData = /** @class */ (function () {
    * multiple times.
    * @returns May be null. */
   SkeletonData.prototype.findEvent = function (eventDataName) {
-    if (!eventDataName)
-      throw new Error("eventDataName cannot be null.");
+    if (!eventDataName) throw new Error('eventDataName cannot be null.');
     var events = this.events;
     for (var i = 0, n = events.length; i < n; i++) {
       var event_1 = events[i];
-      if (event_1.name == eventDataName)
-        return event_1;
+      if (event_1.name == eventDataName) return event_1;
     }
     return null;
   };
@@ -20735,13 +20908,11 @@ var SkeletonData = /** @class */ (function () {
    * call it multiple times.
    * @returns May be null. */
   SkeletonData.prototype.findAnimation = function (animationName) {
-    if (!animationName)
-      throw new Error("animationName cannot be null.");
+    if (!animationName) throw new Error('animationName cannot be null.');
     var animations = this.animations;
     for (var i = 0, n = animations.length; i < n; i++) {
       var animation = animations[i];
-      if (animation.name == animationName)
-        return animation;
+      if (animation.name == animationName) return animation;
     }
     return null;
   };
@@ -20749,13 +20920,11 @@ var SkeletonData = /** @class */ (function () {
    * than to call it multiple times.
    * @return May be null. */
   SkeletonData.prototype.findIkConstraint = function (constraintName) {
-    if (!constraintName)
-      throw new Error("constraintName cannot be null.");
+    if (!constraintName) throw new Error('constraintName cannot be null.');
     var ikConstraints = this.ikConstraints;
     for (var i = 0, n = ikConstraints.length; i < n; i++) {
       var constraint = ikConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
@@ -20763,13 +20932,11 @@ var SkeletonData = /** @class */ (function () {
    * this method than to call it multiple times.
    * @return May be null. */
   SkeletonData.prototype.findTransformConstraint = function (constraintName) {
-    if (!constraintName)
-      throw new Error("constraintName cannot be null.");
+    if (!constraintName) throw new Error('constraintName cannot be null.');
     var transformConstraints = this.transformConstraints;
     for (var i = 0, n = transformConstraints.length; i < n; i++) {
       var constraint = transformConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
@@ -20777,27 +20944,22 @@ var SkeletonData = /** @class */ (function () {
    * than to call it multiple times.
    * @return May be null. */
   SkeletonData.prototype.findPathConstraint = function (constraintName) {
-    if (!constraintName)
-      throw new Error("constraintName cannot be null.");
+    if (!constraintName) throw new Error('constraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
     for (var i = 0, n = pathConstraints.length; i < n; i++) {
       var constraint = pathConstraints[i];
-      if (constraint.name == constraintName)
-        return constraint;
+      if (constraint.name == constraintName) return constraint;
     }
     return null;
   };
   SkeletonData.prototype.findPathConstraintIndex = function (pathConstraintName) {
-    if (pathConstraintName == null)
-      throw new Error("pathConstraintName cannot be null.");
+    if (pathConstraintName == null) throw new Error('pathConstraintName cannot be null.');
     var pathConstraints = this.pathConstraints;
-    for (var i = 0, n = pathConstraints.length; i < n; i++)
-      if (pathConstraints[i].name == pathConstraintName)
-        return i;
+    for (var i = 0, n = pathConstraints.length; i < n; i++) if (pathConstraints[i].name == pathConstraintName) return i;
     return -1;
   };
   return SkeletonData;
-}());
+})();
 
 /** Stores the setup pose for a {@link Slot}.
  * @public
@@ -20807,18 +20969,15 @@ var SlotData = /** @class */ (function () {
     /** The color used to tint the slot's attachment. If {@link #getDarkColor()} is set, this is used as the light color for two
      * color tinting. */
     this.color = new Color(1, 1, 1, 1);
-    if (index < 0)
-      throw new Error("index must be >= 0.");
-    if (!name)
-      throw new Error("name cannot be null.");
-    if (!boneData)
-      throw new Error("boneData cannot be null.");
+    if (index < 0) throw new Error('index must be >= 0.');
+    if (!name) throw new Error('name cannot be null.');
+    if (!boneData) throw new Error('boneData cannot be null.');
     this.index = index;
     this.name = name;
     this.boneData = boneData;
   }
   return SlotData;
-}());
+})();
 
 /** Stores the setup pose for a {@link TransformConstraint}.
  *
@@ -20854,7 +21013,7 @@ var TransformConstraintData = /** @class */ (function (_super) {
     return _this;
   }
   return TransformConstraintData;
-}(ConstraintData));
+})(ConstraintData);
 
 /** Stores an entry in the skin consisting of the slot index, name, and attachment
  * @public
@@ -20866,7 +21025,7 @@ var SkinEntry = /** @class */ (function () {
     this.attachment = attachment;
   }
   return SkinEntry;
-}());
+})();
 /** Stores attachments by slot index and attachment name.
  *
  * See SkeletonData {@link SkeletonData#defaultSkin}, Skeleton {@link Skeleton#skin}, and
@@ -20878,19 +21037,15 @@ var Skin = /** @class */ (function () {
     this.attachments = new Array();
     this.bones = Array();
     this.constraints = new Array();
-    if (!name)
-      throw new Error("name cannot be null.");
+    if (!name) throw new Error('name cannot be null.');
     this.name = name;
   }
   /** Adds an attachment to the skin for the specified slot index and name. */
   Skin.prototype.setAttachment = function (slotIndex, name, attachment) {
-    if (!attachment)
-      throw new Error("attachment cannot be null.");
+    if (!attachment) throw new Error('attachment cannot be null.');
     var attachments = this.attachments;
-    if (slotIndex >= attachments.length)
-      attachments.length = slotIndex + 1;
-    if (!attachments[slotIndex])
-      attachments[slotIndex] = {};
+    if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
+    if (!attachments[slotIndex]) attachments[slotIndex] = {};
     attachments[slotIndex][name] = attachment;
   };
   /** Adds all attachments, bones, and constraints from the specified skin to this skin. */
@@ -20904,8 +21059,7 @@ var Skin = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.bones.push(bone);
+      if (!contained) this.bones.push(bone);
     }
     for (var i = 0; i < skin.constraints.length; i++) {
       var constraint = skin.constraints[i];
@@ -20916,8 +21070,7 @@ var Skin = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.constraints.push(constraint);
+      if (!contained) this.constraints.push(constraint);
     }
     var attachments = skin.getAttachments();
     for (var i = 0; i < attachments.length; i++) {
@@ -20937,8 +21090,7 @@ var Skin = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.bones.push(bone);
+      if (!contained) this.bones.push(bone);
     }
     for (var i = 0; i < skin.constraints.length; i++) {
       var constraint = skin.constraints[i];
@@ -20949,19 +21101,16 @@ var Skin = /** @class */ (function () {
           break;
         }
       }
-      if (!contained)
-        this.constraints.push(constraint);
+      if (!contained) this.constraints.push(constraint);
     }
     var attachments = skin.getAttachments();
     for (var i = 0; i < attachments.length; i++) {
       var attachment = attachments[i];
-      if (!attachment.attachment)
-        continue;
+      if (!attachment.attachment) continue;
       if (attachment.attachment instanceof MeshAttachment) {
         attachment.attachment = attachment.attachment.newLinkedMesh();
         this.setAttachment(attachment.slotIndex, attachment.name, attachment.attachment);
-      }
-      else {
+      } else {
         attachment.attachment = attachment.attachment.copy();
         this.setAttachment(attachment.slotIndex, attachment.name, attachment.attachment);
       }
@@ -20975,8 +21124,7 @@ var Skin = /** @class */ (function () {
   /** Removes the attachment in the skin for the specified slot index and name, if any. */
   Skin.prototype.removeAttachment = function (slotIndex, name) {
     var dictionary = this.attachments[slotIndex];
-    if (dictionary)
-      dictionary[name] = null;
+    if (dictionary) dictionary[name] = null;
   };
   /** Returns all attachments in this skin. */
   Skin.prototype.getAttachments = function () {
@@ -20986,8 +21134,7 @@ var Skin = /** @class */ (function () {
       if (slotAttachments) {
         for (var name_1 in slotAttachments) {
           var attachment = slotAttachments[name_1];
-          if (attachment)
-            entries.push(new SkinEntry(i, name_1, attachment));
+          if (attachment) entries.push(new SkinEntry(i, name_1, attachment));
         }
       }
     }
@@ -20999,8 +21146,7 @@ var Skin = /** @class */ (function () {
     if (slotAttachments) {
       for (var name_2 in slotAttachments) {
         var attachment = slotAttachments[name_2];
-        if (attachment)
-          attachments.push(new SkinEntry(slotIndex, name_2, attachment));
+        if (attachment) attachments.push(new SkinEntry(slotIndex, name_2, attachment));
       }
     }
   };
@@ -21022,8 +21168,7 @@ var Skin = /** @class */ (function () {
           var skinAttachment = dictionary[key];
           if (slotAttachment == skinAttachment) {
             var attachment = this.getAttachment(slotIndex, key);
-            if (attachment)
-              slot.setAttachment(attachment);
+            if (attachment) slot.setAttachment(attachment);
             break;
           }
         }
@@ -21032,7 +21177,7 @@ var Skin = /** @class */ (function () {
     }
   };
   return Skin;
-}());
+})();
 
 /** Loads skeleton data in the Spine binary format.
  *
@@ -21054,14 +21199,15 @@ var SkeletonBinary = /** @class */ (function () {
   SkeletonBinary.prototype.readSkeletonData = function (binary) {
     var scale = this.scale;
     var skeletonData = new SkeletonData();
-    skeletonData.name = ""; // BOZO
+    skeletonData.name = ''; // BOZO
     var input = new BinaryInput(binary);
     var lowHash = input.readInt32();
     var highHash = input.readInt32();
     skeletonData.hash = highHash == 0 && lowHash == 0 ? null : highHash.toString(16) + lowHash.toString(16);
     skeletonData.version = input.readString();
     if (skeletonData.version.substr(0, 3) !== '4.0') {
-      var error = "Spine 4.0 loader cant load version " + skeletonData.version + ". Please configure your pixi-spine bundle";
+      var error =
+        'Spine 4.0 loader cant load version ' + skeletonData.version + '. Please configure your pixi-spine bundle';
       console.error(error);
     }
     skeletonData.x = input.readFloat();
@@ -21077,8 +21223,7 @@ var SkeletonBinary = /** @class */ (function () {
     var n = 0;
     // Strings.
     n = input.readInt(true);
-    for (var i = 0; i < n; i++)
-      input.strings.push(input.readString());
+    for (var i = 0; i < n; i++) input.strings.push(input.readString());
     // Bones.
     n = input.readInt(true);
     for (var i = 0; i < n; i++) {
@@ -21095,8 +21240,7 @@ var SkeletonBinary = /** @class */ (function () {
       data.length = input.readFloat() * scale;
       data.transformMode = input.readInt(true);
       data.skinRequired = input.readBoolean();
-      if (nonessential)
-        Color.rgba8888ToColor(data.color, input.readInt32());
+      if (nonessential) Color.rgba8888ToColor(data.color, input.readInt32());
       skeletonData.bones.push(data);
     }
     // Slots.
@@ -21107,8 +21251,7 @@ var SkeletonBinary = /** @class */ (function () {
       var data = new SlotData(i, slotName, boneData);
       Color.rgba8888ToColor(data.color, input.readInt32());
       var darkColor = input.readInt32();
-      if (darkColor != -1)
-        Color.rgb888ToColor(data.darkColor = new Color(), darkColor);
+      if (darkColor != -1) Color.rgb888ToColor((data.darkColor = new Color()), darkColor);
       data.attachmentName = input.readStringRef();
       data.blendMode = SkeletonBinary.BlendModeValues[input.readInt(true)];
       skeletonData.slots.push(data);
@@ -21120,8 +21263,7 @@ var SkeletonBinary = /** @class */ (function () {
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (var ii = 0; ii < nn; ii++)
-        data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (var ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.bones[input.readInt(true)];
       data.mix = input.readFloat();
       data.softness = input.readFloat() * scale;
@@ -21138,8 +21280,7 @@ var SkeletonBinary = /** @class */ (function () {
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (var ii = 0; ii < nn; ii++)
-        data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (var ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.bones[input.readInt(true)];
       data.local = input.readBoolean();
       data.relative = input.readBoolean();
@@ -21164,19 +21305,16 @@ var SkeletonBinary = /** @class */ (function () {
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (var ii = 0; ii < nn; ii++)
-        data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (var ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.slots[input.readInt(true)];
       data.positionMode = input.readInt(true);
       data.spacingMode = input.readInt(true);
       data.rotateMode = input.readInt(true);
       data.offsetRotation = input.readFloat();
       data.position = input.readFloat();
-      if (data.positionMode == exports.PositionMode.Fixed)
-        data.position *= scale;
+      if (data.positionMode == exports.PositionMode.Fixed) data.position *= scale;
       data.spacing = input.readFloat();
-      if (data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed)
-        data.spacing *= scale;
+      if (data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed) data.spacing *= scale;
       data.mixRotate = input.readFloat();
       data.mixX = input.readFloat();
       data.mixY = input.readFloat();
@@ -21191,9 +21329,8 @@ var SkeletonBinary = /** @class */ (function () {
     // Skins.
     {
       var i = skeletonData.skins.length;
-      Utils.setArraySize(skeletonData.skins, n = i + input.readInt(true));
-      for (; i < n; i++)
-        skeletonData.skins[i] = this.readSkin(input, skeletonData, false, nonessential);
+      Utils.setArraySize(skeletonData.skins, (n = i + input.readInt(true)));
+      for (; i < n; i++) skeletonData.skins[i] = this.readSkin(input, skeletonData, false, nonessential);
     }
     // Linked meshes.
     n = this.linkedMeshes.length;
@@ -21231,15 +21368,12 @@ var SkeletonBinary = /** @class */ (function () {
     var slotCount = 0;
     if (defaultSkin) {
       slotCount = input.readInt(true);
-      if (slotCount == 0)
-        return null;
-      skin = new Skin("default");
-    }
-    else {
+      if (slotCount == 0) return null;
+      skin = new Skin('default');
+    } else {
       skin = new Skin(input.readStringRef());
       skin.bones.length = input.readInt(true);
-      for (var i = 0, n = skin.bones.length; i < n; i++)
-        skin.bones[i] = skeletonData.bones[input.readInt(true)];
+      for (var i = 0, n = skin.bones.length; i < n; i++) skin.bones[i] = skeletonData.bones[input.readInt(true)];
       for (var i = 0, n = input.readInt(true); i < n; i++)
         skin.constraints.push(skeletonData.ikConstraints[input.readInt(true)]);
       for (var i = 0, n = input.readInt(true); i < n; i++)
@@ -21253,17 +21387,22 @@ var SkeletonBinary = /** @class */ (function () {
       for (var ii = 0, nn = input.readInt(true); ii < nn; ii++) {
         var name_2 = input.readStringRef();
         var attachment = this.readAttachment(input, skeletonData, skin, slotIndex, name_2, nonessential);
-        if (attachment)
-          skin.setAttachment(slotIndex, name_2, attachment);
+        if (attachment) skin.setAttachment(slotIndex, name_2, attachment);
       }
     }
     return skin;
   };
-  SkeletonBinary.prototype.readAttachment = function (input, skeletonData, skin, slotIndex, attachmentName, nonessential) {
+  SkeletonBinary.prototype.readAttachment = function (
+    input,
+    skeletonData,
+    skin,
+    slotIndex,
+    attachmentName,
+    nonessential,
+  ) {
     var scale = this.scale;
     var name = input.readStringRef();
-    if (!name)
-      name = attachmentName;
+    if (!name) name = attachmentName;
     switch (input.readByte()) {
       case exports.AttachmentType.Region: {
         var path = input.readStringRef();
@@ -21275,11 +21414,9 @@ var SkeletonBinary = /** @class */ (function () {
         var width = input.readFloat();
         var height = input.readFloat();
         var color = input.readInt32();
-        if (!path)
-          path = name;
+        if (!path) path = name;
         var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
-        if (!region)
-          return null;
+        if (!region) return null;
         region.path = path;
         region.x = x * scale;
         region.y = y * scale;
@@ -21297,13 +21434,11 @@ var SkeletonBinary = /** @class */ (function () {
         var vertices = this.readVertices(input, vertexCount);
         var color = nonessential ? input.readInt32() : 0;
         var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
-        if (!box)
-          return null;
+        if (!box) return null;
         box.worldVerticesLength = vertexCount << 1;
         box.vertices = vertices.vertices;
         box.bones = vertices.bones;
-        if (nonessential)
-          Color.rgba8888ToColor(box.color, color);
+        if (nonessential) Color.rgba8888ToColor(box.color, color);
         return box;
       }
       case exports.AttachmentType.Mesh: {
@@ -21315,17 +21450,16 @@ var SkeletonBinary = /** @class */ (function () {
         var vertices = this.readVertices(input, vertexCount);
         var hullLength = input.readInt(true);
         var edges = null;
-        var width = 0, height = 0;
+        var width = 0,
+          height = 0;
         if (nonessential) {
           edges = this.readShortArray(input);
           width = input.readFloat();
           height = input.readFloat();
         }
-        if (!path)
-          path = name;
+        if (!path) path = name;
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (!mesh)
-          return null;
+        if (!mesh) return null;
         mesh.path = path;
         Color.rgba8888ToColor(mesh.color, color);
         mesh.bones = vertices.bones;
@@ -21348,16 +21482,15 @@ var SkeletonBinary = /** @class */ (function () {
         var skinName = input.readStringRef();
         var parent_3 = input.readStringRef();
         var inheritDeform = input.readBoolean();
-        var width = 0, height = 0;
+        var width = 0,
+          height = 0;
         if (nonessential) {
           width = input.readFloat();
           height = input.readFloat();
         }
-        if (!path)
-          path = name;
+        if (!path) path = name;
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (!mesh)
-          return null;
+        if (!mesh) return null;
         mesh.path = path;
         Color.rgba8888ToColor(mesh.color, color);
         if (nonessential) {
@@ -21373,20 +21506,17 @@ var SkeletonBinary = /** @class */ (function () {
         var vertexCount = input.readInt(true);
         var vertices = this.readVertices(input, vertexCount);
         var lengths = Utils.newArray(vertexCount / 3, 0);
-        for (var i = 0, n = lengths.length; i < n; i++)
-          lengths[i] = input.readFloat() * scale;
+        for (var i = 0, n = lengths.length; i < n; i++) lengths[i] = input.readFloat() * scale;
         var color = nonessential ? input.readInt32() : 0;
         var path = this.attachmentLoader.newPathAttachment(skin, name);
-        if (!path)
-          return null;
+        if (!path) return null;
         path.closed = closed_1;
         path.constantSpeed = constantSpeed;
         path.worldVerticesLength = vertexCount << 1;
         path.vertices = vertices.vertices;
         path.bones = vertices.bones;
         path.lengths = lengths;
-        if (nonessential)
-          Color.rgba8888ToColor(path.color, color);
+        if (nonessential) Color.rgba8888ToColor(path.color, color);
         return path;
       }
       case exports.AttachmentType.Point: {
@@ -21395,13 +21525,11 @@ var SkeletonBinary = /** @class */ (function () {
         var y = input.readFloat();
         var color = nonessential ? input.readInt32() : 0;
         var point = this.attachmentLoader.newPointAttachment(skin, name);
-        if (!point)
-          return null;
+        if (!point) return null;
         point.x = x * scale;
         point.y = y * scale;
         point.rotation = rotation;
-        if (nonessential)
-          Color.rgba8888ToColor(point.color, color);
+        if (nonessential) Color.rgba8888ToColor(point.color, color);
         return point;
       }
       case exports.AttachmentType.Clipping: {
@@ -21410,14 +21538,12 @@ var SkeletonBinary = /** @class */ (function () {
         var vertices = this.readVertices(input, vertexCount);
         var color = nonessential ? input.readInt32() : 0;
         var clip = this.attachmentLoader.newClippingAttachment(skin, name);
-        if (!clip)
-          return null;
+        if (!clip) return null;
         clip.endSlot = skeletonData.slots[endSlotIndex];
         clip.worldVerticesLength = vertexCount << 1;
         clip.vertices = vertices.vertices;
         clip.bones = vertices.bones;
-        if (nonessential)
-          Color.rgba8888ToColor(clip.color, color);
+        if (nonessential) Color.rgba8888ToColor(clip.color, color);
         return clip;
       }
     }
@@ -21450,20 +21576,16 @@ var SkeletonBinary = /** @class */ (function () {
   SkeletonBinary.prototype.readFloatArray = function (input, n, scale) {
     var array = new Array(n);
     if (scale == 1) {
-      for (var i = 0; i < n; i++)
-        array[i] = input.readFloat();
-    }
-    else {
-      for (var i = 0; i < n; i++)
-        array[i] = input.readFloat() * scale;
+      for (var i = 0; i < n; i++) array[i] = input.readFloat();
+    } else {
+      for (var i = 0; i < n; i++) array[i] = input.readFloat() * scale;
     }
     return array;
   };
   SkeletonBinary.prototype.readShortArray = function (input) {
     var n = input.readInt(true);
     var array = new Array(n);
-    for (var i = 0; i < n; i++)
-      array[i] = input.readShort();
+    for (var i = 0; i < n; i++) array[i] = input.readShort();
     return array;
   };
   SkeletonBinary.prototype.readAnimation = function (input, name, skeletonData) {
@@ -21495,8 +21617,7 @@ var SkeletonBinary = /** @class */ (function () {
             var a = input.readUnsignedByte() / 255.0;
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, r, g, b, a);
-              if (frame == frameLast)
-                break;
+              if (frame == frameLast) break;
               var time2 = input.readFloat();
               var r2 = input.readUnsignedByte() / 255.0;
               var g2 = input.readUnsignedByte() / 255.0;
@@ -21530,8 +21651,7 @@ var SkeletonBinary = /** @class */ (function () {
             var b = input.readUnsignedByte() / 255.0;
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, r, g, b);
-              if (frame == frameLast)
-                break;
+              if (frame == frameLast) break;
               var time2 = input.readFloat();
               var r2 = input.readUnsignedByte() / 255.0;
               var g2 = input.readUnsignedByte() / 255.0;
@@ -21566,8 +21686,7 @@ var SkeletonBinary = /** @class */ (function () {
             var b2 = input.readUnsignedByte() / 255.0;
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, r, g, b, a, r2, g2, b2);
-              if (frame == frameLast)
-                break;
+              if (frame == frameLast) break;
               var time2 = input.readFloat();
               var nr = input.readUnsignedByte() / 255.0;
               var ng = input.readUnsignedByte() / 255.0;
@@ -21613,8 +21732,7 @@ var SkeletonBinary = /** @class */ (function () {
             var b2 = input.readUnsignedByte() / 255.0;
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, r, g, b, r2, g2, b2);
-              if (frame == frameLast)
-                break;
+              if (frame == frameLast) break;
               var time2 = input.readFloat();
               var nr = input.readUnsignedByte() / 255.0;
               var ng = input.readUnsignedByte() / 255.0;
@@ -21647,11 +21765,11 @@ var SkeletonBinary = /** @class */ (function () {
           }
           case SLOT_ALPHA: {
             var timeline = new AlphaTimeline(frameCount, input.readInt(true), slotIndex);
-            var time = input.readFloat(), a = input.readUnsignedByte() / 255;
+            var time = input.readFloat(),
+              a = input.readUnsignedByte() / 255;
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, a);
-              if (frame == frameLast)
-                break;
+              if (frame == frameLast) break;
               var time2 = input.readFloat();
               var a2 = input.readUnsignedByte() / 255;
               switch (input.readByte()) {
@@ -21674,7 +21792,9 @@ var SkeletonBinary = /** @class */ (function () {
     for (var i = 0, n = input.readInt(true); i < n; i++) {
       var boneIndex = input.readInt(true);
       for (var ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-        var type = input.readByte(), frameCount = input.readInt(true), bezierCount = input.readInt(true);
+        var type = input.readByte(),
+          frameCount = input.readInt(true),
+          bezierCount = input.readInt(true);
         switch (type) {
           case BONE_ROTATE:
             timelines.push(readTimeline1$1(input, new RotateTimeline(frameCount, bezierCount, boneIndex), 1));
@@ -21710,14 +21830,19 @@ var SkeletonBinary = /** @class */ (function () {
     }
     // IK constraint timelines.
     for (var i = 0, n = input.readInt(true); i < n; i++) {
-      var index = input.readInt(true), frameCount = input.readInt(true), frameLast = frameCount - 1;
+      var index = input.readInt(true),
+        frameCount = input.readInt(true),
+        frameLast = frameCount - 1;
       var timeline = new IkConstraintTimeline(frameCount, input.readInt(true), index);
-      var time = input.readFloat(), mix = input.readFloat(), softness = input.readFloat() * scale;
+      var time = input.readFloat(),
+        mix = input.readFloat(),
+        softness = input.readFloat() * scale;
       for (var frame = 0, bezier = 0; ; frame++) {
         timeline.setFrame(frame, time, mix, softness, input.readByte(), input.readBoolean(), input.readBoolean());
-        if (frame == frameLast)
-          break;
-        var time2 = input.readFloat(), mix2 = input.readFloat(), softness2 = input.readFloat() * scale;
+        if (frame == frameLast) break;
+        var time2 = input.readFloat(),
+          mix2 = input.readFloat(),
+          softness2 = input.readFloat() * scale;
         switch (input.readByte()) {
           case CURVE_STEPPED:
             timeline.setStepped(frame);
@@ -21734,14 +21859,27 @@ var SkeletonBinary = /** @class */ (function () {
     }
     // Transform constraint timelines.
     for (var i = 0, n = input.readInt(true); i < n; i++) {
-      var index = input.readInt(true), frameCount = input.readInt(true), frameLast = frameCount - 1;
+      var index = input.readInt(true),
+        frameCount = input.readInt(true),
+        frameLast = frameCount - 1;
       var timeline = new TransformConstraintTimeline(frameCount, input.readInt(true), index);
-      var time = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat(), mixScaleX = input.readFloat(), mixScaleY = input.readFloat(), mixShearY = input.readFloat();
+      var time = input.readFloat(),
+        mixRotate = input.readFloat(),
+        mixX = input.readFloat(),
+        mixY = input.readFloat(),
+        mixScaleX = input.readFloat(),
+        mixScaleY = input.readFloat(),
+        mixShearY = input.readFloat();
       for (var frame = 0, bezier = 0; ; frame++) {
         timeline.setFrame(frame, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
-        if (frame == frameLast)
-          break;
-        var time2 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat(), mixScaleX2 = input.readFloat(), mixScaleY2 = input.readFloat(), mixShearY2 = input.readFloat();
+        if (frame == frameLast) break;
+        var time2 = input.readFloat(),
+          mixRotate2 = input.readFloat(),
+          mixX2 = input.readFloat(),
+          mixY2 = input.readFloat(),
+          mixScaleX2 = input.readFloat(),
+          mixScaleY2 = input.readFloat(),
+          mixShearY2 = input.readFloat();
         switch (input.readByte()) {
           case CURVE_STEPPED:
             timeline.setStepped(frame);
@@ -21771,21 +21909,36 @@ var SkeletonBinary = /** @class */ (function () {
       for (var ii = 0, nn = input.readInt(true); ii < nn; ii++) {
         switch (input.readByte()) {
           case PATH_POSITION:
-            timelines
-              .push(readTimeline1$1(input, new PathConstraintPositionTimeline(input.readInt(true), input.readInt(true), index), data.positionMode == exports.PositionMode.Fixed ? scale : 1));
+            timelines.push(
+              readTimeline1$1(
+                input,
+                new PathConstraintPositionTimeline(input.readInt(true), input.readInt(true), index),
+                data.positionMode == exports.PositionMode.Fixed ? scale : 1,
+              ),
+            );
             break;
           case PATH_SPACING:
-            timelines
-              .push(readTimeline1$1(input, new PathConstraintSpacingTimeline(input.readInt(true), input.readInt(true), index), data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed ? scale : 1));
+            timelines.push(
+              readTimeline1$1(
+                input,
+                new PathConstraintSpacingTimeline(input.readInt(true), input.readInt(true), index),
+                data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed ? scale : 1,
+              ),
+            );
             break;
           case PATH_MIX:
             var timeline = new PathConstraintMixTimeline(input.readInt(true), input.readInt(true), index);
-            var time = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat();
+            var time = input.readFloat(),
+              mixRotate = input.readFloat(),
+              mixX = input.readFloat(),
+              mixY = input.readFloat();
             for (var frame = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame++) {
               timeline.setFrame(frame, time, mixRotate, mixX, mixY);
-              if (frame == frameLast)
-                break;
-              var time2 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat();
+              if (frame == frameLast) break;
+              var time2 = input.readFloat(),
+                mixRotate2 = input.readFloat(),
+                mixX2 = input.readFloat(),
+                mixY2 = input.readFloat();
               switch (input.readByte()) {
                 case CURVE_STEPPED:
                   timeline.setStepped(frame);
@@ -21814,7 +21967,7 @@ var SkeletonBinary = /** @class */ (function () {
           var attachment = skin.getAttachment(slotIndex, attachmentName);
           var weighted = attachment.bones;
           var vertices = attachment.vertices;
-          var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+          var deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
           var frameCount = input.readInt(true);
           var frameLast = frameCount - 1;
           var bezierCount = input.readInt(true);
@@ -21823,28 +21976,22 @@ var SkeletonBinary = /** @class */ (function () {
           for (var frame = 0, bezier = 0; ; frame++) {
             var deform = void 0;
             var end = input.readInt(true);
-            if (end == 0)
-              deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+            if (end == 0) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
             else {
               deform = Utils.newFloatArray(deformLength);
               var start = input.readInt(true);
               end += start;
               if (scale == 1) {
-                for (var v = start; v < end; v++)
-                  deform[v] = input.readFloat();
-              }
-              else {
-                for (var v = start; v < end; v++)
-                  deform[v] = input.readFloat() * scale;
+                for (var v = start; v < end; v++) deform[v] = input.readFloat();
+              } else {
+                for (var v = start; v < end; v++) deform[v] = input.readFloat() * scale;
               }
               if (!weighted) {
-                for (var v = 0, vn = deform.length; v < vn; v++)
-                  deform[v] += vertices[v];
+                for (var v = 0, vn = deform.length; v < vn; v++) deform[v] += vertices[v];
               }
             }
             timeline.setFrame(frame, time, deform);
-            if (frame == frameLast)
-              break;
+            if (frame == frameLast) break;
             var time2 = input.readFloat();
             switch (input.readByte()) {
               case CURVE_STEPPED:
@@ -21868,25 +22015,22 @@ var SkeletonBinary = /** @class */ (function () {
         var time = input.readFloat();
         var offsetCount = input.readInt(true);
         var drawOrder = Utils.newArray(slotCount, 0);
-        for (var ii = slotCount - 1; ii >= 0; ii--)
-          drawOrder[ii] = -1;
+        for (var ii = slotCount - 1; ii >= 0; ii--) drawOrder[ii] = -1;
         var unchanged = Utils.newArray(slotCount - offsetCount, 0);
-        var originalIndex = 0, unchangedIndex = 0;
+        var originalIndex = 0,
+          unchangedIndex = 0;
         for (var ii = 0; ii < offsetCount; ii++) {
           var slotIndex = input.readInt(true);
           // Collect unchanged items.
-          while (originalIndex != slotIndex)
-            unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
           // Set changed items.
           drawOrder[originalIndex + input.readInt(true)] = originalIndex++;
         }
         // Collect remaining unchanged items.
-        while (originalIndex < slotCount)
-          unchanged[unchangedIndex++] = originalIndex++;
+        while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
         // Fill in unchanged items.
         for (var ii = slotCount - 1; ii >= 0; ii--)
-          if (drawOrder[ii] == -1)
-            drawOrder[ii] = unchanged[--unchangedIndex];
+          if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
         timeline.setFrame(i, time, drawOrder);
       }
       timelines.push(timeline);
@@ -21911,13 +22055,17 @@ var SkeletonBinary = /** @class */ (function () {
       timelines.push(timeline);
     }
     var duration = 0;
-    for (var i = 0, n = timelines.length; i < n; i++)
-      duration = Math.max(duration, timelines[i].getDuration());
+    for (var i = 0, n = timelines.length; i < n; i++) duration = Math.max(duration, timelines[i].getDuration());
     return new Animation(name, timelines, duration);
   };
-  SkeletonBinary.BlendModeValues = [constants.BLEND_MODES.NORMAL, constants.BLEND_MODES.ADD, constants.BLEND_MODES.MULTIPLY, constants.BLEND_MODES.SCREEN];
+  SkeletonBinary.BlendModeValues = [
+    constants.BLEND_MODES.NORMAL,
+    constants.BLEND_MODES.ADD,
+    constants.BLEND_MODES.MULTIPLY,
+    constants.BLEND_MODES.SCREEN,
+  ];
   return SkeletonBinary;
-}());
+})();
 var LinkedMesh$1 = /** @class */ (function () {
   function LinkedMesh(mesh, skin, slotIndex, parent, inheritDeform) {
     this.mesh = mesh;
@@ -21927,23 +22075,28 @@ var LinkedMesh$1 = /** @class */ (function () {
     this.inheritDeform = inheritDeform;
   }
   return LinkedMesh;
-}());
+})();
 var Vertices = /** @class */ (function () {
   function Vertices(bones, vertices) {
-    if (bones === void 0) { bones = null; }
-    if (vertices === void 0) { vertices = null; }
+    if (bones === void 0) {
+      bones = null;
+    }
+    if (vertices === void 0) {
+      vertices = null;
+    }
     this.bones = bones;
     this.vertices = vertices;
   }
   return Vertices;
-}());
+})();
 function readTimeline1$1(input, timeline, scale) {
-  var time = input.readFloat(), value = input.readFloat() * scale;
+  var time = input.readFloat(),
+    value = input.readFloat() * scale;
   for (var frame = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame++) {
     timeline.setFrame(frame, time, value);
-    if (frame == frameLast)
-      break;
-    var time2 = input.readFloat(), value2 = input.readFloat() * scale;
+    if (frame == frameLast) break;
+    var time2 = input.readFloat(),
+      value2 = input.readFloat() * scale;
     switch (input.readByte()) {
       case CURVE_STEPPED:
         timeline.setStepped(frame);
@@ -21957,12 +22110,15 @@ function readTimeline1$1(input, timeline, scale) {
   return timeline;
 }
 function readTimeline2$1(input, timeline, scale) {
-  var time = input.readFloat(), value1 = input.readFloat() * scale, value2 = input.readFloat() * scale;
+  var time = input.readFloat(),
+    value1 = input.readFloat() * scale,
+    value2 = input.readFloat() * scale;
   for (var frame = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame++) {
     timeline.setFrame(frame, time, value1, value2);
-    if (frame == frameLast)
-      break;
-    var time2 = input.readFloat(), nvalue1 = input.readFloat() * scale, nvalue2 = input.readFloat() * scale;
+    if (frame == frameLast) break;
+    var time2 = input.readFloat(),
+      nvalue1 = input.readFloat() * scale,
+      nvalue2 = input.readFloat() * scale;
     switch (input.readByte()) {
       case CURVE_STEPPED:
         timeline.setStepped(frame);
@@ -21978,7 +22134,19 @@ function readTimeline2$1(input, timeline, scale) {
   return timeline;
 }
 function setBezier(input, timeline, bezier, frame, value, time1, time2, value1, value2, scale) {
-  timeline.setBezier(bezier, frame, value, time1, value1, input.readFloat(), input.readFloat() * scale, input.readFloat(), input.readFloat() * scale, time2, value2);
+  timeline.setBezier(
+    bezier,
+    frame,
+    value,
+    time1,
+    value1,
+    input.readFloat(),
+    input.readFloat() * scale,
+    input.readFloat(),
+    input.readFloat() * scale,
+    time2,
+    value2,
+  );
 }
 var BONE_ROTATE = 0;
 var BONE_TRANSLATE = 1;
@@ -22029,8 +22197,7 @@ var SkeletonBounds = /** @class */ (function () {
    * @param updateAabb If true, the axis aligned bounding box containing all the polygons is computed. If false, the
    *           SkeletonBounds AABB methods will always return true. */
   SkeletonBounds.prototype.update = function (skeleton, updateAabb) {
-    if (skeleton == null)
-      throw new Error("skeleton cannot be null.");
+    if (skeleton == null) throw new Error('skeleton cannot be null.');
     var boundingBoxes = this.boundingBoxes;
     var polygons = this.polygons;
     var polygonPool = this.polygonPool;
@@ -22041,8 +22208,7 @@ var SkeletonBounds = /** @class */ (function () {
     polygons.length = 0;
     for (var i = 0; i < slotCount; i++) {
       var slot = slots[i];
-      if (!slot.bone.active)
-        continue;
+      if (!slot.bone.active) continue;
       var attachment = slot.getAttachment();
       if (attachment instanceof BoundingBoxAttachment) {
         var boundingBox = attachment;
@@ -22057,8 +22223,7 @@ var SkeletonBounds = /** @class */ (function () {
     }
     if (updateAabb) {
       this.aabbCompute();
-    }
-    else {
+    } else {
       this.minX = Number.POSITIVE_INFINITY;
       this.minY = Number.POSITIVE_INFINITY;
       this.maxX = Number.NEGATIVE_INFINITY;
@@ -22066,7 +22231,10 @@ var SkeletonBounds = /** @class */ (function () {
     }
   };
   SkeletonBounds.prototype.aabbCompute = function () {
-    var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+    var minX = Number.POSITIVE_INFINITY,
+      minY = Number.POSITIVE_INFINITY,
+      maxX = Number.NEGATIVE_INFINITY,
+      maxY = Number.NEGATIVE_INFINITY;
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++) {
       var polygon = polygons[i];
@@ -22095,21 +22263,22 @@ var SkeletonBounds = /** @class */ (function () {
     var minY = this.minY;
     var maxX = this.maxX;
     var maxY = this.maxY;
-    if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) || (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY))
+    if (
+      (x1 <= minX && x2 <= minX) ||
+      (y1 <= minY && y2 <= minY) ||
+      (x1 >= maxX && x2 >= maxX) ||
+      (y1 >= maxY && y2 >= maxY)
+    )
       return false;
     var m = (y2 - y1) / (x2 - x1);
     var y = m * (minX - x1) + y1;
-    if (y > minY && y < maxY)
-      return true;
+    if (y > minY && y < maxY) return true;
     y = m * (maxX - x1) + y1;
-    if (y > minY && y < maxY)
-      return true;
+    if (y > minY && y < maxY) return true;
     var x = (minY - y1) / m + x1;
-    if (x > minX && x < maxX)
-      return true;
+    if (x > minX && x < maxX) return true;
     x = (maxY - y1) / m + x1;
-    if (x > minX && x < maxX)
-      return true;
+    if (x > minX && x < maxX) return true;
     return false;
   };
   /** Returns true if the axis aligned bounding box intersects the axis aligned bounding box of the specified bounds. */
@@ -22121,8 +22290,7 @@ var SkeletonBounds = /** @class */ (function () {
   SkeletonBounds.prototype.containsPoint = function (x, y) {
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++)
-      if (this.containsPointPolygon(polygons[i], x, y))
-        return this.boundingBoxes[i];
+      if (this.containsPointPolygon(polygons[i], x, y)) return this.boundingBoxes[i];
     return null;
   };
   /** Returns true if the polygon contains the point. */
@@ -22136,8 +22304,7 @@ var SkeletonBounds = /** @class */ (function () {
       var prevY = vertices[prevIndex + 1];
       if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
         var vertexX = vertices[ii];
-        if (vertexX + (y - vertexY) / (prevY - vertexY) * (vertices[prevIndex] - vertexX) < x)
-          inside = !inside;
+        if (vertexX + ((y - vertexY) / (prevY - vertexY)) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
       }
       prevIndex = ii;
     }
@@ -22149,21 +22316,24 @@ var SkeletonBounds = /** @class */ (function () {
   SkeletonBounds.prototype.intersectsSegment = function (x1, y1, x2, y2) {
     var polygons = this.polygons;
     for (var i = 0, n = polygons.length; i < n; i++)
-      if (this.intersectsSegmentPolygon(polygons[i], x1, y1, x2, y2))
-        return this.boundingBoxes[i];
+      if (this.intersectsSegmentPolygon(polygons[i], x1, y1, x2, y2)) return this.boundingBoxes[i];
     return null;
   };
   /** Returns true if the polygon contains any part of the line segment. */
   SkeletonBounds.prototype.intersectsSegmentPolygon = function (polygon, x1, y1, x2, y2) {
     var vertices = polygon;
     var nn = polygon.length;
-    var width12 = x1 - x2, height12 = y1 - y2;
+    var width12 = x1 - x2,
+      height12 = y1 - y2;
     var det1 = x1 * y2 - y1 * x2;
-    var x3 = vertices[nn - 2], y3 = vertices[nn - 1];
+    var x3 = vertices[nn - 2],
+      y3 = vertices[nn - 1];
     for (var ii = 0; ii < nn; ii += 2) {
-      var x4 = vertices[ii], y4 = vertices[ii + 1];
+      var x4 = vertices[ii],
+        y4 = vertices[ii + 1];
       var det2 = x3 * y4 - y3 * x4;
-      var width34 = x3 - x4, height34 = y3 - y4;
+      var width34 = x3 - x4,
+        height34 = y3 - y4;
       var det3 = width12 * height34 - height12 * width34;
       var x = (det1 * width34 - width12 * det2) / det3;
       if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
@@ -22178,8 +22348,7 @@ var SkeletonBounds = /** @class */ (function () {
   };
   /** Returns the polygon for the specified bounding box, or null. */
   SkeletonBounds.prototype.getPolygon = function (boundingBox) {
-    if (boundingBox == null)
-      throw new Error("boundingBox cannot be null.");
+    if (boundingBox == null) throw new Error('boundingBox cannot be null.');
     var index = this.boundingBoxes.indexOf(boundingBox);
     return index == -1 ? null : this.polygons[index];
   };
@@ -22192,7 +22361,7 @@ var SkeletonBounds = /** @class */ (function () {
     return this.maxY - this.minY;
   };
   return SkeletonBounds;
-}());
+})();
 
 /** Loads skeleton data in the Spine JSON format.
  *
@@ -22214,14 +22383,15 @@ var SkeletonJson = /** @class */ (function () {
   SkeletonJson.prototype.readSkeletonData = function (json) {
     var scale = this.scale;
     var skeletonData = new SkeletonData();
-    var root = typeof (json) === "string" ? JSON.parse(json) : json;
+    var root = typeof json === 'string' ? JSON.parse(json) : json;
     // Skeleton
     var skeletonMap = root.skeleton;
     if (skeletonMap) {
       skeletonData.hash = skeletonMap.hash;
       skeletonData.version = skeletonMap.spine;
       if (skeletonData.version.substr(0, 3) !== '4.0') {
-        var error = "Spine 4.0 loader cant load version " + skeletonMap.spine + ". Please configure your pixi-spine bundle";
+        var error =
+          'Spine 4.0 loader cant load version ' + skeletonMap.spine + '. Please configure your pixi-spine bundle';
         console.error(error);
       }
       skeletonData.x = skeletonMap.x;
@@ -22236,26 +22406,24 @@ var SkeletonJson = /** @class */ (function () {
       for (var i = 0; i < root.bones.length; i++) {
         var boneMap = root.bones[i];
         var parent_1 = null;
-        var parentName = getValue(boneMap, "parent", null);
+        var parentName = getValue(boneMap, 'parent', null);
         if (parentName != null) {
           parent_1 = skeletonData.findBone(parentName);
-          if (parent_1 == null)
-            throw new Error("Parent bone not found: " + parentName);
+          if (parent_1 == null) throw new Error('Parent bone not found: ' + parentName);
         }
         var data = new BoneData(skeletonData.bones.length, boneMap.name, parent_1);
-        data.length = getValue(boneMap, "length", 0) * scale;
-        data.x = getValue(boneMap, "x", 0) * scale;
-        data.y = getValue(boneMap, "y", 0) * scale;
-        data.rotation = getValue(boneMap, "rotation", 0);
-        data.scaleX = getValue(boneMap, "scaleX", 1);
-        data.scaleY = getValue(boneMap, "scaleY", 1);
-        data.shearX = getValue(boneMap, "shearX", 0);
-        data.shearY = getValue(boneMap, "shearY", 0);
-        data.transformMode = Utils.enumValue(exports.TransformMode, getValue(boneMap, "transform", "Normal"));
-        data.skinRequired = getValue(boneMap, "skin", false);
-        var color = getValue(boneMap, "color", null);
-        if (color)
-          data.color.setFromString(color);
+        data.length = getValue(boneMap, 'length', 0) * scale;
+        data.x = getValue(boneMap, 'x', 0) * scale;
+        data.y = getValue(boneMap, 'y', 0) * scale;
+        data.rotation = getValue(boneMap, 'rotation', 0);
+        data.scaleX = getValue(boneMap, 'scaleX', 1);
+        data.scaleY = getValue(boneMap, 'scaleY', 1);
+        data.shearX = getValue(boneMap, 'shearX', 0);
+        data.shearY = getValue(boneMap, 'shearY', 0);
+        data.transformMode = Utils.enumValue(exports.TransformMode, getValue(boneMap, 'transform', 'Normal'));
+        data.skinRequired = getValue(boneMap, 'skin', false);
+        var color = getValue(boneMap, 'color', null);
+        if (color) data.color.setFromString(color);
         skeletonData.bones.push(data);
       }
     }
@@ -22266,17 +22434,14 @@ var SkeletonJson = /** @class */ (function () {
         var slotName = slotMap.name;
         var boneName = slotMap.bone;
         var boneData = skeletonData.findBone(boneName);
-        if (boneData == null)
-          throw new Error("Slot bone not found: " + boneName);
+        if (boneData == null) throw new Error('Slot bone not found: ' + boneName);
         var data = new SlotData(skeletonData.slots.length, slotName, boneData);
-        var color = getValue(slotMap, "color", null);
-        if (color)
-          data.color.setFromString(color);
-        var dark = getValue(slotMap, "dark", null);
-        if (dark)
-          data.darkColor = Color.fromString(dark);
-        data.attachmentName = getValue(slotMap, "attachment", null);
-        data.blendMode = SkeletonJson.blendModeFromString(getValue(slotMap, "blend", "normal"));
+        var color = getValue(slotMap, 'color', null);
+        if (color) data.color.setFromString(color);
+        var dark = getValue(slotMap, 'dark', null);
+        if (dark) data.darkColor = Color.fromString(dark);
+        data.attachmentName = getValue(slotMap, 'attachment', null);
+        data.blendMode = SkeletonJson.blendModeFromString(getValue(slotMap, 'blend', 'normal'));
         skeletonData.slots.push(data);
       }
     }
@@ -22285,22 +22450,21 @@ var SkeletonJson = /** @class */ (function () {
       for (var i = 0; i < root.ik.length; i++) {
         var constraintMap = root.ik[i];
         var data = new IkConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, "order", 0);
-        data.skinRequired = getValue(constraintMap, "skin", false);
+        data.order = getValue(constraintMap, 'order', 0);
+        data.skinRequired = getValue(constraintMap, 'skin', false);
         for (var ii = 0; ii < constraintMap.bones.length; ii++) {
           var boneName = constraintMap.bones[ii];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("IK bone not found: " + boneName);
+          if (bone == null) throw new Error('IK bone not found: ' + boneName);
           data.bones.push(bone);
         }
         data.target = skeletonData.findBone(constraintMap.target);
-        data.mix = getValue(constraintMap, "mix", 1);
-        data.softness = getValue(constraintMap, "softness", 0) * scale;
-        data.bendDirection = getValue(constraintMap, "bendPositive", true) ? 1 : -1;
-        data.compress = getValue(constraintMap, "compress", false);
-        data.stretch = getValue(constraintMap, "stretch", false);
-        data.uniform = getValue(constraintMap, "uniform", false);
+        data.mix = getValue(constraintMap, 'mix', 1);
+        data.softness = getValue(constraintMap, 'softness', 0) * scale;
+        data.bendDirection = getValue(constraintMap, 'bendPositive', true) ? 1 : -1;
+        data.compress = getValue(constraintMap, 'compress', false);
+        data.stretch = getValue(constraintMap, 'stretch', false);
+        data.uniform = getValue(constraintMap, 'uniform', false);
         skeletonData.ikConstraints.push(data);
       }
     }
@@ -22309,33 +22473,31 @@ var SkeletonJson = /** @class */ (function () {
       for (var i = 0; i < root.transform.length; i++) {
         var constraintMap = root.transform[i];
         var data = new TransformConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, "order", 0);
-        data.skinRequired = getValue(constraintMap, "skin", false);
+        data.order = getValue(constraintMap, 'order', 0);
+        data.skinRequired = getValue(constraintMap, 'skin', false);
         for (var ii = 0; ii < constraintMap.bones.length; ii++) {
           var boneName = constraintMap.bones[ii];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("Transform constraint bone not found: " + boneName);
+          if (bone == null) throw new Error('Transform constraint bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findBone(targetName);
-        if (data.target == null)
-          throw new Error("Transform constraint target bone not found: " + targetName);
-        data.local = getValue(constraintMap, "local", false);
-        data.relative = getValue(constraintMap, "relative", false);
-        data.offsetRotation = getValue(constraintMap, "rotation", 0);
-        data.offsetX = getValue(constraintMap, "x", 0) * scale;
-        data.offsetY = getValue(constraintMap, "y", 0) * scale;
-        data.offsetScaleX = getValue(constraintMap, "scaleX", 0);
-        data.offsetScaleY = getValue(constraintMap, "scaleY", 0);
-        data.offsetShearY = getValue(constraintMap, "shearY", 0);
-        data.mixRotate = getValue(constraintMap, "mixRotate", 1);
-        data.mixX = getValue(constraintMap, "mixX", 1);
-        data.mixY = getValue(constraintMap, "mixY", data.mixX);
-        data.mixScaleX = getValue(constraintMap, "mixScaleX", 1);
-        data.mixScaleY = getValue(constraintMap, "mixScaleY", data.mixScaleX);
-        data.mixShearY = getValue(constraintMap, "mixShearY", 1);
+        if (data.target == null) throw new Error('Transform constraint target bone not found: ' + targetName);
+        data.local = getValue(constraintMap, 'local', false);
+        data.relative = getValue(constraintMap, 'relative', false);
+        data.offsetRotation = getValue(constraintMap, 'rotation', 0);
+        data.offsetX = getValue(constraintMap, 'x', 0) * scale;
+        data.offsetY = getValue(constraintMap, 'y', 0) * scale;
+        data.offsetScaleX = getValue(constraintMap, 'scaleX', 0);
+        data.offsetScaleY = getValue(constraintMap, 'scaleY', 0);
+        data.offsetShearY = getValue(constraintMap, 'shearY', 0);
+        data.mixRotate = getValue(constraintMap, 'mixRotate', 1);
+        data.mixX = getValue(constraintMap, 'mixX', 1);
+        data.mixY = getValue(constraintMap, 'mixY', data.mixX);
+        data.mixScaleX = getValue(constraintMap, 'mixScaleX', 1);
+        data.mixScaleY = getValue(constraintMap, 'mixScaleY', data.mixScaleX);
+        data.mixShearY = getValue(constraintMap, 'mixShearY', 1);
         skeletonData.transformConstraints.push(data);
       }
     }
@@ -22344,32 +22506,28 @@ var SkeletonJson = /** @class */ (function () {
       for (var i = 0; i < root.path.length; i++) {
         var constraintMap = root.path[i];
         var data = new PathConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, "order", 0);
-        data.skinRequired = getValue(constraintMap, "skin", false);
+        data.order = getValue(constraintMap, 'order', 0);
+        data.skinRequired = getValue(constraintMap, 'skin', false);
         for (var ii = 0; ii < constraintMap.bones.length; ii++) {
           var boneName = constraintMap.bones[ii];
           var bone = skeletonData.findBone(boneName);
-          if (bone == null)
-            throw new Error("Transform constraint bone not found: " + boneName);
+          if (bone == null) throw new Error('Transform constraint bone not found: ' + boneName);
           data.bones.push(bone);
         }
         var targetName = constraintMap.target;
         data.target = skeletonData.findSlot(targetName);
-        if (data.target == null)
-          throw new Error("Path target slot not found: " + targetName);
-        data.positionMode = Utils.enumValue(exports.PositionMode, getValue(constraintMap, "positionMode", "Percent"));
-        data.spacingMode = Utils.enumValue(SpacingMode, getValue(constraintMap, "spacingMode", "Length"));
-        data.rotateMode = Utils.enumValue(exports.RotateMode, getValue(constraintMap, "rotateMode", "Tangent"));
-        data.offsetRotation = getValue(constraintMap, "rotation", 0);
-        data.position = getValue(constraintMap, "position", 0);
-        if (data.positionMode == exports.PositionMode.Fixed)
-          data.position *= scale;
-        data.spacing = getValue(constraintMap, "spacing", 0);
-        if (data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed)
-          data.spacing *= scale;
-        data.mixRotate = getValue(constraintMap, "mixRotate", 1);
-        data.mixX = getValue(constraintMap, "mixX", 1);
-        data.mixY = getValue(constraintMap, "mixY", data.mixX);
+        if (data.target == null) throw new Error('Path target slot not found: ' + targetName);
+        data.positionMode = Utils.enumValue(exports.PositionMode, getValue(constraintMap, 'positionMode', 'Percent'));
+        data.spacingMode = Utils.enumValue(SpacingMode, getValue(constraintMap, 'spacingMode', 'Length'));
+        data.rotateMode = Utils.enumValue(exports.RotateMode, getValue(constraintMap, 'rotateMode', 'Tangent'));
+        data.offsetRotation = getValue(constraintMap, 'rotation', 0);
+        data.position = getValue(constraintMap, 'position', 0);
+        if (data.positionMode == exports.PositionMode.Fixed) data.position *= scale;
+        data.spacing = getValue(constraintMap, 'spacing', 0);
+        if (data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed) data.spacing *= scale;
+        data.mixRotate = getValue(constraintMap, 'mixRotate', 1);
+        data.mixX = getValue(constraintMap, 'mixX', 1);
+        data.mixY = getValue(constraintMap, 'mixY', data.mixX);
         skeletonData.pathConstraints.push(data);
       }
     }
@@ -22381,49 +22539,42 @@ var SkeletonJson = /** @class */ (function () {
         if (skinMap.bones) {
           for (var ii = 0; ii < skinMap.bones.length; ii++) {
             var bone = skeletonData.findBone(skinMap.bones[ii]);
-            if (bone == null)
-              throw new Error("Skin bone not found: " + skinMap.bones[i]);
+            if (bone == null) throw new Error('Skin bone not found: ' + skinMap.bones[i]);
             skin.bones.push(bone);
           }
         }
         if (skinMap.ik) {
           for (var ii = 0; ii < skinMap.ik.length; ii++) {
             var constraint = skeletonData.findIkConstraint(skinMap.ik[ii]);
-            if (constraint == null)
-              throw new Error("Skin IK constraint not found: " + skinMap.ik[i]);
+            if (constraint == null) throw new Error('Skin IK constraint not found: ' + skinMap.ik[i]);
             skin.constraints.push(constraint);
           }
         }
         if (skinMap.transform) {
           for (var ii = 0; ii < skinMap.transform.length; ii++) {
             var constraint = skeletonData.findTransformConstraint(skinMap.transform[ii]);
-            if (constraint == null)
-              throw new Error("Skin transform constraint not found: " + skinMap.transform[i]);
+            if (constraint == null) throw new Error('Skin transform constraint not found: ' + skinMap.transform[i]);
             skin.constraints.push(constraint);
           }
         }
         if (skinMap.path) {
           for (var ii = 0; ii < skinMap.path.length; ii++) {
             var constraint = skeletonData.findPathConstraint(skinMap.path[ii]);
-            if (constraint == null)
-              throw new Error("Skin path constraint not found: " + skinMap.path[i]);
+            if (constraint == null) throw new Error('Skin path constraint not found: ' + skinMap.path[i]);
             skin.constraints.push(constraint);
           }
         }
         for (var slotName in skinMap.attachments) {
           var slot = skeletonData.findSlot(slotName);
-          if (slot == null)
-            throw new Error("Slot not found: " + slotName);
+          if (slot == null) throw new Error('Slot not found: ' + slotName);
           var slotMap = skinMap.attachments[slotName];
           for (var entryName in slotMap) {
             var attachment = this.readAttachment(slotMap[entryName], skin, slot.index, entryName, skeletonData);
-            if (attachment)
-              skin.setAttachment(slot.index, entryName, attachment);
+            if (attachment) skin.setAttachment(slot.index, entryName, attachment);
           }
         }
         skeletonData.skins.push(skin);
-        if (skin.name == "default")
-          skeletonData.defaultSkin = skin;
+        if (skin.name == 'default') skeletonData.defaultSkin = skin;
       }
     }
     // Linked meshes.
@@ -22441,13 +22592,13 @@ var SkeletonJson = /** @class */ (function () {
       for (var eventName in root.events) {
         var eventMap = root.events[eventName];
         var data = new EventData(eventName);
-        data.intValue = getValue(eventMap, "int", 0);
-        data.floatValue = getValue(eventMap, "float", 0);
-        data.stringValue = getValue(eventMap, "string", "");
-        data.audioPath = getValue(eventMap, "audio", null);
+        data.intValue = getValue(eventMap, 'int', 0);
+        data.floatValue = getValue(eventMap, 'float', 0);
+        data.stringValue = getValue(eventMap, 'string', '');
+        data.audioPath = getValue(eventMap, 'audio', null);
         if (data.audioPath) {
-          data.volume = getValue(eventMap, "volume", 1);
-          data.balance = getValue(eventMap, "balance", 0);
+          data.volume = getValue(eventMap, 'volume', 1);
+          data.balance = getValue(eventMap, 'balance', 0);
         }
         skeletonData.events.push(data);
       }
@@ -22463,52 +22614,48 @@ var SkeletonJson = /** @class */ (function () {
   };
   SkeletonJson.prototype.readAttachment = function (map, skin, slotIndex, name, skeletonData) {
     var scale = this.scale;
-    name = getValue(map, "name", name);
-    switch (getValue(map, "type", "region")) {
-      case "region": {
-        var path = getValue(map, "path", name);
+    name = getValue(map, 'name', name);
+    switch (getValue(map, 'type', 'region')) {
+      case 'region': {
+        var path = getValue(map, 'path', name);
         var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
-        if (!region)
-          return null;
+        if (!region) return null;
         region.path = path;
-        region.x = getValue(map, "x", 0) * scale;
-        region.y = getValue(map, "y", 0) * scale;
-        region.scaleX = getValue(map, "scaleX", 1);
-        region.scaleY = getValue(map, "scaleY", 1);
-        region.rotation = getValue(map, "rotation", 0);
+        region.x = getValue(map, 'x', 0) * scale;
+        region.y = getValue(map, 'y', 0) * scale;
+        region.scaleX = getValue(map, 'scaleX', 1);
+        region.scaleY = getValue(map, 'scaleY', 1);
+        region.rotation = getValue(map, 'rotation', 0);
         region.width = map.width * scale;
         region.height = map.height * scale;
-        var color = getValue(map, "color", null);
-        if (color)
-          region.color.setFromString(color);
+        var color = getValue(map, 'color', null);
+        if (color) region.color.setFromString(color);
         // region.updateOffset();
         return region;
       }
-      case "boundingbox": {
+      case 'boundingbox': {
         var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
-        if (!box)
-          return null;
+        if (!box) return null;
         this.readVertices(map, box, map.vertexCount << 1);
-        var color = getValue(map, "color", null);
-        if (color)
-          box.color.setFromString(color);
+        var color = getValue(map, 'color', null);
+        if (color) box.color.setFromString(color);
         return box;
       }
-      case "mesh":
-      case "linkedmesh": {
-        var path = getValue(map, "path", name);
+      case 'mesh':
+      case 'linkedmesh': {
+        var path = getValue(map, 'path', name);
         var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-        if (!mesh)
-          return null;
+        if (!mesh) return null;
         mesh.path = path;
-        var color = getValue(map, "color", null);
-        if (color)
-          mesh.color.setFromString(color);
-        mesh.width = getValue(map, "width", 0) * scale;
-        mesh.height = getValue(map, "height", 0) * scale;
-        var parent_3 = getValue(map, "parent", null);
+        var color = getValue(map, 'color', null);
+        if (color) mesh.color.setFromString(color);
+        mesh.width = getValue(map, 'width', 0) * scale;
+        mesh.height = getValue(map, 'height', 0) * scale;
+        var parent_3 = getValue(map, 'parent', null);
         if (parent_3) {
-          this.linkedMeshes.push(new LinkedMesh(mesh, getValue(map, "skin", null), slotIndex, parent_3, getValue(map, "deform", true)));
+          this.linkedMeshes.push(
+            new LinkedMesh(mesh, getValue(map, 'skin', null), slotIndex, parent_3, getValue(map, 'deform', true)),
+          );
           return mesh;
         }
         var uvs = map.uvs;
@@ -22516,55 +22663,47 @@ var SkeletonJson = /** @class */ (function () {
         mesh.triangles = map.triangles;
         mesh.regionUVs = new Float32Array(uvs);
         // mesh.updateUVs();
-        mesh.edges = getValue(map, "edges", null);
-        mesh.hullLength = getValue(map, "hull", 0) * 2;
+        mesh.edges = getValue(map, 'edges', null);
+        mesh.hullLength = getValue(map, 'hull', 0) * 2;
         return mesh;
       }
-      case "path": {
+      case 'path': {
         var path = this.attachmentLoader.newPathAttachment(skin, name);
-        if (!path)
-          return null;
-        path.closed = getValue(map, "closed", false);
-        path.constantSpeed = getValue(map, "constantSpeed", true);
+        if (!path) return null;
+        path.closed = getValue(map, 'closed', false);
+        path.constantSpeed = getValue(map, 'constantSpeed', true);
         var vertexCount = map.vertexCount;
         this.readVertices(map, path, vertexCount << 1);
         var lengths = Utils.newArray(vertexCount / 3, 0);
-        for (var i = 0; i < map.lengths.length; i++)
-          lengths[i] = map.lengths[i] * scale;
+        for (var i = 0; i < map.lengths.length; i++) lengths[i] = map.lengths[i] * scale;
         path.lengths = lengths;
-        var color = getValue(map, "color", null);
-        if (color)
-          path.color.setFromString(color);
+        var color = getValue(map, 'color', null);
+        if (color) path.color.setFromString(color);
         return path;
       }
-      case "point": {
+      case 'point': {
         var point = this.attachmentLoader.newPointAttachment(skin, name);
-        if (!point)
-          return null;
-        point.x = getValue(map, "x", 0) * scale;
-        point.y = getValue(map, "y", 0) * scale;
-        point.rotation = getValue(map, "rotation", 0);
-        var color = getValue(map, "color", null);
-        if (color)
-          point.color.setFromString(color);
+        if (!point) return null;
+        point.x = getValue(map, 'x', 0) * scale;
+        point.y = getValue(map, 'y', 0) * scale;
+        point.rotation = getValue(map, 'rotation', 0);
+        var color = getValue(map, 'color', null);
+        if (color) point.color.setFromString(color);
         return point;
       }
-      case "clipping": {
+      case 'clipping': {
         var clip = this.attachmentLoader.newClippingAttachment(skin, name);
-        if (!clip)
-          return null;
-        var end = getValue(map, "end", null);
+        if (!clip) return null;
+        var end = getValue(map, 'end', null);
         if (end != null) {
           var slot = skeletonData.findSlot(end);
-          if (slot == null)
-            throw new Error("Clipping end slot not found: " + end);
+          if (slot == null) throw new Error('Clipping end slot not found: ' + end);
           clip.endSlot = slot;
         }
         var vertexCount = map.vertexCount;
         this.readVertices(map, clip, vertexCount << 1);
-        var color = getValue(map, "color", null);
-        if (color)
-          clip.color.setFromString(color);
+        var color = getValue(map, 'color', null);
+        if (color) clip.color.setFromString(color);
         return clip;
       }
     }
@@ -22577,15 +22716,14 @@ var SkeletonJson = /** @class */ (function () {
     if (verticesLength == vertices.length) {
       var scaledVertices = Utils.toFloatArray(vertices);
       if (scale != 1) {
-        for (var i = 0, n = vertices.length; i < n; i++)
-          scaledVertices[i] *= scale;
+        for (var i = 0, n = vertices.length; i < n; i++) scaledVertices[i] *= scale;
       }
       attachment.vertices = scaledVertices;
       return;
     }
     var weights = new Array();
     var bones = new Array();
-    for (var i = 0, n = vertices.length; i < n;) {
+    for (var i = 0, n = vertices.length; i < n; ) {
       var boneCount = vertices[i++];
       bones.push(boneCount);
       for (var nn = i + boneCount * 4; i < nn; i += 4) {
@@ -22606,24 +22744,21 @@ var SkeletonJson = /** @class */ (function () {
       for (var slotName in map.slots) {
         var slotMap = map.slots[slotName];
         var slotIndex = skeletonData.findSlotIndex(slotName);
-        if (slotIndex == -1)
-          throw new Error("Slot not found: " + slotName);
+        if (slotIndex == -1) throw new Error('Slot not found: ' + slotName);
         for (var timelineName in slotMap) {
           var timelineMap = slotMap[timelineName];
-          if (!timelineMap)
-            continue;
-          if (timelineName == "attachment") {
+          if (!timelineMap) continue;
+          if (timelineName == 'attachment') {
             var timeline = new AttachmentTimeline(timelineMap.length, slotIndex);
             for (var frame = 0; frame < timelineMap.length; frame++) {
               var keyMap = timelineMap[frame];
-              timeline.setFrame(frame, getValue(keyMap, "time", 0), keyMap.name);
+              timeline.setFrame(frame, getValue(keyMap, 'time', 0), keyMap.name);
             }
             timelines.push(timeline);
-          }
-          else if (timelineName == "rgba") {
+          } else if (timelineName == 'rgba') {
             var timeline = new RGBATimeline(timelineMap.length, timelineMap.length << 2, slotIndex);
             var keyMap = timelineMap[0];
-            var time = getValue(keyMap, "time", 0);
+            var time = getValue(keyMap, 'time', 0);
             var color = Color.fromString(keyMap.color);
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, color.r, color.g, color.b, color.a);
@@ -22632,7 +22767,7 @@ var SkeletonJson = /** @class */ (function () {
                 timeline.shrink(bezier);
                 break;
               }
-              var time2 = getValue(nextMap, "time", 0);
+              var time2 = getValue(nextMap, 'time', 0);
               var newColor = Color.fromString(nextMap.color);
               var curve = keyMap.curve;
               if (curve) {
@@ -22646,11 +22781,10 @@ var SkeletonJson = /** @class */ (function () {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          }
-          else if (timelineName == "rgb") {
+          } else if (timelineName == 'rgb') {
             var timeline = new RGBTimeline(timelineMap.length, timelineMap.length * 3, slotIndex);
             var keyMap = timelineMap[0];
-            var time = getValue(keyMap, "time", 0);
+            var time = getValue(keyMap, 'time', 0);
             var color = Color.fromString(keyMap.color);
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, color.r, color.g, color.b);
@@ -22659,7 +22793,7 @@ var SkeletonJson = /** @class */ (function () {
                 timeline.shrink(bezier);
                 break;
               }
-              var time2 = getValue(nextMap, "time", 0);
+              var time2 = getValue(nextMap, 'time', 0);
               var newColor = Color.fromString(nextMap.color);
               var curve = keyMap.curve;
               if (curve) {
@@ -22672,14 +22806,14 @@ var SkeletonJson = /** @class */ (function () {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          }
-          else if (timelineName == "alpha") {
-            timelines.push(readTimeline1(timelineMap, new AlphaTimeline(timelineMap.length, timelineMap.length, slotIndex), 0, 1));
-          }
-          else if (timelineName == "rgba2") {
+          } else if (timelineName == 'alpha') {
+            timelines.push(
+              readTimeline1(timelineMap, new AlphaTimeline(timelineMap.length, timelineMap.length, slotIndex), 0, 1),
+            );
+          } else if (timelineName == 'rgba2') {
             var timeline = new RGBA2Timeline(timelineMap.length, timelineMap.length * 7, slotIndex);
             var keyMap = timelineMap[0];
-            var time = getValue(keyMap, "time", 0);
+            var time = getValue(keyMap, 'time', 0);
             var color = Color.fromString(keyMap.light);
             var color2 = Color.fromString(keyMap.dark);
             for (var frame = 0, bezier = 0; ; frame++) {
@@ -22689,7 +22823,7 @@ var SkeletonJson = /** @class */ (function () {
                 timeline.shrink(bezier);
                 break;
               }
-              var time2 = getValue(nextMap, "time", 0);
+              var time2 = getValue(nextMap, 'time', 0);
               var newColor = Color.fromString(nextMap.light);
               var newColor2 = Color.fromString(nextMap.dark);
               var curve = keyMap.curve;
@@ -22708,11 +22842,10 @@ var SkeletonJson = /** @class */ (function () {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          }
-          else if (timelineName == "rgb2") {
+          } else if (timelineName == 'rgb2') {
             var timeline = new RGB2Timeline(timelineMap.length, timelineMap.length * 6, slotIndex);
             var keyMap = timelineMap[0];
-            var time = getValue(keyMap, "time", 0);
+            var time = getValue(keyMap, 'time', 0);
             var color = Color.fromString(keyMap.light);
             var color2 = Color.fromString(keyMap.dark);
             for (var frame = 0, bezier = 0; ; frame++) {
@@ -22722,7 +22855,7 @@ var SkeletonJson = /** @class */ (function () {
                 timeline.shrink(bezier);
                 break;
               }
-              var time2 = getValue(nextMap, "time", 0);
+              var time2 = getValue(nextMap, 'time', 0);
               var newColor = Color.fromString(nextMap.light);
               var newColor2 = Color.fromString(nextMap.dark);
               var curve = keyMap.curve;
@@ -22740,9 +22873,7 @@ var SkeletonJson = /** @class */ (function () {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          }
-          else
-            throw new Error("Invalid timeline type for a slot: " + timelineName + " (" + slotName + ")");
+          } else throw new Error('Invalid timeline type for a slot: ' + timelineName + ' (' + slotName + ')');
         }
       }
     }
@@ -22751,48 +22882,39 @@ var SkeletonJson = /** @class */ (function () {
       for (var boneName in map.bones) {
         var boneMap = map.bones[boneName];
         var boneIndex = skeletonData.findBoneIndex(boneName);
-        if (boneIndex == -1)
-          throw new Error("Bone not found: " + boneName);
+        if (boneIndex == -1) throw new Error('Bone not found: ' + boneName);
         for (var timelineName in boneMap) {
           var timelineMap = boneMap[timelineName];
-          if (timelineMap.length == 0)
-            continue;
-          if (timelineName === "rotate") {
-            timelines.push(readTimeline1(timelineMap, new RotateTimeline(timelineMap.length, timelineMap.length, boneIndex), 0, 1));
-          }
-          else if (timelineName === "translate") {
+          if (timelineMap.length == 0) continue;
+          if (timelineName === 'rotate') {
+            timelines.push(
+              readTimeline1(timelineMap, new RotateTimeline(timelineMap.length, timelineMap.length, boneIndex), 0, 1),
+            );
+          } else if (timelineName === 'translate') {
             var timeline = new TranslateTimeline(timelineMap.length, timelineMap.length << 1, boneIndex);
-            timelines.push(readTimeline2(timelineMap, timeline, "x", "y", 0, scale));
-          }
-          else if (timelineName === "translatex") {
+            timelines.push(readTimeline2(timelineMap, timeline, 'x', 'y', 0, scale));
+          } else if (timelineName === 'translatex') {
             var timeline = new TranslateXTimeline(timelineMap.length, timelineMap.length, boneIndex);
             timelines.push(readTimeline1(timelineMap, timeline, 0, scale));
-          }
-          else if (timelineName === "translatey") {
+          } else if (timelineName === 'translatey') {
             var timeline = new TranslateYTimeline(timelineMap.length, timelineMap.length, boneIndex);
             timelines.push(readTimeline1(timelineMap, timeline, 0, scale));
-          }
-          else if (timelineName === "scale") {
+          } else if (timelineName === 'scale') {
             var timeline = new ScaleTimeline(timelineMap.length, timelineMap.length << 1, boneIndex);
-            timelines.push(readTimeline2(timelineMap, timeline, "x", "y", 1, 1));
-          }
-          else if (timelineName === "scalex") {
+            timelines.push(readTimeline2(timelineMap, timeline, 'x', 'y', 1, 1));
+          } else if (timelineName === 'scalex') {
             var timeline = new ScaleXTimeline(timelineMap.length, timelineMap.length, boneIndex);
             timelines.push(readTimeline1(timelineMap, timeline, 1, 1));
-          }
-          else if (timelineName === "scaley") {
+          } else if (timelineName === 'scaley') {
             var timeline = new ScaleYTimeline(timelineMap.length, timelineMap.length, boneIndex);
             timelines.push(readTimeline1(timelineMap, timeline, 1, 1));
-          }
-          else if (timelineName === "shear") {
+          } else if (timelineName === 'shear') {
             var timeline = new ShearTimeline(timelineMap.length, timelineMap.length << 1, boneIndex);
-            timelines.push(readTimeline2(timelineMap, timeline, "x", "y", 0, 1));
-          }
-          else if (timelineName === "shearx") {
+            timelines.push(readTimeline2(timelineMap, timeline, 'x', 'y', 0, 1));
+          } else if (timelineName === 'shearx') {
             var timeline = new ShearXTimeline(timelineMap.length, timelineMap.length, boneIndex);
             timelines.push(readTimeline1(timelineMap, timeline, 0, 1));
-          }
-          else if (timelineName === "sheary") {
+          } else if (timelineName === 'sheary') {
             var timeline = new ShearYTimeline(timelineMap.length, timelineMap.length, boneIndex);
             timelines.push(readTimeline1(timelineMap, timeline, 0, 1));
           }
@@ -22804,24 +22926,31 @@ var SkeletonJson = /** @class */ (function () {
       for (var constraintName in map.ik) {
         var constraintMap = map.ik[constraintName];
         var keyMap = constraintMap[0];
-        if (!keyMap)
-          continue;
+        if (!keyMap) continue;
         var constraint = skeletonData.findIkConstraint(constraintName);
         var constraintIndex = skeletonData.ikConstraints.indexOf(constraint);
         var timeline = new IkConstraintTimeline(constraintMap.length, constraintMap.length << 1, constraintIndex);
-        var time = getValue(keyMap, "time", 0);
-        var mix = getValue(keyMap, "mix", 1);
-        var softness = getValue(keyMap, "softness", 0) * scale;
+        var time = getValue(keyMap, 'time', 0);
+        var mix = getValue(keyMap, 'mix', 1);
+        var softness = getValue(keyMap, 'softness', 0) * scale;
         for (var frame = 0, bezier = 0; ; frame++) {
-          timeline.setFrame(frame, time, mix, softness, getValue(keyMap, "bendPositive", true) ? 1 : -1, getValue(keyMap, "compress", false), getValue(keyMap, "stretch", false));
+          timeline.setFrame(
+            frame,
+            time,
+            mix,
+            softness,
+            getValue(keyMap, 'bendPositive', true) ? 1 : -1,
+            getValue(keyMap, 'compress', false),
+            getValue(keyMap, 'stretch', false),
+          );
           var nextMap = constraintMap[frame + 1];
           if (!nextMap) {
             timeline.shrink(bezier);
             break;
           }
-          var time2 = getValue(nextMap, "time", 0);
-          var mix2 = getValue(nextMap, "mix", 1);
-          var softness2 = getValue(nextMap, "softness", 0) * scale;
+          var time2 = getValue(nextMap, 'time', 0);
+          var mix2 = getValue(nextMap, 'mix', 1);
+          var softness2 = getValue(nextMap, 'softness', 0) * scale;
           var curve = keyMap.curve;
           if (curve) {
             bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, mix, mix2, 1);
@@ -22840,18 +22969,17 @@ var SkeletonJson = /** @class */ (function () {
       for (var constraintName in map.transform) {
         var timelineMap = map.transform[constraintName];
         var keyMap = timelineMap[0];
-        if (!keyMap)
-          continue;
+        if (!keyMap) continue;
         var constraint = skeletonData.findTransformConstraint(constraintName);
         var constraintIndex = skeletonData.transformConstraints.indexOf(constraint);
         var timeline = new TransformConstraintTimeline(timelineMap.length, timelineMap.length << 2, constraintIndex);
-        var time = getValue(keyMap, "time", 0);
-        var mixRotate = getValue(keyMap, "mixRotate", 1);
-        var mixX = getValue(keyMap, "mixX", 1);
-        var mixY = getValue(keyMap, "mixY", mixX);
-        var mixScaleX = getValue(keyMap, "mixScaleX", 1);
-        var mixScaleY = getValue(keyMap, "mixScaleY", mixScaleX);
-        var mixShearY = getValue(keyMap, "mixShearY", 1);
+        var time = getValue(keyMap, 'time', 0);
+        var mixRotate = getValue(keyMap, 'mixRotate', 1);
+        var mixX = getValue(keyMap, 'mixX', 1);
+        var mixY = getValue(keyMap, 'mixY', mixX);
+        var mixScaleX = getValue(keyMap, 'mixScaleX', 1);
+        var mixScaleY = getValue(keyMap, 'mixScaleY', mixScaleX);
+        var mixShearY = getValue(keyMap, 'mixShearY', 1);
         for (var frame = 0, bezier = 0; ; frame++) {
           timeline.setFrame(frame, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
           var nextMap = timelineMap[frame + 1];
@@ -22859,13 +22987,13 @@ var SkeletonJson = /** @class */ (function () {
             timeline.shrink(bezier);
             break;
           }
-          var time2 = getValue(nextMap, "time", 0);
-          var mixRotate2 = getValue(nextMap, "mixRotate", 1);
-          var mixX2 = getValue(nextMap, "mixX", 1);
-          var mixY2 = getValue(nextMap, "mixY", mixX2);
-          var mixScaleX2 = getValue(nextMap, "mixScaleX", 1);
-          var mixScaleY2 = getValue(nextMap, "mixScaleY", mixScaleX2);
-          var mixShearY2 = getValue(nextMap, "mixShearY", 1);
+          var time2 = getValue(nextMap, 'time', 0);
+          var mixRotate2 = getValue(nextMap, 'mixRotate', 1);
+          var mixX2 = getValue(nextMap, 'mixX', 1);
+          var mixY2 = getValue(nextMap, 'mixY', mixX2);
+          var mixScaleX2 = getValue(nextMap, 'mixScaleX', 1);
+          var mixScaleY2 = getValue(nextMap, 'mixScaleY', mixScaleX2);
+          var mixShearY2 = getValue(nextMap, 'mixShearY', 1);
           var curve = keyMap.curve;
           if (curve) {
             bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, mixRotate, mixRotate2, 1);
@@ -22892,28 +23020,38 @@ var SkeletonJson = /** @class */ (function () {
       for (var constraintName in map.path) {
         var constraintMap = map.path[constraintName];
         var constraintIndex = skeletonData.findPathConstraintIndex(constraintName);
-        if (constraintIndex == -1)
-          throw new Error("Path constraint not found: " + constraintName);
+        if (constraintIndex == -1) throw new Error('Path constraint not found: ' + constraintName);
         var constraint = skeletonData.pathConstraints[constraintIndex];
         for (var timelineName in constraintMap) {
           var timelineMap = constraintMap[timelineName];
           var keyMap = timelineMap[0];
-          if (!keyMap)
-            continue;
-          if (timelineName === "position") {
+          if (!keyMap) continue;
+          if (timelineName === 'position') {
             var timeline = new PathConstraintPositionTimeline(timelineMap.length, timelineMap.length, constraintIndex);
-            timelines.push(readTimeline1(timelineMap, timeline, 0, constraint.positionMode == exports.PositionMode.Fixed ? scale : 1));
-          }
-          else if (timelineName === "spacing") {
+            timelines.push(
+              readTimeline1(
+                timelineMap,
+                timeline,
+                0,
+                constraint.positionMode == exports.PositionMode.Fixed ? scale : 1,
+              ),
+            );
+          } else if (timelineName === 'spacing') {
             var timeline = new PathConstraintSpacingTimeline(timelineMap.length, timelineMap.length, constraintIndex);
-            timelines.push(readTimeline1(timelineMap, timeline, 0, constraint.spacingMode == SpacingMode.Length || constraint.spacingMode == SpacingMode.Fixed ? scale : 1));
-          }
-          else if (timelineName === "mix") {
+            timelines.push(
+              readTimeline1(
+                timelineMap,
+                timeline,
+                0,
+                constraint.spacingMode == SpacingMode.Length || constraint.spacingMode == SpacingMode.Fixed ? scale : 1,
+              ),
+            );
+          } else if (timelineName === 'mix') {
             var timeline = new PathConstraintMixTimeline(timelineMap.length, timelineMap.length * 3, constraintIndex);
-            var time = getValue(keyMap, "time", 0);
-            var mixRotate = getValue(keyMap, "mixRotate", 1);
-            var mixX = getValue(keyMap, "mixX", 1);
-            var mixY = getValue(keyMap, "mixY", mixX);
+            var time = getValue(keyMap, 'time', 0);
+            var mixRotate = getValue(keyMap, 'mixRotate', 1);
+            var mixX = getValue(keyMap, 'mixX', 1);
+            var mixY = getValue(keyMap, 'mixY', mixX);
             for (var frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, mixRotate, mixX, mixY);
               var nextMap = timelineMap[frame + 1];
@@ -22921,10 +23059,10 @@ var SkeletonJson = /** @class */ (function () {
                 timeline.shrink(bezier);
                 break;
               }
-              var time2 = getValue(nextMap, "time", 0);
-              var mixRotate2 = getValue(nextMap, "mixRotate", 1);
-              var mixX2 = getValue(nextMap, "mixX", 1);
-              var mixY2 = getValue(nextMap, "mixY", mixX2);
+              var time2 = getValue(nextMap, 'time', 0);
+              var mixRotate2 = getValue(nextMap, 'mixRotate', 1);
+              var mixX2 = getValue(nextMap, 'mixX', 1);
+              var mixY2 = getValue(nextMap, 'mixY', mixX2);
               var curve = keyMap.curve;
               if (curve) {
                 bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, mixRotate, mixRotate2, 1);
@@ -22949,46 +23087,39 @@ var SkeletonJson = /** @class */ (function () {
         var skin = skeletonData.findSkin(deformName);
         if (skin == null) {
           if (settings.FAIL_ON_NON_EXISTING_SKIN) {
-            throw new Error("Skin not found: " + deformName);
-          }
-          else {
+            throw new Error('Skin not found: ' + deformName);
+          } else {
             continue;
           }
         }
         for (var slotName in deformMap) {
           var slotMap = deformMap[slotName];
           var slotIndex = skeletonData.findSlotIndex(slotName);
-          if (slotIndex == -1)
-            throw new Error("Slot not found: " + slotMap.name);
+          if (slotIndex == -1) throw new Error('Slot not found: ' + slotMap.name);
           for (var timelineName in slotMap) {
             var timelineMap = slotMap[timelineName];
             var keyMap = timelineMap[0];
-            if (!keyMap)
-              continue;
+            if (!keyMap) continue;
             var attachment = skin.getAttachment(slotIndex, timelineName);
-            if (attachment == null)
-              throw new Error("Deform attachment not found: " + timelineMap.name);
+            if (attachment == null) throw new Error('Deform attachment not found: ' + timelineMap.name);
             var weighted = attachment.bones != null;
             var vertices = attachment.vertices;
-            var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+            var deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
             var timeline = new DeformTimeline(timelineMap.length, timelineMap.length, slotIndex, attachment);
-            var time = getValue(keyMap, "time", 0);
+            var time = getValue(keyMap, 'time', 0);
             for (var frame = 0, bezier = 0; ; frame++) {
               var deform = void 0;
-              var verticesValue = getValue(keyMap, "vertices", null);
-              if (!verticesValue)
-                deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+              var verticesValue = getValue(keyMap, 'vertices', null);
+              if (!verticesValue) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
               else {
                 deform = Utils.newFloatArray(deformLength);
-                var start = getValue(keyMap, "offset", 0);
+                var start = getValue(keyMap, 'offset', 0);
                 Utils.arrayCopy(verticesValue, 0, deform, start, verticesValue.length);
                 if (scale != 1) {
-                  for (var i = start, n = i + verticesValue.length; i < n; i++)
-                    deform[i] *= scale;
+                  for (var i = start, n = i + verticesValue.length; i < n; i++) deform[i] *= scale;
                 }
                 if (!weighted) {
-                  for (var i = 0; i < deformLength; i++)
-                    deform[i] += vertices[i];
+                  for (var i = 0; i < deformLength; i++) deform[i] += vertices[i];
                 }
               }
               timeline.setFrame(frame, time, deform);
@@ -22997,10 +23128,9 @@ var SkeletonJson = /** @class */ (function () {
                 timeline.shrink(bezier);
                 break;
               }
-              var time2 = getValue(nextMap, "time", 0);
+              var time2 = getValue(nextMap, 'time', 0);
               var curve = keyMap.curve;
-              if (curve)
-                bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, 0, 1, 1);
+              if (curve) bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, 0, 1, 1);
               time = time2;
               keyMap = nextMap;
             }
@@ -23017,29 +23147,27 @@ var SkeletonJson = /** @class */ (function () {
       for (var i = 0; i < map.drawOrder.length; i++, frame++) {
         var drawOrderMap = map.drawOrder[i];
         var drawOrder = null;
-        var offsets = getValue(drawOrderMap, "offsets", null);
+        var offsets = getValue(drawOrderMap, 'offsets', null);
         if (offsets) {
           drawOrder = Utils.newArray(slotCount, -1);
           var unchanged = Utils.newArray(slotCount - offsets.length, 0);
-          var originalIndex = 0, unchangedIndex = 0;
+          var originalIndex = 0,
+            unchangedIndex = 0;
           for (var ii = 0; ii < offsets.length; ii++) {
             var offsetMap = offsets[ii];
             var slotIndex = skeletonData.findSlotIndex(offsetMap.slot);
             // Collect unchanged items.
-            while (originalIndex != slotIndex)
-              unchanged[unchangedIndex++] = originalIndex++;
+            while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
             // Set changed items.
             drawOrder[originalIndex + offsetMap.offset] = originalIndex++;
           }
           // Collect remaining unchanged items.
-          while (originalIndex < slotCount)
-            unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
           // Fill in unchanged items.
           for (var ii = slotCount - 1; ii >= 0; ii--)
-            if (drawOrder[ii] == -1)
-              drawOrder[ii] = unchanged[--unchangedIndex];
+            if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
         }
-        timeline.setFrame(frame, getValue(drawOrderMap, "time", 0), drawOrder);
+        timeline.setFrame(frame, getValue(drawOrderMap, 'time', 0), drawOrder);
       }
       timelines.push(timeline);
     }
@@ -23050,40 +23178,35 @@ var SkeletonJson = /** @class */ (function () {
       for (var i = 0; i < map.events.length; i++, frame++) {
         var eventMap = map.events[i];
         var eventData = skeletonData.findEvent(eventMap.name);
-        var event_1 = new Event(Utils.toSinglePrecision(getValue(eventMap, "time", 0)), eventData);
-        event_1.intValue = getValue(eventMap, "int", eventData.intValue);
-        event_1.floatValue = getValue(eventMap, "float", eventData.floatValue);
-        event_1.stringValue = getValue(eventMap, "string", eventData.stringValue);
+        var event_1 = new Event(Utils.toSinglePrecision(getValue(eventMap, 'time', 0)), eventData);
+        event_1.intValue = getValue(eventMap, 'int', eventData.intValue);
+        event_1.floatValue = getValue(eventMap, 'float', eventData.floatValue);
+        event_1.stringValue = getValue(eventMap, 'string', eventData.stringValue);
         if (event_1.data.audioPath) {
-          event_1.volume = getValue(eventMap, "volume", 1);
-          event_1.balance = getValue(eventMap, "balance", 0);
+          event_1.volume = getValue(eventMap, 'volume', 1);
+          event_1.balance = getValue(eventMap, 'balance', 0);
         }
         timeline.setFrame(frame, event_1);
       }
       timelines.push(timeline);
     }
     var duration = 0;
-    for (var i = 0, n = timelines.length; i < n; i++)
-      duration = Math.max(duration, timelines[i].getDuration());
+    for (var i = 0, n = timelines.length; i < n; i++) duration = Math.max(duration, timelines[i].getDuration());
     if (isNaN(duration)) {
-      throw new Error("Error while parsing animation, duration is NaN");
+      throw new Error('Error while parsing animation, duration is NaN');
     }
     skeletonData.animations.push(new Animation(name, timelines, duration));
   };
   SkeletonJson.blendModeFromString = function (str) {
     str = str.toLowerCase();
-    if (str == "normal")
-      return constants.BLEND_MODES.NORMAL;
-    if (str == "additive")
-      return constants.BLEND_MODES.ADD;
-    if (str == "multiply")
-      return constants.BLEND_MODES.MULTIPLY;
-    if (str == "screen")
-      return constants.BLEND_MODES.SCREEN;
-    throw new Error("Unknown blend mode: " + str);
+    if (str == 'normal') return constants.BLEND_MODES.NORMAL;
+    if (str == 'additive') return constants.BLEND_MODES.ADD;
+    if (str == 'multiply') return constants.BLEND_MODES.MULTIPLY;
+    if (str == 'screen') return constants.BLEND_MODES.SCREEN;
+    throw new Error('Unknown blend mode: ' + str);
   };
   return SkeletonJson;
-}());
+})();
 var LinkedMesh = /** @class */ (function () {
   function LinkedMesh(mesh, skin, slotIndex, parent, inheritDeform) {
     this.mesh = mesh;
@@ -23093,11 +23216,11 @@ var LinkedMesh = /** @class */ (function () {
     this.inheritDeform = inheritDeform;
   }
   return LinkedMesh;
-}());
+})();
 function readTimeline1(keys, timeline, defaultValue, scale) {
   var keyMap = keys[0];
-  var time = getValue(keyMap, "time", 0);
-  var value = getValue(keyMap, "value", defaultValue) * scale;
+  var time = getValue(keyMap, 'time', 0);
+  var value = getValue(keyMap, 'value', defaultValue) * scale;
   var bezier = 0;
   for (var frame = 0; ; frame++) {
     timeline.setFrame(frame, time, value);
@@ -23106,10 +23229,9 @@ function readTimeline1(keys, timeline, defaultValue, scale) {
       timeline.shrink(bezier);
       return timeline;
     }
-    var time2 = getValue(nextMap, "time", 0);
-    var value2 = getValue(nextMap, "value", defaultValue) * scale;
-    if (keyMap.curve)
-      bezier = readCurve(keyMap.curve, timeline, bezier, frame, 0, time, time2, value, value2, scale);
+    var time2 = getValue(nextMap, 'time', 0);
+    var value2 = getValue(nextMap, 'value', defaultValue) * scale;
+    if (keyMap.curve) bezier = readCurve(keyMap.curve, timeline, bezier, frame, 0, time, time2, value, value2, scale);
     time = time2;
     value = value2;
     keyMap = nextMap;
@@ -23117,7 +23239,7 @@ function readTimeline1(keys, timeline, defaultValue, scale) {
 }
 function readTimeline2(keys, timeline, name1, name2, defaultValue, scale) {
   var keyMap = keys[0];
-  var time = getValue(keyMap, "time", 0);
+  var time = getValue(keyMap, 'time', 0);
   var value1 = getValue(keyMap, name1, defaultValue) * scale;
   var value2 = getValue(keyMap, name2, defaultValue) * scale;
   var bezier = 0;
@@ -23128,7 +23250,7 @@ function readTimeline2(keys, timeline, name1, name2, defaultValue, scale) {
       timeline.shrink(bezier);
       return timeline;
     }
-    var time2 = getValue(nextMap, "time", 0);
+    var time2 = getValue(nextMap, 'time', 0);
     var nvalue1 = getValue(nextMap, name1, defaultValue) * scale;
     var nvalue2 = getValue(nextMap, name2, defaultValue) * scale;
     var curve = keyMap.curve;
@@ -23143,7 +23265,7 @@ function readTimeline2(keys, timeline, name1, name2, defaultValue, scale) {
   }
 }
 function readCurve(curve, timeline, bezier, frame, value, time1, time2, value1, value2, scale) {
-  if (curve == "stepped") {
+  if (curve == 'stepped') {
     timeline.setStepped(frame);
     return bezier;
   }
@@ -23165,7 +23287,7 @@ function getValue(map, property, defaultValue) {
 var Spine$1 = /** @class */ (function (_super) {
   __extends(Spine, _super);
   function Spine() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return (_super !== null && _super.apply(this, arguments)) || this;
   }
   Spine.prototype.createSkeleton = function (spineData) {
     this.skeleton = new Skeleton(spineData);
@@ -23174,9 +23296,9 @@ var Spine$1 = /** @class */ (function (_super) {
     this.state = new AnimationState(this.stateData);
   };
   return Spine;
-}(SpineBase));
+})(SpineBase);
 
-var spine40 = /*#__PURE__*/Object.freeze({
+var spine40 = /*#__PURE__*/ Object.freeze({
   __proto__: null,
   AlphaTimeline: AlphaTimeline,
   Animation: Animation,
@@ -23200,7 +23322,9 @@ var spine40 = /*#__PURE__*/Object.freeze({
   EventData: EventData,
   EventQueue: EventQueue,
   EventTimeline: EventTimeline,
-  get EventType() { return EventType; },
+  get EventType() {
+    return EventType;
+  },
   IkConstraint: IkConstraint,
   IkConstraintData: IkConstraintData,
   IkConstraintTimeline: IkConstraintTimeline,
@@ -23234,7 +23358,9 @@ var spine40 = /*#__PURE__*/Object.freeze({
   SkinEntry: SkinEntry,
   Slot: Slot,
   SlotData: SlotData,
-  get SpacingMode() { return SpacingMode; },
+  get SpacingMode() {
+    return SpacingMode;
+  },
   Spine: Spine$1,
   SwirlEffect: SwirlEffect,
   Timeline: Timeline,
@@ -23245,19 +23371,18 @@ var spine40 = /*#__PURE__*/Object.freeze({
   TranslateTimeline: TranslateTimeline,
   TranslateXTimeline: TranslateXTimeline,
   TranslateYTimeline: TranslateYTimeline,
-  VertexAttachment: VertexAttachment
+  VertexAttachment: VertexAttachment,
 });
-
 
 /**
  * @public
  */
 var SPINE_VERSION;
 (function (SPINE_VERSION) {
-  SPINE_VERSION[SPINE_VERSION["UNKNOWN"] = 0] = "UNKNOWN";
-  SPINE_VERSION[SPINE_VERSION["VER37"] = 37] = "VER37";
-  SPINE_VERSION[SPINE_VERSION["VER38"] = 38] = "VER38";
-  SPINE_VERSION[SPINE_VERSION["VER40"] = 40] = "VER40";
+  SPINE_VERSION[(SPINE_VERSION['UNKNOWN'] = 0)] = 'UNKNOWN';
+  SPINE_VERSION[(SPINE_VERSION['VER37'] = 37)] = 'VER37';
+  SPINE_VERSION[(SPINE_VERSION['VER38'] = 38)] = 'VER38';
+  SPINE_VERSION[(SPINE_VERSION['VER40'] = 40)] = 'VER40';
 })(SPINE_VERSION || (SPINE_VERSION = {}));
 /**
  * @public
@@ -23303,14 +23428,14 @@ var UniBinaryParser = /** @class */ (function () {
       parser = new SkeletonBinary(new AtlasAttachmentLoader(atlas));
     }
     if (!parser) {
-      var error = "Unsupported version of spine model " + version + ", please update pixi-spine";
+      var error = 'Unsupported version of spine model ' + version + ', please update pixi-spine';
       console.error(error);
     }
     parser.scale = this.scale;
     return parser.readSkeletonData(dataToParse);
   };
   return UniBinaryParser;
-}());
+})();
 var UniJsonParser = /** @class */ (function () {
   function UniJsonParser() {
     this.scale = 1;
@@ -23329,21 +23454,21 @@ var UniJsonParser = /** @class */ (function () {
       parser = new SkeletonJson(new AtlasAttachmentLoader(atlas));
     }
     if (!parser) {
-      var error = "Unsupported version of spine model " + version + ", please update pixi-spine";
+      var error = 'Unsupported version of spine model ' + version + ', please update pixi-spine';
       console.error(error);
     }
     parser.scale = this.scale;
     return parser.readSkeletonData(dataToParse);
   };
   return UniJsonParser;
-}());
+})();
 /**
  * @public
  */
 var SpineParser = /** @class */ (function (_super) {
   __extends(SpineParser, _super);
   function SpineParser() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return (_super !== null && _super.apply(this, arguments)) || this;
   }
   SpineParser.prototype.createBinaryParser = function () {
     return new UniBinaryParser();
@@ -23361,7 +23486,7 @@ var SpineParser = /** @class */ (function (_super) {
   };
   SpineParser.use = new SpineParser().genMiddleware().use;
   return SpineParser;
-}(AbstractSpineParser));
+})(AbstractSpineParser);
 
 /**
  * @public
@@ -23369,7 +23494,7 @@ var SpineParser = /** @class */ (function (_super) {
 var Spine = /** @class */ (function (_super) {
   __extends(Spine, _super);
   function Spine() {
-    return _super !== null && _super.apply(this, arguments) || this;
+    return (_super !== null && _super.apply(this, arguments)) || this;
   }
   Spine.prototype.createSkeleton = function (spineData) {
     var ver = detectSpineVersion(spineData.version);
@@ -23384,7 +23509,7 @@ var Spine = /** @class */ (function (_super) {
       spine = spine40;
     }
     if (!spine) {
-      var error = "Cant detect version of spine model " + spineData.version;
+      var error = 'Cant detect version of spine model ' + spineData.version;
       console.error(error);
     }
     this.skeleton = new spine.Skeleton(spineData);
@@ -23393,7 +23518,7 @@ var Spine = /** @class */ (function (_super) {
     this.state = new spine.AnimationState(this.stateData);
   };
   return Spine;
-}(SpineBase));
+})(SpineBase);
 
 // SpineParser.registerLoaderPlugin();
 
@@ -23425,12 +23550,11 @@ exports.filterFromString = filterFromString;
 exports.settings = settings;
 exports.wrapFromString = wrapFromString;
 
+exports.core = exports.core || {};
+exports.core.TextureAtlas = TextureAtlas;
 
-exports.core = exports.core || {}
-exports.core.TextureAtlas = TextureAtlas
-
-exports.core.AtlasAttachmentLoader = AtlasAttachmentLoader
-exports.core.SkeletonJson = SkeletonJson
+exports.core.AtlasAttachmentLoader = AtlasAttachmentLoader;
+exports.core.SkeletonJson = SkeletonJson;
 
 Object.defineProperty(exports, '__esModule', { value: true });
-export default exports
+export default exports;

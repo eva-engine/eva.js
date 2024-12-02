@@ -8,7 +8,7 @@ interface ExtendOptions extends IOptions {
 
 export default class Lottie extends Component {
   // @decorators.IDEProp 复杂编辑后续添加
-  slot: { [key: string]: string }
+  slot: { [key: string]: string };
 
   static componentName: string = 'Lottie';
   public anim: any;

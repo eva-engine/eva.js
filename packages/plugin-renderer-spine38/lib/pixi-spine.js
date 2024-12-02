@@ -1122,7 +1122,7 @@ var pixi_spine;
             (softness +
               (frames[frame + IkConstraintTimeline.SOFTNESS] - softness) * percent -
               constraint.data.softness) *
-            alpha;
+              alpha;
           if (direction == MixDirection.mixOut) {
             constraint.bendDirection = constraint.data.bendDirection;
             constraint.compress = constraint.data.compress;
@@ -2228,7 +2228,7 @@ var pixi_spine;
         if (!EventQueue.deprecatedWarning1) {
           EventQueue.deprecatedWarning1 = true;
           console.warn(
-            'Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. \'state.addListener({ complete: function(track, event) { } })\'',
+            "Spine Deprecation Warning: onComplete, onStart, onEnd, onEvent art deprecated, please use listeners from now on. 'state.addListener({ complete: function(track, event) { } })'",
           );
         }
         return true;
@@ -2302,13 +2302,13 @@ var pixi_spine;
       EventType[(EventType['event'] = 5)] = 'event';
     })((EventType = core.EventType || (core.EventType = {})));
     var AnimationStateAdapter = (function () {
-      function AnimationStateAdapter() { }
-      AnimationStateAdapter.prototype.start = function (entry) { };
-      AnimationStateAdapter.prototype.interrupt = function (entry) { };
-      AnimationStateAdapter.prototype.end = function (entry) { };
-      AnimationStateAdapter.prototype.dispose = function (entry) { };
-      AnimationStateAdapter.prototype.complete = function (entry) { };
-      AnimationStateAdapter.prototype.event = function (entry, event) { };
+      function AnimationStateAdapter() {}
+      AnimationStateAdapter.prototype.start = function (entry) {};
+      AnimationStateAdapter.prototype.interrupt = function (entry) {};
+      AnimationStateAdapter.prototype.end = function (entry) {};
+      AnimationStateAdapter.prototype.dispose = function (entry) {};
+      AnimationStateAdapter.prototype.complete = function (entry) {};
+      AnimationStateAdapter.prototype.event = function (entry, event) {};
       return AnimationStateAdapter;
     })();
     core.AnimationStateAdapter = AnimationStateAdapter;
@@ -2574,9 +2574,9 @@ var pixi_spine;
             if (
               this.data.transformMode == core.TransformMode.NoScale &&
               pa * pd - pb * pc < 0 !=
-              (Bone.yDown
-                ? this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0
-                : this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)
+                (Bone.yDown
+                  ? this.skeleton.scaleX < 0 != this.skeleton.scaleY > 0
+                  : this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)
             )
               s = -s;
             var r = Math.PI / 2 + Math.atan2(zc, za);
@@ -3175,7 +3175,7 @@ var pixi_spine;
         var spacing = this.spacing;
         if (scale || lengthSpacing) {
           if (scale) lengths = core.Utils.setArraySize(this.lengths, boneCount);
-          for (var i = 0, n = spacesCount - 1; i < n;) {
+          for (var i = 0, n = spacesCount - 1; i < n; ) {
             var bone = bones[i];
             var setupLength = bone.data.length;
             if (setupLength < PathConstraint.epsilon) {
@@ -4813,7 +4813,7 @@ var pixi_spine;
         byteCount--;
         var chars = '';
         var charCount = 0;
-        for (var i = 0; i < byteCount;) {
+        for (var i = 0; i < byteCount; ) {
           var b = this.readByte();
           switch (b >> 4) {
             case 12:
@@ -5822,7 +5822,7 @@ var pixi_spine;
         }
         var weights = [];
         var bones = [];
-        for (var i = 0, n = vertices.length; i < n;) {
+        for (var i = 0, n = vertices.length; i < n; ) {
           var boneCount = vertices[i++];
           bones.push(boneCount);
           for (var nn = i + boneCount * 4; i < nn; i += 4) {
@@ -6789,8 +6789,8 @@ var pixi_spine;
                   if (!page.width || !page.height) {
                     console.log(
                       'ERROR spine atlas page ' +
-                      page.name +
-                      ': meshes wont work if you dont specify size in atlas (http://www.html5gamedevs.com/topic/18888-pixi-spines-and-meshes/?p=107121)',
+                        page.name +
+                        ': meshes wont work if you dont specify size in atlas (http://www.html5gamedevs.com/topic/18888-pixi-spines-and-meshes/?p=107121)',
                     );
                   }
                 }
@@ -6902,7 +6902,7 @@ var pixi_spine;
       return TextureAtlasReader;
     })();
     var TextureAtlasPage = (function () {
-      function TextureAtlasPage() { }
+      function TextureAtlasPage() {}
       TextureAtlasPage.prototype.setFilters = function () {
         var tex = this.baseTexture;
         var filter = this.minFilter;
@@ -7551,7 +7551,7 @@ var pixi_spine;
     })();
     core.Color = Color;
     var MathUtils = (function () {
-      function MathUtils() { }
+      function MathUtils() {}
       MathUtils.clamp = function (value, min, max) {
         if (value < min) return min;
         if (value > max) return max;
@@ -7592,7 +7592,7 @@ var pixi_spine;
     })();
     core.MathUtils = MathUtils;
     var Interpolation = (function () {
-      function Interpolation() { }
+      function Interpolation() {}
       Interpolation.prototype.apply = function (start, end, a) {
         return start + (end - start) * this.applyInternal(a);
       };
@@ -7626,7 +7626,7 @@ var pixi_spine;
     })(Pow);
     core.PowOut = PowOut;
     var Utils = (function () {
-      function Utils() { }
+      function Utils() {}
       Utils.arrayCopy = function (source, sourceStart, dest, destStart, numElements) {
         for (var i = sourceStart, j = destStart; i < sourceStart + numElements; i++, j++) {
           dest[j] = source[i];
@@ -7680,7 +7680,7 @@ var pixi_spine;
       Utils.toSinglePrecision = function (value) {
         return Utils.SUPPORTS_TYPED_ARRAYS ? Math.fround(value) : value;
       };
-      Utils.webkit602BugfixHelper = function (alpha, blend) { };
+      Utils.webkit602BugfixHelper = function (alpha, blend) {};
       Utils.contains = function (array, element, identity) {
         if (identity === void 0) {
           identity = true;
@@ -7695,7 +7695,7 @@ var pixi_spine;
     })();
     core.Utils = Utils;
     var DebugUtils = (function () {
-      function DebugUtils() { }
+      function DebugUtils() {}
       DebugUtils.logBones = function (skeleton) {
         for (var i = 0; i < skeleton.bones.length; i++) {
           var bone = skeleton.bones[i];
@@ -8333,12 +8333,12 @@ var pixi_spine;
         this.jitterX = jitterX;
         this.jitterY = jitterY;
       }
-      JitterEffect.prototype.begin = function (skeleton) { };
+      JitterEffect.prototype.begin = function (skeleton) {};
       JitterEffect.prototype.transform = function (position, uv, light, dark) {
         position.x += core.MathUtils.randomTriangular(-this.jitterX, this.jitterY);
         position.y += core.MathUtils.randomTriangular(-this.jitterX, this.jitterY);
       };
-      JitterEffect.prototype.end = function () { };
+      JitterEffect.prototype.end = function () {};
       return JitterEffect;
     })();
     core.JitterEffect = JitterEffect;
@@ -8375,7 +8375,7 @@ var pixi_spine;
           position.y = sin * x + cos * y + this.worldY;
         }
       };
-      SwirlEffect.prototype.end = function () { };
+      SwirlEffect.prototype.end = function () {};
       SwirlEffect.interpolation = new core.PowOut(2);
       return SwirlEffect;
     })();

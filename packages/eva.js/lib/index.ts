@@ -45,5 +45,5 @@ export {
   IDEProp,
   componentObserver,
   RESOURCE_TYPE_STRATEGY,
-  resourceLoader
+  resourceLoader,
 };

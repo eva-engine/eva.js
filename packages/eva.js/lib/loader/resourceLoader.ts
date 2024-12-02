@@ -9,8 +9,8 @@ import {
   Loader,
   Resource,
   ResourceType,
-  ResourceState
-} from 'resource-loader'
+  ResourceState,
+} from 'resource-loader';
 
 export const resourceLoader = {
   AbstractLoadStrategy,
@@ -23,5 +23,5 @@ export const resourceLoader = {
   Loader,
   Resource,
   ResourceType,
-  ResourceState
-}
+  ResourceState,
+};

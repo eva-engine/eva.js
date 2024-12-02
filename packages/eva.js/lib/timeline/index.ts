@@ -60,7 +60,7 @@ class Timeline {
   }
 
   get globalTime() {
-    return this.parent ? this.parent.currentTime : _nowtime() - this._createTime
+    return this.parent ? this.parent.currentTime : _nowtime() - this._createTime;
   }
 
   get parent() {

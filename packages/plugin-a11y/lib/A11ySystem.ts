@@ -76,7 +76,7 @@ export default class A11ySystem extends System {
   cache: Map<string, HTMLElement> = new Map();
   eventCache: Map<string, (e: MouseEvent) => void> = new Map();
   /**
-   * 
+   *
    * dom 的 zIndex
    */
   zIndex: number = ZINDEX;
@@ -127,7 +127,7 @@ export default class A11ySystem extends System {
   async init(opt: SystemParam = {}) {
     const { activate = A11yActivate.CHECK, delay = 100, checkA11yOpen = () => Promise.resolve(false), zIndex } = opt;
     this.delay = delay;
-    this.zIndex = zIndex || this.zIndex
+    this.zIndex = zIndex || this.zIndex;
     switch (activate) {
       case A11yActivate.CHECK:
         try {
@@ -235,11 +235,11 @@ export default class A11ySystem extends System {
   }
 
   change(changed: ComponentChanged) {
-    const component = changed.component as A11y
+    const component = changed.component as A11y;
     if (changed.prop.prop[0] === 'hint') {
-      const dom = this.cache.get(component.a11yId)
-      dom?.setAttribute('aria-label', component.hint)
-      dom && this.setPosition(dom, changed.gameObject.transform)
+      const dom = this.cache.get(component.a11yId);
+      dom?.setAttribute('aria-label', component.hint);
+      dom && this.setPosition(dom, changed.gameObject.transform);
     }
   }
 
@@ -402,6 +402,6 @@ export default class A11ySystem extends System {
     this.div.parentElement.removeChild(this.div);
     this.cache = null;
     this.eventCache = null;
-    this.div = null
+    this.div = null;
   }
 }

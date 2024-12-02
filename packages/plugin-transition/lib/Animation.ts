@@ -119,7 +119,7 @@ export default class Animation {
   }
 
   play(iteration = 1, currentTime) {
-    this.currentTime = currentTime
+    this.currentTime = currentTime;
     this.stoped = false;
     this.start();
     this.currIteration = 0;

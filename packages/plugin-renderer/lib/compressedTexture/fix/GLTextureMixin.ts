@@ -2,8 +2,8 @@
  * Inspired by pixi-compressed-texture
  * @link https://github.com/pixijs/pixi-compressed-textures/tree/v4.x
  */
-import { glCore } from "pixi.js";
-import { CompressedTextureResource } from "../resource/CompressedTextureResource";
+import { glCore } from 'pixi.js';
+import { CompressedTextureResource } from '../resource/CompressedTextureResource';
 const GLTexture = glCore.GLTexture;
 export const GLTextureMixin = {
   isCompressed: false,
@@ -31,5 +31,5 @@ export const GLTextureMixin = {
     this.bind();
     this.mipmap = true;
     gl.generateMipmap(gl.TEXTURE_2D);
-  }
+  },
 };

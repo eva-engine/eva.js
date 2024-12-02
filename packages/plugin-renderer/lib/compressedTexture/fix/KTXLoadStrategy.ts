@@ -1,4 +1,4 @@
-import { XhrLoadStrategy } from './XhrLoadStrategy'
+import { XhrLoadStrategy } from './XhrLoadStrategy';
 import { KTXTextureResource } from '../resource/KTXTextureResource';
 
 // @ts-ignore

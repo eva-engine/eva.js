@@ -87,7 +87,7 @@ export default class Sprite extends Renderer {
         if (!this.validateAsyncId(gameObjectId, asyncId)) return;
         if (!instance) {
           console.error(`GameObject:${changed.gameObject.name}'s Sprite resource load error`);
-          return
+          return;
         }
         this.sprites[changed.gameObject.id].image =
           instance[component.resource + resourceKeySplit + component.spriteName];

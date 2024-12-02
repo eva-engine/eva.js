@@ -14062,8 +14062,8 @@ if (!Date.now) {
         dragonBones.DataParser.VERTICES in rawData
           ? rawData[dragonBones.DataParser.VERTICES]
           : dragonBones.DataParser.VALUE in rawData
-          ? rawData[dragonBones.DataParser.VALUE]
-          : null;
+            ? rawData[dragonBones.DataParser.VALUE]
+            : null;
       var offset = ObjectDataParser._getNumber(rawData, dragonBones.DataParser.OFFSET, 0); // uint
       var vertexCount = this._intArray[this._geometry.offset + 0 /* GeometryVertexCount */];
       var weight = this._geometry.weight;

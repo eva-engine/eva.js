@@ -115,13 +115,10 @@ export default class Mask extends Renderer {
     const component = changed.component as MaskComponent;
     if (changed.prop.prop[0] === 'type') {
       this.changedCache[changed.gameObject.id] = true;
-      if (
-        [MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(component.type) > -1 ||
-        component._lastType !== component.type
-      ) {
+      if ([MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(component.type) > -1 || component._lastType !== component.type) {
         this.remove(changed);
         this.add(changed);
-        component._lastType = component.type
+        component._lastType = component.type;
       } else {
         this.redrawGraphics(changed);
       }

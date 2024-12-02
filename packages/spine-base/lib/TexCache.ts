@@ -3,7 +3,7 @@ import { Texture } from 'pixi.js';
 let texCache: { [name: string]: { tex: Texture; count: number } } = {};
 
 interface CacheData {
-  image?: any
+  image?: any;
 }
 
 function cacheImage(data: CacheData) {
@@ -45,7 +45,7 @@ export function cleanTextures() {
 }
 
 export function releaseTexture(imageSrc: string) {
-  if (!imageSrc) return
+  if (!imageSrc) return;
   // 如果要取消上一个timeout，注意count--不要写timeout里面
   setTimeout(() => {
     // 延迟销毁，避免快速重用

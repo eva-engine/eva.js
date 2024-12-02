@@ -44,7 +44,7 @@ export default class Renderer<T extends {} = {}> extends System<T> {
    *
    * called while the observed component props change.
    */
-  componentChanged(_changed: ComponentChanged) { }
+  componentChanged(_changed: ComponentChanged) {}
 
   /**
    * 每帧调用
@@ -52,7 +52,7 @@ export default class Renderer<T extends {} = {}> extends System<T> {
    * called by every loop
    * @param _gameObject gameObject
    */
-  rendererUpdate(_gameObject: GameObject) { }
+  rendererUpdate(_gameObject: GameObject) {}
 
   // @ts-ignore
   update(e?: UpdateParams) {
@@ -62,7 +62,7 @@ export default class Renderer<T extends {} = {}> extends System<T> {
     }
   }
 
-  protected asyncIdMap: Record<number, number> = {}
+  protected asyncIdMap: Record<number, number> = {};
 
   protected increaseAsyncId(id: number) {
     this.asyncIdMap[id] = (this.asyncIdMap[id] || 0) + 1;

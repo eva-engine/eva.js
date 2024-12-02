@@ -1,8 +1,8 @@
-import { ResourceBase, RESOURCE_TYPE_STRATEGY, resourceLoader } from "@eva/eva.js";
-import { getSuportCompressedTextureFormats } from "../ability";
-import KTXLoadStrategy from "./KTXLoadStrategy";
-const { XhrResponseType } = resourceLoader
-export function addPreProcessResourceHandler(resource, gl:WebGLRenderingContext) {
+import { ResourceBase, RESOURCE_TYPE_STRATEGY, resourceLoader } from '@eva/eva.js';
+import { getSuportCompressedTextureFormats } from '../ability';
+import KTXLoadStrategy from './KTXLoadStrategy';
+const { XhrResponseType } = resourceLoader;
+export function addPreProcessResourceHandler(resource, gl: WebGLRenderingContext) {
   resource.addPreProcessResourceHandler(function normalizeResource(resource: ResourceBase): void {
     let textures = resource.src?.image?.texture;
 
@@ -17,7 +17,7 @@ export function addPreProcessResourceHandler(resource, gl:WebGLRenderingContext)
     if (target) {
       Object.assign(resource.src.image, target);
     }
-  })
+  });
 }
 export function addKTXStragetyAndRegister() {
   Object.assign(RESOURCE_TYPE_STRATEGY, {

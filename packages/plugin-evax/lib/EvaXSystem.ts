@@ -5,8 +5,8 @@ import { defineProperty, updateStore } from './utils';
 
 export interface EvaXSystemParams {
   store: {
-    [key: string]: any
-  }
+    [key: string]: any;
+  };
 }
 
 @decorators.componentObserver({
@@ -105,5 +105,5 @@ export default class EvaXSystem extends System<EvaXSystemParams> {
   emit(eventName, ...args) {
     return this.ee.emit(eventName, ...args);
   }
-  onDestroy() { }
+  onDestroy() {}
 }

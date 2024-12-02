@@ -1,7 +1,14 @@
-import { Loader, XhrResponseType, ImageLoadStrategy, XhrLoadStrategy, VideoLoadStrategy, AbstractLoadStrategy } from 'resource-loader';
+import {
+  Loader,
+  XhrResponseType,
+  ImageLoadStrategy,
+  XhrLoadStrategy,
+  VideoLoadStrategy,
+  AbstractLoadStrategy,
+} from 'resource-loader';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
-export { resourceLoader } from './resourceLoader'
+export { resourceLoader } from './resourceLoader';
 /** Load event */
 export enum LOAD_EVENT {
   'START' = 'start',
@@ -25,17 +32,17 @@ interface SrcBase {
   type: string;
   url?: string;
   data?: any;
-  size?: Size2,
-  texture?: TextureBase[] | TextureBase
+  size?: Size2;
+  texture?: TextureBase[] | TextureBase;
 }
 interface Size2 {
-  width: number,
-  height: number,
+  width: number;
+  height: number;
 }
 interface TextureBase {
-  type: string,
-  url: string,
-  size?: Size2,
+  type: string;
+  url: string;
+  size?: Size2;
 }
 
 /** Eva resource base */
@@ -94,7 +101,6 @@ type ResourceName = string;
 type ResourceProcessFn = (resource: ResourceStruct) => any;
 type PreProcessResourceHandler = (res: ResourceBase) => void;
 
-
 /**
  * Resource manager
  * @public
@@ -104,7 +110,7 @@ class Resource extends EE {
   /** load resource timeout */
   public timeout: number = 6000;
 
-  private preProcessResourceHandlers: PreProcessResourceHandler[] = []
+  private preProcessResourceHandlers: PreProcessResourceHandler[] = [];
 
   /** Resource cache  */
   public resourcesMap: Record<ResourceName, ResourceStruct> = {};
@@ -218,14 +224,14 @@ class Resource extends EE {
   }
 
   /**
-   * You should use this function and redefine RESOURCE_TYPE in global.d.ts at the same time.   
+   * You should use this function and redefine RESOURCE_TYPE in global.d.ts at the same time.
    * such as:
-   * 
+   *
    * #### package plugin-renderer-lottie
    * - index.ts:
    * ``` typescript
-   *      import {resource} from "@eva/eva.js"  
-   *      resource.registerResourceType('LOTTIE');  
+   *      import {resource} from "@eva/eva.js"
+   *      resource.registerResourceType('LOTTIE');
    * ```
    * - global.d.ts
    * ``` typescript
@@ -237,7 +243,7 @@ class Resource extends EE {
    *      }
    *  ```
    * The another tip is that you should call it before you call resource.registerInstance/resource.registerDestroy.
-  */
+   */
   public registerResourceType(type: string, value = type) {
     if (RESOURCE_TYPE[type]) {
       throw new Error(`The type ${type} already exists in RESOURCE_TYPE`);

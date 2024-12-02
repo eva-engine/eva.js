@@ -5,8 +5,8 @@ import Game from '../game/Game';
 
 export interface SystemConstructor<T extends System = System> {
   systemName: string;
-  observerInfo: PureObserverInfo
-  new(params?: any): T;
+  observerInfo: PureObserverInfo;
+  new (params?: any): T;
 }
 /**
  * Each System runs continuously and performs global actions on every Entity that possesses a Component of the same aspect as that System.

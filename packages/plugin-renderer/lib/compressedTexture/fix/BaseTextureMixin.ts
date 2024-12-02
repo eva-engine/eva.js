@@ -1,9 +1,8 @@
-import { BaseTexture, utils } from "pixi.js";
-import { CompressedTextureResource } from "../resource/CompressedTextureResource";
+import { BaseTexture, utils } from 'pixi.js';
+import { CompressedTextureResource } from '../resource/CompressedTextureResource';
 export const BaseTextureMixin = {
   oldFrom: BaseTexture.from,
   from(source, scaleMode, sourceScale) {
-
     if (!(source instanceof CompressedTextureResource)) {
       return this.oldFrom(source, scaleMode, sourceScale);
     }
@@ -19,7 +18,7 @@ export const BaseTextureMixin = {
       }
       BaseTexture.addToCache(baseTexture, imageUrl);
     }
-    
+
     return baseTexture;
-  }
-}
+  },
+};

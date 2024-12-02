@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { Application, Container } from '@eva/renderer-adapter';
 import Render from './System';
 import ContainerManager from './manager/ContainerManager';
-import type { Render as RenderComponent } from "@eva/plugin-renderer-render";
+import type { Render as RenderComponent } from '@eva/plugin-renderer-render';
 
 @decorators.componentObserver({
   Transform: ['_parent'],

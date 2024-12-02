@@ -32,5 +32,5 @@ export {
   CanvasRenderer,
   glCore,
   settings,
-  UPDATE_PRIORITY
+  UPDATE_PRIORITY,
 } from '@tbminiapp/pixi-miniprogram-engine';

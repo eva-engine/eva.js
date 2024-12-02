@@ -21,7 +21,7 @@ export default class Spine extends Component<SpineParams> {
 
   private _armature: any;
 
-  private waitExecuteInfos: { playType: boolean, track?: number, name?: string, loop?: boolean }[] = []
+  private waitExecuteInfos: { playType: boolean; track?: number; name?: string; loop?: boolean }[] = [];
 
   set armature(val) {
     this._armature = val;
@@ -71,8 +71,8 @@ export default class Spine extends Component<SpineParams> {
            * 为了解决这个问题，在 autoPlay 的情况下，未加载完之前调用 play ，默认循环播放，除非设置不循环参数
            */
           loop: loop ?? this.autoPlay,
-          track
-        })
+          track,
+        });
       } else {
         if (track === undefined) {
           track = 0;
@@ -88,8 +88,8 @@ export default class Spine extends Component<SpineParams> {
     if (!this.armature) {
       this.waitExecuteInfos.push({
         playType: false,
-        track
-      })
+        track,
+      });
       return;
     }
     if (track === undefined) {

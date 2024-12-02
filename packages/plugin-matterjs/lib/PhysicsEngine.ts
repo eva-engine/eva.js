@@ -6,7 +6,7 @@ import type { PhysicsSystemParams } from './PhysicsSystem';
 import type { Physics } from './Physics';
 
 export interface EvaBody extends Matter.Body {
-  component: Physics
+  component: Physics;
 }
 
 export default class PhysicsEngine {
@@ -39,7 +39,7 @@ export default class PhysicsEngine {
     this.runner = this.Runner.create({
       fps: this.options.fps || 60,
       // Eva.js设置fps30也可能导致deltaTime为16，导致经过matterjs采样后的一段时间的delta都是很低
-      deltaSampleSize: this.options.deltaSampleSize || 1
+      deltaSampleSize: this.options.deltaSampleSize || 1,
     });
   }
 
@@ -131,12 +131,14 @@ export default class PhysicsEngine {
   private initMouse() {
     if (this.options.mouse && this.options.mouse.open) {
       const mouse = Matter.Mouse.create(this.game.canvas);
-      let options = this.options.mouse.constraint ? {
-        mouse,
-        constraint: this.options.mouse.constraint
-      } : {
-          mouse
-        };
+      let options = this.options.mouse.constraint
+        ? {
+            mouse,
+            constraint: this.options.mouse.constraint,
+          }
+        : {
+            mouse,
+          };
       this.mouseConstraint = Matter.MouseConstraint.create(this.engine, options);
       this.World.add(this.engine.world, this.mouseConstraint);
     }

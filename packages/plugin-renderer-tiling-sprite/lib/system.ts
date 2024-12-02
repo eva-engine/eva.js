@@ -43,7 +43,7 @@ export default class TilingSprite extends Renderer {
         if (!this.validateAsyncId(gameObjectId, asyncId)) return;
         if (!data) {
           console.error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
-          return
+          return;
         }
         sprite.image = data.image;
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
@@ -53,7 +53,7 @@ export default class TilingSprite extends Renderer {
           if (!this.validateAsyncId(gameObjectId, asyncId)) return;
           if (!data) {
             console.error(`GameObject:${changed.gameObject.name}'s TilingSprite resource load error`);
-            return
+            return;
           }
           this.imgs[changed.gameObject.id].image = data.image;
         } else {
@@ -64,7 +64,7 @@ export default class TilingSprite extends Renderer {
         const sprite = this.imgs[changed.gameObject.id];
         this.containerManager.getContainer(changed.gameObject.id).removeChild(sprite.tilingSprite);
         sprite.tilingSprite.destroy({
-          children: true
+          children: true,
         });
         delete this.imgs[changed.gameObject.id];
       }

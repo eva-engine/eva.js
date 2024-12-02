@@ -1,6 +1,6 @@
-import {Component} from '@eva/eva.js';
-import {type, step} from '@eva/inspector-decorator';
-import {uuid} from './utils';
+import { Component } from '@eva/eva.js';
+import { type, step } from '@eva/inspector-decorator';
+import { uuid } from './utils';
 
 export interface A11yParams {
   hint: string;

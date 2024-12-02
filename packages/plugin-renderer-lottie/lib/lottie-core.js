@@ -330,25 +330,25 @@ function M(t, s, e, i) {
           return s;
         })(t, i, this.mX1, this.mX2)
       : 0 === h
-      ? i
-      : (function (t, s, e, i, h) {
-          let r,
-            a,
-            n = 0;
-          do {
-            (a = s + (e - s) / 2), (r = S(a, i, h) - t), r > 0 ? (e = a) : (s = a);
-          } while (Math.abs(r) > 1e-7 && ++n < 10);
-          return a;
-        })(t, s, s + 0.1, this.mX1, this.mX2);
+        ? i
+        : (function (t, s, e, i, h) {
+            let r,
+              a,
+              n = 0;
+            do {
+              (a = s + (e - s) / 2), (r = S(a, i, h) - t), r > 0 ? (e = a) : (s = a);
+            } while (Math.abs(r) > 1e-7 && ++n < 10);
+            return a;
+          })(t, s, s + 0.1, this.mX1, this.mX2);
   }),
   (M.prototype.get = function (t) {
     return this.mX1 === this.mY1 && this.mX2 === this.mY2
       ? t
       : 0 === t
-      ? 0
-      : 1 === t
-      ? 1
-      : S(this._getTForX(t), this.mY1, this.mY2);
+        ? 0
+        : 1 === t
+          ? 1
+          : S(this._getTForX(t), this.mY1, this.mY2);
   });
 const P = {};
 var T = {
@@ -369,10 +369,10 @@ w =
         return 'float32' === t
           ? new Float32Array(s)
           : 'int16' === t
-          ? new Int16Array(s)
-          : 'uint8c' === t
-          ? new Uint8ClampedArray(s)
-          : void 0;
+            ? new Int16Array(s)
+            : 'uint8c' === t
+              ? new Uint8ClampedArray(s)
+              : void 0;
       }
     : function (t, s) {
         let e = 0;
@@ -733,10 +733,10 @@ class $ {
         ? t
         : this.end - s.euclideanModulo(this.begin - t, this.total)
       : 'out' === this.type
-      ? t <= this.end
-        ? t
-        : this.begin + s.euclideanModulo(t - this.end, this.total)
-      : void 0;
+        ? t <= this.end
+          ? t
+          : this.begin + s.euclideanModulo(t - this.end, this.total)
+        : void 0;
   }
 }
 class tt {
@@ -918,26 +918,26 @@ class rt {
             (t >= g
               ? (n = 1)
               : t < y
-              ? (n = 0)
-              : (i.o.x.constructor === Array
-                  ? (i.__fnct || (i.__fnct = []),
-                    i.__fnct[d]
-                      ? (p = i.__fnct[d])
-                      : ((s = void 0 === i.o.x[d] ? i.o.x[0] : i.o.x[d]),
-                        (r = void 0 === i.o.y[d] ? i.o.y[0] : i.o.y[d]),
-                        (a = void 0 === i.i.x[d] ? i.i.x[0] : i.i.x[d]),
-                        (o = void 0 === i.i.y[d] ? i.i.y[0] : i.i.y[d]),
+                ? (n = 0)
+                : (i.o.x.constructor === Array
+                    ? (i.__fnct || (i.__fnct = []),
+                      i.__fnct[d]
+                        ? (p = i.__fnct[d])
+                        : ((s = void 0 === i.o.x[d] ? i.o.x[0] : i.o.x[d]),
+                          (r = void 0 === i.o.y[d] ? i.o.y[0] : i.o.y[d]),
+                          (a = void 0 === i.i.x[d] ? i.i.x[0] : i.i.x[d]),
+                          (o = void 0 === i.i.y[d] ? i.i.y[0] : i.i.y[d]),
+                          (p = T.getBezierEasing(s, r, a, o).get),
+                          (i.__fnct[d] = p)))
+                    : i.__fnct
+                      ? (p = i.__fnct)
+                      : ((s = i.o.x),
+                        (r = i.o.y),
+                        (a = i.i.x),
+                        (o = i.i.y),
                         (p = T.getBezierEasing(s, r, a, o).get),
-                        (i.__fnct[d] = p)))
-                  : i.__fnct
-                  ? (p = i.__fnct)
-                  : ((s = i.o.x),
-                    (r = i.o.y),
-                    (a = i.i.x),
-                    (o = i.i.y),
-                    (p = T.getBezierEasing(s, r, a, o).get),
-                    (i.__fnct = p)),
-                (n = p((t - y) / (g - y))))),
+                        (i.__fnct = p)),
+                  (n = p((t - y) / (g - y))))),
             (m = h.s || i.e),
             (l = 1 === i.h ? i.s[d] : i.s[d] + (m[d] - i.s[d]) * n),
             'multidimensional' === this.propType ? (e[d] = l) : (e = l);
@@ -2007,13 +2007,13 @@ class Lt extends O {
               ? ((t = this.p.getValueAtTime((this.p.keyframes[0].t + 0.01) / e, 0)),
                 (s = this.p.getValueAtTime(this.p.keyframes[0].t / e, 0)))
               : this.p._caching.lastFrame + this.p.offsetTime >= this.p.keyframes[this.p.keyframes.length - 1].t
-              ? ((t = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t / e, 0)),
-                (s = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.05) / e, 0)))
-              : ((t = this.p.pv),
-                (s = this.p.getValueAtTime(
-                  (this.p._caching.lastFrame + this.p.offsetTime - 0.01) / e,
-                  this.p.offsetTime,
-                )));
+                ? ((t = this.p.getValueAtTime(this.p.keyframes[this.p.keyframes.length - 1].t / e, 0)),
+                  (s = this.p.getValueAtTime((this.p.keyframes[this.p.keyframes.length - 1].t - 0.05) / e, 0)))
+                : ((t = this.p.pv),
+                  (s = this.p.getValueAtTime(
+                    (this.p._caching.lastFrame + this.p.offsetTime - 0.01) / e,
+                    this.p.offsetTime,
+                  )));
           else if (
             this.px &&
             this.px.keyframes &&
@@ -2030,13 +2030,13 @@ class Lt extends O {
                 (s[0] = i.getValueAtTime(i.keyframes[0].t / e, 0)),
                 (s[1] = h.getValueAtTime(h.keyframes[0].t / e, 0)))
               : i._caching.lastFrame + i.offsetTime >= i.keyframes[i.keyframes.length - 1].t
-              ? ((t[0] = i.getValueAtTime(i.keyframes[i.keyframes.length - 1].t / e, 0)),
-                (t[1] = h.getValueAtTime(h.keyframes[h.keyframes.length - 1].t / e, 0)),
-                (s[0] = i.getValueAtTime((i.keyframes[i.keyframes.length - 1].t - 0.01) / e, 0)),
-                (s[1] = h.getValueAtTime((h.keyframes[h.keyframes.length - 1].t - 0.01) / e, 0)))
-              : ((t = [i.pv, h.pv]),
-                (s[0] = i.getValueAtTime((i._caching.lastFrame + i.offsetTime - 0.01) / e, i.offsetTime)),
-                (s[1] = h.getValueAtTime((h._caching.lastFrame + h.offsetTime - 0.01) / e, h.offsetTime)));
+                ? ((t[0] = i.getValueAtTime(i.keyframes[i.keyframes.length - 1].t / e, 0)),
+                  (t[1] = h.getValueAtTime(h.keyframes[h.keyframes.length - 1].t / e, 0)),
+                  (s[0] = i.getValueAtTime((i.keyframes[i.keyframes.length - 1].t - 0.01) / e, 0)),
+                  (s[1] = h.getValueAtTime((h.keyframes[h.keyframes.length - 1].t - 0.01) / e, 0)))
+                : ((t = [i.pv, h.pv]),
+                  (s[0] = i.getValueAtTime((i._caching.lastFrame + i.offsetTime - 0.01) / e, i.offsetTime)),
+                  (s[1] = h.getValueAtTime((h._caching.lastFrame + h.offsetTime - 0.01) / e, h.offsetTime)));
           } else t = s = Z;
           this.v.rotate(-Math.atan2(t[1] - s[1], t[0] - s[0]));
         }
@@ -2154,8 +2154,8 @@ bt(
       s <= 1
         ? r.push({ s: t, e: s })
         : t >= 1
-        ? r.push({ s: t - 1, e: s - 1 })
-        : (r.push({ s: t, e: 1 }), r.push({ s: 0, e: s - 1 }));
+          ? r.push({ s: t - 1, e: s - 1 })
+          : (r.push({ s: t, e: 1 }), r.push({ s: 0, e: s - 1 }));
       let a,
         n,
         o = [],
@@ -2242,9 +2242,9 @@ bt(
                 y <= 1
                   ? f.push({ s: d.totalShapeLength * g, e: d.totalShapeLength * y })
                   : g >= 1
-                  ? f.push({ s: d.totalShapeLength * (g - 1), e: d.totalShapeLength * (y - 1) })
-                  : (f.push({ s: d.totalShapeLength * g, e: d.totalShapeLength }),
-                    f.push({ s: 0, e: d.totalShapeLength * (y - 1) }));
+                    ? f.push({ s: d.totalShapeLength * (g - 1), e: d.totalShapeLength * (y - 1) })
+                    : (f.push({ s: d.totalShapeLength * g, e: d.totalShapeLength }),
+                      f.push({ s: 0, e: d.totalShapeLength * (y - 1) }));
               let t = this.addShapes(d, f[0]);
               if (f[0].s !== f[0].e) {
                 if (f.length > 1) {
@@ -2968,21 +2968,21 @@ class Nt extends O {
             f.push(s[r]),
             this.addTransformToStyleList(s[r]))
           : 'sh' == t[r].ty || 'rc' == t[r].ty || 'el' == t[r].ty || 'sr' == t[r].ty
-          ? o || (s[r] = this.createShapeElement(t[r]))
-          : 'tm' == t[r].ty || 'rd' == t[r].ty
-          ? (o
-              ? ((l = s[r]), (l.closed = !1))
-              : ((l = It.getModifier(t[r].ty)), l.init(this, t[r]), (s[r] = l), this.shapeModifiers.push(l)),
-            u.push(l))
-          : 'rp' == t[r].ty &&
-            (o
-              ? ((l = s[r]), (l.closed = !0))
-              : ((l = It.getModifier(t[r].ty)),
-                (s[r] = l),
-                l.init(this, t, r, s),
-                this.shapeModifiers.push(l),
-                (i = !1)),
-            u.push(l));
+            ? o || (s[r] = this.createShapeElement(t[r]))
+            : 'tm' == t[r].ty || 'rd' == t[r].ty
+              ? (o
+                  ? ((l = s[r]), (l.closed = !1))
+                  : ((l = It.getModifier(t[r].ty)), l.init(this, t[r]), (s[r] = l), this.shapeModifiers.push(l)),
+                u.push(l))
+              : 'rp' == t[r].ty &&
+                (o
+                  ? ((l = s[r]), (l.closed = !0))
+                  : ((l = It.getModifier(t[r].ty)),
+                    (s[r] = l),
+                    l.init(this, t, r, s),
+                    this.shapeModifiers.push(l),
+                    (i = !1)),
+                u.push(l));
       this.addProcessedElement(t[r], r + 1);
     }
     for (this.removeTransformFromStyleList(), this.closeStyles(d), c = u.length, r = 0; r < c; r += 1) u[r].closed = !0;
@@ -3045,14 +3045,14 @@ class Nt extends O {
       'tr' == s[h].ty
         ? ((i = e[h].transform), this.updateShapeTransform(t, i))
         : 'sh' == s[h].ty || 'el' == s[h].ty || 'rc' == s[h].ty || 'sr' == s[h].ty
-        ? this.updatePath(s[h], e[h])
-        : 'fl' == s[h].ty
-        ? this.updateFill(s[h], e[h], i)
-        : 'st' == s[h].ty
-        ? this.updateStroke(s[h], e[h], i)
-        : 'gf' == s[h].ty || 'gs' == s[h].ty
-        ? this.updateGradientFill(s[h], e[h], i)
-        : 'gr' == s[h].ty && this.updateShape(i, s[h].it, e[h].it);
+          ? this.updatePath(s[h], e[h])
+          : 'fl' == s[h].ty
+            ? this.updateFill(s[h], e[h], i)
+            : 'st' == s[h].ty
+              ? this.updateStroke(s[h], e[h], i)
+              : 'gf' == s[h].ty || 'gs' == s[h].ty
+                ? this.updateGradientFill(s[h], e[h], i)
+                : 'gr' == s[h].ty && this.updateShape(i, s[h].it, e[h].it);
   }
   updateGrahpics() {
     const t = this.stylesList.length;
@@ -3389,8 +3389,8 @@ class Kt extends e {
       null === this.textureLoader
         ? this.emit('success')
         : this.textureLoader.loaded
-        ? this.emit('success')
-        : this.textureLoader.once('complete', () => this.emit('success'));
+          ? this.emit('success')
+          : this.textureLoader.once('complete', () => this.emit('success'));
   }
   _extraCompositions(t, { global: e, local: i }, h = !1) {
     const { w: r, h: a, ip: n, op: o, st: l = 0 } = t,

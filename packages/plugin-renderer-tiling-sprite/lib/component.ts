@@ -1,5 +1,5 @@
-import {Component} from '@eva/eva.js';
-import {type, step} from '@eva/inspector-decorator';
+import { Component } from '@eva/eva.js';
+import { type, step } from '@eva/inspector-decorator';
 
 export interface TilingSpriteParams {
   resource: string;

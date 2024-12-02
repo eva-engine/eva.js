@@ -6,11 +6,10 @@ import Component from '../core/Component';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
 
-
 /** eva plugin struct */
 export interface PluginStruct {
-  Components?: typeof Component[];
-  Systems?: typeof System[];
+  Components?: (typeof Component)[];
+  Systems?: (typeof System)[];
 }
 
 interface GameParams {
@@ -38,8 +37,8 @@ interface LoadSceneParams {
   params?: {
     width?: number;
     height?: number;
-    canvas?: HTMLCanvasElement
-    renderType?: number
+    canvas?: HTMLCanvasElement;
+    renderType?: number;
     autoStart?: boolean;
     sharedTicker?: boolean;
     sharedLoader?: boolean;
@@ -53,7 +52,7 @@ interface LoadSceneParams {
     forceFXAA?: boolean;
     legacy?: boolean;
     autoResize?: boolean;
-    powerPreference?: "high-performance";
+    powerPreference?: 'high-performance';
   };
 }
 

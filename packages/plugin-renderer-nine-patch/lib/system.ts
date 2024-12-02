@@ -47,7 +47,7 @@ export default class NinePatch extends Renderer {
     if (!this.validateAsyncId(gameObjectId, asyncId)) return;
     if (!data) {
       console.error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
-      return
+      return;
     }
     let img: Parameters<(typeof Texture)['from']>[0];
     if (type === RESOURCE_TYPE.SPRITE) {
