@@ -30,7 +30,7 @@ export interface TransformMatrix {
   d: number;
   tx: number;
   ty: number;
-  array?: number[];
+  array: Float32Array | null;
 }
 
 /**

@@ -21,6 +21,6 @@
     "@eva/eva.js": "1.2.8",
     "@eva/plugin-renderer": "1.2.8",
     "@eva/inspector-decorator": "^0.0.5",
-    "pixi.js": "^4.8.9"
+    "pixi.js": "^8.6.2"
   }
 }

@@ -151,20 +151,17 @@ class Game extends EventEmitter {
   /** Systems alled to this game */
   systems: System[] = [];
 
-  constructor({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
-    super();
+  async init({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
     if (window.__EVA_INSPECTOR_ENV__) {
       window.__EVA_GAME_INSTANCE__ = this;
     }
     this.ticker = new Ticker({ autoStart: false, frameRate });
     this.initTicker();
-
     if (systems && systems.length) {
       for (const system of systems) {
-        this.addSystem(system);
+        await this.addSystem(system);
       }
     }
-
     if (needScene) {
       this.loadScene(new Scene('scene'));
     }
@@ -189,8 +186,11 @@ class Game extends EventEmitter {
     return getAllGameObjects(this);
   }
 
-  addSystem<T extends System>(S: T): T;
-  addSystem<T extends System>(S: SystemConstructor<T>, obj?: ConstructorParameters<SystemConstructor<T>>): T;
+  async addSystem<T extends System>(S: T): Promise<T>;
+  async addSystem<T extends System>(
+    S: SystemConstructor<T>,
+    obj?: ConstructorParameters<SystemConstructor<T>>,
+  ): Promise<T>;
 
   /**
    * Add system
@@ -198,7 +198,10 @@ class Game extends EventEmitter {
    * @typeParam T - system which extends base `System` class
    * @typeparam U - type of system class
    */
-  addSystem<T extends System>(S: T | SystemConstructor<T>, obj?: ConstructorParameters<SystemConstructor<T>>): T {
+  async addSystem<T extends System>(
+    S: T | SystemConstructor<T>,
+    obj?: ConstructorParameters<SystemConstructor<T>>,
+  ): Promise<T> {
     let system;
     if (S instanceof Function) {
       system = new S(obj);
@@ -218,7 +221,7 @@ class Game extends EventEmitter {
     }
 
     system.game = this;
-    system.init && system.init(system.__systemDefaultParams);
+    system.init && (await system.init(system.__systemDefaultParams));
 
     setSystemObserver(system, system.constructor);
     initObserver(system.constructor);

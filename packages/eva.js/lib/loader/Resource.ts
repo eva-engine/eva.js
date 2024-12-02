@@ -1,11 +1,4 @@
-import {
-  Loader,
-  XhrResponseType,
-  ImageLoadStrategy,
-  XhrLoadStrategy,
-  VideoLoadStrategy,
-  AbstractLoadStrategy,
-} from 'resource-loader';
+import { Assets } from 'pixi.js';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
 export { resourceLoader } from './resourceLoader';
@@ -76,27 +69,6 @@ export interface ResourceStruct extends ResourceBase {
   instance?: any;
 }
 
-XhrLoadStrategy.setExtensionXhrType('json', XhrResponseType.Json);
-XhrLoadStrategy.setExtensionXhrType('tex', XhrResponseType.Json);
-XhrLoadStrategy.setExtensionXhrType('ske', XhrResponseType.Json);
-
-XhrLoadStrategy.setExtensionXhrType('mp3', XhrResponseType.Buffer);
-XhrLoadStrategy.setExtensionXhrType('wav', XhrResponseType.Buffer);
-XhrLoadStrategy.setExtensionXhrType('aac', XhrResponseType.Buffer);
-XhrLoadStrategy.setExtensionXhrType('ogg', XhrResponseType.Buffer);
-
-export const RESOURCE_TYPE_STRATEGY: { [type: string]: new (...args: any[]) => AbstractLoadStrategy } = {
-  png: ImageLoadStrategy,
-  jpg: ImageLoadStrategy,
-  jpeg: ImageLoadStrategy,
-  webp: ImageLoadStrategy,
-  json: XhrLoadStrategy,
-  tex: XhrLoadStrategy,
-  ske: XhrLoadStrategy,
-  audio: XhrLoadStrategy,
-  video: VideoLoadStrategy,
-};
-
 type ResourceName = string;
 type ResourceProcessFn = (resource: ResourceStruct) => any;
 type PreProcessResourceHandler = (res: ResourceBase) => void;
@@ -123,8 +95,6 @@ class Resource extends EE {
 
   /** Resource load promise */
   private promiseMap = {};
-
-  private loaders: Loader[] = [];
 
   progress: Progress;
 
@@ -264,39 +234,41 @@ class Resource extends EE {
   private loadResource({ names = [], preload = false }) {
     const unLoadNames = names.filter(name => !this.promiseMap[name] && this.resourcesMap[name]);
     if (!unLoadNames.length) return;
-
     const resolves = {};
-    const loader = this.getLoader(preload);
-
     unLoadNames.forEach(name => {
       this.promiseMap[name] = new Promise(r => (resolves[name] = r));
       const res = this.resourcesMap[name];
-
       for (const handler of this.preProcessResourceHandlers) {
         handler(res);
       }
-
       for (const key in res.src) {
         const resourceType = res.src[key].type;
         if (resourceType === 'data') {
           res.data[key] = res.src[key].data;
           this.doComplete(name, resolves[name], preload);
         } else {
-          loader.add({
-            url: res.src[key].url,
-            name: `${res.name}_${key}`,
-            strategy: RESOURCE_TYPE_STRATEGY[resourceType],
-            metadata: {
-              key,
-              name: res.name,
-              resolves,
-            },
-          });
+          Assets.load(res.src[key].url)
+            .then(data => {
+              this.onLoad({
+                preload,
+                resource: {
+                  metadata: { key, name, resolves },
+                  data: data,
+                },
+              });
+            })
+            .catch(e => {
+              this.onError({
+                preload,
+                errMsg: e.message,
+                resource: {
+                  metadata: { key, name, resolves },
+                },
+              });
+            });
         }
       }
     });
-
-    loader.load();
   }
 
   async doComplete(name, resolve, preload = false) {
@@ -333,29 +305,24 @@ class Resource extends EE {
   }
 
   getLoader(preload: boolean = false) {
-    let loader = this.loaders.find(({ loading }) => !loading);
-    if (!loader) {
-      loader = new Loader();
-      this.loaders.push(loader);
-    }
-    if (preload) {
-      loader.onStart.once(() => {
-        this.progress.onStart();
-      });
-    }
-    loader.onLoad.add((_, resource) => {
-      this.onLoad({ preload, resource });
-    });
-    // @ts-ignore
-    loader.onError.add((errMsg, _, resource) => {
-      this.onError({ errMsg, resource, preload });
-    });
-    loader.onComplete.once(() => {
-      loader.onLoad.detachAll();
-      loader.onError.detachAll();
-      loader.reset();
-    });
-    return loader;
+    // if (preload) {
+    //   loader.onStart.once(() => {
+    //     this.progress.onStart();
+    //   });
+    // }
+    // loader.onLoad.add((_, resource) => {
+    //   this.onLoad({ preload, resource });
+    // });
+    // // @ts-ignore
+    // loader.onError.add((errMsg, _, resource) => {
+    //   this.onError({ errMsg, resource, preload });
+    // });
+    // loader.onComplete.once(() => {
+    //   loader.onLoad.detachAll();
+    //   loader.onError.detachAll();
+    //   loader.reset();
+    // });
+    // return loader;
   }
 
   private async onLoad({ preload = false, resource }) {

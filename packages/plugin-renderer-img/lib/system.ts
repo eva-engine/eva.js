@@ -7,10 +7,13 @@ import ImgComponent from './component';
 resource.registerInstance(RESOURCE_TYPE.IMAGE, ({ data = {} }) => {
   const { image } = data;
   if (image) {
+    if (image instanceof Texture) {
+      return image;
+    }
     const texture = Texture.from(image);
     return texture;
   }
-  return;
+  return data;
 });
 resource.registerDestroy(RESOURCE_TYPE.IMAGE, ({ instance }) => {
   if (instance) {

@@ -3,12 +3,12 @@ import { Application } from '@eva/renderer-adapter';
 import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
-import { ticker } from 'pixi.js';
+// import { ticker } from 'pixi.js';
 import type { WebGLRenderer, ApplicationOptions } from 'pixi.js';
 import { registerCompressedTexture } from './compressedTexture';
 import { SuportedCompressedTexture, getSuportCompressedTextureFormats } from './compressedTexture/ability';
 
-export interface RendererSystemParams extends ApplicationOptions {
+export interface RendererSystemParams extends Partial<ApplicationOptions> {
   canvas?: HTMLCanvasElement;
   renderType?: number;
   /**
@@ -25,13 +25,13 @@ export enum RENDERER_TYPE {
 }
 
 const disableScroll = renderer => {
-  renderer.plugins.interaction.autoPreventDefault = true;
-  renderer.view.style.touchAction = 'none';
+  // renderer.plugins.interaction.autoPreventDefault = true;
+  // renderer.view.style.touchAction = 'none';
 };
 
 const enableScroll = renderer => {
-  renderer.plugins.interaction.autoPreventDefault = false;
-  renderer.view.style.touchAction = 'auto';
+  // renderer.plugins.interaction.autoPreventDefault = false;
+  // renderer.view.style.touchAction = 'auto';
 };
 
 @decorators.componentObserver({
@@ -39,7 +39,7 @@ const enableScroll = renderer => {
 })
 export default class Renderer extends System<RendererSystemParams> {
   static systemName: string = 'Renderer';
-  params: RendererSystemParams;
+  params: Partial<RendererSystemParams>;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
   application: Application;
@@ -47,16 +47,16 @@ export default class Renderer extends System<RendererSystemParams> {
   transform: Transform;
   multiApps: Application[] = [];
   suportedCompressedTextureFormats: SuportedCompressedTexture;
-  init(params: RendererSystemParams) {
+  async init(params: Partial<RendererSystemParams>) {
     this.params = params;
-    this.application = this.createApplication(params);
+    this.application = await this.createApplication(params);
 
     this.containerManager = new ContainerManager();
     this.rendererManager = new RendererManager({
       game: this.game,
       rendererSystem: this,
     });
-    this.game.canvas = this.application.view;
+    this.game.canvas = this.application.canvas;
     this.transform = new Transform({
       system: this,
       containerManager: this.containerManager,
@@ -72,7 +72,7 @@ export default class Renderer extends System<RendererSystemParams> {
           application = this.createMultiApplication({ params });
           break;
       }
-      scene.canvas = application.view;
+      scene.canvas = application.canvas;
       this.transform.emit('changeScene', {
         scene,
         mode,
@@ -104,22 +104,11 @@ export default class Renderer extends System<RendererSystemParams> {
     return app;
   }
 
-  createApplication(params: RendererSystemParams) {
-    params.view = params.canvas;
-    if (params.renderType === RENDERER_TYPE.CANVAS) {
-      params.forceCanvas = true;
-    }
-    let app;
-
-    try {
-      app = new Application({ sharedTicker: true, ...params });
-    } catch (e) {
-      if (e.message.match(/not support webgl/i) !== undefined) {
-        app = new Application({ sharedTicker: true, ...params, forceCanvas: true });
-      }
-    }
-    ticker.shared.stop();
-    ticker.shared.autoStart = false;
+  async createApplication(params: Partial<RendererSystemParams>) {
+    const app = new Application();
+    await app.init({ sharedTicker: true, ...params, hello: true });
+    // ticker.shared.stop();
+    // ticker.shared.autoStart = false;
     /**
      * Fix https://github.com/eva-engine/eva.js/issues/30
      * PreventScroll is legacy, because it has bug.

@@ -7,7 +7,7 @@ import Game, { LOAD_SCENE_MODE } from './game/Game';
 import Scene from './game/Scene';
 import { IDEProp } from './decorators/ide';
 import { componentObserver } from './decorators/system';
-import { resource, LOAD_EVENT, RESOURCE_TYPE, RESOURCE_TYPE_STRATEGY, resourceLoader } from './loader/Resource';
+import { resource, LOAD_EVENT, RESOURCE_TYPE, resourceLoader } from './loader/Resource';
 
 /** Decorators util */
 const decorators = {
@@ -27,6 +27,8 @@ export type { SystemConstructor } from './core/System';
 
 const version = '__VERSION__';
 console.log(`Eva.js version: ${version}`);
+
+const RESOURCE_TYPE_STRATEGY = {};
 
 export {
   version,

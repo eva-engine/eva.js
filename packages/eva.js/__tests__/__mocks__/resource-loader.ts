@@ -109,12 +109,4 @@ export enum XhrResponseType {
 
 export class ImageLoadStrategy {}
 
-export class XhrLoadStrategy {
-  static sourceMap = {};
-
-  static setExtensionXhrType(resourceType: string, responseType: string) {
-    this.sourceMap[resourceType] = responseType;
-  }
-}
-
 export class VideoLoadStrategy {}

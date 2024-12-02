@@ -1,8 +1,7 @@
-import { XhrLoadStrategy } from './XhrLoadStrategy';
 import { KTXTextureResource } from '../resource/KTXTextureResource';
 
 // @ts-ignore
-export default class KTXLoadStrategy extends XhrLoadStrategy {
+export default class KTXLoadStrategy {
   // @ts-ignore
   private _complete(type, data): void {
     //@ts-ignore

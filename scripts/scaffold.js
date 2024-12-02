@@ -48,15 +48,17 @@ files.forEach(shortName => {
 
   if (args.force || !pkgExists) {
     const bundle = pkg.bundle ?? `EVA.${shortName.replaceAll('-', '.')}`;
-    const pluginRendererDep = shortName.startsWith('plugin-renderer-') ? {
-      "@eva/plugin-renderer": version,
-      "pixi.js": "^4.8.9"
-    } : {}
+    const pluginRendererDep = shortName.startsWith('plugin-renderer-')
+      ? {
+          '@eva/plugin-renderer': version,
+          'pixi.js': '^8.6.2',
+        }
+      : {};
     const dependencies = {
-      "@eva/inspector-decorator": "^0.0.5",
-      "@eva/eva.js": version,
+      '@eva/inspector-decorator': '^0.0.5',
+      '@eva/eva.js': version,
       ...pluginRendererDep,
-      ...(pkg.dependencies ?? {})
+      ...(pkg.dependencies ?? {}),
     };
     const author = gitUser();
     const json = {

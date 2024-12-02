@@ -2,13 +2,13 @@
  * Inspired by pixi-compressed-texture
  * @link https://github.com/pixijs/pixi-compressed-textures/tree/v4.x
  */
-import { glCore } from 'pixi.js';
+// import { glCore } from 'pixi.js';
 import { CompressedTextureResource } from '../resource/CompressedTextureResource';
-const GLTexture = glCore.GLTexture;
+// const GLTexture = glCore.GLTexture;
 export const GLTextureMixin = {
   isCompressed: false,
 
-  uploadNotCompressed: GLTexture.prototype.upload,
+  // uploadNotCompressed: GLTexture.prototype.upload,
 
   upload: function (source) {
     if (!(source instanceof CompressedTextureResource)) {

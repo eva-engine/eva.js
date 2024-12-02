@@ -19,13 +19,4 @@ export function addPreProcessResourceHandler(resource, gl: WebGLRenderingContext
     }
   });
 }
-export function addKTXStragetyAndRegister() {
-  Object.assign(RESOURCE_TYPE_STRATEGY, {
-    astc: KTXLoadStrategy,
-    etc: KTXLoadStrategy,
-    pvrtc: KTXLoadStrategy,
-    s3tc: KTXLoadStrategy,
-    atc: KTXLoadStrategy,
-  });
-  KTXLoadStrategy.setExtensionXhrType('ktx', XhrResponseType.Buffer);
-}
+export function addKTXStragetyAndRegister() {}

@@ -63,13 +63,13 @@ export default class Transform extends EventEmitter {
   }
   addContainer(changed: ComponentChanged) {
     const container = new Container();
-    container.name = changed.gameObject.name;
+    container.label = changed.gameObject.name;
     this.containerManager.addContainer({
       name: changed.gameObject.id,
       container,
     });
     const transform = changed.component as Trans;
-    transform.worldTransform = container.transform.worldTransform;
+    transform.worldTransform = container.worldTransform;
   }
   change(changed: ComponentChanged) {
     const transform = changed.component as Trans;

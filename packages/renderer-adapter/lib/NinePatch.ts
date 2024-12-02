@@ -1,6 +1,6 @@
-import { Texture, mesh } from 'pixi.js';
+import { Texture } from 'pixi.js';
 
-export default class NinePatch extends mesh.NineSlicePlane {
+export default class NinePatch {
   constructor(img, leftWidth, topHeight, rightWidth, bottomHeight) {
     let texture;
     if (img === 'string') {
@@ -8,6 +8,6 @@ export default class NinePatch extends mesh.NineSlicePlane {
     } else {
       texture = Texture.from(img);
     }
-    super(texture, leftWidth, topHeight, rightWidth, bottomHeight);
+    // super(texture, leftWidth, topHeight, rightWidth, bottomHeight);
   }
 }
