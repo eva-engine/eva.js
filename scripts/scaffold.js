@@ -51,7 +51,7 @@ files.forEach(shortName => {
     const pluginRendererDep = shortName.startsWith('plugin-renderer-')
       ? {
           '@eva/plugin-renderer': version,
-          'pixi.js': '^8.6.2',
+          'pixi.js': '^8.6.3',
         }
       : {};
     const dependencies = {

@@ -22,7 +22,7 @@
     "@eva/renderer-adapter": "1.2.8",
     "eventemitter3": "^3.1.2",
     "lodash-es": "^4.17.21",
-    "pixi.js": "^8.6.2"
+    "pixi.js": "^8.6.3"
   },
   "devDependencies": {
     "resource-loader": "^4.0.0-rc4"
