@@ -247,7 +247,10 @@ class Resource extends EE {
           res.data[key] = res.src[key].data;
           this.doComplete(name, resolves[name], preload);
         } else {
-          Assets.load(res.src[key].url)
+          const url = res.src[key].url?.startsWith('//')
+            ? `${window.location.protocol}${res.src[key].url}`
+            : res.src[key].url;
+          Assets.load(url)
             .then(data => {
               this.onLoad({
                 preload,
@@ -258,6 +261,7 @@ class Resource extends EE {
               });
             })
             .catch(e => {
+              console.log('>>>E', e);
               this.onError({
                 preload,
                 errMsg: e.message,
