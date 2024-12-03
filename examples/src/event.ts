@@ -1,11 +1,10 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { Img, ImgSystem } from "@eva/plugin-renderer-img";
-import { GraphicsSystem, Graphics } from "@eva/plugin-renderer-graphics";
-import { Event, EventSystem, HIT_AREA_TYPE } from "@eva/plugin-renderer-event";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Img, ImgSystem } from '@eva/plugin-renderer-img';
+import { GraphicsSystem, Graphics } from '@eva/plugin-renderer-graphics';
+import { Event, EventSystem, HIT_AREA_TYPE } from '@eva/plugin-renderer-event';
 export const name = 'event';
 export async function init(canvas) {
-
   resource.addResource([
     {
       name: 'heart',
@@ -20,9 +19,9 @@ export async function init(canvas) {
     },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
-
       new RendererSystem({
         canvas,
         width: 750,
@@ -30,10 +29,8 @@ export async function init(canvas) {
       }),
 
       new EventSystem(),
-
       new ImgSystem(),
-
-      new GraphicsSystem()
+      new GraphicsSystem(),
     ],
   });
 
@@ -47,14 +44,12 @@ export async function init(canvas) {
     anchor: { x: 0.5, y: 0.5 },
   });
   image.addComponent(
-
     new Img({
       resource: 'heart',
     }),
   );
 
   const evt = image.addComponent(
-
     new Event({
       // 使用这个属性设置交互事件可以触发的区域，骨骼动画有所变差，可以临时在当前游戏对象下添加一个同类型同属性的Graphic查看具体点击位置。
       hitArea: {
@@ -91,21 +86,21 @@ export async function init(canvas) {
   const localPosEventGameObject = new GameObject('', {
     position: {
       x: 400,
-      y: 700
+      y: 700,
     },
     size: {
       width: 1000,
-      height: 1000
+      height: 1000,
     },
     scale: {
-      x: .25,
-      y: .5
+      x: 0.25,
+      y: 0.5,
     },
     origin: {
-      x: .5,
-      y: .5
+      x: 0.5,
+      y: 0.5,
     },
-    rotation: Math.PI * .25
+    rotation: Math.PI * 0.25,
   });
   const g = localPosEventGameObject.addComponent(new Graphics());
   g.graphics.beginFill(0xff0000).drawRect(0, 0, 1000, 1000).endFill();
@@ -114,6 +109,6 @@ export async function init(canvas) {
 
   e.on('tap', e => {
     console.log(`LocalPosition: [x: ${e.data.localPosition.x}, y: ${e.data.localPosition.y}]`);
-  })
+  });
   game.scene.addChild(localPosEventGameObject);
 }
