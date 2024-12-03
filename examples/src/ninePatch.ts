@@ -1,10 +1,9 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { NinePatchSystem, NinePatch } from "@eva/plugin-renderer-nine-patch";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { NinePatchSystem, NinePatch } from '@eva/plugin-renderer-nine-patch';
 
 export const name = 'ninePatch';
 export async function init(canvas) {
-
   resource.addResource([
     {
       name: 'nine',
@@ -19,7 +18,8 @@ export async function init(canvas) {
     },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
