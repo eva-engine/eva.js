@@ -1,11 +1,11 @@
-import { Game, GameObject } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { GraphicsSystem, Graphics } from "@eva/plugin-renderer-graphics";
+import { Game, GameObject } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { GraphicsSystem, Graphics } from '@eva/plugin-renderer-graphics';
 
 export const name = 'graphics';
 export async function init(canvas) {
-
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
