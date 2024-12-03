@@ -1,0 +1,119 @@
+{
+  "frames": {
+    "symbol_1": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 365
+      }
+    },
+    "symbol_2": {
+      "frame": {
+        "x": 300,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 365
+      }
+    },
+    "symbol_3": {
+      "frame": {
+        "x": 600,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 365
+      }
+    },
+    "symbol_4": {
+      "frame": {
+        "x": 0,
+        "y": 365,
+        "w": 300,
+        "h": 365
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 365
+      }
+    },
+    "symbol_5": {
+      "frame": {
+        "x": 300,
+        "y": 365,
+        "w": 300,
+        "h": 365
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 365
+      },
+      "sourceSize": {
+        "w": 300,
+        "h": 365
+      }
+    }
+  },
+  "animations": {
+    "symbol": ["symbol_1", "symbol_2", "symbol_3", "symbol_4", "symbol_5"]
+  },
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "symbol.png",
+    "format": "RGBA4444",
+    "size": {
+      "w": 900,
+      "h": 730
+    },
+    "scale": "1",
+    "smartupdate": ""
+  }
+}

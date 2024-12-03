@@ -3,14 +3,14 @@ import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@ev
 
 import SpriteComponent from './component';
 import { Sprite as SpriteEngine } from '@eva/renderer-adapter';
-import { Spritesheet, BaseTexture } from 'pixi.js';
+import { Spritesheet, Texture } from 'pixi.js';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be used in ninepatch system.
 
 resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
   return new Promise(r => {
-    const textureObj = data.json;
-    const texture = BaseTexture.from(data.image);
+    const textureObj = data.json.data;
+    const texture = data.image instanceof Texture ? data.image : Texture.from(data.image);
     const frames = textureObj.frames || {};
     const animations = textureObj.animations || {};
     const newFrames = {};
@@ -30,9 +30,8 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
     }
     textureObj.frames = newFrames;
     const spriteSheet = new Spritesheet(texture, textureObj);
-    spriteSheet.parse(() => {
-      const { textures } = spriteSheet;
-      r(textures);
+    spriteSheet.parse().then(() => {
+      r(spriteSheet.textures);
     });
   });
 });
