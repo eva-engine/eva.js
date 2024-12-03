@@ -52,6 +52,7 @@ export default class Text extends Component<TextParams> {
         newStyle[key.substring(1)] = style[key];
       }
     }
+    delete newStyle['styleKey'];
     this.style = newStyle;
     if (obj) {
       this.text = obj.text;

@@ -1,10 +1,10 @@
-import { RendererSystem } from "@eva/plugin-renderer"
-import { Game, GameObject } from "@eva/eva.js"
-import { Text, TextSystem } from "@eva/plugin-renderer-text"
-export const name = 'text'
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Game, GameObject } from '@eva/eva.js';
+import { Text, TextSystem } from '@eva/plugin-renderer-text';
+export const name = 'text';
 export async function init(canvas) {
-
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       //@ts-ignore
       new RendererSystem({
@@ -39,7 +39,6 @@ export async function init(canvas) {
   });
 
   text.addComponent(
-    //@ts-ignore
     new Text({
       text: '欢迎使用EVA互动游戏开发体系！',
       style: {
