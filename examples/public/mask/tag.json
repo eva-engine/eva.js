@@ -1,0 +1,88 @@
+{
+  "frames": {
+    "achievement.png": {
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 48,
+        "h": 48
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 2,
+        "w": 48,
+        "h": 48
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 50
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "donate.png": {
+      "frame": {
+        "x": 51,
+        "y": 1,
+        "w": 48,
+        "h": 48
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 2,
+        "w": 48,
+        "h": 48
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 50
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "task.png": {
+      "frame": {
+        "x": 101,
+        "y": 1,
+        "w": 48,
+        "h": 48
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 2,
+        "w": 48,
+        "h": 48
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 50
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "tag.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 150,
+      "h": 50
+    },
+    "scale": "0.5",
+    "smartupdate": "$TexturePacker:SmartUpdate:4b89bdc6b075a16e3b9a5ffa8544ca83:8a4526e168ca739bc9c725ac690b63c5:09d1d1d6ac185da3afc34e24691399f3$"
+  }
+}

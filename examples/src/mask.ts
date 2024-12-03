@@ -1,11 +1,10 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { Img, ImgSystem } from "@eva/plugin-renderer-img";
-import "@eva/plugin-renderer-sprite";
-import { Mask, MaskSystem, MASK_TYPE } from "@eva/plugin-renderer-mask";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Img, ImgSystem } from '@eva/plugin-renderer-img';
+import '@eva/plugin-renderer-sprite';
+import { Mask, MaskSystem, MASK_TYPE } from '@eva/plugin-renderer-mask';
 export const name = 'mask';
 export async function init(canvas) {
-
   resource.addResource([
     {
       name: 'heart',
@@ -13,7 +12,7 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url: '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
+          url: '/mask/heart.png',
         },
       },
       preload: false,
@@ -24,18 +23,19 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url: '//gw.alicdn.com/mt/TB1KcVte4n1gK0jSZKPXXXvUXXa-150-50.png',
+          url: '/mask/tag.png',
         },
         json: {
           type: 'json',
-          url: '//gw.alicdn.com/mt/TB1d4lse4D1gK0jSZFsXXbldVXa.json',
+          url: '/mask/tag.json',
         },
       },
       preload: true,
     },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
@@ -121,13 +121,12 @@ export async function init(canvas) {
   );
   game.scene.addChild(image2);
 
-
   // @ts-ignore
   window.test = () => {
     setTimeout(() => {
-      image2.removeComponent(Mask)
+      image2.removeComponent(Mask);
       setTimeout(() => {
-        image2.removeComponent(Mask)
+        image2.removeComponent(Mask);
         setTimeout(() => {
           image2.addComponent(
             new Mask({
@@ -142,11 +141,11 @@ export async function init(canvas) {
               spriteName: 'task.png',
             }),
           );
-          console.log(123)
-        }, 1000)
-        console.log(1233)
-      }, 1000)
-      console.log(1223)
-    }, 1000)
-  }
+          console.log(123);
+        }, 1000);
+        console.log(1233);
+      }, 1000);
+      console.log(1223);
+    }, 1000);
+  };
 }

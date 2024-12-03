@@ -13,11 +13,11 @@ const propertyForGraphics = {
   Polygon: ['paths'],
 };
 const functionForGraphics = {
-  Circle: 'drawCircle',
-  Ellipse: 'drawEllipse',
-  Rect: 'drawRect',
-  RoundedRect: 'drawRoundedRect',
-  Polygon: 'drawPolygon',
+  Circle: 'circle',
+  Ellipse: 'ellipse',
+  Rect: 'rect',
+  RoundedRect: 'roundRect',
+  Polygon: 'poly',
 };
 
 enum MASK_TYPE {
@@ -152,10 +152,11 @@ export default class Mask extends Renderer {
     for (const key of propertyForGraphics[component.type]) {
       params.push(component.style[key]);
     }
-    graphics.beginFill(0x000000, 1);
+    graphics.fill(0x000000);
+    // @ts-ignore
     graphics[functionForGraphics[component.type]](...params);
 
-    graphics.endFill();
+    graphics.fill();
   }
   createSprite(component: MaskComponent) {
     const sprite = new SpriteEngine(null);
