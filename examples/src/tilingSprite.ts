@@ -1,6 +1,6 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { TilingSprite,TilingSpriteSystem } from "@eva/plugin-renderer-tiling-sprite";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { TilingSprite, TilingSpriteSystem } from '@eva/plugin-renderer-tiling-sprite';
 
 export const name = 'tilingSprite';
 export async function init(canvas) {
@@ -18,7 +18,8 @@ export async function init(canvas) {
     },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
@@ -30,14 +31,14 @@ export async function init(canvas) {
   });
 
   const tilingSprite = new GameObject('sprite', {
-    size: {width: 750, height: 1000},
+    size: { width: 750, height: 1000 },
   });
 
   tilingSprite.addComponent(
     new TilingSprite({
       resource: 'imageName',
-      tileScale: {x: 0.7, y: 0.7},
-      tilePosition: {x: 10, y: 40},
+      tileScale: { x: 0.7, y: 0.7 },
+      tilePosition: { x: 10, y: 40 },
     }),
   );
 
