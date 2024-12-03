@@ -4,8 +4,8 @@ import { StatsSystem } from '@eva/plugin-stats';
 import { Text, TextSystem } from '@eva/plugin-renderer-text';
 export const name = 'stats';
 export async function init(canvas) {
-  
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       //@ts-ignore
       new RendererSystem({
