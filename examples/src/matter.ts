@@ -1,17 +1,16 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { Graphics, GraphicsSystem } from "@eva/plugin-renderer-graphics";
-import { PhysicsSystem, Physics, PhysicsType } from "@eva/plugin-matterjs";
-import { Text, TextSystem } from "@eva/plugin-renderer-text";
-import { ImgSystem, Img } from "@eva/plugin-renderer-img";
-import { EventSystem, Event } from "@eva/plugin-renderer-event";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Graphics, GraphicsSystem } from '@eva/plugin-renderer-graphics';
+import { PhysicsSystem, Physics, PhysicsType } from '@eva/plugin-matterjs';
+import { Text, TextSystem } from '@eva/plugin-renderer-text';
+import { ImgSystem, Img } from '@eva/plugin-renderer-img';
+import { EventSystem, Event } from '@eva/plugin-renderer-event';
 
 declare const window: Window & {
-  game: Game
-}
+  game: Game;
+};
 export const name = 'matter';
 export async function init(canvas) {
-
   let gameHeight = 750 * (window.innerHeight / window.innerWidth);
 
   const fruitRadius = {
@@ -77,7 +76,7 @@ export async function init(canvas) {
     density: 0.002,
   };
   createGame();
-  function createGame() {
+  async function createGame() {
     resource.addResource([
       {
         name: 'yingtao',
@@ -193,12 +192,12 @@ export async function init(canvas) {
       },
     ]);
 
-    const game = new Game({
+    const game = new Game();
+    await game.init({
       autoStart: true,
       frameRate: 60,
       systems: [
         new RendererSystem({
-          transparent: true,
           canvas,
           backgroundColor: 0xfee79d,
           width: 750,
@@ -217,8 +216,8 @@ export async function init(canvas) {
             },
           },
           mouse: {
-            open: false
-          }
+            open: false,
+          },
         }),
         new TextSystem(),
         new EventSystem(),
@@ -244,9 +243,7 @@ export async function init(canvas) {
       },
     });
     const { graphics } = background.addComponent(new Graphics());
-    graphics.beginFill(0xfee79d, 1);
-    graphics.drawRect(0, 0, background.transform.size.width, background.transform.size.height);
-    graphics.endFill();
+    graphics.rect(0, 0, background.transform.size.width, background.transform.size.height).fill(0xfee79d);
     window.game.scene.addChild(background);
 
     gradePanel = new GameObject('grade', {
@@ -405,9 +402,7 @@ export async function init(canvas) {
       },
     });
     const { graphics } = gameObject.addComponent(new Graphics());
-    graphics.beginFill(color, 1);
-    graphics.drawRect(0, 0, gameObject.transform.size.width, gameObject.transform.size.height);
-    graphics.endFill();
+    graphics.rect(0, 0, gameObject.transform.size.width, gameObject.transform.size.height).fill(color);
     gameObject.addComponent(
       new Physics({
         type: PhysicsType.RECTANGLE,

@@ -15,6 +15,11 @@ export default class Text extends PIXIText {
       delete style['strokeThickness'];
     }
 
+    if (Array.isArray(style.fill)) {
+      console.warn('Eva.js Deprecation Warning:  fill array is not supported in Eva.js v2.');
+      style.fill = style.fill[0];
+    }
+
     // @ts-ignore
     if (Array.isArray(style.fillGradientStops)) {
       let fontSize;

@@ -152,11 +152,9 @@ export default class Mask extends Renderer {
     for (const key of propertyForGraphics[component.type]) {
       params.push(component.style[key]);
     }
-    graphics.fill(0x000000);
     // @ts-ignore
     graphics[functionForGraphics[component.type]](...params);
-
-    graphics.fill();
+    graphics.fill(0x000000);
   }
   createSprite(component: MaskComponent) {
     const sprite = new SpriteEngine(null);
