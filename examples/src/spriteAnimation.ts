@@ -11,7 +11,7 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png'
+          url: 'https://gw.alicdn.com/bao/uploaded/TB15pMkkrsTMeJjSszhXXcGCFXa-377-1070.png',
         },
         json: {
           type: 'json',
@@ -19,16 +19,16 @@ export async function init(canvas) {
         },
       },
       preload: false,
-    }
+    },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
         width: 750,
         height: 1000,
-        transparent: true
       }),
       new SpriteAnimationSystem(),
     ],
@@ -43,9 +43,9 @@ export async function init(canvas) {
   const frame = cut.addComponent(
     new SpriteAnimation({
       resource: 'fruit',
-      speed: 100,
+      speed: 200,
       autoPlay: true,
-      forwards: true
+      forwards: true,
     }),
   );
 

@@ -1,7 +1,7 @@
 import { GameObject, decorators, resource, ComponentChanged, RESOURCE_TYPE, OBSERVER_TYPE } from '@eva/eva.js';
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { SpriteAnimation as SpriteAnimationEngine } from '@eva/renderer-adapter';
-import { Spritesheet, BaseTexture } from 'pixi.js';
+import { Spritesheet, Texture } from 'pixi.js';
 
 import SpriteAnimationComponent from './component';
 
@@ -9,8 +9,8 @@ const resourceKeySplit = '_s|r|c_';
 
 resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({ name, data }) => {
   return new Promise(r => {
-    const textureObj = data.json;
-    const texture = BaseTexture.from(data.image);
+    const textureObj = data.json.data;
+    const texture = data.image instanceof Texture ? data.image : Texture.from(data.image);
     const frames = textureObj.frames || {};
     const animations = textureObj.animations || {};
     const newFrames = {};
@@ -30,7 +30,7 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({ name, data }) => {
     }
     textureObj.frames = newFrames;
     const spriteSheet = new Spritesheet(texture, textureObj);
-    spriteSheet.parse(() => {
+    spriteSheet.parse().then(() => {
       const { textures } = spriteSheet;
       const spriteFrames = [];
       for (const key in textures) {
