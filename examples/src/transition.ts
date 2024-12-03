@@ -1,11 +1,10 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { Img, ImgSystem } from "@eva/plugin-renderer-img";
-import { Transition, TransitionSystem } from "@eva/plugin-transition";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Img, ImgSystem } from '@eva/plugin-renderer-img';
+import { Transition, TransitionSystem } from '@eva/plugin-transition';
 
 export const name = 'transition';
 export async function init(canvas) {
-
   resource.addResource([
     {
       name: 'heart',
@@ -19,7 +18,8 @@ export async function init(canvas) {
       preload: false,
     },
   ]);
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
@@ -30,7 +30,7 @@ export async function init(canvas) {
       new TransitionSystem(),
     ],
   });
-  window.game = game
+  window.game = game;
 
   const image = new GameObject('image', {
     size: { width: 200, height: 200 },
