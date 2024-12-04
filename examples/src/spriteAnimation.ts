@@ -43,7 +43,7 @@ export async function init(canvas) {
   const frame = cut.addComponent(
     new SpriteAnimation({
       resource: 'fruit',
-      speed: 200,
+      speed: 100,
       autoPlay: true,
       forwards: true,
     }),

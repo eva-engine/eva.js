@@ -5,6 +5,7 @@ import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
 // import { ticker } from 'pixi.js';
 import type { WebGLRenderer, ApplicationOptions } from 'pixi.js';
+import { Ticker } from 'pixi.js';
 import { registerCompressedTexture } from './compressedTexture';
 import { SuportedCompressedTexture, getSuportCompressedTextureFormats } from './compressedTexture/ability';
 
@@ -107,8 +108,8 @@ export default class Renderer extends System<RendererSystemParams> {
   async createApplication(params: Partial<RendererSystemParams>) {
     const app = new Application();
     await app.init({ sharedTicker: true, ...params, hello: true });
-    // ticker.shared.stop();
-    // ticker.shared.autoStart = false;
+    Ticker.shared.stop();
+    Ticker.shared.autoStart = false;
     /**
      * Fix https://github.com/eva-engine/eva.js/issues/30
      * PreventScroll is legacy, because it has bug.
