@@ -17,6 +17,7 @@ export interface RendererSystemParams extends Partial<ApplicationOptions> {
    */
   preventScroll?: boolean;
   enableScroll?: boolean;
+  debugMode?: boolean;
 }
 
 export enum RENDERER_TYPE {
@@ -107,6 +108,9 @@ export default class Renderer extends System<RendererSystemParams> {
 
   async createApplication(params: Partial<RendererSystemParams>) {
     const app = new Application();
+    if (params.debugMode) {
+      globalThis.__PIXI_APP__ = app;
+    }
     await app.init({ sharedTicker: true, ...params, hello: true });
     Ticker.shared.stop();
     Ticker.shared.autoStart = false;

@@ -66,7 +66,6 @@ export default class SpineSystem extends Renderer {
       // TODO: 类型
       // @ts-ignore
       this.armatures[key].update(e.deltaTime * 0.001);
-      this.armatures[key].updateTransform();
     }
     super.update();
   }
@@ -92,7 +91,7 @@ export default class SpineSystem extends Renderer {
     const asyncId = this.increaseAsyncId(gameObjectId);
     const res = await resource.getResource(component.resource);
     if (!this.validateAsyncId(gameObjectId, asyncId)) return;
-    const spineData = await getSpineData(res, this.pixiSpine);
+    const spineData = await getSpineData(res, component.scale, this.pixiSpine);
     if (!this.validateAsyncId(gameObjectId, asyncId)) return;
     if (!spineData) {
       component.addHandler = setTimeout(() => {
@@ -119,7 +118,10 @@ export default class SpineSystem extends Renderer {
     }
     component.lastResource = component.resource;
     // @ts-ignore
-    const armature: any = new this.pixiSpine.Spine(spineData);
+    const armature: any = new this.pixiSpine.Spine({
+      skeletonData: spineData,
+      autoUpdate: false,
+    });
     this.armatures[changed.gameObject.id] = armature;
     if (changed.gameObject && changed.gameObject.transform) {
       const tran = changed.gameObject.transform;
@@ -130,7 +132,6 @@ export default class SpineSystem extends Renderer {
     container.addChildAt(armature, 0);
     /** 保证第一帧显示正常 */
     armature.update();
-    armature.updateTransform();
     component.armature = armature;
     // @ts-ignore
     component.emit('loaded', { resource: component.resource });

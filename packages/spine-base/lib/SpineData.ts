@@ -1,32 +1,21 @@
 import { resource } from '@eva/eva.js';
-import { cleanTextures, getTexture, releaseTexture, retainTexture } from './TexCache';
+import { cleanTextures, releaseTexture, retainTexture } from './TexCache';
 let dataMap: any = {};
 
 function createSpineData(name, data, scale, pixiSpine) {
-  let spineData: any = null;
-  const img = getTexture(data.image.src, data);
-  // @ts-ignore
-  new pixiSpine.core.TextureAtlas(
-    (data as any).atlas,
-    // @ts-ignore
-    (line, callback) => {
-      callback(img.baseTexture);
-    },
-    spineAtlas => {
-      if (spineAtlas) {
-        // @ts-ignore
-        const attachmentLoader = new pixiSpine.core.AtlasAttachmentLoader(spineAtlas);
-        // @ts-ignore
-        const spineJsonParser = new pixiSpine.core.SkeletonJson(attachmentLoader);
-        if (scale) {
-          spineJsonParser.scale = scale;
-        }
-        spineData = spineJsonParser.readSkeletonData(data.ske);
-      }
-    },
-  );
-  const obj = { spineData, ref: 0, imageSrc: data.image.src };
-  dataMap[name] = obj;
+  const skeletonAsset = data.ske;
+  const atlasAsset = data.atlas;
+  const attachmentLoader = new pixiSpine.AtlasAttachmentLoader(atlasAsset);
+  const parser =
+    skeletonAsset instanceof Uint8Array
+      ? new pixiSpine.SkeletonBinary(attachmentLoader)
+      : new pixiSpine.SkeletonJson(attachmentLoader);
+
+  parser.scale = scale || 1;
+  const skeletonData = parser.readSkeletonData(skeletonAsset);
+
+  dataMap[name] = skeletonData;
+  const obj = { spineData: skeletonData, ref: 0, imageSrc: data.image.label };
   return obj;
 }
 
@@ -48,17 +37,17 @@ export const registryResource = pixiSpine => {
   });
 };
 
-export default async function getSpineData(res, pixiSpine) {
+export default async function getSpineData(res, scale, pixiSpine) {
   let data = dataMap[res.name];
   if (!data) {
     if (res.complete) {
-      data = createSpineData(res.name, res.data, (res as any).scale, pixiSpine);
+      data = createSpineData(res.name, res.data, scale, pixiSpine);
     } else if (!data) {
       return;
     }
   }
 
-  retainTexture(res.data.image.src, res.data);
+  retainTexture(res.data.image.label, res.data);
 
   data.ref++;
   return data.spineData;

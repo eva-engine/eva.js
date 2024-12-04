@@ -4,6 +4,7 @@ import { type } from '@eva/inspector-decorator';
 export interface SpineParams {
   resource: string;
   animationName?: string;
+  scale?: number;
   autoPlay?: boolean;
 }
 
@@ -12,6 +13,9 @@ export default class Spine extends Component<SpineParams> {
 
   @type('string')
   resource: string = '';
+
+  @type('number')
+  scale: number = 1;
 
   @type('string')
   animationName: string = '';

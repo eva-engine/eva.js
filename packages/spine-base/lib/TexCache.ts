@@ -10,7 +10,7 @@ function cacheImage(data: CacheData) {
   const oldImg = data.image;
 
   return {
-    tex: Texture.from(oldImg),
+    tex: oldImg instanceof Texture ? oldImg : Texture.from(oldImg),
     count: 0,
   };
 }
