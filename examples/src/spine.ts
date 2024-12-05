@@ -2,6 +2,13 @@ import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Spine, SpineSystem } from '@eva/plugin-renderer-spine';
 import { StatsSystem } from '@eva/plugin-stats';
+import { extensions, loadBasis, detectBasis, setBasisTranscoderPath } from 'pixi.js';
+
+setBasisTranscoderPath({
+  jsUrl: '/basis/basis_transcoder.js',
+  wasmUrl: '/basis/basis_transcoder.wasm',
+});
+extensions.add(loadBasis, detectBasis);
 
 export const name = 'spine';
 resource.addResource([
@@ -19,12 +26,15 @@ resource.addResource([
       },
       image: {
         type: 'png',
-        url: '/spine/spineboy/spineboy-pma.png',
+        url: '/spine/spineboy/spineboy-pma.basis',
+        // url: '/spine/spineboy/spineboy-pma.png',
       },
     },
     preload: true,
   },
 ]);
+
+resource.preload();
 
 export const init = async canvas => {
   const game = new Game();
