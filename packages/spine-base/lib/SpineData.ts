@@ -14,8 +14,8 @@ function createSpineData(name, data, scale, pixiSpine) {
   parser.scale = scale || 1;
   const skeletonData = parser.readSkeletonData(skeletonAsset);
 
-  dataMap[name] = skeletonData;
   const obj = { spineData: skeletonData, ref: 0, imageSrc: data.image.label };
+  dataMap[name] = obj;
   return obj;
 }
 
