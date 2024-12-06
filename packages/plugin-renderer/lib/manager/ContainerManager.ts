@@ -19,9 +19,11 @@ export default class ContainerManager {
     if (!container || !transform) return;
     const { anchor, origin, position, rotation, scale, size, skew } = transform;
     container.rotation = rotation;
+    // @ts-ignore
     container.scale = scale as Point;
     container.pivot.x = size.width * origin.x;
     container.pivot.y = size.height * origin.y;
+    // @ts-ignore
     container.skew = skew as ObservablePoint;
     let x = position.x;
     let y = position.y;
@@ -31,6 +33,7 @@ export default class ContainerManager {
       y = y + parent.size.height * anchor.y;
     }
 
+    // @ts-ignore
     container.position = { x, y } as Point;
   }
 }

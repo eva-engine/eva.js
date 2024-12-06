@@ -4,10 +4,9 @@ import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
 // import { ticker } from 'pixi.js';
-import type { WebGLRenderer, ApplicationOptions } from 'pixi.js';
+import type { ApplicationOptions } from 'pixi.js';
 import { Ticker } from 'pixi.js';
-import { registerCompressedTexture } from './compressedTexture';
-import { SuportedCompressedTexture, getSuportCompressedTextureFormats } from './compressedTexture/ability';
+import { SuportedCompressedTexture } from './compressedTexture/ability';
 
 export interface RendererSystemParams extends Partial<ApplicationOptions> {
   canvas?: HTMLCanvasElement;
@@ -54,7 +53,7 @@ export default class Renderer extends System<RendererSystemParams> {
       game: this.game,
       rendererSystem: this,
     });
-    this.game.canvas = this.application.canvas;
+    this.game.canvas = this.application.canvas as any;
     this.transform = new Transform({
       system: this,
       containerManager: this.containerManager,
@@ -77,12 +76,6 @@ export default class Renderer extends System<RendererSystemParams> {
         application,
       });
     });
-
-    const gl = (this.application.renderer as WebGLRenderer).gl;
-    if (gl) {
-      this.suportedCompressedTextureFormats = getSuportCompressedTextureFormats(gl);
-      registerCompressedTexture(gl);
-    }
   }
 
   registerObserver(observerInfo) {
@@ -153,6 +146,7 @@ export default class Renderer extends System<RendererSystemParams> {
   resize(width, height) {
     this.params.width = width;
     this.params.height = height;
+    // @ts-ignore
     this.application.renderer.resize(width, height);
   }
 }

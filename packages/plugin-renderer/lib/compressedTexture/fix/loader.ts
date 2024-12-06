@@ -1,7 +1,5 @@
-import { ResourceBase, RESOURCE_TYPE_STRATEGY, resourceLoader } from '@eva/eva.js';
+import { ResourceBase } from '@eva/eva.js';
 import { getSuportCompressedTextureFormats } from '../ability';
-import KTXLoadStrategy from './KTXLoadStrategy';
-const { XhrResponseType } = resourceLoader;
 export function addPreProcessResourceHandler(resource, gl: WebGLRenderingContext) {
   resource.addPreProcessResourceHandler(function normalizeResource(resource: ResourceBase): void {
     let textures = resource.src?.image?.texture;
