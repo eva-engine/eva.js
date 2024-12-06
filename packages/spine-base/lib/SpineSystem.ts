@@ -1,4 +1,4 @@
-import { DisplayObject } from 'pixi.js';
+import { Container } from 'pixi.js';
 import { decorators, ComponentChanged, OBSERVER_TYPE, resource, UpdateParams } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import Spine from './Spine';
@@ -11,7 +11,7 @@ const MaxRetryCount = 20;
 })
 export default class SpineSystem extends Renderer {
   static systemName = 'SpineSystem';
-  armatures: Record<number, DisplayObject> = {};
+  armatures: Record<number, Container> = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
