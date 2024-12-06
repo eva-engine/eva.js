@@ -12,7 +12,7 @@ const path = require('path');
 const chalk = require('chalk');
 const semver = require('semver');
 const currentVersion = require('../package.json').version;
-const {prompt} = require('enquirer');
+const { prompt } = require('enquirer');
 const execa = require('execa');
 
 const preId = args.preid || (semver.prerelease(currentVersion) && semver.prerelease(currentVersion)[0]);
@@ -20,15 +20,22 @@ const isDryRun = args.dry;
 const skipTests = args.skipTests;
 const skipBuild = args.skipBuild;
 
-const packages = fs.readdirSync(path.resolve(__dirname, '../packages')).filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
+const packages = fs
+  .readdirSync(path.resolve(__dirname, '../packages'))
+  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const skippedPackages = ['plugin-renderer-test'];
 
-const versionIncrements = ['patch', 'minor', 'major', ...(preId ? ['prepatch', 'preminor', 'premajor', 'prerelease'] : [])];
+const versionIncrements = [
+  'patch',
+  'minor',
+  'major',
+  ...(preId ? ['prepatch', 'preminor', 'premajor', 'prerelease'] : []),
+];
 
 const inc = i => semver.inc(currentVersion, i, preId);
 const bin = name => path.resolve(__dirname, '../node_modules/.bin/' + name);
-const run = (bin, args, opts = {}) => execa(bin, args, {stdio: 'inherit', ...opts});
+const run = (bin, args, opts = {}) => execa(bin, args, { stdio: 'inherit', ...opts });
 const dryRun = (bin, args, opts = {}) => console.log(chalk.blue(`[dryrun] ${bin} ${args.join(' ')}`), opts);
 const runIfNotDry = isDryRun ? dryRun : run;
 const getPkgRoot = pkg => path.resolve(__dirname, '../packages/' + pkg);
@@ -39,7 +46,7 @@ async function main() {
 
   if (!targetVersion) {
     // no explicit version, offer suggestions
-    const {release} = await prompt({
+    const { release } = await prompt({
       type: 'select',
       name: 'release',
       message: 'Select release type',
@@ -64,7 +71,7 @@ async function main() {
     throw new Error(`invalid target version: ${targetVersion}`);
   }
 
-  const {yes} = await prompt({
+  const { yes } = await prompt({
     type: 'confirm',
     name: 'yes',
     message: `Releasing v${targetVersion}. Confirm?`,
@@ -95,7 +102,7 @@ async function main() {
     console.log('(skipped)');
   }
 
-  const {stdout} = await run('git', ['diff'], {stdio: 'pipe'});
+  const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
   if (stdout) {
     step('\nCommitting changes...');
     await runIfNotDry('git', ['add', '-A']);
@@ -121,7 +128,9 @@ async function main() {
   }
 
   if (skippedPackages.length) {
-    console.log(chalk.yellow(`The following packages are skipped and NOT published:\n- ${skippedPackages.join('\n- ')}`));
+    console.log(
+      chalk.yellow(`The following packages are skipped and NOT published:\n- ${skippedPackages.join('\n- ')}`),
+    );
   }
   console.log();
 }
@@ -170,6 +179,7 @@ async function publishPackage(pkgName, version, runIfNotDry) {
 
   step(`Publishing ${pkgName}...`);
   try {
+    return;
     await runIfNotDry('npm', ['publish', ...(releaseTag ? ['--tag', releaseTag] : []), '--access', 'public'], {
       cwd: pkgRoot,
       stdio: 'pipe',

@@ -5,8 +5,6 @@
     "target": "es6",
     "paths": {
       "@eva/eva.js": ["./packages/eva.js/lib"],
-      "@eva/miniprogram-adapter": ["./packages/miniprogram-adapter/lib"],
-      "@eva/miniprogram-pixi": ["./packages/miniprogram-pixi/lib"],
       "@eva/plugin-a11y": ["./packages/plugin-a11y/lib"],
       "@eva/plugin-evax": ["./packages/plugin-evax/lib"],
       "@eva/plugin-matterjs": ["./packages/plugin-matterjs/lib"],

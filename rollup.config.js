@@ -4,7 +4,6 @@ import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
-import { miniprogramPlugins1, miniprogramPlugins2 } from './rollup.miniprogram.plugin';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 
 if (!process.env.TARGET) {
@@ -25,31 +24,31 @@ const packages = fs
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 
 const IIFE_PREFIX = '_EVA_IIFE_';
-const split = (str) => {
-  return str.split('.')
-}
-const getInsert = (str) => {
-  const arr = split(str)
-  const footers = []
-  const banners = []
-  let lastFooter = 'window'
+const split = str => {
+  return str.split('.');
+};
+const getInsert = str => {
+  const arr = split(str);
+  const footers = [];
+  const banners = [];
+  let lastFooter = 'window';
   arr.forEach((name, i) => {
-    lastFooter += `.${name}`
-    let footer
+    lastFooter += `.${name}`;
+    let footer;
     if (i === arr.length - 1) {
-      footer = `${lastFooter} = ${lastFooter} || ${IIFE_PREFIX + name}`
-      footers.push(footer)
+      footer = `${lastFooter} = ${lastFooter} || ${IIFE_PREFIX + name}`;
+      footers.push(footer);
     } else {
-      footer = `${lastFooter} = ${lastFooter} || {}`
-      banners.push(footer)
+      footer = `${lastFooter} = ${lastFooter} || {}`;
+      banners.push(footer);
     }
-  })
-  return [banners.join(`;\n`), footers.join(`;\n`)]
-}
+  });
+  return [banners.join(`;\n`), footers.join(`;\n`)];
+};
 
-const sliteName = split(pkg.bundle)
-const iifeName = IIFE_PREFIX + sliteName[sliteName.length - 1]
-const insert = getInsert(pkg.bundle)
+const sliteName = split(pkg.bundle);
+const iifeName = IIFE_PREFIX + sliteName[sliteName.length - 1];
+const insert = getInsert(pkg.bundle);
 
 const outputConfigs = {
   esm: {
@@ -65,11 +64,7 @@ const outputConfigs = {
     file: resolve(`dist/${pkg.bundle}.js`),
     format: 'iife',
     banner: insert[0],
-    footer: insert[1]
-  },
-  miniprogram: {
-    file: resolve(`dist/miniprogram.js`),
-    format: 'es',
+    footer: insert[1],
   },
 };
 
@@ -94,7 +89,7 @@ if (!process.env.PROD_ONLY) {
 
 // 为生产环境创建rollup配置
 if (process.env.NODE_ENV === 'production') {
-packageFormats = packageOptions.formats || inlineFormats || ['cjs', 'iife', 'miniprogram'];
+  packageFormats = packageOptions.formats || inlineFormats || ['cjs', 'iife'];
   packageFormats.forEach(format => {
     if (!outputConfigs[format]) return;
 
@@ -104,10 +99,6 @@ packageFormats = packageOptions.formats || inlineFormats || ['cjs', 'iife', 'min
 
     if (format === 'iife' && pkg.bundle) {
       packageConfigs.push(createMinifiedConfig(format));
-    }
-
-    if (format === 'miniprogram') {
-      packageConfigs.push(createMiniProgramConfig(format));
     }
   });
 }
@@ -147,17 +138,10 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
       require('rollup-plugin-polyfill-node')(),
       require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
     ];
-  } else if (format === 'miniprogram') {
-    nodePlugins = [
-      require('@rollup/plugin-node-resolve').nodeResolve({
-        resolveOnly: ['resource-loader', 'type-signals', 'parse-uri']
-      }),
-      require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
-    ]
   }
 
   let external = [];
-  let internal = ['@eva/spine-base']
+  let internal = ['@eva/spine-base'];
   if (format === 'esm' || format === 'cjs') {
     external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
   } else {
@@ -195,7 +179,7 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
       }),
       ...nodePlugins,
       tsPlugin,
-      ...plugins2
+      ...plugins2,
     ],
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
@@ -235,20 +219,16 @@ function createMinifiedConfig(format) {
       format,
       file: destFilename,
       banner,
-      footer
+      footer,
     },
     [
       terser({
         // toplevel: true, // 开启最高级压缩
         mangle: { reserved: ['_extends'] }, // 不压缩 _extends
-        compress: true, // 压缩整体代码 
+        compress: true, // 压缩整体代码
       }),
     ],
   );
-}
-
-function createMiniProgramConfig(format) {
-  return createConfig(format, outputConfigs[format], miniprogramPlugins1, miniprogramPlugins2);
 }
 
 export default packageConfigs;
