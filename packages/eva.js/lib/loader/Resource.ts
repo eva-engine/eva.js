@@ -403,7 +403,7 @@ class Resource extends EE {
     return Array.from(Object.keys(res.src)).every(resourceKey => res.data[resourceKey]);
   }
 
-  getLoader(preload: boolean = false) {
+  getLoader(_preload: boolean = false) {
     // if (preload) {
     //   loader.onStart.once(() => {
     //     this.progress.onStart();
