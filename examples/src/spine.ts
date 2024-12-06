@@ -2,32 +2,30 @@ import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Spine, SpineSystem } from '@eva/plugin-renderer-spine';
 import { StatsSystem } from '@eva/plugin-stats';
-import { extensions, loadBasis, detectBasis, setBasisTranscoderPath } from 'pixi.js';
+import { extensions, loadKTX2, setKTXTranscoderPath } from 'pixi.js';
+import * as PIXI from 'pixi.js';
+window.PIXI = PIXI;
 
-setBasisTranscoderPath({
-  jsUrl: '/basis/basis_transcoder.js',
-  wasmUrl: '/basis/basis_transcoder.wasm',
+extensions.add(loadKTX2);
+
+setKTXTranscoderPath({
+  jsUrl: '/libktx.js',
+  wasmUrl: '/libktx.wasm',
 });
-extensions.add(loadBasis, detectBasis);
 
 export const name = 'spine';
-resource.addResource([
+resource.addResource2([
   {
     name: 'anim',
     type: RESOURCE_TYPE.SPINE,
     src: {
-      ske: {
-        type: 'skel',
-        url: '/spine/spineboy/spineboy-pro.skel',
-      },
-      atlas: {
-        type: 'atlas',
-        url: '/spine/spineboy/spineboy-pma.atlas',
-      },
+      ske: '/spine/spineboy/spineboy-pro.skel',
+      atlas: '/spine/spineboy/spineboy-pma.atlas',
       image: {
-        type: 'png',
-        url: '/spine/spineboy/spineboy-pma.basis',
-        // url: '/spine/spineboy/spineboy-pma.png',
+        astc: '/spine/spineboy/spineboy-pma.ktx2',
+        etc2: '',
+        bc7: '',
+        fallback: '/spine/spineboy/spineboy-pma.png',
       },
     },
     preload: true,
@@ -36,7 +34,45 @@ resource.addResource([
 
 resource.preload();
 
+// <script src="js" crossorigin="anonymous"></script>
+// js
+// if swicth  + webgl
+// load script
+// appendChild(script):
+
+//script
+// load down PIXI EVA + callback + status
+
+// main.js
+// callback registry + status
+
+function createGb(game, x, y) {
+  const gameObject = new GameObject('spine' + x + y, {
+    anchor: {
+      x: 0.5,
+      y: 0.5,
+    },
+    scale: {
+      x: 0.5,
+      y: 0.5,
+    },
+    position: {
+      x: x * 30 + 100,
+      y: y * 30 + 100,
+    },
+  });
+  const spine = new Spine({ resource: 'anim', animationName: 'run', scale: 1 });
+  gameObject.addComponent(spine);
+  spine.on('complete', e => {
+    console.log('动画播放结束', e.name);
+  });
+  spine.play('run');
+  game.scene.addChild(gameObject);
+}
+
 export const init = async canvas => {
+  // const type = resource.addResource2([{}]);
+  // console.log('>>>type', type);
   const game = new Game();
   await game.init({
     systems: [
@@ -53,31 +89,10 @@ export const init = async canvas => {
     frameRate: 120,
   });
 
-  const g = new GameObject('g', {
-    position: {
-      x: 0,
-      y: 0,
-    },
-  });
-  const gameObject = new GameObject('spine', {
-    anchor: {
-      x: 0.5,
-      y: 0.5,
-    },
-    scale: {
-      x: 0.5,
-      y: 0.5,
-    },
-    position: {
-      x: 300,
-      y: 500,
-    },
-  });
-  const spine = new Spine({ resource: 'anim', animationName: 'run', scale: 1 });
-  gameObject.addComponent(spine);
-  spine.on('complete', e => {
-    console.log('动画播放结束', e.name);
-  });
-  spine.play('run');
-  game.scene.addChild(gameObject);
+  // for (let i = 0; i < 10; i++) {
+  //   for (let j = 0; j < 10; j++) {
+  //     createGb(game, i, j);
+  //   }
+  // }
+  createGb(game, 10, 10);
 };

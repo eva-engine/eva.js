@@ -20,6 +20,9 @@ export enum RESOURCE_TYPE {
   'VIDEO' = 'VIDEO',
 }
 
+type CompressedTextureType = 'astc' | 'etc2' | 'etc1' | 'bc7' | 'pvrtc1' | 'pvrtc2' | 'fallback';
+const textureTypeSort: CompressedTextureType[] = ['pvrtc2', 'pvrtc1', 'astc', 'etc2', 'etc1', 'fallback'];
+
 /** Resource item */
 interface SrcBase {
   type: string;
@@ -53,6 +56,25 @@ export interface ResourceBase {
   };
   complete?: boolean;
   preload?: boolean;
+  v2?: boolean;
+}
+
+type CompressedTextureSrc = Partial<Record<CompressedTextureType, string>>;
+
+export interface ResourceBase2 {
+  name: string;
+  type: RESOURCE_TYPE;
+  src: {
+    json?: string;
+    image?: CompressedTextureSrc | string;
+    tex?: string;
+    ske?: string;
+    video?: string;
+    audio?: string;
+    [propName: string]: CompressedTextureSrc | string;
+  };
+  complete?: boolean;
+  preload?: boolean;
 }
 
 /** Resource with entity */
@@ -66,6 +88,7 @@ export interface ResourceStruct extends ResourceBase {
     audio?: ArrayBuffer;
     [propName: string]: any;
   };
+  v2?: boolean;
   instance?: any;
 }
 
@@ -95,6 +118,8 @@ class Resource extends EE {
 
   /** Resource load promise */
   private promiseMap = {};
+
+  private compressedTextureTypes: CompressedTextureType[] = [];
 
   progress: Progress;
 
@@ -131,6 +156,65 @@ class Resource extends EE {
 
       this.resourcesMap[res.name] = res;
       this.resourcesMap[res.name].data = {};
+    }
+  }
+
+  private getSupportedCompressedTextureTypes(): CompressedTextureType[] {
+    if (this.compressedTextureTypes?.length) {
+      return this.compressedTextureTypes;
+    }
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    let compressedTextureTypes: CompressedTextureType[] = [];
+
+    if (gl) {
+      const extensions = gl.getSupportedExtensions() || [];
+      const supportedFormats = {
+        astc: extensions.includes('WEBGL_compressed_texture_astc'),
+        etc2: extensions.includes('WEBGL_compressed_texture_etc'),
+        bc7: extensions.includes('EXT_texture_compression_bptc'),
+        etc1: extensions.includes('WEBGL_compressed_texture_etc1'),
+        pvrtc1:
+          extensions.includes('WEBGL_compressed_texture_pvrtc') ||
+          extensions.includes('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+        pvrtc2: extensions.includes('WEBGL_compressed_texture_pvrtc2'),
+        fallback: true,
+      };
+      for (const textureType of textureTypeSort) {
+        if (supportedFormats[textureType]) {
+          compressedTextureTypes.push(textureType);
+        }
+      }
+    }
+
+    this.compressedTextureTypes = compressedTextureTypes;
+    return this.compressedTextureTypes;
+  }
+
+  private getTextureByResrouce(resource: Record<CompressedTextureType, string>) {
+    const types = this.getSupportedCompressedTextureTypes();
+    for (const type of types) {
+      if (resource[type]) {
+        return resource[type];
+      }
+    }
+    return '';
+  }
+
+  public addResource2(resources: ResourceBase2[]) {
+    if (!resources || resources.length < 1) {
+      console.warn('no resources');
+      return;
+    }
+    for (const res of resources) {
+      if (this.resourcesMap[res.name]) {
+        console.warn(res.name + ' was already added');
+        continue;
+      }
+      // @ts-ignore
+      this.resourcesMap[res.name] = res;
+      this.resourcesMap[res.name].data = {};
+      this.resourcesMap[res.name].v2 = true;
     }
   }
 
@@ -247,9 +331,20 @@ class Resource extends EE {
           res.data[key] = res.src[key].data;
           this.doComplete(name, resolves[name], preload);
         } else {
-          const url = res.src[key].url?.startsWith('//')
-            ? `${window.location.protocol}${res.src[key].url}`
-            : res.src[key].url;
+          let url: string;
+          if (res.v2) {
+            const target: any = res.src[key];
+            if (typeof target === 'object' && target) {
+              url = this.getTextureByResrouce(target);
+            } else {
+              url = target;
+            }
+          } else {
+            url = res.src[key].url;
+          }
+          if (url.startsWith('//')) {
+            url = `${window.location.protocol}${res.src[key].url}`;
+          }
           Assets.load(url)
             .then(data => {
               this.onLoad({
