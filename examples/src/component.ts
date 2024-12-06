@@ -88,6 +88,7 @@ export async function init(canvas) {
         canvas,
         width: 750,
         height: 1000,
+        enableScroll: true,
       }),
       new ImgSystem(),
     ],

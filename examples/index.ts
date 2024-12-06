@@ -9,7 +9,7 @@ const modules: Record<string, ExampleModule> = import.meta.glob('./src/*.ts');
 
 window.addEventListener('hashchange', () => {
   location.reload();
-})
+});
 
 const path = location.hash.replace('#', '');
 if (modules[path]) {
@@ -32,9 +32,9 @@ if (modules[path]) {
     const link = document.createElement('a');
     li.appendChild(link);
     const pathname = url.split('/').pop().split('.ts')[0];
-    link.href = `#${url}`
+    link.href = `#${url}`;
     link.innerText = pathname;
-    link.addEventListener('click', () => location.hash = url);
-  })
+    link.addEventListener('click', () => (location.hash = url));
+  });
   document.body.appendChild(ul);
 }

@@ -12,10 +12,6 @@ import { SuportedCompressedTexture, getSuportCompressedTextureFormats } from './
 export interface RendererSystemParams extends Partial<ApplicationOptions> {
   canvas?: HTMLCanvasElement;
   renderType?: number;
-  /**
-   * @deprecated PreventScroll property will deprecate at next major version, please use enableScroll instead. https://eva.js.org/#/tutorials/game
-   */
-  preventScroll?: boolean;
   enableScroll?: boolean;
   debugMode?: boolean;
 }
@@ -27,13 +23,13 @@ export enum RENDERER_TYPE {
 }
 
 const disableScroll = renderer => {
-  // renderer.plugins.interaction.autoPreventDefault = true;
-  // renderer.view.style.touchAction = 'none';
+  renderer.events.autoPreventDefault = true;
+  renderer.canvas.style.touchAction = 'none';
 };
 
 const enableScroll = renderer => {
-  // renderer.plugins.interaction.autoPreventDefault = false;
-  // renderer.view.style.touchAction = 'auto';
+  renderer.events.autoPreventDefault = false;
+  renderer.canvas.style.touchAction = 'auto';
 };
 
 @decorators.componentObserver({
@@ -96,12 +92,14 @@ export default class Renderer extends System<RendererSystemParams> {
       if (!thisObserverInfo[key]) {
         thisObserverInfo[key] = [];
       }
+      //@ts-ignore
       thisObserverInfo[key].push(...observerInfo[key]);
     }
   }
 
   createMultiApplication({ params }: { params: RendererSystemParams }) {
     const app = this.createApplication(params);
+    // @ts-ignore
     this.multiApps.push(app);
     return app;
   }
@@ -114,23 +112,8 @@ export default class Renderer extends System<RendererSystemParams> {
     await app.init({ sharedTicker: true, ...params, hello: true });
     Ticker.shared.stop();
     Ticker.shared.autoStart = false;
-    /**
-     * Fix https://github.com/eva-engine/eva.js/issues/30
-     * PreventScroll is legacy, because it has bug.
-     */
-    if (params.preventScroll !== undefined) {
-      console.warn(
-        'PreventScroll property will deprecate at next major version, please use enableScroll instead. https://eva.js.org/#/tutorials/game',
-      );
-      params.preventScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
-    }
-
     if (params.enableScroll !== undefined) {
       params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
-    }
-
-    if (params.preventScroll === undefined && params.enableScroll === undefined) {
-      enableScroll(app.renderer);
     }
     return app;
   }
