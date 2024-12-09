@@ -72,9 +72,9 @@ async function build(target) {
   }
 
   // if building a specific format, do not remove dist.
-//   if (!formats) {
-//     await fs.remove(`${pkgDir}/dist`);
-//   }
+  //   if (!formats) {
+  //     await fs.remove(`${pkgDir}/dist`);
+  //   }
 
   const env = (pkg.buildOptions && pkg.buildOptions.env) || (devOnly ? 'development' : 'production');
 
@@ -98,54 +98,54 @@ async function build(target) {
     { stdio: 'inherit' },
   );
 
-  if (buildTypes && pkg.types) {
-    console.log();
-    console.log(chalk.bold(chalk.yellow(`Rolling up type definitions for ${target}...`)));
+  //   if (buildTypes && pkg.types) {
+  //     console.log();
+  //     console.log(chalk.bold(chalk.yellow(`Rolling up type definitions for ${target}...`)));
 
-    // build types
-    const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
+  //     // build types
+  //     const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
 
-    const extractorConfigPath = path.resolve(pkgDir, 'api-extractor.json');
-    const extractorConfig = ExtractorConfig.loadFileAndPrepare(extractorConfigPath);
-    const extractorResult = Extractor.invoke(extractorConfig, {
-      localBuild: true,
-      showVerboseMessages: true,
-    });
+  //     const extractorConfigPath = path.resolve(pkgDir, 'api-extractor.json');
+  //     const extractorConfig = ExtractorConfig.loadFileAndPrepare(extractorConfigPath);
+  //     const extractorResult = Extractor.invoke(extractorConfig, {
+  //       localBuild: true,
+  //       showVerboseMessages: true,
+  //     });
 
-    if (extractorResult.succeeded) {
-      // @deprecated 曾经联合代码的功能，重设打包路径后此段代码无效
-      // concat additional d.ts to rolled-up dts
-      // const typesDir = path.resolve(pkgDir, 'types');
-      // if (await fs.exists(typesDir)) {
-      //   const dtsPath = path.resolve(pkgDir, pkg.types);
-      //   const existing = await fs.readFile(dtsPath, 'utf-8');
-      //   const typeFiles = await fs.readdir(typesDir);
-      //   const toAdd = await Promise.all(
-      //     typeFiles.map(file => {
-      //       return fs.readFile(path.resolve(typesDir, file), 'utf-8');
-      //     }),
-      //   );
-      //   await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
-      // }
-      const globalPath = path.resolve(pkgDir, 'global.d.ts');
-      if (await fs.exists(globalPath)) {
-        const dtsPath = path.resolve(pkgDir, pkg.types);
-        const existing = await fs.readFile(dtsPath, 'utf-8');
-        await fs.writeFile(dtsPath, '/// <reference path="./global.d.ts"/>' + '\n' + existing);
-        await fs.copyFile(globalPath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
-      }
+  //     if (extractorResult.succeeded) {
+  //       // @deprecated 曾经联合代码的功能，重设打包路径后此段代码无效
+  //       // concat additional d.ts to rolled-up dts
+  //       // const typesDir = path.resolve(pkgDir, 'types');
+  //       // if (await fs.exists(typesDir)) {
+  //       //   const dtsPath = path.resolve(pkgDir, pkg.types);
+  //       //   const existing = await fs.readFile(dtsPath, 'utf-8');
+  //       //   const typeFiles = await fs.readdir(typesDir);
+  //       //   const toAdd = await Promise.all(
+  //       //     typeFiles.map(file => {
+  //       //       return fs.readFile(path.resolve(typesDir, file), 'utf-8');
+  //       //     }),
+  //       //   );
+  //       //   await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
+  //       // }
+  //       const globalPath = path.resolve(pkgDir, 'global.d.ts');
+  //       if (await fs.exists(globalPath)) {
+  //         const dtsPath = path.resolve(pkgDir, pkg.types);
+  //         const existing = await fs.readFile(dtsPath, 'utf-8');
+  //         await fs.writeFile(dtsPath, '/// <reference path="./global.d.ts"/>' + '\n' + existing);
+  //         await fs.copyFile(globalPath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
+  //       }
 
-      console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));
-    } else {
-      console.error(
-        `API Extractor completed with ${extractorResult.errorCount} errors` +
-          ` and ${extractorResult.warningCount} warnings`,
-      );
-      process.exitCode = 1;
-    }
+  //       console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));
+  //     } else {
+  //       console.error(
+  //         `API Extractor completed with ${extractorResult.errorCount} errors` +
+  //           ` and ${extractorResult.warningCount} warnings`,
+  //       );
+  //       process.exitCode = 1;
+  //     }
 
-    await fs.remove(`${pkgDir}/dist/packages`);
-  }
+  //     await fs.remove(`${pkgDir}/dist/packages`);
+  //   }
 }
 
 function checkAllSizes(targets) {

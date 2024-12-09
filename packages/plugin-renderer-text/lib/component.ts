@@ -1,11 +1,19 @@
-import { TextStyle } from 'pixi.js';
+import {
+  TextStyle,
+  TextStyleAlign,
+  TextStyleFontStyle,
+  TextStyleFontVariant,
+  TextStyleFontWeight,
+  TextStyleTextBaseline,
+  TextStyleWhiteSpace,
+} from 'pixi.js';
 import { Component } from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
 
 export interface TextParams {
   text: string;
   style?: {
-    align?: string;
+    align?: TextStyleAlign;
     breakWords?: boolean;
     dropShadow?: boolean;
     dropShadowAlpha?: number;
@@ -13,14 +21,14 @@ export interface TextParams {
     dropShadowBlur?: number;
     dropShadowColor?: string | number;
     dropShadowDistance?: number;
-    fill?: string | string[] | number | number[] | CanvasGradient | CanvasPattern;
+    fill?: any;
     fillGradientType?: number;
     fillGradientStops?: number[];
     fontFamily?: string | string[];
     fontSize?: number | string;
-    fontStyle?: string;
-    fontVariant?: string;
-    fontWeight?: string;
+    fontStyle?: TextStyleFontStyle;
+    fontVariant?: TextStyleFontVariant;
+    fontWeight?: TextStyleFontWeight;
     letterSpacing?: number;
     lineHeight?: number;
     lineJoin?: string;
@@ -28,9 +36,9 @@ export interface TextParams {
     padding?: number;
     stroke?: string | number;
     strokeThickness?: number;
-    textBaseline?: string;
+    textBaseline?: TextStyleTextBaseline;
     trim?: boolean;
-    whiteSpace?: string;
+    whiteSpace?: TextStyleWhiteSpace;
     wordWrap?: boolean;
     wordWrapWidth?: number;
     leading?: number;

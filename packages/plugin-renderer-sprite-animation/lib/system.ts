@@ -138,7 +138,7 @@ export default class SpriteAnimation extends Renderer {
     if (!animate) return;
     this.autoPlay[id] = animate.animatedSprite.playing;
     this.containerManager.getContainer(id).removeChild(animate.animatedSprite);
-    animate.animatedSprite.destroy({ children: true });
+    animate.animatedSprite.destroy();
     delete this.animates[id];
     if (!isChange) {
       delete this.autoPlay[id];

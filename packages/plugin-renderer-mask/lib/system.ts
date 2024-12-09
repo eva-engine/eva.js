@@ -105,8 +105,8 @@ export default class Mask extends Renderer {
   }
   remove(changed: ComponentChanged) {
     const container = this.containerManager.getContainer(changed.gameObject.id);
-    container.removeChild(container.mask);
-    container.mask.destroy({ children: true });
+    container.removeChild(container.mask as any);
+    (container.mask as any).destroy({ children: true });
     container.mask = null;
     delete this.maskSpriteCache[changed.gameObject.id];
   }
