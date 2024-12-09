@@ -1,6 +1,6 @@
 {
   "name": "@eva/spine-base",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "@eva/spine-base",
   "main": "index.js",
   "module": "dist/spine-base.esm.js",
@@ -21,8 +21,8 @@
     "registry": "https://registry.anpm.alibaba-inc.com"
   },
   "dependencies": {
-    "@eva/eva.js": "2.0.0-beta.0",
-    "@eva/plugin-renderer": "2.0.0-beta.0",
+    "@eva/eva.js": "2.0.0-beta.1",
+    "@eva/plugin-renderer": "2.0.0-beta.1",
     "@eva/inspector-decorator": "^0.0.5",
     "pixi.js": "^8.6.3"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-img",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "@eva/plugin-renderer-img",
   "main": "index.js",
   "module": "dist/plugin-renderer-img.esm.js",
@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "2.0.0-beta.0",
-    "@eva/renderer-adapter": "2.0.0-beta.0",
-    "@eva/eva.js": "2.0.0-beta.0",
+    "@eva/plugin-renderer": "2.0.0-beta.1",
+    "@eva/renderer-adapter": "2.0.0-beta.1",
+    "@eva/eva.js": "2.0.0-beta.1",
     "pixi.js": "^8.6.3"
   }
 }

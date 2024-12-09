@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-a11y",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "@eva/plugin-a11y",
   "main": "index.js",
   "module": "dist/plugin-a11y.esm.js",
@@ -21,9 +21,9 @@
     "registry": "https://registry.anpm.alibaba-inc.com"
   },
   "dependencies": {
-    "@eva/eva.js": "2.0.0-beta.0",
+    "@eva/eva.js": "2.0.0-beta.1",
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "2.0.0-beta.0",
+    "@eva/plugin-renderer": "2.0.0-beta.1",
     "eventemitter3": "^3.1.2"
   }
 }
