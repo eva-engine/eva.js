@@ -179,8 +179,7 @@ async function publishPackage(pkgName, version, runIfNotDry) {
 
   step(`Publishing ${pkgName}...`);
   try {
-    return;
-    await runIfNotDry('npm', ['publish', ...(releaseTag ? ['--tag', releaseTag] : []), '--access', 'public'], {
+    await runIfNotDry('tnpm', ['publish', ...(releaseTag ? ['--tag', releaseTag] : []), '--access', 'public'], {
       cwd: pkgRoot,
       stdio: 'pipe',
     });
