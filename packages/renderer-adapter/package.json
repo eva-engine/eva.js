@@ -1,6 +1,6 @@
 {
   "name": "@eva/renderer-adapter",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.0",
   "description": "@eva/renderer-adapter",
   "main": "index.js",
   "module": "dist/renderer-adapter.esm.js",
@@ -17,9 +17,6 @@
   "author": "fanmingfei <az8641683@163.com>",
   "license": "MIT",
   "homepage": "https://eva.js.org",
-  "publishConfig": {
-    "registry": "https://registry.anpm.alibaba-inc.com"
-  },
   "dependencies": {
     "pixi.js": "^8.6.3"
   }

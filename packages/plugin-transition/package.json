@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-transition",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.0",
   "description": "@eva/plugin-transition",
   "main": "index.js",
   "module": "dist/plugin-transition.esm.js",
@@ -17,11 +17,8 @@
   "author": "fanmingfei <az8641683@163.com>",
   "license": "MIT",
   "homepage": "https://eva.js.org",
-  "publishConfig": {
-    "registry": "https://registry.anpm.alibaba-inc.com"
-  },
   "dependencies": {
-    "@eva/eva.js": "2.0.0-beta.1",
+    "@eva/eva.js": "2.0.0-beta.0",
     "@tweenjs/tween.js": "^18.6.4",
     "sprite-timeline": "^1.10.2"
   }

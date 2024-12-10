@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-event",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.0",
   "description": "@eva/plugin-renderer-event",
   "main": "index.js",
   "module": "dist/plugin-renderer-event.esm.js",
@@ -17,12 +17,9 @@
   "author": "fanmingfei <az8641683@163.com>",
   "license": "MIT",
   "homepage": "https://eva.js.org",
-  "publishConfig": {
-    "registry": "https://registry.anpm.alibaba-inc.com"
-  },
   "dependencies": {
-    "@eva/plugin-renderer": "2.0.0-beta.1",
-    "@eva/eva.js": "2.0.0-beta.1",
+    "@eva/plugin-renderer": "2.0.0-beta.0",
+    "@eva/eva.js": "2.0.0-beta.0",
     "pixi.js": "^8.6.3"
   }
 }
