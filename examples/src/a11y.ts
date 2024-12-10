@@ -1,11 +1,10 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { Img, ImgSystem } from "@eva/plugin-renderer-img";
-import { Text, TextSystem } from "@eva/plugin-renderer-text";
-import { EventSystem, Event, HIT_AREA_TYPE } from "@eva/plugin-renderer-event";
-import { A11y, A11ySystem, A11yActivate } from "@eva/plugin-a11y";
-import { Sprite, SpriteSystem } from "@eva/plugin-renderer-sprite";
-import { SpineSystem, Spine } from "@eva/plugin-renderer-spine";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Img, ImgSystem } from '@eva/plugin-renderer-img';
+import { Text, TextSystem } from '@eva/plugin-renderer-text';
+import { EventSystem, Event, HIT_AREA_TYPE } from '@eva/plugin-renderer-event';
+import { A11y, A11ySystem, A11yActivate } from '@eva/plugin-a11y';
+import { Sprite, SpriteSystem } from '@eva/plugin-renderer-sprite';
 
 export const name = 'a11y';
 export async function init(canvas) {
@@ -49,7 +48,7 @@ export async function init(canvas) {
       }),
     );
 
-    let a11y
+    let a11y;
     setTimeout(() => {
       game.scene.addChild(text);
     }, 1000);
@@ -57,8 +56,8 @@ export async function init(canvas) {
       a11y = text.addComponent(new A11y({ hint: 'aaaa' }));
     }, 2000);
     setTimeout(() => {
-      txt.text = '123'
-      a11y.hint = '123'
+      txt.text = '123';
+      a11y.hint = '123';
     }, 3000);
     setTimeout(() => {
       game.scene.removeChild(text);
@@ -86,9 +85,7 @@ export async function init(canvas) {
         resource: 'image',
       }),
     );
-    image.addComponent(
-      new A11y({ hint: '这是一张图片', 'aria-aaa': '123', delay: 100 }),
-    );
+    image.addComponent(new A11y({ hint: '这是一张图片', 'aria-aaa': '123', delay: 100 }));
     // @ts-ignore
     window.image = image;
     game.scene.addChild(image);
@@ -231,24 +228,7 @@ export async function init(canvas) {
         hitArea: {
           type: HIT_AREA_TYPE.Polygon,
           style: {
-            paths: [
-              109,
-              48,
-              161,
-              21,
-              194,
-              63,
-              193,
-              104,
-              65,
-              176,
-              8,
-              86,
-              38,
-              40,
-              90,
-              33,
-            ],
+            paths: [109, 48, 161, 21, 194, 63, 193, 104, 65, 176, 8, 86, 38, 40, 90, 33],
           },
         },
       }),
@@ -263,33 +243,6 @@ export async function init(canvas) {
 
     game.scene.addChild(image);
   };
-  const loadSpine = game => {
-    const gameObject = new GameObject('spine', {
-      position: {
-        x: 500,
-        y: 500,
-      },
-      scale: {
-        x: 0.5,
-        y: 0.5,
-      },
-    });
-    const spine = new Spine({ resource: 'anim', animationName: 'idle', autoPlay: true });
-    gameObject.addComponent(spine);
-    spine.on('complete', e => {
-      console.log('动画播放结束', e.name);
-    });
-    spine.play('idle');
-
-    gameObject.addComponent(
-      new A11y({
-        hint: 'hint',
-        // delay: 100
-      }),
-    );
-
-    game.scene.addChild(gameObject);
-  };
 
   resource.addResource([
     {
@@ -298,15 +251,15 @@ export async function init(canvas) {
       src: {
         ske: {
           url: '//gw.alicdn.com/bao/uploaded/TB1SFUHVAzoK1RjSZFlXXai4VXa.json',
-          type: 'json'
+          type: 'json',
         },
         tex: {
           url: '//gw.alicdn.com/bao/uploaded/TB17n.IVrrpK1RjSZTEXXcWAVXa.json',
-          type: 'json'
+          type: 'json',
         },
         image: {
           url: '//gw.alicdn.com/bao/uploaded/TB11W7FVyrpK1RjSZFhXXXSdXXa-489-886.png',
-          type: 'png'
+          type: 'png',
         },
       },
     },
@@ -316,8 +269,7 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url:
-            'https://gw.alicdn.com/tfs/TB1DNzoOvb2gK0jSZK9XXaEgFXa-658-1152.webp',
+          url: 'https://gw.alicdn.com/tfs/TB1DNzoOvb2gK0jSZK9XXaEgFXa-658-1152.webp',
         },
       },
       preload: true,
@@ -328,13 +280,11 @@ export async function init(canvas) {
       src: {
         image: {
           type: 'png',
-          url:
-            'https://gw.alicdn.com/tfs/TB1ONLxOAL0gK0jSZFAXXcA9pXa-900-730.png',
+          url: 'https://gw.alicdn.com/tfs/TB1ONLxOAL0gK0jSZFAXXcA9pXa-900-730.png',
         },
         json: {
           type: 'json',
-          url:
-            'https://pages.tmall.com/wow/eva/ad317f6aea149d9a8b34a517e5df2caf.json',
+          url: 'https://pages.tmall.com/wow/eva/ad317f6aea149d9a8b34a517e5df2caf.json',
         },
       },
       preload: true,
@@ -343,39 +293,17 @@ export async function init(canvas) {
       name: 'heart',
       type: RESOURCE_TYPE.IMAGE,
       src: {
-        image:{
+        image: {
           type: 'png',
           url: '//gw.alicdn.com/bao/uploaded/TB1lVHuaET1gK0jSZFhXXaAtVXa-200-200.png',
-        }
+        },
       },
       preload: false,
     },
-    {
-      name: 'anim',
-      // @ts-ignore
-      type: 'SPINE',
-      src: {
-        ske: {
-          type: 'json',
-          url:
-            'https://pages.tmall.com/wow/eva/b5fdf74313d5ff2609ab82f6b6fd83e6.json',
-        },
-        // @ts-ignore
-        atlas: {
-          type: 'atlas',
-          url:
-            'https://pages.tmall.com/wow/eva/b8597f298a5d6fe47095d43ef03210d4.atlas',
-        },
-        image: {
-          type: 'png',
-          url:
-            'https://gw.alicdn.com/tfs/TB1YHC8Vxz1gK0jSZSgXXavwpXa-711-711.png',
-        },
-      },
-    },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
@@ -386,10 +314,10 @@ export async function init(canvas) {
       new ImgSystem(),
       new SpriteSystem(),
       new EventSystem(),
-      new SpineSystem(),
       new A11ySystem({
         debug: true,
-        activate: A11yActivate.CHECK,      }),
+        activate: A11yActivate.CHECK,
+      }),
     ],
     autoStart: true,
     frameRate: 60,
@@ -405,6 +333,4 @@ export async function init(canvas) {
   loadImage(game);
   loadSprite(game);
   loadEvent(game);
-  loadSpine(game);
-
 }
