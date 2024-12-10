@@ -20,9 +20,6 @@ export enum RESOURCE_TYPE {
   'VIDEO' = 'VIDEO',
 }
 
-type CompressedTextureType = 'astc' | 'etc2' | 'etc1' | 'bc7' | 'pvrtc1' | 'pvrtc2' | 'fallback';
-const textureTypeSort: CompressedTextureType[] = ['pvrtc2', 'pvrtc1', 'astc', 'etc2', 'etc1', 'fallback'];
-
 /** Resource item */
 interface SrcBase {
   type: string;
@@ -57,24 +54,6 @@ export interface ResourceBase {
   complete?: boolean;
   preload?: boolean;
   v2?: boolean;
-}
-
-type CompressedTextureSrc = Partial<Record<CompressedTextureType, string>>;
-
-export interface ResourceBase2 {
-  name: string;
-  type: RESOURCE_TYPE;
-  src: {
-    json?: string;
-    image?: CompressedTextureSrc | string;
-    tex?: string;
-    ske?: string;
-    video?: string;
-    audio?: string;
-    [propName: string]: CompressedTextureSrc | string;
-  };
-  complete?: boolean;
-  preload?: boolean;
 }
 
 /** Resource with entity */
@@ -118,8 +97,6 @@ class Resource extends EE {
 
   /** Resource load promise */
   private promiseMap = {};
-
-  private compressedTextureTypes: CompressedTextureType[] = [];
 
   progress: Progress;
 
