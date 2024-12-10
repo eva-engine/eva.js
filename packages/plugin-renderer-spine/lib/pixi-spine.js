@@ -11927,6 +11927,13 @@ var spineTextureAtlasLoader = {
       }
       const textureLoadingPromises = [];
       for (const page of retval.pages) {
+        if (metadata.resolve) {
+          const resolvePromise = metadata.resolve().then(texture => {
+            page.setTexture(SpineTexture.from(texture.source));
+          });
+          textureLoadingPromises.push(resolvePromise);
+          continue;
+        }
         const pageName = page.name;
         const providedPage = metadata?.images ? metadata.images[pageName] : void 0;
         if (providedPage instanceof TextureSource) {

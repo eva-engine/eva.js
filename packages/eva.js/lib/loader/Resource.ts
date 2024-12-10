@@ -253,6 +253,20 @@ class Resource extends EE {
           if (typeof url === 'string' && url.startsWith('//')) {
             url = `${window.location.protocol}${res.src[key].url}`;
           }
+          if (key === 'atlas') {
+            Assets.add({
+              alias: url,
+              src: url,
+              data: {
+                resolve: () => Assets.load(res.src['image'].url),
+              },
+            });
+          } else {
+            Assets.add({
+              alias: url,
+              src: url,
+            });
+          }
           Assets.load(url)
             .then(data => {
               this.onLoad({
