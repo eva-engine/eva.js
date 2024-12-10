@@ -159,38 +159,6 @@ class Resource extends EE {
     }
   }
 
-  private getSupportedCompressedTextureTypes(): CompressedTextureType[] {
-    if (this.compressedTextureTypes?.length) {
-      return this.compressedTextureTypes;
-    }
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
-    let compressedTextureTypes: CompressedTextureType[] = [];
-
-    if (gl) {
-      const extensions = gl.getSupportedExtensions() || [];
-      const supportedFormats = {
-        astc: extensions.includes('WEBGL_compressed_texture_astc'),
-        etc2: extensions.includes('WEBGL_compressed_texture_etc'),
-        bc7: extensions.includes('EXT_texture_compression_bptc'),
-        etc1: extensions.includes('WEBGL_compressed_texture_etc1'),
-        pvrtc1:
-          extensions.includes('WEBGL_compressed_texture_pvrtc') ||
-          extensions.includes('WEBKIT_WEBGL_compressed_texture_pvrtc'),
-        pvrtc2: extensions.includes('WEBGL_compressed_texture_pvrtc2'),
-        fallback: true,
-      };
-      for (const textureType of textureTypeSort) {
-        if (supportedFormats[textureType]) {
-          compressedTextureTypes.push(textureType);
-        }
-      }
-    }
-
-    this.compressedTextureTypes = compressedTextureTypes;
-    return this.compressedTextureTypes;
-  }
-
   /** dd resource preprocesser*/
   public addPreProcessResourceHandler(handler: PreProcessResourceHandler) {
     this.preProcessResourceHandlers.push(handler);
