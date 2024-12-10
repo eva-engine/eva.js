@@ -1,31 +1,50 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
-import { RendererSystem } from '@eva/plugin-renderer';
+import { RendererSystem, registerKtx2CompressedTexture } from '@eva/plugin-renderer';
 import { Spine, SpineSystem } from '@eva/plugin-renderer-spine';
 import { StatsSystem } from '@eva/plugin-stats';
-import { extensions, loadKTX2, setKTXTranscoderPath } from 'pixi.js';
-import * as PIXI from 'pixi.js';
-window.PIXI = PIXI;
-
-extensions.add(loadKTX2);
-
-setKTXTranscoderPath({
-  jsUrl: '/libktx.js',
-  wasmUrl: '/libktx.wasm',
-});
 
 export const name = 'spine';
-resource.addResource2([
+
+const params = {
+  jsUrl: '/libktx.js',
+  wasmUrl: '/libktx.wasm',
+};
+registerKtx2CompressedTexture(params);
+
+resource.addResource([
   {
     name: 'anim',
     type: RESOURCE_TYPE.SPINE,
     src: {
-      ske: '/spine/spineboy/spineboy-pro.skel',
-      atlas: '/spine/spineboy/spineboy-pma.atlas',
+      ske: {
+        type: 'ske',
+        url: '/spine/spineboy/spineboy-pro.skel',
+      },
+      atlas: {
+        type: 'atlas',
+        url: '/spine/spineboy/spineboy-pma.atlas',
+      },
       image: {
-        astc: '/spine/spineboy/spineboy-pma.ktx2',
-        etc2: '',
-        bc7: '',
-        fallback: '/spine/spineboy/spineboy-pma.png',
+        type: 'ktx2',
+        url: '/spine/spineboy/spineboy-pma.png',
+        texture: [
+          {
+            type: 'astc',
+            url: '/spine/spineboy/spineboy-pma.ktx2',
+          },
+          {
+            type: 'pvrtc',
+            url: '',
+          },
+          {
+            type: 'etc',
+            url: '',
+          },
+          {
+            type: 's3tc',
+            url: '',
+          },
+        ],
       },
     },
     preload: true,

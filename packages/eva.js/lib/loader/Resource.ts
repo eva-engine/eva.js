@@ -191,33 +191,6 @@ class Resource extends EE {
     return this.compressedTextureTypes;
   }
 
-  private getTextureByResrouce(resource: Record<CompressedTextureType, string>) {
-    const types = this.getSupportedCompressedTextureTypes();
-    for (const type of types) {
-      if (resource[type]) {
-        return resource[type];
-      }
-    }
-    return '';
-  }
-
-  public addResource2(resources: ResourceBase2[]) {
-    if (!resources || resources.length < 1) {
-      console.warn('no resources');
-      return;
-    }
-    for (const res of resources) {
-      if (this.resourcesMap[res.name]) {
-        console.warn(res.name + ' was already added');
-        continue;
-      }
-      // @ts-ignore
-      this.resourcesMap[res.name] = res;
-      this.resourcesMap[res.name].data = {};
-      this.resourcesMap[res.name].v2 = true;
-    }
-  }
-
   /** dd resource preprocesser*/
   public addPreProcessResourceHandler(handler: PreProcessResourceHandler) {
     this.preProcessResourceHandlers.push(handler);
@@ -331,18 +304,8 @@ class Resource extends EE {
           res.data[key] = res.src[key].data;
           this.doComplete(name, resolves[name], preload);
         } else {
-          let url: string;
-          if (res.v2) {
-            const target: any = res.src[key];
-            if (typeof target === 'object' && target) {
-              url = this.getTextureByResrouce(target);
-            } else {
-              url = target;
-            }
-          } else {
-            url = res.src[key].url;
-          }
-          if (url.startsWith('//')) {
+          let url = res.src[key]?.url;
+          if (typeof url === 'string' && url.startsWith('//')) {
             url = `${window.location.protocol}${res.src[key].url}`;
           }
           Assets.load(url)

@@ -20,8 +20,10 @@ export interface SuportedCompressedTexture {
   atc: boolean;
   astc: boolean;
 }
-export function getSuportCompressedTextureFormats(gl: WebGLRenderingContext): SuportedCompressedTexture {
+export function getSuportCompressedTextureFormats(): SuportedCompressedTexture {
   if (result) return result;
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
 
   if (!gl) {
     // #if _DEBUG

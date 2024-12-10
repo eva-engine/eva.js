@@ -1,14 +1,16 @@
-import { addKTXStragetyAndRegister, addPreProcessResourceHandler } from './fix/loader';
-// import { BaseTexture, glCore, Texture } from 'pixi.js';
+import { extensions, setKTXTranscoderPath, loadKTX2, resolveCompressedTextureUrl, detectCompressed } from 'pixi.js';
+import { addPreProcessResourceHandler } from './fix/loader';
 import { resource } from '@eva/eva.js';
 
-export function registerCompressedTexture(gl: WebGLRenderingContext) {
-  // Register for load compressed texture correctly
-  addPreProcessResourceHandler(resource, gl);
-  addKTXStragetyAndRegister();
+interface Params {
+  jsUrl: string;
+  wasmUrl: string;
+}
 
-  // Change some PIXI class implement
-  // Object.assign(glCore.GLTexture.prototype, GLTextureMixin);
-  // Object.assign(Texture, TextureMixin);
-  // Object.assign(BaseTexture, BaseTextureMixin);
+export function registerKtx2CompressedTexture(params: Params) {
+  setKTXTranscoderPath(params);
+  extensions.add(loadKTX2);
+  extensions.add(resolveCompressedTextureUrl);
+  extensions.add(detectCompressed);
+  addPreProcessResourceHandler(resource);
 }
