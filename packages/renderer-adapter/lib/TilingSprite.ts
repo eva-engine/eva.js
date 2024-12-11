@@ -16,7 +16,7 @@ export default class TilingSprite {
       this.tilingSprite = new PIXITilingSprite(PIXITexture.EMPTY);
     }
   }
-  set image(val) {
+  set image(val: PIXITexture | HTMLImageElement) {
     if (this._image === val) {
       return;
     }

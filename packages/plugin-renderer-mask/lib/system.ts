@@ -1,6 +1,7 @@
 import { decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
 import { Renderer, RendererManager, ContainerManager, RendererSystem } from '@eva/plugin-renderer';
 import { Sprite as SpriteEngine, Graphics } from '@eva/renderer-adapter';
+import type { Sprite as PIXISprite } from 'pixi.js';
 import MaskComponent from './component';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
@@ -156,7 +157,7 @@ export default class Mask extends Renderer {
     graphics[functionForGraphics[component.type]](...params);
     graphics.fill(0x000000);
   }
-  createSprite(component: MaskComponent) {
+  createSprite(component: MaskComponent): PIXISprite {
     const sprite = new SpriteEngine(null);
     this.maskSpriteCache[component.gameObject.id] = sprite;
     this.setSprite(component, sprite);

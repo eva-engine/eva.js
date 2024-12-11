@@ -15,7 +15,7 @@ export default class Sprite {
       this.sprite = new PIXISprite();
     }
   }
-  set image(val) {
+  set image(val: HTMLImageElement | PIXITexture) {
     if (this._image === val) {
       return;
     }
@@ -28,7 +28,7 @@ export default class Sprite {
     }
     this._image = val;
   }
-  get image() {
+  get image(): HTMLImageElement | PIXITexture {
     return this._image;
   }
 }

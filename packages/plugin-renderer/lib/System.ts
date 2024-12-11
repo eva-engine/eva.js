@@ -90,14 +90,14 @@ export default class Renderer extends System<RendererSystemParams> {
     }
   }
 
-  createMultiApplication({ params }: { params: RendererSystemParams }) {
-    const app = this.createApplication(params);
+  async createMultiApplication({ params }: { params: RendererSystemParams }): Promise<Application> {
+    const app = await this.createApplication(params);
     // @ts-ignore
     this.multiApps.push(app);
     return app;
   }
 
-  async createApplication(params: Partial<RendererSystemParams>) {
+  async createApplication(params: Partial<RendererSystemParams>): Promise<Application> {
     const app = new Application();
     if (params.debugMode) {
       globalThis.__PIXI_APP__ = app;
