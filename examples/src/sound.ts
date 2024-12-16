@@ -1,8 +1,8 @@
-import { Game, GameObject, resource, RESOURCE_TYPE } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
-import { Event, EventSystem } from "@eva/plugin-renderer-event";
-import { Text, TextSystem } from "@eva/plugin-renderer-text";
-import { Sound, SoundSystem } from "@eva/plugin-sound";
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
+import { Event, EventSystem } from '@eva/plugin-renderer-event';
+import { Text, TextSystem } from '@eva/plugin-renderer-text';
+import { Sound, SoundSystem } from '@eva/plugin-sound';
 
 export const name = 'sound';
 export async function init(canvas) {
@@ -31,10 +31,11 @@ export async function init(canvas) {
     },
   ]);
 
-  window.resource = resource
+  window.resource = resource;
 
   const soundSystem = new SoundSystem();
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
@@ -91,7 +92,7 @@ export async function init(canvas) {
         text,
         style: {
           fontSize: 36,
-          fill: ['#ffffff'],
+          fill: '#ffffff',
         },
       }),
     );
@@ -115,7 +116,11 @@ export async function init(canvas) {
   game.scene.addChild(textPause);
   const textPauseEvt = textPause.addComponent(new Event());
   textPauseEvt.on('tap', () => {
-    bgSound.pause();
+    if (bgSound.playing) {
+      bgSound.pause();
+    } else {
+      bgSound.resume();
+    }
   });
 
   const textStop = createText('textStop', 'stop bgSound', {
@@ -209,7 +214,7 @@ export async function init(canvas) {
         fontSize: 36,
         fontStyle: 'italic',
         fontWeight: 'bold',
-        fill: ['#ffffff', '#00ff99', '#00ffff'], // gradient
+        fill: '#ffffff', // gradient
         fillGradientType: 1,
         fillGradientStops: [0.1, 0.4],
         stroke: '#4a1850',

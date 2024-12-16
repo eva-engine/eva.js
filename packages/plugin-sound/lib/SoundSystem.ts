@@ -1,5 +1,10 @@
 import { System, decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 import SoundComponent from './Sound';
+import { sound } from '@pixi/sound';
+import { extensions } from 'pixi.js';
+import { soundAsset } from '@pixi/sound';
+
+extensions.add(soundAsset);
 
 interface SoundSystemParams {
   autoPauseAndStart?: boolean;
@@ -12,10 +17,6 @@ interface SoundSystemParams {
 class SoundSystem extends System {
   static systemName = 'SoundSystem';
 
-  private ctx: AudioContext;
-
-  private gainNode: GainNode;
-
   /** 是否和游戏同步暂停和启动 */
   private autoPauseAndStart = true;
 
@@ -23,40 +24,7 @@ class SoundSystem extends System {
 
   private components: SoundComponent[] = [];
 
-  private pausedComponents: SoundComponent[] = [];
-
   private audioBufferCache = {};
-
-  private decodeAudioPromiseMap = {};
-
-  get muted(): boolean {
-    return this.gainNode ? this.gainNode.gain.value === 0 : false;
-  }
-
-  set muted(v: boolean) {
-    if (!this.gainNode) {
-      return;
-    }
-    this.gainNode.gain.setValueAtTime(v ? 0 : 1, 0);
-  }
-
-  get volume(): number {
-    return this.gainNode ? this.gainNode.gain.value : 1;
-  }
-
-  set volume(v: number) {
-    if (!this.gainNode || typeof v !== 'number' || v < 0 || v > 1) {
-      return;
-    }
-    this.gainNode.gain.setValueAtTime(v, 0);
-  }
-
-  get audioLocked(): boolean {
-    if (!this.ctx) {
-      return true;
-    }
-    return this.ctx.state !== 'running';
-  }
 
   constructor(obj?: SoundSystemParams) {
     super();
@@ -67,50 +35,21 @@ class SoundSystem extends System {
    * 恢复播放所有被暂停的音频
    */
   resumeAll() {
-    const handleResume = () => {
-      this.pausedComponents.forEach(component => {
-        component.play();
-      });
-      // 清理之前缓存的暂停列表
-      this.pausedComponents = [];
-    };
-    this.ctx.resume().then(handleResume, handleResume);
+    sound.resumeAll();
   }
 
   /**
    * 暂停所有正在播放的音频
    */
   pauseAll() {
-    this.components.forEach(component => {
-      if (component.playing) {
-        this.pausedComponents.push(component);
-        component.pause();
-      }
-    });
-    this.ctx.suspend().then();
+    sound.pauseAll();
   }
 
   /**
    * 停止所有正在播放的音频
    */
   stopAll() {
-    this.components.forEach(component => {
-      if (component.playing) {
-        component.stop();
-      }
-    });
-    // 清理之前缓存的暂停列表
-    this.pausedComponents = [];
-    this.ctx.suspend().then();
-  }
-
-  /**
-   * System 初始化用，可以配置参数，游戏未开始
-   *
-   * System init, set params, game is not begain
-   */
-  init() {
-    this.setupAudioContext();
+    sound.stopAll();
   }
 
   update() {
@@ -153,12 +92,7 @@ class SoundSystem extends System {
       component.onDestroy();
     });
     this.components = [];
-    if (this.ctx) {
-      this.gainNode.disconnect();
-      this.gainNode = null;
-      this.ctx.close();
-      this.ctx = null;
-    }
+    sound.removeAll();
   }
 
   async componentChanged(changed: ComponentChanged) {
@@ -167,47 +101,6 @@ class SoundSystem extends System {
     if (changed.type === OBSERVER_TYPE.ADD) {
       this.add(changed);
     }
-  }
-
-  private setupAudioContext() {
-    try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      this.ctx = new AudioContext();
-    } catch (error) {
-      console.error(error);
-      if (this.onError) {
-        this.onError(error);
-      }
-    }
-
-    if (!this.ctx) {
-      return;
-    }
-    this.gainNode =
-      typeof this.ctx.createGain === 'undefined' ? (this.ctx as any).createGainNode() : this.ctx.createGain();
-    this.gainNode.gain.setValueAtTime(this.muted ? 0 : this.volume, this.ctx.currentTime);
-    this.gainNode.connect(this.ctx.destination);
-    this.unlockAudio();
-  }
-
-  private unlockAudio() {
-    if (!this.ctx || !this.audioLocked) {
-      return;
-    }
-
-    const unlock = () => {
-      if (this.ctx) {
-        const removeListenerFn = () => {
-          document.body.removeEventListener('touchstart', unlock);
-          document.body.removeEventListener('touchend', unlock);
-          document.body.removeEventListener('click', unlock);
-        };
-        this.ctx.resume().then(removeListenerFn, removeListenerFn);
-      }
-    };
-    document.body.addEventListener('touchstart', unlock);
-    document.body.addEventListener('touchend', unlock);
-    document.body.addEventListener('click', unlock);
   }
 
   private async add(changed: ComponentChanged) {
@@ -219,11 +112,9 @@ class SoundSystem extends System {
 
       const audio = await resource.getResource(config.resource);
       if (!this.audioBufferCache[audio.name] && audio?.data?.audio) {
-        this.audioBufferCache[audio.name] = await this.decodeAudioData(audio.data.audio, audio.name);
+        this.audioBufferCache[audio.name] = audio?.data?.audio;
       }
       if (this.audioBufferCache[audio.name]) {
-        component.systemContext = this.ctx;
-        component.systemDestination = this.gainNode;
         component.onload(this.audioBufferCache[audio.name]);
       }
     } catch (error) {
@@ -231,46 +122,6 @@ class SoundSystem extends System {
         this.onError(error);
       }
     }
-  }
-
-  private decodeAudioData(arraybuffer: ArrayBuffer, name: string) {
-    if (this.decodeAudioPromiseMap[name]) {
-      return this.decodeAudioPromiseMap[name];
-    }
-
-    const promise = new Promise<AudioBuffer>((resolve, reject) => {
-      if (!this.ctx) {
-        reject(new Error('No audio support'));
-      }
-
-      const success = (decodedData: AudioBuffer) => {
-        if (this.decodeAudioPromiseMap[name]) {
-          delete this.decodeAudioPromiseMap[name];
-        }
-        if (decodedData) {
-          resolve(decodedData);
-        } else {
-          reject(new Error(`Error decoding audio ${name}`));
-        }
-      };
-
-      const error = (err: DOMException) => {
-        if (this.decodeAudioPromiseMap[name]) {
-          delete this.decodeAudioPromiseMap[name];
-        }
-        reject(new Error(`${err}. arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
-      };
-
-      const promise = this.ctx.decodeAudioData(arraybuffer, success, error);
-      if (promise instanceof Promise) {
-        promise.catch(err => {
-          reject(new Error(`catch ${err}, arrayBuffer byteLength: ${arraybuffer ? arraybuffer.byteLength : 0}`));
-        });
-      }
-    });
-
-    this.decodeAudioPromiseMap[name] = promise;
-    return promise;
   }
 }
 
