@@ -3704,14 +3704,17 @@ var _AnimationState = class {
     let finished = this.updateMixingFrom(from, delta);
     from.animationLast = from.nextAnimationLast;
     from.trackLast = from.nextTrackLast;
-    if (to.mixTime > 0 && to.mixTime >= to.mixDuration) {
-      if (from.totalAlpha == 0 || to.mixDuration == 0) {
-        to.mixingFrom = from.mixingFrom;
-        if (from.mixingFrom) from.mixingFrom.mixingTo = to;
-        to.interruptAlpha = from.interruptAlpha;
-        this.queue.end(from);
+    if (to.nextTrackLast != -1) {
+      const discard = to.mixTime == 0 && from.mixTime == 0;
+      if (to.mixTime >= to.mixDuration || discard) {
+        if (from.totalAlpha == 0 || to.mixDuration == 0 || discard) {
+          to.mixingFrom = from.mixingFrom;
+          if (from.mixingFrom != null) from.mixingFrom.mixingTo = to;
+          to.interruptAlpha = from.interruptAlpha;
+          this.queue.end(from);
+        }
+        return finished;
       }
-      return finished;
     }
     from.trackTime += delta * from.timeScale;
     to.mixTime += delta;
