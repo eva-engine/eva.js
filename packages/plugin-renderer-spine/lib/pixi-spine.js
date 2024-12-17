@@ -3704,14 +3704,17 @@ var _AnimationState = class {
     let finished = this.updateMixingFrom(from, delta);
     from.animationLast = from.nextAnimationLast;
     from.trackLast = from.nextTrackLast;
-    if (to.mixTime > 0 && to.mixTime >= to.mixDuration) {
-      if (from.totalAlpha == 0 || to.mixDuration == 0) {
-        to.mixingFrom = from.mixingFrom;
-        if (from.mixingFrom) from.mixingFrom.mixingTo = to;
-        to.interruptAlpha = from.interruptAlpha;
-        this.queue.end(from);
+    if (to.nextTrackLast != -1) {
+      const discard = to.mixTime == 0 && from.mixTime == 0;
+      if (to.mixTime >= to.mixDuration || discard) {
+        if (from.totalAlpha == 0 || to.mixDuration == 0 || discard) {
+          to.mixingFrom = from.mixingFrom;
+          if (from.mixingFrom != null) from.mixingFrom.mixingTo = to;
+          to.interruptAlpha = from.interruptAlpha;
+          this.queue.end(from);
+        }
+        return finished;
       }
-      return finished;
     }
     from.trackTime += delta * from.timeScale;
     to.mixTime += delta;
@@ -11927,13 +11930,6 @@ var spineTextureAtlasLoader = {
       }
       const textureLoadingPromises = [];
       for (const page of retval.pages) {
-        if (metadata.resolve) {
-          const resolvePromise = metadata.resolve().then(texture => {
-            page.setTexture(SpineTexture.from(texture.source));
-          });
-          textureLoadingPromises.push(resolvePromise);
-          continue;
-        }
         const pageName = page.name;
         const providedPage = metadata?.images ? metadata.images[pageName] : void 0;
         if (providedPage instanceof TextureSource) {
@@ -12644,7 +12640,10 @@ var Spine = class extends ViewContainer {
   updateAndSetPixiMask(slot, last) {
     const attachment = slot.attachment;
     if (attachment && attachment instanceof ClippingAttachment) {
-      const clip = (this.clippingSlotToPixiMasks[slot.data.name] ||= { slot, vertices: new Array() });
+      const clip = (this.clippingSlotToPixiMasks[slot.data.name] ||= {
+        slot,
+        vertices: new Array(),
+      });
       clip.maskComputed = false;
       this.currentClippingSlot = this.clippingSlotToPixiMasks[slot.data.name];
       return;
@@ -13006,6 +13005,7 @@ var Spine = class extends ViewContainer {
       skeletonAsset instanceof Uint8Array ? new SkeletonBinary(attachmentLoader) : new SkeletonJson(attachmentLoader);
     parser.scale = scale;
     const skeletonData = parser.readSkeletonData(skeletonAsset);
+    console.log('>>>skeletonData', skeletonData);
     Cache.set(cacheKey, skeletonData);
     return new Spine({
       skeletonData,
@@ -13542,4 +13542,4 @@ export default {
   VertexAttachment,
   WindowedMean,
 };
-//# sourceMappingURL=spine-pixi-v8.esm.js.map
+//# sourceMappingURL=spine-pixi-v8.mjs.map
