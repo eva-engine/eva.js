@@ -22,29 +22,7 @@ export default class Render extends Renderer {
     const container = this.containerManager.getContainer(gameObject.id);
     container.alpha = component.alpha;
     container.visible = component.visible;
-    if (component.sortDirty && component.sortableChildren) {
-      const gameObjects = gameObject.transform.children.map(({ gameObject }) => gameObject);
-      const children = gameObjects
-        .sort((a, b) => {
-          const aRender = a.getComponent('Render') as RenderComponent;
-          const bRender = b.getComponent('Render') as RenderComponent;
-          if (!aRender) {
-            return -1;
-          }
-          if (!bRender) {
-            return 1;
-          }
-          return aRender.zIndex - bRender.zIndex;
-        })
-        .map(gameObject => {
-          return this.containerManager.getContainer(gameObject.id);
-        });
-      const oldChildren = this.containerManager.getContainer(component.gameObject.id).children;
-      const elements = oldChildren.filter(c => children.indexOf(c as Container) === -1);
-      oldChildren.length = 0;
-      oldChildren.push(...elements, ...children);
-      component.sortDirty = false;
-    }
+    container.zIndex = component.zIndex;
   }
   componentChanged(changed: ComponentChanged) {
     if (changed.type === OBSERVER_TYPE.ADD || changed.type === OBSERVER_TYPE.REMOVE) {
