@@ -2,7 +2,6 @@ import { GameObject, decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/ev
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 
 import RenderComponent from './component';
-import type { Container } from '@eva/renderer-adapter';
 
 @decorators.componentObserver({
   Render: ['zIndex'],
