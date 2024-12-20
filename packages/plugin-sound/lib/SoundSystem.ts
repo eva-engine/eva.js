@@ -1,8 +1,7 @@
 import { System, decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 import SoundComponent from './Sound';
-import { sound } from '@pixi/sound';
+import { sound, soundAsset } from '@pixi/sound';
 import { extensions } from 'pixi.js';
-import { soundAsset } from '@pixi/sound';
 
 extensions.add(soundAsset);
 

@@ -13508,6 +13508,7 @@ export default {
   ShearXTimeline,
   ShearYTimeline,
   Skeleton,
+  SpineTexture,
   SkeletonBinary,
   SkeletonBounds,
   SkeletonClipping,

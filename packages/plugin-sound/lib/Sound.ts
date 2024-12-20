@@ -1,5 +1,5 @@
 import { Component } from '@eva/eva.js';
-import { Sound as PIXISound } from '@pixi/sound';
+import { Sound as PIXISound, sound } from '@pixi/sound';
 
 export interface SoundParams {
   resource: string;
@@ -16,11 +16,14 @@ export interface SoundParams {
 class Sound extends Component<SoundParams> {
   static componentName = 'Sound';
 
-  systemContext: AudioContext;
+  get systemContext(): AudioContext {
+    return sound.context as any;
+  }
 
   systemDestination: GainNode;
 
   get playing() {
+    if (!this.buffer) return false;
     return this.buffer.isPlaying;
   }
 
@@ -37,23 +40,24 @@ class Sound extends Component<SoundParams> {
   };
 
   private actionQueue: (() => void)[] = [];
+  public startTime: number = 0;
 
   private buffer: PIXISound;
 
   get muted(): boolean {
-    return this.buffer.muted;
+    return this.buffer?.muted || false;
   }
 
   set muted(v: boolean) {
-    this.buffer.muted = v;
+    if (this.buffer) this.buffer.muted = v;
   }
 
   get volume(): number {
-    return this.buffer.volume;
+    return this.buffer?.volume || 0;
   }
 
   set volume(v: number) {
-    this.buffer.volume = v;
+    if (this.buffer) this.buffer.volume = v;
   }
 
   init(obj?: SoundParams) {
@@ -70,18 +74,23 @@ class Sound extends Component<SoundParams> {
     if (this.state !== 'loaded') {
       this.actionQueue.push(this.play.bind(this));
     }
+    if (!this.buffer) return;
+    this.startTime = this.systemContext.currentTime;
     this.buffer.play();
   }
 
   resume() {
+    if (!this.buffer) return;
     this.buffer.resume();
   }
 
   pause() {
+    if (!this.buffer) return;
     this.buffer.pause();
   }
 
   stop() {
+    if (!this.buffer) return;
     this.buffer.stop();
   }
 
@@ -98,8 +107,11 @@ class Sound extends Component<SoundParams> {
 
   onDestroy() {
     this.actionQueue.length = 0;
-    this.buffer.destroy();
-    this.buffer = null;
+    this.startTime = 0;
+    if (this.buffer) {
+      this.buffer.destroy();
+      this.buffer = null;
+    }
   }
 }
 
