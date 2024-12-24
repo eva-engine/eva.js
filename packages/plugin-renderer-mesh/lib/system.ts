@@ -81,4 +81,13 @@ export default class MeshSystem extends Renderer {
       }
     }
   }
+
+  destroy(): void {
+    for (const key in this.meshes) {
+      const mesh = this.meshes[key];
+      this.containerManager?.getContainer(parseInt(key))?.removeChild(mesh);
+      mesh.destroy();
+      delete this.meshes[key];
+    }
+  }
 }
