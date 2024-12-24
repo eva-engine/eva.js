@@ -7,8 +7,8 @@ import { PerspectiveMesh, Texture } from 'pixi.js';
   PerspectiveMesh: ['resource', '_forceUpdate'],
 })
 export default class MeshSystem extends Renderer {
-  static systemName = 'PerspectiveMesh';
-  name: string = 'PerspectiveMesh';
+  static systemName = 'MeshSystem';
+  name: string = 'MeshSystem';
 
   renderSystem: RendererSystem;
 
