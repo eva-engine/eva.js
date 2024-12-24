@@ -15,7 +15,7 @@ interface Corners {
   y3: number;
 }
 
-export class PerspectiveMesh extends Component<PerspectiveMeshParams> {
+export default class PerspectiveMesh extends Component<PerspectiveMeshParams> {
   static componentName: string = 'PerspectiveMesh';
   resource: string;
 

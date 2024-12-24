@@ -1,12 +1,12 @@
 import { decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
-import { PerspectiveMesh as PerspectiveMeshComponent } from './perspective-mesh';
+import { default as PerspectiveMeshComponent } from './perspective-mesh';
 import { RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { PerspectiveMesh, Texture } from 'pixi.js';
 
 @decorators.componentObserver({
   PerspectiveMesh: ['resource', '_forceUpdate'],
 })
-export class MeshSystem extends Renderer {
+export default class MeshSystem extends Renderer {
   static systemName = 'PerspectiveMesh';
   name: string = 'PerspectiveMesh';
 

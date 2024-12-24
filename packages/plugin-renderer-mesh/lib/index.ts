@@ -1,2 +1,2 @@
-export * from './perspective-mesh';
-export * from './system';
+export { default as PerspectiveMesh } from './perspective-mesh';
+export { default as MeshSystem } from './system';

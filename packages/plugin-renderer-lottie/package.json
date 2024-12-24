@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-lottie",
-  "version": "2.0.0-beta.9",
+  "version": "2.0.0-beta.10",
   "description": "@eva/plugin-renderer-lottie",
   "main": "index.js",
   "module": "dist/plugin-renderer-lottie.esm.js",
@@ -18,8 +18,8 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "2.0.0-beta.9",
-    "@eva/plugin-renderer": "2.0.0-beta.9",
+    "@eva/eva.js": "2.0.0-beta.10",
+    "@eva/plugin-renderer": "2.0.0-beta.10",
     "ios-version": "^1.0.1",
     "pixi.js": "^8.6.5"
   }
