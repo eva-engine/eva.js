@@ -1,4 +1,4 @@
-import { GameObject, decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
 import { PerspectiveMesh as PerspectiveMeshComponent } from './perspective-mesh';
 import { RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { PerspectiveMesh, Texture } from 'pixi.js';
