@@ -22,7 +22,7 @@ export class PerspectiveMesh extends Component<PerspectiveMeshParams> {
   corners: Corners;
   _forceUpdate = 0;
 
-  init(obj?: PerspectiveMesh) {
+  init(obj?: PerspectiveMeshParams) {
     if (obj && obj.resource) {
       this.resource = obj.resource;
     }
