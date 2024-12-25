@@ -40,6 +40,7 @@ export default class MeshSystem extends Renderer {
           console.error(`GameObject:${changed.gameObject!.name}'s Mesh resource load error`);
           return;
         }
+        mesh.texture = texture as any;
         if (component.corners) {
           this.meshes[changed.gameObject!.id].setCorners(
             component.corners.x0,
