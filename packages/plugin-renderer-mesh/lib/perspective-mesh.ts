@@ -2,6 +2,8 @@ import { Component } from '@eva/eva.js';
 
 export interface PerspectiveMeshParams {
   resource: string;
+  verticesX?: number;
+  verticesY?: number;
 }
 
 interface Corners {
@@ -18,6 +20,8 @@ interface Corners {
 export default class PerspectiveMesh extends Component<PerspectiveMeshParams> {
   static componentName: string = 'PerspectiveMesh';
   resource: string;
+  verticesX = 10;
+  verticesY = 10;
 
   corners: Corners;
   _forceUpdate = 0;
@@ -25,6 +29,12 @@ export default class PerspectiveMesh extends Component<PerspectiveMeshParams> {
   init(obj?: PerspectiveMeshParams) {
     if (obj && obj.resource) {
       this.resource = obj.resource;
+    }
+    if (obj && obj.verticesX) {
+      this.verticesX = obj.verticesX;
+    }
+    if (obj && obj.verticesY) {
+      this.verticesY = obj.verticesY;
     }
   }
 

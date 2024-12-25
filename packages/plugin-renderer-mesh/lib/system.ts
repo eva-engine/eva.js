@@ -25,7 +25,11 @@ export default class MeshSystem extends Renderer {
       const component: PerspectiveMeshComponent = changed.component as PerspectiveMeshComponent;
 
       if (changed.type === OBSERVER_TYPE.ADD) {
-        const mesh = new PerspectiveMesh({ texture: new Texture() });
+        const mesh = new PerspectiveMesh({
+          texture: new Texture(),
+          verticesX: component.verticesX,
+          verticesY: component.verticesY,
+        });
         this.meshes[changed.gameObject!.id] = mesh;
         this.containerManager.getContainer(changed.gameObject!.id).addChildAt(mesh, 0);
         const asyncId = this.increaseAsyncId(gameObjectId);

@@ -40,6 +40,8 @@ export async function init() {
 
   const meshComp = new PerspectiveMesh({
     resource: 'meshName',
+    verticesX: 2,
+    verticesY: 2,
   });
 
   gameObj1.addComponent(meshComp);
