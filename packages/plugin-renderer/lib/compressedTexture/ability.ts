@@ -23,7 +23,7 @@ export interface SuportedCompressedTexture {
 export function getSuportCompressedTextureFormats(): SuportedCompressedTexture {
   if (result) return result;
   const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+  const gl = canvas.getContext('webgl2');
 
   if (!gl) {
     // #if _DEBUG
