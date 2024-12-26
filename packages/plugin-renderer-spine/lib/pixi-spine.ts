@@ -1,3 +1,4 @@
+// @ts-nocheck
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) =>
   key in obj
@@ -12385,7 +12386,10 @@ var SpinePipe = class {
       const blendMode = spineBlendModeMap[slot.data.blendMode];
       if (attachment instanceof RegionAttachment || attachment instanceof MeshAttachment) {
         const cacheData = spine._getCachedData(slot, attachment);
-        const batchableSpineSlot = (gpuSpine.slotBatches[cacheData.id] ||= new BatchableSpineSlot());
+        if (!gpuSpine.slotBatches[cacheData.id]) {
+          gpuSpine.slotBatches[cacheData.id] = new BatchableSpineSlot();
+        }
+        const batchableSpineSlot = gpuSpine.slotBatches[cacheData.id];
         batchableSpineSlot.setData(spine, cacheData, blendMode, roundPixels);
         if (!cacheData.skipRender) {
           batcher.addToBatch(batchableSpineSlot, instructionSet);
@@ -12647,7 +12651,10 @@ var Spine = class extends ViewContainer {
   updateAndSetPixiMask(slot, last) {
     const attachment = slot.attachment;
     if (attachment && attachment instanceof ClippingAttachment) {
-      const clip = (this.clippingSlotToPixiMasks[slot.data.name] ||= { slot, vertices: new Array() });
+      if (!this.clippingSlotToPixiMasks[slot.data.name]) {
+        this.clippingSlotToPixiMasks[slot.data.name] = { slot, vertices: new Array() };
+      }
+      const clip = this.clippingSlotToPixiMasks[slot.data.name];
       clip.maskComputed = false;
       this.currentClippingSlot = this.clippingSlotToPixiMasks[slot.data.name];
       return;
@@ -12917,7 +12924,9 @@ var Spine = class extends ViewContainer {
   }
   updateBounds() {
     this._boundsDirty = false;
-    this.skeletonBounds ||= new SkeletonBounds();
+    if (!this.skeletonBounds) {
+      this.skeletonBounds = new SkeletonBounds();
+    }
     const skeletonBounds = this.skeletonBounds;
     skeletonBounds.update(this.skeleton, true);
     if (skeletonBounds.minX === Infinity) {
