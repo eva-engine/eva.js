@@ -1,17 +1,22 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { NinePatchSystem, NinePatch } from '@eva/plugin-renderer-nine-patch';
+import { SpriteSystem } from '@eva/plugin-renderer-sprite';
 
 export const name = 'ninePatch';
 export async function init(canvas) {
   resource.addResource([
     {
       name: 'nine',
-      type: RESOURCE_TYPE.IMAGE,
+      type: RESOURCE_TYPE.SPRITE,
       src: {
         image: {
           type: 'png',
-          url: 'https://img.alicdn.com/tfs/TB17uSKkQ9l0K4jSZFKXXXFjpXa-363-144.png',
+          url: 'https://dev.g.alicdn.com/eva/hd25-spring-assets/0.0.5/gohome/tp.png',
+        },
+        json: {
+          type: 'json',
+          url: 'https://dev.g.alicdn.com/eva/hd25-spring-assets/0.0.5/gohome/tp.json',
         },
       },
       preload: false,
@@ -27,6 +32,7 @@ export async function init(canvas) {
         height: 1000,
         backgroundColor: 0xffffff,
       }),
+      new SpriteSystem(),
       new NinePatchSystem(),
     ],
   });
@@ -73,6 +79,7 @@ export async function init(canvas) {
       topHeight: 40,
       rightWidth: 40,
       bottomHeight: 40,
+      spriteName: 'waiting_tip.png',
     }),
   );
 

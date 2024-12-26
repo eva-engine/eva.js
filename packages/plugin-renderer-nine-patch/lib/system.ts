@@ -43,15 +43,19 @@ export default class NinePatch extends Renderer {
     const component = changed.component as NinePatchComponent;
     const gameObjectId = changed.gameObject.id;
     const asyncId = this.increaseAsyncId(gameObjectId);
-    const { type, data } = await resource.getResource(component.resource);
+    const { type, data, instance } = await resource.getResource(component.resource);
     if (!this.validateAsyncId(gameObjectId, asyncId)) return;
     if (!data) {
       console.error(`GameObject:${changed.gameObject.name}'s NinePatch resource load error`);
       return;
     }
     let img: Parameters<(typeof Texture)['from']>[0];
-    if (type === RESOURCE_TYPE.SPRITE) {
-      img = component.resource + resourceKeySplit + component.spriteName;
+    if (type === RESOURCE_TYPE.SPRITE && component.spriteName) {
+      if (!instance) {
+        console.error(`GameObjectNinePatch Sprite resource rely on the Sprite system`);
+        return;
+      }
+      img = instance[component.resource + resourceKeySplit + component.spriteName];
     } else {
       img = data.image;
     }
