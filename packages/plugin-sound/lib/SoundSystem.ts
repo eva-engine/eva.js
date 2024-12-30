@@ -6,6 +6,7 @@ import { extensions } from 'pixi.js';
 extensions.add(soundAsset);
 
 interface SoundSystemParams {
+  useLegacy?: boolean;
   autoPauseAndStart?: boolean;
   onError: (error: any) => void;
 }
@@ -28,6 +29,9 @@ class SoundSystem extends System {
   constructor(obj?: SoundSystemParams) {
     super();
     Object.assign(this, obj);
+    if (obj?.useLegacy) {
+      sound.useLegacy = true;
+    }
   }
 
   /**
