@@ -17,7 +17,7 @@ class Sound extends Component<SoundParams> {
   static componentName = 'Sound';
 
   get systemContext(): AudioContext {
-    return sound.context as any;
+    return sound.context.audioContext;
   }
 
   systemDestination: GainNode;
