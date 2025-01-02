@@ -3,6 +3,8 @@ import SoundComponent from './Sound';
 import { sound, soundAsset } from '@pixi/sound';
 import { extensions } from 'pixi.js';
 
+sound.disableAutoPause = true;
+
 extensions.add(soundAsset);
 
 interface SoundSystemParams {
