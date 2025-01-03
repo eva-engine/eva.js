@@ -1,11 +1,13 @@
 import { System, decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 import SoundComponent from './Sound';
-import { sound, soundAsset } from '@pixi/sound';
-import { extensions } from 'pixi.js';
+import { sound, utils } from '@pixi/sound';
 
 sound.disableAutoPause = true;
 
-extensions.add(soundAsset);
+utils.extensions.push('aac');
+utils.validateFormats({
+  aac: 'audio/aac',
+});
 
 interface SoundSystemParams {
   useLegacy?: boolean;
