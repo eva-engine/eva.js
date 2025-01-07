@@ -237,7 +237,7 @@ class Resource extends EE {
     const unLoadNames = names.filter(name => !this.promiseMap[name] && this.resourcesMap[name]);
     if (!unLoadNames.length) return;
     const resolves = {};
-    unLoadNames.forEach(name => {
+    unLoadNames.forEach(async name => {
       this.promiseMap[name] = new Promise(r => (resolves[name] = r));
       const res = this.resourcesMap[name];
       for (const handler of this.preProcessResourceHandlers) {
@@ -262,10 +262,23 @@ class Resource extends EE {
               },
             });
           } else {
-            Assets.add({
+            const options: any = {
               alias: url,
               src: url,
-            });
+            };
+            if (res.type === RESOURCE_TYPE.SPRITE || res.type === RESOURCE_TYPE.SPRITE_ANIMATION) {
+              if (res.src[key].type === 'json') {
+                try {
+                  const data = await Assets.load(res.src['image'].url);
+                  options.data = {
+                    texture: data,
+                  };
+                } catch (e) {
+                  console.log('>>>E', e);
+                }
+              }
+            }
+            Assets.add(options);
           }
           Assets.load(url)
             .then(data => {
