@@ -71,7 +71,7 @@ export default class Transform extends EventEmitter {
     const transform = changed.component as Trans;
     Object.defineProperty(transform, 'worldTransform', {
       get() {
-        return container.worldTransform;
+        return container.renderGroup || container.parentRenderGroup ? container.worldTransform : void 0;
       },
     });
   }

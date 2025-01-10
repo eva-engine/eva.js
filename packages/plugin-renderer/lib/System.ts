@@ -102,6 +102,12 @@ export default class Renderer extends System<RendererSystemParams> {
     if (params.debugMode) {
       globalThis.__PIXI_APP__ = app;
     }
+    const ticker = new Ticker();
+    // @ts-ignore
+    Ticker._system = Ticker._shared = ticker;
+    // @ts-ignore
+    ticker._protected = true;
+
     await app.init({ sharedTicker: true, ...params, hello: true });
     Ticker.shared.stop();
     Ticker.shared.autoStart = false;
