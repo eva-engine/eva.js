@@ -107,10 +107,10 @@ export default class Renderer extends System<RendererSystemParams> {
     Ticker._system = Ticker._shared = ticker;
     // @ts-ignore
     ticker._protected = true;
-
-    await app.init({ sharedTicker: true, ...params, hello: true });
     Ticker.shared.stop();
     Ticker.shared.autoStart = false;
+
+    await app.init({ sharedTicker: true, ...params, hello: true });
     if (params.enableScroll !== undefined) {
       params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
@@ -132,6 +132,13 @@ export default class Renderer extends System<RendererSystemParams> {
     }
   }
   lateUpdate(e) {
+    for (const gameObject of this.game.gameObjects) {
+      this.containerManager.updateTransform({
+        name: gameObject.id,
+        transform: gameObject.transform,
+      });
+      this.rendererManager.update(gameObject);
+    }
     this.transform.update();
     this.application.ticker.update(e.time);
   }
