@@ -258,7 +258,16 @@ class Resource extends EE {
               alias: url,
               src: url,
               data: {
-                resolve: () => Assets.load(res.src['image'].url),
+                resolve: () =>
+                  Assets.load(res.src['image'].url).catch(e => {
+                    this.onError({
+                      preload,
+                      errMsg: e.message,
+                      resource: {
+                        metadata: { key, name, resolves },
+                      },
+                    });
+                  }),
               },
             });
           } else {
@@ -275,6 +284,13 @@ class Resource extends EE {
                   };
                 } catch (e) {
                   console.log('>>>E', e);
+                  this.onError({
+                    preload,
+                    errMsg: e.message,
+                    resource: {
+                      metadata: { key, name, resolves },
+                    },
+                  });
                 }
               }
             }
