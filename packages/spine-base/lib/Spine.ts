@@ -118,7 +118,7 @@ export default class Spine extends Component<SpineParams> {
   setMix(from: string, to: string, duration: number) {
     if (!this.armature) {
     } else {
-      this.armature.stateData.setMix(from, to, duration);
+      this.armature.state.data.setMix(from, to, duration);
     }
   }
 
@@ -136,7 +136,7 @@ export default class Spine extends Component<SpineParams> {
   setDefaultMix(duration: number) {
     if (!this.armature) {
     } else {
-      this.armature.stateData.defaultMix = duration;
+      this.armature.state.data.defaultMix = duration;
     }
   }
 
