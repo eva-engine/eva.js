@@ -33,6 +33,6 @@ stats.html
 
 # vite
 vite-test/dist
-examples/spine38.html
+examples/spine36.html
 examples/loader.html
 package-lock.json

@@ -2,7 +2,6 @@ import { Container } from 'pixi.js';
 import { decorators, ComponentChanged, OBSERVER_TYPE, resource, UpdateParams } from '@eva/eva.js';
 import { Renderer, RendererSystem, RendererManager, ContainerManager } from '@eva/plugin-renderer';
 import Spine from './Spine';
-// import pixiSpine from './pixi-spine.js';
 import getSpineData, { releaseSpineData } from './SpineData';
 const MaxRetryCount = 20;
 

@@ -27,7 +27,8 @@
       "@eva/eva.js": ["packages/eva.js/lib"],
       "@eva/renderer-adapter": ["packages/renderer-adapter/lib"],
       "@eva/spine-base": ["packages/spine-base/lib"],
-      "pixi-spine": ["packages/plugin-renderer-spine/lib/pixi-spine.js"]
+      "pixi-spine": ["packages/plugin-renderer-spine/lib/pixi-spine.js"],
+      "pixi-spine36": ["packages/plugin-renderer-spine36/lib/pixi-spine.js"]
     }
   },
   "include": ["packages/global.d.ts", "packages/*/global.d.ts", "packages/*/lib", "packages/*/__tests__"]

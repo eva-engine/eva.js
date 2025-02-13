@@ -1,6 +1,6 @@
 import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { RendererSystem, registerKtx2CompressedTexture } from '@eva/plugin-renderer';
-import { Spine, SpineSystem } from '@eva/plugin-renderer-spine';
+import { Spine, SpineSystem } from '@eva/plugin-renderer-spine36';
 import { StatsSystem } from '@eva/plugin-stats';
 
 export const name = 'spine';
@@ -64,12 +64,8 @@ function createGb(game, x, y) {
       x: 0.5,
       y: 0.5,
     },
-    position: {
-      x: x * 30 + 100,
-      y: y * 30 + 100,
-    },
   });
-  const spine = new Spine({ resource: 'anim', animationName: 'run', scale: 1 });
+  const spine = new Spine({ resource: 'anim', animationName: 'animation', scale: 1 });
   gameObject.addComponent(spine);
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
@@ -100,6 +96,10 @@ export const init = async canvas => {
     frameRate: 120,
   });
 
+  game.scene.transform.size = {
+    width: 750,
+    height: 1000,
+  };
   // for (let i = 0; i < 10; i++) {
   //   for (let j = 0; j < 10; j++) {
   //     createGb(game, i, j);

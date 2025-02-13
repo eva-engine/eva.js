@@ -254,20 +254,21 @@ class Resource extends EE {
             url = `${window.location.protocol}${res.src[key].url}`;
           }
           if (key === 'atlas') {
+            const loadImagePromise = Assets.load(res.src['image'].url).catch(e => {
+              this.onError({
+                preload,
+                errMsg: e.message,
+                resource: {
+                  metadata: { key, name, resolves },
+                },
+              });
+            });
             Assets.add({
               alias: url,
               src: url,
               data: {
-                resolve: () =>
-                  Assets.load(res.src['image'].url).catch(e => {
-                    this.onError({
-                      preload,
-                      errMsg: e.message,
-                      resource: {
-                        metadata: { key, name, resolves },
-                      },
-                    });
-                  }),
+                resolve: () => loadImagePromise,
+                imageTexture: await loadImagePromise,
               },
             });
           } else {

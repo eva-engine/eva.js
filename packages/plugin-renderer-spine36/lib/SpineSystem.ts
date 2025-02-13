@@ -1,6 +1,5 @@
 import { SpineSystem as SpineSystemBase } from '@eva/spine-base';
-// @ts-ignore
-import pixiSpine from 'pixi-spine';
+import * as pixiSpine from 'pixi-spine36';
 export default class SpineSystem extends SpineSystemBase {
   init() {
     super.init({ pixiSpine });
