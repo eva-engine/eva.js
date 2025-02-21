@@ -107,13 +107,13 @@ export default class Renderer extends System<RendererSystemParams> {
     Ticker._system = Ticker._shared = ticker;
     // @ts-ignore
     ticker._protected = true;
-    Ticker.shared.stop();
-    Ticker.shared.autoStart = false;
 
     await app.init({ sharedTicker: true, ...params, hello: true });
     if (params.enableScroll !== undefined) {
       params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }
+    Ticker.shared.stop();
+    Ticker.shared.autoStart = false;
     return app;
   }
 

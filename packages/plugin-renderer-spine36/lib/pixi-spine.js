@@ -3135,7 +3135,7 @@ class AssetManager {
     return this.errors;
   }
 }
-let Event$1 = class Event2 {
+class Event {
   constructor(time, data) {
     __publicField(this, 'data');
     __publicField(this, 'intValue');
@@ -3146,7 +3146,7 @@ let Event$1 = class Event2 {
     this.time = time;
     this.data = data;
   }
-};
+}
 class EventData {
   constructor(name) {
     __publicField(this, 'name');
@@ -6136,6 +6136,9 @@ class SkeletonJson {
       timelines.push(timeline);
       duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
     }
+    if (isNaN(duration)) {
+      throw new Error('Error while parsing animation, duration is NaN');
+    }
     skeletonData.animations.push(new Animation(name, timelines, duration));
   }
   readCurve(map, timeline, frameIndex) {
@@ -8272,7 +8275,7 @@ export {
   DebugUtils,
   DeformTimeline,
   DrawOrderTimeline,
-  Event$1 as Event,
+  Event,
   EventData,
   EventQueue,
   EventTimeline,
