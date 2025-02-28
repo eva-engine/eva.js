@@ -4,7 +4,6 @@ var __defNormalProp = (obj, key, value) =>
     ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value })
     : (obj[key] = value);
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== 'symbol' ? key + '' : key, value);
-var _a, _b;
 import {
   Texture as Texture$1,
   ExtensionType,
@@ -219,46 +218,45 @@ __publicField(_Color, 'GREEN', new _Color(0, 1, 0, 1));
 __publicField(_Color, 'BLUE', new _Color(0, 0, 1, 1));
 __publicField(_Color, 'MAGENTA', new _Color(1, 0, 1, 1));
 let Color = _Color;
-let MathUtils$1 =
-  ((_a = class {
-    static clamp(value, min, max) {
-      if (value < min) return min;
-      if (value > max) return max;
-      return value;
-    }
-    static cosDeg(degrees) {
-      return Math.cos(degrees * _a.degRad);
-    }
-    static sinDeg(degrees) {
-      return Math.sin(degrees * _a.degRad);
-    }
-    static signum(value) {
-      return value > 0 ? 1 : value < 0 ? -1 : 0;
-    }
-    static toInt(x) {
-      return x > 0 ? Math.floor(x) : Math.ceil(x);
-    }
-    static cbrt(x) {
-      var y = Math.pow(Math.abs(x), 1 / 3);
-      return x < 0 ? -y : y;
-    }
-    static randomTriangular(min, max) {
-      return _a.randomTriangularWith(min, max, (min + max) * 0.5);
-    }
-    static randomTriangularWith(min, max, mode) {
-      let u = Math.random();
-      let d = max - min;
-      if (u <= (mode - min) / d) return min + Math.sqrt(u * d * (mode - min));
-      return max - Math.sqrt((1 - u) * d * (max - mode));
-    }
-  }),
-  __publicField(_a, 'PI', 3.1415927),
-  __publicField(_a, 'PI2', _a.PI * 2),
-  __publicField(_a, 'radiansToDegrees', 180 / _a.PI),
-  __publicField(_a, 'radDeg', _a.radiansToDegrees),
-  __publicField(_a, 'degreesToRadians', _a.PI / 180),
-  __publicField(_a, 'degRad', _a.degreesToRadians),
-  _a);
+const _MathUtils = class _MathUtils {
+  static clamp(value, min, max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+  }
+  static cosDeg(degrees) {
+    return Math.cos(degrees * _MathUtils.degRad);
+  }
+  static sinDeg(degrees) {
+    return Math.sin(degrees * _MathUtils.degRad);
+  }
+  static signum(value) {
+    return value > 0 ? 1 : value < 0 ? -1 : 0;
+  }
+  static toInt(x) {
+    return x > 0 ? Math.floor(x) : Math.ceil(x);
+  }
+  static cbrt(x) {
+    var y = Math.pow(Math.abs(x), 1 / 3);
+    return x < 0 ? -y : y;
+  }
+  static randomTriangular(min, max) {
+    return _MathUtils.randomTriangularWith(min, max, (min + max) * 0.5);
+  }
+  static randomTriangularWith(min, max, mode) {
+    let u = Math.random();
+    let d = max - min;
+    if (u <= (mode - min) / d) return min + Math.sqrt(u * d * (mode - min));
+    return max - Math.sqrt((1 - u) * d * (max - mode));
+  }
+};
+__publicField(_MathUtils, 'PI', 3.1415927);
+__publicField(_MathUtils, 'PI2', _MathUtils.PI * 2);
+__publicField(_MathUtils, 'radiansToDegrees', 180 / _MathUtils.PI);
+__publicField(_MathUtils, 'radDeg', _MathUtils.radiansToDegrees);
+__publicField(_MathUtils, 'degreesToRadians', _MathUtils.PI / 180);
+__publicField(_MathUtils, 'degRad', _MathUtils.degreesToRadians);
+let MathUtils = _MathUtils;
 class Interpolation {
   apply(start, end, a) {
     return start + (end - start) * this.applyInternal(a);
@@ -283,60 +281,59 @@ class PowOut extends Pow {
     return Math.pow(a - 1, this.power) * (this.power % 2 == 0 ? -1 : 1) + 1;
   }
 }
-let Utils$1 =
-  ((_b = class {
-    static arrayCopy(source, sourceStart, dest, destStart, numElements) {
-      for (let i = sourceStart, j = destStart; i < sourceStart + numElements; i++, j++) {
-        dest[j] = source[i];
-      }
+const _Utils = class _Utils {
+  static arrayCopy(source, sourceStart, dest, destStart, numElements) {
+    for (let i = sourceStart, j = destStart; i < sourceStart + numElements; i++, j++) {
+      dest[j] = source[i];
     }
-    static setArraySize(array, size, value = 0) {
-      let oldSize = array.length;
-      if (oldSize == size) return array;
-      array.length = size;
-      if (oldSize < size) {
-        for (let i = oldSize; i < size; i++) array[i] = value;
-      }
-      return array;
+  }
+  static setArraySize(array, size, value = 0) {
+    let oldSize = array.length;
+    if (oldSize == size) return array;
+    array.length = size;
+    if (oldSize < size) {
+      for (let i = oldSize; i < size; i++) array[i] = value;
     }
-    static ensureArrayCapacity(array, size, value = 0) {
-      if (array.length >= size) return array;
-      return _b.setArraySize(array, size, value);
-    }
-    static newArray(size, defaultValue) {
+    return array;
+  }
+  static ensureArrayCapacity(array, size, value = 0) {
+    if (array.length >= size) return array;
+    return _Utils.setArraySize(array, size, value);
+  }
+  static newArray(size, defaultValue) {
+    let array = new Array(size);
+    for (let i = 0; i < size; i++) array[i] = defaultValue;
+    return array;
+  }
+  static newFloatArray(size) {
+    if (_Utils.SUPPORTS_TYPED_ARRAYS) {
+      return new Float32Array(size);
+    } else {
       let array = new Array(size);
-      for (let i = 0; i < size; i++) array[i] = defaultValue;
+      for (let i = 0; i < array.length; i++) array[i] = 0;
       return array;
     }
-    static newFloatArray(size) {
-      if (_b.SUPPORTS_TYPED_ARRAYS) {
-        return new Float32Array(size);
-      } else {
-        let array = new Array(size);
-        for (let i = 0; i < array.length; i++) array[i] = 0;
-        return array;
-      }
+  }
+  static newShortArray(size) {
+    if (_Utils.SUPPORTS_TYPED_ARRAYS) {
+      return new Int16Array(size);
+    } else {
+      let array = new Array(size);
+      for (let i = 0; i < array.length; i++) array[i] = 0;
+      return array;
     }
-    static newShortArray(size) {
-      if (_b.SUPPORTS_TYPED_ARRAYS) {
-        return new Int16Array(size);
-      } else {
-        let array = new Array(size);
-        for (let i = 0; i < array.length; i++) array[i] = 0;
-        return array;
-      }
-    }
-    static toFloatArray(array) {
-      return _b.SUPPORTS_TYPED_ARRAYS ? new Float32Array(array) : array;
-    }
-    static toSinglePrecision(value) {
-      return _b.SUPPORTS_TYPED_ARRAYS ? Math.fround(value) : value;
-    }
-    // This function is used to fix WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
-    static webkit602BugfixHelper(alpha, pose) {}
-  }),
-  __publicField(_b, 'SUPPORTS_TYPED_ARRAYS', typeof Float32Array !== 'undefined'),
-  _b);
+  }
+  static toFloatArray(array) {
+    return _Utils.SUPPORTS_TYPED_ARRAYS ? new Float32Array(array) : array;
+  }
+  static toSinglePrecision(value) {
+    return _Utils.SUPPORTS_TYPED_ARRAYS ? Math.fround(value) : value;
+  }
+  // This function is used to fix WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
+  static webkit602BugfixHelper(alpha, pose) {}
+};
+__publicField(_Utils, 'SUPPORTS_TYPED_ARRAYS', typeof Float32Array !== 'undefined');
+let Utils = _Utils;
 class DebugUtils {
   static logBones(skeleton) {
     for (let i = 0; i < skeleton.bones.length; i++) {
@@ -382,7 +379,7 @@ class Pool {
     this.items.length = 0;
   }
 }
-let Vector2$1 = class Vector22 {
+class Vector2 {
   constructor(x = 0, y = 0) {
     this.x = x;
     this.y = y;
@@ -405,7 +402,7 @@ let Vector2$1 = class Vector22 {
     }
     return this;
   }
-};
+}
 class TimeKeeper {
   constructor() {
     __publicField(this, 'maxDelta', 0.064);
@@ -536,7 +533,7 @@ const _CurveTimeline = class _CurveTimeline {
   constructor(frameCount) {
     __publicField(this, 'curves');
     if (frameCount <= 0) throw new Error('frameCount must be > 0: ' + frameCount);
-    this.curves = Utils$1.newFloatArray((frameCount - 1) * _CurveTimeline.BEZIER_SIZE);
+    this.curves = Utils.newFloatArray((frameCount - 1) * _CurveTimeline.BEZIER_SIZE);
   }
   getFrameCount() {
     return this.curves.length / _CurveTimeline.BEZIER_SIZE + 1;
@@ -584,7 +581,7 @@ const _CurveTimeline = class _CurveTimeline {
     }
   }
   getCurvePercent(frameIndex, percent) {
-    percent = MathUtils$1.clamp(percent, 0, 1);
+    percent = MathUtils.clamp(percent, 0, 1);
     let curves = this.curves;
     let i = frameIndex * _CurveTimeline.BEZIER_SIZE;
     let type = curves[i];
@@ -621,7 +618,7 @@ const _RotateTimeline = class _RotateTimeline extends CurveTimeline {
     super(frameCount);
     __publicField(this, 'boneIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount << 1);
+    this.frames = Utils.newFloatArray(frameCount << 1);
   }
   getPropertyId() {
     return (0 << 24) + this.boneIndex;
@@ -687,7 +684,7 @@ const _TranslateTimeline = class _TranslateTimeline extends CurveTimeline {
     super(frameCount);
     __publicField(this, 'boneIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _TranslateTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _TranslateTimeline.ENTRIES);
   }
   getPropertyId() {
     return (1 << 24) + this.boneIndex;
@@ -800,11 +797,11 @@ class ScaleTimeline extends TranslateTimeline {
         by = bone.scaleY;
       }
       if (direction == 1) {
-        x = Math.abs(x) * MathUtils$1.signum(bx);
-        y = Math.abs(y) * MathUtils$1.signum(by);
+        x = Math.abs(x) * MathUtils.signum(bx);
+        y = Math.abs(y) * MathUtils.signum(by);
       } else {
-        bx = Math.abs(bx) * MathUtils$1.signum(x);
-        by = Math.abs(by) * MathUtils$1.signum(y);
+        bx = Math.abs(bx) * MathUtils.signum(x);
+        by = Math.abs(by) * MathUtils.signum(y);
       }
       bone.scaleX = bx + (x - bx) * alpha;
       bone.scaleY = by + (y - by) * alpha;
@@ -865,7 +862,7 @@ const _ColorTimeline = class _ColorTimeline extends CurveTimeline {
     super(frameCount);
     __publicField(this, 'slotIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _ColorTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _ColorTimeline.ENTRIES);
   }
   getPropertyId() {
     return (5 << 24) + this.slotIndex;
@@ -950,7 +947,7 @@ const _TwoColorTimeline = class _TwoColorTimeline extends CurveTimeline {
     super(frameCount);
     __publicField(this, 'slotIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _TwoColorTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _TwoColorTimeline.ENTRIES);
   }
   getPropertyId() {
     return (14 << 24) + this.slotIndex;
@@ -1067,7 +1064,7 @@ class AttachmentTimeline {
     __publicField(this, 'frames');
     // time, ...
     __publicField(this, 'attachmentNames');
-    this.frames = Utils$1.newFloatArray(frameCount);
+    this.frames = Utils.newFloatArray(frameCount);
     this.attachmentNames = new Array(frameCount);
   }
   getPropertyId() {
@@ -1114,9 +1111,9 @@ class DeformTimeline extends CurveTimeline {
     __publicField(this, 'frames');
     // time, ...
     __publicField(this, 'frameVertices');
-    this.frames = Utils$1.newFloatArray(frameCount);
+    this.frames = Utils.newFloatArray(frameCount);
     this.frameVertices = new Array(frameCount);
-    if (zeros == null) zeros = Utils$1.newFloatArray(64);
+    if (zeros == null) zeros = Utils.newFloatArray(64);
   }
   getPropertyId() {
     return (6 << 27) + +this.attachment.id + this.slotIndex;
@@ -1146,7 +1143,7 @@ class DeformTimeline extends CurveTimeline {
             verticesArray.length = 0;
             break;
           }
-          let vertices2 = Utils$1.setArraySize(verticesArray, vertexCount);
+          let vertices2 = Utils.setArraySize(verticesArray, vertexCount);
           if (vertexAttachment.bones == null) {
             var setupVertices = vertexAttachment.vertices;
             for (var i = 0; i < vertexCount; i++) vertices2[i] += (setupVertices[i] - vertices2[i]) * alpha;
@@ -1157,11 +1154,11 @@ class DeformTimeline extends CurveTimeline {
       }
       return;
     }
-    let vertices = Utils$1.setArraySize(verticesArray, vertexCount);
+    let vertices = Utils.setArraySize(verticesArray, vertexCount);
     if (time >= frames[frames.length - 1]) {
       let lastVertices = frameVertices[frames.length - 1];
       if (alpha == 1) {
-        Utils$1.arrayCopy(lastVertices, 0, vertices, 0, vertexCount);
+        Utils.arrayCopy(lastVertices, 0, vertices, 0, vertexCount);
       } else if (pose == 0) {
         let vertexAttachment = slotAttachment;
         if (vertexAttachment.bones == null) {
@@ -1216,7 +1213,7 @@ class EventTimeline {
     __publicField(this, 'frames');
     // time, ...
     __publicField(this, 'events');
-    this.frames = Utils$1.newFloatArray(frameCount);
+    this.frames = Utils.newFloatArray(frameCount);
     this.events = new Array(frameCount);
   }
   getPropertyId() {
@@ -1258,7 +1255,7 @@ class DrawOrderTimeline {
     __publicField(this, 'frames');
     // time, ...
     __publicField(this, 'drawOrders');
-    this.frames = Utils$1.newFloatArray(frameCount);
+    this.frames = Utils.newFloatArray(frameCount);
     this.drawOrders = new Array(frameCount);
   }
   getPropertyId() {
@@ -1277,19 +1274,19 @@ class DrawOrderTimeline {
     let drawOrder = skeleton.drawOrder;
     let slots = skeleton.slots;
     if (direction == 1 && pose == 0) {
-      Utils$1.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
+      Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
       return;
     }
     let frames = this.frames;
     if (time < frames[0]) {
-      if (pose == 0) Utils$1.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
+      if (pose == 0) Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
       return;
     }
     let frame = 0;
     if (time >= frames[frames.length - 1]) frame = frames.length - 1;
     else frame = Animation.binarySearch(frames, time) - 1;
     let drawOrderToSetupIndex = this.drawOrders[frame];
-    if (drawOrderToSetupIndex == null) Utils$1.arrayCopy(slots, 0, drawOrder, 0, slots.length);
+    if (drawOrderToSetupIndex == null) Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
     else {
       for (let i = 0, n = drawOrderToSetupIndex.length; i < n; i++) drawOrder[i] = slots[drawOrderToSetupIndex[i]];
     }
@@ -1301,7 +1298,7 @@ const _IkConstraintTimeline = class _IkConstraintTimeline extends CurveTimeline 
     super(frameCount);
     __publicField(this, 'ikConstraintIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _IkConstraintTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _IkConstraintTimeline.ENTRIES);
   }
   getPropertyId() {
     return (9 << 24) + this.ikConstraintIndex;
@@ -1375,7 +1372,7 @@ const _TransformConstraintTimeline = class _TransformConstraintTimeline extends 
     super(frameCount);
     __publicField(this, 'transformConstraintIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _TransformConstraintTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _TransformConstraintTimeline.ENTRIES);
   }
   getPropertyId() {
     return (10 << 24) + this.transformConstraintIndex;
@@ -1466,7 +1463,7 @@ const _PathConstraintPositionTimeline = class _PathConstraintPositionTimeline ex
     super(frameCount);
     __publicField(this, 'pathConstraintIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _PathConstraintPositionTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _PathConstraintPositionTimeline.ENTRIES);
   }
   getPropertyId() {
     return (11 << 24) + this.pathConstraintIndex;
@@ -1555,7 +1552,7 @@ const _PathConstraintMixTimeline = class _PathConstraintMixTimeline extends Curv
     super(frameCount);
     __publicField(this, 'pathConstraintIndex');
     __publicField(this, 'frames');
-    this.frames = Utils$1.newFloatArray(frameCount * _PathConstraintMixTimeline.ENTRIES);
+    this.frames = Utils.newFloatArray(frameCount * _PathConstraintMixTimeline.ENTRIES);
   }
   getPropertyId() {
     return (13 << 24) + this.pathConstraintIndex;
@@ -1718,7 +1715,7 @@ const _AnimationState = class _AnimationState {
       } else {
         let timelineData = current.timelineData;
         let firstFrame = current.timelinesRotation.length == 0;
-        if (firstFrame) Utils$1.setArraySize(current.timelinesRotation, timelineCount << 1, null);
+        if (firstFrame) Utils.setArraySize(current.timelinesRotation, timelineCount << 1, null);
         let timelinesRotation = current.timelinesRotation;
         for (let ii = 0; ii < timelineCount; ii++) {
           let timeline = timelines[ii];
@@ -1735,7 +1732,7 @@ const _AnimationState = class _AnimationState {
               firstFrame,
             );
           } else {
-            Utils$1.webkit602BugfixHelper(mix, pose);
+            Utils.webkit602BugfixHelper(mix, pose);
             timeline.apply(skeleton, animationLast, animationTime, events, mix, pose, MixDirection.in);
           }
         }
@@ -1769,7 +1766,7 @@ const _AnimationState = class _AnimationState {
     let timelineData = from.timelineData;
     let timelineDipMix = from.timelineDipMix;
     let firstFrame = from.timelinesRotation.length == 0;
-    if (firstFrame) Utils$1.setArraySize(from.timelinesRotation, timelineCount << 1, null);
+    if (firstFrame) Utils.setArraySize(from.timelinesRotation, timelineCount << 1, null);
     let timelinesRotation = from.timelinesRotation;
     let pose;
     let alphaDip = from.alpha * to.interruptAlpha,
@@ -1804,7 +1801,7 @@ const _AnimationState = class _AnimationState {
       if (timeline instanceof RotateTimeline)
         this.applyRotateTimeline(timeline, skeleton, animationTime, alpha, pose, timelinesRotation, i << 1, firstFrame);
       else {
-        Utils$1.webkit602BugfixHelper(alpha, pose);
+        Utils.webkit602BugfixHelper(alpha, pose);
         timeline.apply(skeleton, animationLast, animationTime, events, alpha, pose, MixDirection.out);
       }
     }
@@ -1861,12 +1858,12 @@ const _AnimationState = class _AnimationState {
       }
       let current = diff > 0,
         dir = lastTotal >= 0;
-      if (MathUtils$1.signum(lastDiff) != MathUtils$1.signum(diff) && Math.abs(lastDiff) <= 90) {
-        if (Math.abs(lastTotal) > 180) lastTotal += 360 * MathUtils$1.signum(lastTotal);
+      if (MathUtils.signum(lastDiff) != MathUtils.signum(diff) && Math.abs(lastDiff) <= 90) {
+        if (Math.abs(lastTotal) > 180) lastTotal += 360 * MathUtils.signum(lastTotal);
         dir = current;
       }
       total = diff + lastTotal - (lastTotal % 360);
-      if (dir != current) total += 360 * MathUtils$1.signum(lastTotal);
+      if (dir != current) total += 360 * MathUtils.signum(lastTotal);
       timelinesRotation[i] = total;
     }
     timelinesRotation[i + 1] = diff;
@@ -2013,7 +2010,7 @@ const _AnimationState = class _AnimationState {
   }
   expandToIndex(index) {
     if (index < this.tracks.length) return this.tracks[index];
-    Utils$1.ensureArrayCapacity(this.tracks, index - this.tracks.length + 1, null);
+    Utils.ensureArrayCapacity(this.tracks, index - this.tracks.length + 1, null);
     this.tracks.length = index + 1;
     return null;
   }
@@ -2132,9 +2129,9 @@ class TrackEntry {
     let mixingToLast = mixingToArray.length - 1;
     let timelines = this.animation.timelines;
     let timelinesCount = this.animation.timelines.length;
-    let timelineData = Utils$1.setArraySize(this.timelineData, timelinesCount);
+    let timelineData = Utils.setArraySize(this.timelineData, timelinesCount);
     this.timelineDipMix.length = 0;
-    let timelineDipMix = Utils$1.setArraySize(this.timelineDipMix, timelinesCount);
+    let timelineDipMix = Utils.setArraySize(this.timelineDipMix, timelinesCount);
     outer: for (var i = 0; i < timelinesCount; i++) {
       let id = timelines[i].getPropertyId();
       if (!propertyIDs.add(id)) timelineData[i] = AnimationState.SUBSEQUENT;
@@ -2362,7 +2359,7 @@ class MeshAttachment extends VertexAttachment {
       height = this.region.v2 - v;
     }
     let regionUVs = this.regionUVs;
-    if (this.uvs == null || this.uvs.length != regionUVs.length) this.uvs = Utils$1.newFloatArray(regionUVs.length);
+    if (this.uvs == null || this.uvs.length != regionUVs.length) this.uvs = Utils.newFloatArray(regionUVs.length);
     let uvs = this.uvs;
     if (this.region.rotate) {
       for (let i = 0, n = uvs.length; i < n; i += 2) {
@@ -2396,7 +2393,7 @@ class MeshAttachment extends VertexAttachment {
     }
   }
 }
-let PathAttachment$1 = class PathAttachment2 extends VertexAttachment {
+class PathAttachment extends VertexAttachment {
   constructor(name) {
     super(name);
     __publicField(this, 'lengths');
@@ -2404,7 +2401,7 @@ let PathAttachment$1 = class PathAttachment2 extends VertexAttachment {
     __publicField(this, 'constantSpeed', false);
     __publicField(this, 'color', new Color(1, 1, 1, 1));
   }
-};
+}
 class PointAttachment extends VertexAttachment {
   constructor(name) {
     super(name);
@@ -2419,11 +2416,11 @@ class PointAttachment extends VertexAttachment {
     return point;
   }
   computeWorldRotation(bone) {
-    let cos = MathUtils$1.cosDeg(this.rotation),
-      sin = MathUtils$1.sinDeg(this.rotation);
+    let cos = MathUtils.cosDeg(this.rotation),
+      sin = MathUtils.sinDeg(this.rotation);
     let x = cos * bone.a + sin * bone.b;
     let y = cos * bone.c + sin * bone.d;
-    return Math.atan2(y, x) * MathUtils$1.radDeg;
+    return Math.atan2(y, x) * MathUtils.radDeg;
   }
 }
 const _RegionAttachment = class _RegionAttachment extends Attachment {
@@ -2440,8 +2437,8 @@ const _RegionAttachment = class _RegionAttachment extends Attachment {
     __publicField(this, 'path');
     __publicField(this, 'rendererObject');
     __publicField(this, 'region');
-    __publicField(this, 'offset', Utils$1.newFloatArray(8));
-    __publicField(this, 'uvs', Utils$1.newFloatArray(8));
+    __publicField(this, 'offset', Utils.newFloatArray(8));
+    __publicField(this, 'uvs', Utils.newFloatArray(8));
     __publicField(this, 'tempColor', new Color(1, 1, 1, 1));
   }
   updateOffset() {
@@ -2451,7 +2448,7 @@ const _RegionAttachment = class _RegionAttachment extends Attachment {
     let localY = (-this.height / 2) * this.scaleY + this.region.offsetY * regionScaleY;
     let localX2 = localX + this.region.width * regionScaleX;
     let localY2 = localY + this.region.height * regionScaleY;
-    let radians = this.rotation * MathUtils$1.degRad;
+    let radians = (this.rotation * Math.PI) / 180;
     let cos = Math.cos(radians);
     let sin = Math.sin(radians);
     let localXCos = localX * cos + this.x;
@@ -2596,7 +2593,7 @@ class AtlasAttachmentLoader {
   }
   /** @return May be null to not load an attachment */
   newPathAttachment(skin, name) {
-    return new PathAttachment$1(name);
+    return new PathAttachment(name);
   }
   newPointAttachment(skin, name) {
     return new PointAttachment(name);
@@ -2691,10 +2688,10 @@ class Bone {
     let parent = this.parent;
     if (parent == null) {
       let rotationY = rotation + 90 + shearY;
-      let la = MathUtils$1.cosDeg(rotation + shearX) * scaleX;
-      let lb = MathUtils$1.cosDeg(rotationY) * scaleY;
-      let lc = MathUtils$1.sinDeg(rotation + shearX) * scaleX;
-      let ld = MathUtils$1.sinDeg(rotationY) * scaleY;
+      let la = MathUtils.cosDeg(rotation + shearX) * scaleX;
+      let lb = MathUtils.cosDeg(rotationY) * scaleY;
+      let lc = MathUtils.sinDeg(rotation + shearX) * scaleX;
+      let ld = MathUtils.sinDeg(rotationY) * scaleY;
       let skeleton = this.skeleton;
       if (skeleton.flipX) {
         x = -x;
@@ -2723,10 +2720,10 @@ class Bone {
     switch (this.data.transformMode) {
       case TransformMode.Normal: {
         let rotationY = rotation + 90 + shearY;
-        let la = MathUtils$1.cosDeg(rotation + shearX) * scaleX;
-        let lb = MathUtils$1.cosDeg(rotationY) * scaleY;
-        let lc = MathUtils$1.sinDeg(rotation + shearX) * scaleX;
-        let ld = MathUtils$1.sinDeg(rotationY) * scaleY;
+        let la = MathUtils.cosDeg(rotation + shearX) * scaleX;
+        let lb = MathUtils.cosDeg(rotationY) * scaleY;
+        let lc = MathUtils.sinDeg(rotation + shearX) * scaleX;
+        let ld = MathUtils.sinDeg(rotationY) * scaleY;
         this.a = pa * la + pb * lc;
         this.b = pa * lb + pb * ld;
         this.c = pc * la + pd * lc;
@@ -2735,10 +2732,10 @@ class Bone {
       }
       case TransformMode.OnlyTranslation: {
         let rotationY = rotation + 90 + shearY;
-        this.a = MathUtils$1.cosDeg(rotation + shearX) * scaleX;
-        this.b = MathUtils$1.cosDeg(rotationY) * scaleY;
-        this.c = MathUtils$1.sinDeg(rotation + shearX) * scaleX;
-        this.d = MathUtils$1.sinDeg(rotationY) * scaleY;
+        this.a = MathUtils.cosDeg(rotation + shearX) * scaleX;
+        this.b = MathUtils.cosDeg(rotationY) * scaleY;
+        this.c = MathUtils.sinDeg(rotation + shearX) * scaleX;
+        this.d = MathUtils.sinDeg(rotationY) * scaleY;
         break;
       }
       case TransformMode.NoRotationOrReflection: {
@@ -2748,18 +2745,18 @@ class Bone {
           s = Math.abs(pa * pd - pb * pc) / s;
           pb = pc * s;
           pd = pa * s;
-          prx = Math.atan2(pc, pa) * MathUtils$1.radDeg;
+          prx = Math.atan2(pc, pa) * MathUtils.radDeg;
         } else {
           pa = 0;
           pc = 0;
-          prx = 90 - Math.atan2(pd, pb) * MathUtils$1.radDeg;
+          prx = 90 - Math.atan2(pd, pb) * MathUtils.radDeg;
         }
         let rx = rotation + shearX - prx;
         let ry = rotation + shearY - prx + 90;
-        let la = MathUtils$1.cosDeg(rx) * scaleX;
-        let lb = MathUtils$1.cosDeg(ry) * scaleY;
-        let lc = MathUtils$1.sinDeg(rx) * scaleX;
-        let ld = MathUtils$1.sinDeg(ry) * scaleY;
+        let la = MathUtils.cosDeg(rx) * scaleX;
+        let lb = MathUtils.cosDeg(ry) * scaleY;
+        let lc = MathUtils.sinDeg(rx) * scaleX;
+        let ld = MathUtils.sinDeg(ry) * scaleY;
         this.a = pa * la - pb * lc;
         this.b = pa * lb - pb * ld;
         this.c = pc * la + pd * lc;
@@ -2768,8 +2765,8 @@ class Bone {
       }
       case TransformMode.NoScale:
       case TransformMode.NoScaleOrReflection: {
-        let cos = MathUtils$1.cosDeg(rotation);
-        let sin = MathUtils$1.sinDeg(rotation);
+        let cos = MathUtils.cosDeg(rotation);
+        let sin = MathUtils.sinDeg(rotation);
         let za = pa * cos + pb * sin;
         let zc = pc * cos + pd * sin;
         let s = Math.sqrt(za * za + zc * zc);
@@ -2780,10 +2777,10 @@ class Bone {
         let r = Math.PI / 2 + Math.atan2(zc, za);
         let zb = Math.cos(r) * s;
         let zd = Math.sin(r) * s;
-        let la = MathUtils$1.cosDeg(shearX) * scaleX;
-        let lb = MathUtils$1.cosDeg(90 + shearY) * scaleY;
-        let lc = MathUtils$1.sinDeg(shearX) * scaleX;
-        let ld = MathUtils$1.sinDeg(90 + shearY) * scaleY;
+        let la = MathUtils.cosDeg(shearX) * scaleX;
+        let lb = MathUtils.cosDeg(90 + shearY) * scaleY;
+        let lc = MathUtils.sinDeg(shearX) * scaleX;
+        let ld = MathUtils.sinDeg(90 + shearY) * scaleY;
         if (
           this.data.transformMode != TransformMode.NoScaleOrReflection
             ? pa * pd - pb * pc < 0
@@ -2819,10 +2816,10 @@ class Bone {
     this.shearY = data.shearY;
   }
   getWorldRotationX() {
-    return Math.atan2(this.c, this.a) * MathUtils$1.radDeg;
+    return Math.atan2(this.c, this.a) * MathUtils.radDeg;
   }
   getWorldRotationY() {
-    return Math.atan2(this.d, this.b) * MathUtils$1.radDeg;
+    return Math.atan2(this.d, this.b) * MathUtils.radDeg;
   }
   getWorldScaleX() {
     return Math.sqrt(this.a * this.a + this.c * this.c);
@@ -2840,12 +2837,12 @@ class Bone {
     if (parent == null) {
       this.ax = this.worldX;
       this.ay = this.worldY;
-      this.arotation = Math.atan2(this.c, this.a) * MathUtils$1.radDeg;
+      this.arotation = Math.atan2(this.c, this.a) * MathUtils.radDeg;
       this.ascaleX = Math.sqrt(this.a * this.a + this.c * this.c);
       this.ascaleY = Math.sqrt(this.b * this.b + this.d * this.d);
       this.ashearX = 0;
       this.ashearY =
-        Math.atan2(this.a * this.b + this.c * this.d, this.a * this.d - this.b * this.c) * MathUtils$1.radDeg;
+        Math.atan2(this.a * this.b + this.c * this.d, this.a * this.d - this.b * this.c) * MathUtils.radDeg;
       return;
     }
     let pa = parent.a,
@@ -2870,13 +2867,13 @@ class Bone {
     if (this.ascaleX > 1e-4) {
       let det = ra * rd - rb * rc;
       this.ascaleY = det / this.ascaleX;
-      this.ashearY = Math.atan2(ra * rb + rc * rd, det) * MathUtils$1.radDeg;
-      this.arotation = Math.atan2(rc, ra) * MathUtils$1.radDeg;
+      this.ashearY = Math.atan2(ra * rb + rc * rd, det) * MathUtils.radDeg;
+      this.arotation = Math.atan2(rc, ra) * MathUtils.radDeg;
     } else {
       this.ascaleX = 0;
       this.ascaleY = Math.sqrt(rb * rb + rd * rd);
       this.ashearY = 0;
-      this.arotation = 90 - Math.atan2(rd, rb) * MathUtils$1.radDeg;
+      this.arotation = 90 - Math.atan2(rd, rb) * MathUtils.radDeg;
     }
   }
   worldToLocal(world) {
@@ -2899,27 +2896,262 @@ class Bone {
     return local;
   }
   worldToLocalRotation(worldRotation) {
-    let sin = MathUtils$1.sinDeg(worldRotation),
-      cos = MathUtils$1.cosDeg(worldRotation);
-    return Math.atan2(this.a * sin - this.c * cos, this.d * cos - this.b * sin) * MathUtils$1.radDeg;
+    let sin = MathUtils.sinDeg(worldRotation),
+      cos = MathUtils.cosDeg(worldRotation);
+    return Math.atan2(this.a * sin - this.c * cos, this.d * cos - this.b * sin) * MathUtils.radDeg;
   }
   localToWorldRotation(localRotation) {
-    let sin = MathUtils$1.sinDeg(localRotation),
-      cos = MathUtils$1.cosDeg(localRotation);
-    return Math.atan2(cos * this.c + sin * this.d, cos * this.a + sin * this.b) * MathUtils$1.radDeg;
+    let sin = MathUtils.sinDeg(localRotation),
+      cos = MathUtils.cosDeg(localRotation);
+    return Math.atan2(cos * this.c + sin * this.d, cos * this.a + sin * this.b) * MathUtils.radDeg;
   }
   rotateWorld(degrees) {
     let a = this.a,
       b = this.b,
       c = this.c,
       d = this.d;
-    let cos = MathUtils$1.cosDeg(degrees),
-      sin = MathUtils$1.sinDeg(degrees);
+    let cos = MathUtils.cosDeg(degrees),
+      sin = MathUtils.sinDeg(degrees);
     this.a = cos * a - sin * c;
     this.b = cos * b - sin * d;
     this.c = sin * a + cos * c;
     this.d = sin * b + cos * d;
     this.appliedValid = false;
+  }
+}
+class Texture {
+  constructor(image) {
+    __publicField(this, '_image');
+    this._image = image;
+  }
+  getImage() {
+    return this._image;
+  }
+  static filterFromString(text) {
+    switch (text.toLowerCase()) {
+      case 'nearest':
+        return 9728;
+      case 'linear':
+        return 9729;
+      case 'mipmap':
+        return 9987;
+      case 'mipmapnearestnearest':
+        return 9984;
+      case 'mipmaplinearnearest':
+        return 9985;
+      case 'mipmapnearestlinear':
+        return 9986;
+      case 'mipmaplinearlinear':
+        return 9987;
+      default:
+        throw new Error(`Unknown texture filter ${text}`);
+    }
+  }
+  static wrapFromString(text) {
+    switch (text.toLowerCase()) {
+      case 'mirroredtepeat':
+        return 33648;
+      case 'clamptoedge':
+        return 33071;
+      case 'repeat':
+        return 10497;
+      default:
+        throw new Error(`Unknown texture wrap ${text}`);
+    }
+  }
+}
+var TextureFilter = /* @__PURE__ */ (TextureFilter2 => {
+  TextureFilter2[(TextureFilter2['Nearest'] = 9728)] = 'Nearest';
+  TextureFilter2[(TextureFilter2['Linear'] = 9729)] = 'Linear';
+  TextureFilter2[(TextureFilter2['MipMap'] = 9987)] = 'MipMap';
+  TextureFilter2[(TextureFilter2['MipMapNearestNearest'] = 9984)] = 'MipMapNearestNearest';
+  TextureFilter2[(TextureFilter2['MipMapLinearNearest'] = 9985)] = 'MipMapLinearNearest';
+  TextureFilter2[(TextureFilter2['MipMapNearestLinear'] = 9986)] = 'MipMapNearestLinear';
+  TextureFilter2[(TextureFilter2['MipMapLinearLinear'] = 9987)] = 'MipMapLinearLinear';
+  return TextureFilter2;
+})(TextureFilter || {});
+var TextureWrap = /* @__PURE__ */ (TextureWrap2 => {
+  TextureWrap2[(TextureWrap2['MirroredRepeat'] = 33648)] = 'MirroredRepeat';
+  TextureWrap2[(TextureWrap2['ClampToEdge'] = 33071)] = 'ClampToEdge';
+  TextureWrap2[(TextureWrap2['Repeat'] = 10497)] = 'Repeat';
+  return TextureWrap2;
+})(TextureWrap || {});
+class TextureRegion {
+  constructor() {
+    __publicField(this, 'renderObject');
+    __publicField(this, 'u', 0);
+    __publicField(this, 'v', 0);
+    __publicField(this, 'u2', 0);
+    __publicField(this, 'v2', 0);
+    __publicField(this, 'width', 0);
+    __publicField(this, 'height', 0);
+    __publicField(this, 'rotate', false);
+    __publicField(this, 'offsetX', 0);
+    __publicField(this, 'offsetY', 0);
+    __publicField(this, 'originalWidth', 0);
+    __publicField(this, 'originalHeight', 0);
+    __publicField(this, 'texture');
+  }
+}
+class FakeTexture extends Texture {
+  setFilters(minFilter, magFilter) {}
+  setWraps(uWrap, vWrap) {}
+  dispose() {}
+}
+class TextureAtlas {
+  constructor(atlasText, textureLoader) {
+    __publicField(this, 'pages', new Array());
+    __publicField(this, 'regions', new Array());
+    this.load(atlasText, textureLoader);
+  }
+  load(atlasText, textureLoader) {
+    if (textureLoader == null) throw new Error('textureLoader cannot be null.');
+    let reader = new TextureAtlasReader(atlasText);
+    let tuple = new Array(4);
+    let page = null;
+    while (true) {
+      let line = reader.readLine();
+      if (line == null) break;
+      line = line.trim();
+      if (line.length == 0) page = null;
+      else if (!page) {
+        page = new TextureAtlasPage();
+        page.name = line;
+        if (reader.readTuple(tuple) == 2) {
+          page.width = parseInt(tuple[0]);
+          page.height = parseInt(tuple[1]);
+          reader.readTuple(tuple);
+        }
+        reader.readTuple(tuple);
+        page.minFilter = Texture.filterFromString(tuple[0]);
+        page.magFilter = Texture.filterFromString(tuple[1]);
+        let direction = reader.readValue();
+        page.uWrap = TextureWrap.ClampToEdge;
+        page.vWrap = TextureWrap.ClampToEdge;
+        if (direction == 'x') page.uWrap = TextureWrap.Repeat;
+        else if (direction == 'y') page.vWrap = TextureWrap.Repeat;
+        else if (direction == 'xy') page.uWrap = page.vWrap = TextureWrap.Repeat;
+        page.texture = textureLoader(line);
+        page.texture.setFilters(page.minFilter, page.magFilter);
+        page.texture.setWraps(page.uWrap, page.vWrap);
+        page.width = page.texture.getImage().width;
+        page.height = page.texture.getImage().height;
+        this.pages.push(page);
+      } else {
+        let region = new TextureAtlasRegion();
+        region.name = line;
+        region.page = page;
+        region.rotate = reader.readValue() == 'true';
+        reader.readTuple(tuple);
+        let x = parseInt(tuple[0]);
+        let y = parseInt(tuple[1]);
+        reader.readTuple(tuple);
+        let width = parseInt(tuple[0]);
+        let height = parseInt(tuple[1]);
+        region.u = x / page.width;
+        region.v = y / page.height;
+        if (region.rotate) {
+          region.u2 = (x + height) / page.width;
+          region.v2 = (y + width) / page.height;
+        } else {
+          region.u2 = (x + width) / page.width;
+          region.v2 = (y + height) / page.height;
+        }
+        region.x = x;
+        region.y = y;
+        region.width = Math.abs(width);
+        region.height = Math.abs(height);
+        if (reader.readTuple(tuple) == 4) {
+          if (reader.readTuple(tuple) == 4) {
+            reader.readTuple(tuple);
+          }
+        }
+        region.originalWidth = parseInt(tuple[0]);
+        region.originalHeight = parseInt(tuple[1]);
+        reader.readTuple(tuple);
+        region.offsetX = parseInt(tuple[0]);
+        region.offsetY = parseInt(tuple[1]);
+        region.index = parseInt(reader.readValue());
+        region.texture = page.texture;
+        this.regions.push(region);
+      }
+    }
+  }
+  findRegion(name) {
+    for (let i = 0; i < this.regions.length; i++) {
+      if (this.regions[i].name == name) {
+        return this.regions[i];
+      }
+    }
+    return null;
+  }
+  dispose() {
+    for (let i = 0; i < this.pages.length; i++) {
+      this.pages[i].texture.dispose();
+    }
+  }
+}
+class TextureAtlasReader {
+  constructor(text) {
+    __publicField(this, 'lines');
+    __publicField(this, 'index', 0);
+    this.lines = text.split(/\r\n|\r|\n/);
+  }
+  readLine() {
+    if (this.index >= this.lines.length) return null;
+    return this.lines[this.index++];
+  }
+  readValue() {
+    let line = this.readLine();
+    let colon = line.indexOf(':');
+    if (colon == -1) throw new Error('Invalid line: ' + line);
+    return line.substring(colon + 1).trim();
+  }
+  readTuple(tuple) {
+    let line = this.readLine();
+    let colon = line.indexOf(':');
+    if (colon == -1) throw new Error('Invalid line: ' + line);
+    let i = 0,
+      lastMatch = colon + 1;
+    for (; i < 3; i++) {
+      let comma = line.indexOf(',', lastMatch);
+      if (comma == -1) break;
+      tuple[i] = line.substr(lastMatch, comma - lastMatch).trim();
+      lastMatch = comma + 1;
+    }
+    tuple[i] = line.substring(lastMatch).trim();
+    return i + 1;
+  }
+}
+class TextureAtlasPage {
+  constructor() {
+    __publicField(this, 'name');
+    __publicField(this, 'minFilter');
+    __publicField(this, 'magFilter');
+    __publicField(this, 'uWrap');
+    __publicField(this, 'vWrap');
+    __publicField(this, 'texture');
+    __publicField(this, 'width');
+    __publicField(this, 'height');
+  }
+  setTexture(texture) {
+    this.texture = texture;
+    texture.setFilters(this.minFilter, this.magFilter);
+    texture.setWraps(this.uWrap, this.vWrap);
+    this.width = this.texture.getImage().width;
+    this.height = this.texture.getImage().height;
+  }
+}
+class TextureAtlasRegion extends TextureRegion {
+  constructor() {
+    super(...arguments);
+    __publicField(this, 'page');
+    __publicField(this, 'name');
+    __publicField(this, 'x');
+    __publicField(this, 'y');
+    __publicField(this, 'index');
+    __publicField(this, 'rotate');
+    __publicField(this, 'texture');
   }
 }
 class AssetManager {
@@ -3318,7 +3550,7 @@ class IkConstraint {
           break outer;
         }
       }
-      let minAngle = spine.MathUtils.PI,
+      let minAngle = MathUtils.PI,
         minX = l1 - a,
         minDist = minX * minX,
         minY = 0;
@@ -3385,6 +3617,40 @@ class IkConstraintData {
     this.name = name;
   }
 }
+class PathConstraintData {
+  constructor(name) {
+    __publicField(this, 'name');
+    __publicField(this, 'order', 0);
+    __publicField(this, 'bones', new Array());
+    __publicField(this, 'target');
+    __publicField(this, 'positionMode');
+    __publicField(this, 'spacingMode');
+    __publicField(this, 'rotateMode');
+    __publicField(this, 'offsetRotation');
+    __publicField(this, 'position');
+    __publicField(this, 'spacing');
+    __publicField(this, 'rotateMix');
+    __publicField(this, 'translateMix');
+    this.name = name;
+  }
+}
+var PositionMode = /* @__PURE__ */ (PositionMode2 => {
+  PositionMode2[(PositionMode2['Fixed'] = 0)] = 'Fixed';
+  PositionMode2[(PositionMode2['Percent'] = 1)] = 'Percent';
+  return PositionMode2;
+})(PositionMode || {});
+var SpacingMode = /* @__PURE__ */ (SpacingMode2 => {
+  SpacingMode2[(SpacingMode2['Length'] = 0)] = 'Length';
+  SpacingMode2[(SpacingMode2['Fixed'] = 1)] = 'Fixed';
+  SpacingMode2[(SpacingMode2['Percent'] = 2)] = 'Percent';
+  return SpacingMode2;
+})(SpacingMode || {});
+var RotateMode = /* @__PURE__ */ (RotateMode2 => {
+  RotateMode2[(RotateMode2['Tangent'] = 0)] = 'Tangent';
+  RotateMode2[(RotateMode2['Chain'] = 1)] = 'Chain';
+  RotateMode2[(RotateMode2['ChainScale'] = 2)] = 'ChainScale';
+  return RotateMode2;
+})(RotateMode || {});
 const _PathConstraint = class _PathConstraint {
   constructor(data, skeleton) {
     __publicField(this, 'data');
@@ -3792,40 +4058,6 @@ __publicField(_PathConstraint, 'BEFORE', -2);
 __publicField(_PathConstraint, 'AFTER', -3);
 __publicField(_PathConstraint, 'epsilon', 1e-5);
 let PathConstraint = _PathConstraint;
-class PathConstraintData {
-  constructor(name) {
-    __publicField(this, 'name');
-    __publicField(this, 'order', 0);
-    __publicField(this, 'bones', new Array());
-    __publicField(this, 'target');
-    __publicField(this, 'positionMode');
-    __publicField(this, 'spacingMode');
-    __publicField(this, 'rotateMode');
-    __publicField(this, 'offsetRotation');
-    __publicField(this, 'position');
-    __publicField(this, 'spacing');
-    __publicField(this, 'rotateMix');
-    __publicField(this, 'translateMix');
-    this.name = name;
-  }
-}
-var PositionMode$1 = /* @__PURE__ */ (PositionMode2 => {
-  PositionMode2[(PositionMode2['Fixed'] = 0)] = 'Fixed';
-  PositionMode2[(PositionMode2['Percent'] = 1)] = 'Percent';
-  return PositionMode2;
-})(PositionMode$1 || {});
-var SpacingMode$1 = /* @__PURE__ */ (SpacingMode2 => {
-  SpacingMode2[(SpacingMode2['Length'] = 0)] = 'Length';
-  SpacingMode2[(SpacingMode2['Fixed'] = 1)] = 'Fixed';
-  SpacingMode2[(SpacingMode2['Percent'] = 2)] = 'Percent';
-  return SpacingMode2;
-})(SpacingMode$1 || {});
-var RotateMode$1 = /* @__PURE__ */ (RotateMode2 => {
-  RotateMode2[(RotateMode2['Tangent'] = 0)] = 'Tangent';
-  RotateMode2[(RotateMode2['Chain'] = 1)] = 'Chain';
-  RotateMode2[(RotateMode2['ChainScale'] = 2)] = 'ChainScale';
-  return RotateMode2;
-})(RotateMode$1 || {});
 class Slot {
   constructor(data, bone) {
     __publicField(this, 'data');
@@ -4233,7 +4465,7 @@ class Skeleton {
     for (let i = 0, n = this.data.skins.length; i < n; i++)
       this.sortPathConstraintAttachment(this.data.skins[i], slotIndex, slotBone);
     let attachment = slot.getAttachment();
-    if (attachment instanceof PathAttachment$1) this.sortPathConstraintAttachmentWith(attachment, slotBone);
+    if (attachment instanceof PathAttachment) this.sortPathConstraintAttachmentWith(attachment, slotBone);
     let constrained = constraint.bones;
     let boneCount = constrained.length;
     for (let i = 0; i < boneCount; i++) this.sortBone(constrained[i]);
@@ -4268,7 +4500,7 @@ class Skeleton {
     }
   }
   sortPathConstraintAttachmentWith(attachment, slotBone) {
-    if (!(attachment instanceof PathAttachment$1)) return;
+    if (!(attachment instanceof PathAttachment)) return;
     let pathBones = attachment.bones;
     if (pathBones == null) this.sortBone(slotBone);
     else {
@@ -4350,7 +4582,7 @@ class Skeleton {
   }
   setSlotsToSetupPose() {
     let slots = this.slots;
-    Utils$1.arrayCopy(slots, 0, this.drawOrder, 0, slots.length);
+    Utils.arrayCopy(slots, 0, this.drawOrder, 0, slots.length);
     for (let i = 0, n = slots.length; i < n; i++) slots[i].setToSetupPose();
   }
   /** @return May return null. */
@@ -4502,12 +4734,12 @@ class Skeleton {
       let attachment = slot.getAttachment();
       if (attachment instanceof RegionAttachment) {
         verticesLength = 8;
-        vertices = Utils$1.setArraySize(temp, verticesLength, 0);
+        vertices = Utils.setArraySize(temp, verticesLength, 0);
         attachment.computeWorldVertices(slot.bone, vertices, 0, 2);
       } else if (attachment instanceof MeshAttachment) {
         let mesh = attachment;
         verticesLength = mesh.worldVerticesLength;
-        vertices = Utils$1.setArraySize(temp, verticesLength, 0);
+        vertices = Utils.setArraySize(temp, verticesLength, 0);
         mesh.computeWorldVertices(slot, 0, verticesLength, vertices, 0, 2);
       }
       if (vertices != null) {
@@ -4540,7 +4772,7 @@ class SkeletonBounds {
       this,
       'polygonPool',
       new Pool(() => {
-        return Utils$1.newFloatArray(16);
+        return Utils.newFloatArray(16);
       }),
     );
   }
@@ -4562,7 +4794,7 @@ class SkeletonBounds {
         boundingBoxes.push(boundingBox);
         let polygon = polygonPool.obtain();
         if (polygon.length != boundingBox.worldVerticesLength) {
-          polygon = Utils$1.newFloatArray(boundingBox.worldVerticesLength);
+          polygon = Utils.newFloatArray(boundingBox.worldVerticesLength);
         }
         polygons.push(polygon);
         boundingBox.computeWorldVertices(slot, 0, boundingBox.worldVerticesLength, polygon, 0, 2);
@@ -4955,7 +5187,7 @@ class SkeletonClipping {
     if (this.clipAttachment != null) return 0;
     this.clipAttachment = clip;
     let n = clip.worldVerticesLength;
-    let vertices = Utils$1.setArraySize(this.clippingPolygon, n);
+    let vertices = Utils.setArraySize(this.clippingPolygon, n);
     clip.computeWorldVertices(slot, 0, n, vertices, 0, 2);
     let clippingPolygon = this.clippingPolygon;
     SkeletonClipping.makeClockwise(clippingPolygon);
@@ -5024,7 +5256,7 @@ class SkeletonClipping {
           let d = 1 / (d0 * d2 + d1 * (y1 - y3));
           let clipOutputCount = clipOutputLength >> 1;
           let clipOutputItems = this.clipOutput;
-          let clippedVerticesItems = Utils$1.setArraySize(clippedVertices, s + clipOutputCount * vertexSize);
+          let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + clipOutputCount * vertexSize);
           for (let ii = 0; ii < clipOutputLength; ii += 2) {
             let x = clipOutputItems[ii],
               y = clipOutputItems[ii + 1];
@@ -5050,7 +5282,7 @@ class SkeletonClipping {
             s += vertexSize;
           }
           s = clippedTriangles.length;
-          let clippedTrianglesItems = Utils$1.setArraySize(clippedTriangles, s + 3 * (clipOutputCount - 2));
+          let clippedTrianglesItems = Utils.setArraySize(clippedTriangles, s + 3 * (clipOutputCount - 2));
           clipOutputCount--;
           for (let ii = 1; ii < clipOutputCount; ii++) {
             clippedTrianglesItems[s] = index;
@@ -5060,7 +5292,7 @@ class SkeletonClipping {
           }
           index += clipOutputCount + 1;
         } else {
-          let clippedVerticesItems = Utils$1.setArraySize(clippedVertices, s + 3 * vertexSize);
+          let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + 3 * vertexSize);
           clippedVerticesItems[s] = x1;
           clippedVerticesItems[s + 1] = y1;
           clippedVerticesItems[s + 2] = light.r;
@@ -5119,7 +5351,7 @@ class SkeletonClipping {
             clippedVerticesItems[s + 35] = dark.a;
           }
           s = clippedTriangles.length;
-          let clippedTrianglesItems = Utils$1.setArraySize(clippedTriangles, s + 3);
+          let clippedTrianglesItems = Utils.setArraySize(clippedTriangles, s + 3);
           clippedTrianglesItems[s] = index;
           clippedTrianglesItems[s + 1] = index + 1;
           clippedTrianglesItems[s + 2] = index + 2;
@@ -5169,8 +5401,8 @@ class SkeletonClipping {
           let d = 1 / (d0 * d2 + d1 * (y1 - y3));
           let clipOutputCount = clipOutputLength >> 1;
           let clipOutputItems = this.clipOutput;
-          let clippedVerticesItems = Utils$1.setArraySize(clippedVertices, s + clipOutputCount * 2);
-          let clippedUVsItems = Utils$1.setArraySize(clippedUVs, s + clipOutputCount * 2);
+          let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + clipOutputCount * 2);
+          let clippedUVsItems = Utils.setArraySize(clippedUVs, s + clipOutputCount * 2);
           for (let ii = 0; ii < clipOutputLength; ii += 2, s += 2) {
             let x = clipOutputItems[ii],
               y = clipOutputItems[ii + 1];
@@ -5185,7 +5417,7 @@ class SkeletonClipping {
             clippedUVsItems[s + 1] = v1 * a + v2 * b + v3 * c;
           }
           s = clippedTriangles.length;
-          let clippedTrianglesItems = Utils$1.setArraySize(clippedTriangles, s + 3 * (clipOutputCount - 2));
+          let clippedTrianglesItems = Utils.setArraySize(clippedTriangles, s + 3 * (clipOutputCount - 2));
           clipOutputCount--;
           for (let ii = 1; ii < clipOutputCount; ii++, s += 3) {
             clippedTrianglesItems[s] = index;
@@ -5194,14 +5426,14 @@ class SkeletonClipping {
           }
           index += clipOutputCount + 1;
         } else {
-          let clippedVerticesItems = Utils$1.setArraySize(clippedVertices, s + 3 * 2);
+          let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + 3 * 2);
           clippedVerticesItems[s] = x1;
           clippedVerticesItems[s + 1] = y1;
           clippedVerticesItems[s + 2] = x2;
           clippedVerticesItems[s + 3] = y2;
           clippedVerticesItems[s + 4] = x3;
           clippedVerticesItems[s + 5] = y3;
-          let clippedUVSItems = Utils$1.setArraySize(clippedUVs, s + 3 * 2);
+          let clippedUVSItems = Utils.setArraySize(clippedUVs, s + 3 * 2);
           clippedUVSItems[s] = u1;
           clippedUVSItems[s + 1] = v1;
           clippedUVSItems[s + 2] = u2;
@@ -5209,7 +5441,7 @@ class SkeletonClipping {
           clippedUVSItems[s + 4] = u3;
           clippedUVSItems[s + 5] = v3;
           s = clippedTriangles.length;
-          let clippedTrianglesItems = Utils$1.setArraySize(clippedTriangles, s + 3);
+          let clippedTrianglesItems = Utils.setArraySize(clippedTriangles, s + 3);
           clippedTrianglesItems[s] = index;
           clippedTrianglesItems[s + 1] = index + 1;
           clippedTrianglesItems[s + 2] = index + 2;
@@ -5666,9 +5898,9 @@ class SkeletonJson {
         data.rotateMode = SkeletonJson.rotateModeFromString(this.getValue(constraintMap, 'rotateMode', 'tangent'));
         data.offsetRotation = this.getValue(constraintMap, 'rotation', 0);
         data.position = this.getValue(constraintMap, 'position', 0);
-        if (data.positionMode == PositionMode$1.Fixed) data.position *= scale;
+        if (data.positionMode == PositionMode.Fixed) data.position *= scale;
         data.spacing = this.getValue(constraintMap, 'spacing', 0);
-        if (data.spacingMode == SpacingMode$1.Length || data.spacingMode == SpacingMode$1.Fixed) data.spacing *= scale;
+        if (data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed) data.spacing *= scale;
         data.rotateMix = this.getValue(constraintMap, 'rotateMix', 1);
         data.translateMix = this.getValue(constraintMap, 'translateMix', 1);
         skeletonData.pathConstraints.push(data);
@@ -5778,7 +6010,7 @@ class SkeletonJson {
         path2.constantSpeed = this.getValue(map, 'constantSpeed', true);
         let vertexCount = map.vertexCount;
         this.readVertices(map, path2, vertexCount << 1);
-        let lengths = Utils$1.newArray(vertexCount / 3, 0);
+        let lengths = Utils.newArray(vertexCount / 3, 0);
         for (let i = 0; i < map.lengths.length; i++) lengths[i] = map.lengths[i] * scale;
         path2.lengths = lengths;
         let color = this.getValue(map, 'color', null);
@@ -5818,7 +6050,7 @@ class SkeletonJson {
     attachment.worldVerticesLength = verticesLength;
     let vertices = map.vertices;
     if (verticesLength == vertices.length) {
-      let scaledVertices = Utils$1.toFloatArray(vertices);
+      let scaledVertices = Utils.toFloatArray(vertices);
       if (scale != 1) {
         for (let i = 0, n = vertices.length; i < n; i++) scaledVertices[i] *= scale;
       }
@@ -5838,7 +6070,7 @@ class SkeletonJson {
       }
     }
     attachment.bones = bones;
-    attachment.vertices = Utils$1.toFloatArray(weights);
+    attachment.vertices = Utils.toFloatArray(weights);
   }
   readAnimation(map, name, skeletonData) {
     let scale = this.scale;
@@ -6001,11 +6233,11 @@ class SkeletonJson {
             let timelineScale = 1;
             if (timelineName === 'spacing') {
               timeline = new PathConstraintSpacingTimeline(timelineMap.length);
-              if (data.spacingMode == SpacingMode$1.Length || data.spacingMode == SpacingMode$1.Fixed)
+              if (data.spacingMode == SpacingMode.Length || data.spacingMode == SpacingMode.Fixed)
                 timelineScale = scale;
             } else {
               timeline = new PathConstraintPositionTimeline(timelineMap.length);
-              if (data.positionMode == PositionMode$1.Fixed) timelineScale = scale;
+              if (data.positionMode == PositionMode.Fixed) timelineScale = scale;
             }
             timeline.pathConstraintIndex = index;
             let frameIndex = 0;
@@ -6068,11 +6300,11 @@ class SkeletonJson {
               let valueMap = timelineMap[j];
               let deform;
               let verticesValue = this.getValue(valueMap, 'vertices', null);
-              if (verticesValue == null) deform = weighted ? Utils$1.newFloatArray(deformLength) : vertices;
+              if (verticesValue == null) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
               else {
-                deform = Utils$1.newFloatArray(deformLength);
+                deform = Utils.newFloatArray(deformLength);
                 let start = this.getValue(valueMap, 'offset', 0);
-                Utils$1.arrayCopy(verticesValue, 0, deform, start, verticesValue.length);
+                Utils.arrayCopy(verticesValue, 0, deform, start, verticesValue.length);
                 if (scale != 1) {
                   for (let i = start, n = i + verticesValue.length; i < n; i++) deform[i] *= scale;
                 }
@@ -6101,8 +6333,8 @@ class SkeletonJson {
         let drawOrder = null;
         let offsets = this.getValue(drawOrderMap, 'offsets', null);
         if (offsets != null) {
-          drawOrder = Utils$1.newArray(slotCount, -1);
-          let unchanged = Utils$1.newArray(slotCount - offsets.length, 0);
+          drawOrder = Utils.newArray(slotCount, -1);
+          let unchanged = Utils.newArray(slotCount - offsets.length, 0);
           let originalIndex = 0,
             unchangedIndex = 0;
           for (let i = 0; i < offsets.length; i++) {
@@ -6127,7 +6359,7 @@ class SkeletonJson {
         let eventMap = map.events[i];
         let eventData = skeletonData.findEvent(eventMap.name);
         if (eventData == null) throw new Error('Event not found: ' + eventMap.name);
-        let event = new Event(Utils$1.toSinglePrecision(eventMap.time), eventData);
+        let event = new Event(Utils.toSinglePrecision(eventMap.time), eventData);
         event.intValue = this.getValue(eventMap, 'int', eventData.intValue);
         event.floatValue = this.getValue(eventMap, 'float', eventData.floatValue);
         event.stringValue = this.getValue(eventMap, 'string', eventData.stringValue);
@@ -6162,22 +6394,22 @@ class SkeletonJson {
   }
   static positionModeFromString(str) {
     str = str.toLowerCase();
-    if (str == 'fixed') return PositionMode$1.Fixed;
-    if (str == 'percent') return PositionMode$1.Percent;
+    if (str == 'fixed') return PositionMode.Fixed;
+    if (str == 'percent') return PositionMode.Percent;
     throw new Error(`Unknown position mode: ${str}`);
   }
   static spacingModeFromString(str) {
     str = str.toLowerCase();
-    if (str == 'length') return SpacingMode$1.Length;
-    if (str == 'fixed') return SpacingMode$1.Fixed;
-    if (str == 'percent') return SpacingMode$1.Percent;
+    if (str == 'length') return SpacingMode.Length;
+    if (str == 'fixed') return SpacingMode.Fixed;
+    if (str == 'percent') return SpacingMode.Percent;
     throw new Error(`Unknown position mode: ${str}`);
   }
   static rotateModeFromString(str) {
     str = str.toLowerCase();
-    if (str == 'tangent') return RotateMode$1.Tangent;
-    if (str == 'chain') return RotateMode$1.Chain;
-    if (str == 'chainscale') return RotateMode$1.ChainScale;
+    if (str == 'tangent') return RotateMode.Tangent;
+    if (str == 'chain') return RotateMode.Chain;
+    if (str == 'chainscale') return RotateMode.ChainScale;
     throw new Error(`Unknown rotate mode: ${str}`);
   }
   static transformModeFromString(str) {
@@ -6200,241 +6432,6 @@ class LinkedMesh {
     this.skin = skin;
     this.slotIndex = slotIndex;
     this.parent = parent;
-  }
-}
-class Texture {
-  constructor(image) {
-    __publicField(this, '_image');
-    this._image = image;
-  }
-  getImage() {
-    return this._image;
-  }
-  static filterFromString(text) {
-    switch (text.toLowerCase()) {
-      case 'nearest':
-        return 9728;
-      case 'linear':
-        return 9729;
-      case 'mipmap':
-        return 9987;
-      case 'mipmapnearestnearest':
-        return 9984;
-      case 'mipmaplinearnearest':
-        return 9985;
-      case 'mipmapnearestlinear':
-        return 9986;
-      case 'mipmaplinearlinear':
-        return 9987;
-      default:
-        throw new Error(`Unknown texture filter ${text}`);
-    }
-  }
-  static wrapFromString(text) {
-    switch (text.toLowerCase()) {
-      case 'mirroredtepeat':
-        return 33648;
-      case 'clamptoedge':
-        return 33071;
-      case 'repeat':
-        return 10497;
-      default:
-        throw new Error(`Unknown texture wrap ${text}`);
-    }
-  }
-}
-var TextureFilter = /* @__PURE__ */ (TextureFilter2 => {
-  TextureFilter2[(TextureFilter2['Nearest'] = 9728)] = 'Nearest';
-  TextureFilter2[(TextureFilter2['Linear'] = 9729)] = 'Linear';
-  TextureFilter2[(TextureFilter2['MipMap'] = 9987)] = 'MipMap';
-  TextureFilter2[(TextureFilter2['MipMapNearestNearest'] = 9984)] = 'MipMapNearestNearest';
-  TextureFilter2[(TextureFilter2['MipMapLinearNearest'] = 9985)] = 'MipMapLinearNearest';
-  TextureFilter2[(TextureFilter2['MipMapNearestLinear'] = 9986)] = 'MipMapNearestLinear';
-  TextureFilter2[(TextureFilter2['MipMapLinearLinear'] = 9987)] = 'MipMapLinearLinear';
-  return TextureFilter2;
-})(TextureFilter || {});
-var TextureWrap = /* @__PURE__ */ (TextureWrap2 => {
-  TextureWrap2[(TextureWrap2['MirroredRepeat'] = 33648)] = 'MirroredRepeat';
-  TextureWrap2[(TextureWrap2['ClampToEdge'] = 33071)] = 'ClampToEdge';
-  TextureWrap2[(TextureWrap2['Repeat'] = 10497)] = 'Repeat';
-  return TextureWrap2;
-})(TextureWrap || {});
-class TextureRegion {
-  constructor() {
-    __publicField(this, 'renderObject');
-    __publicField(this, 'u', 0);
-    __publicField(this, 'v', 0);
-    __publicField(this, 'u2', 0);
-    __publicField(this, 'v2', 0);
-    __publicField(this, 'width', 0);
-    __publicField(this, 'height', 0);
-    __publicField(this, 'rotate', false);
-    __publicField(this, 'offsetX', 0);
-    __publicField(this, 'offsetY', 0);
-    __publicField(this, 'originalWidth', 0);
-    __publicField(this, 'originalHeight', 0);
-    __publicField(this, 'texture');
-  }
-}
-let FakeTexture$1 = class FakeTexture2 extends Texture {
-  setFilters(minFilter, magFilter) {}
-  setWraps(uWrap, vWrap) {}
-  dispose() {}
-};
-let TextureAtlas$1 = class TextureAtlas2 {
-  constructor(atlasText, textureLoader) {
-    __publicField(this, 'pages', new Array());
-    __publicField(this, 'regions', new Array());
-    this.load(atlasText, textureLoader);
-  }
-  load(atlasText, textureLoader) {
-    if (textureLoader == null) throw new Error('textureLoader cannot be null.');
-    let reader = new TextureAtlasReader(atlasText);
-    let tuple = new Array(4);
-    let page = null;
-    while (true) {
-      let line = reader.readLine();
-      if (line == null) break;
-      line = line.trim();
-      if (line.length == 0) page = null;
-      else if (!page) {
-        page = new TextureAtlasPage();
-        page.name = line;
-        if (reader.readTuple(tuple) == 2) {
-          page.width = parseInt(tuple[0]);
-          page.height = parseInt(tuple[1]);
-          reader.readTuple(tuple);
-        }
-        reader.readTuple(tuple);
-        page.minFilter = Texture.filterFromString(tuple[0]);
-        page.magFilter = Texture.filterFromString(tuple[1]);
-        let direction = reader.readValue();
-        page.uWrap = TextureWrap.ClampToEdge;
-        page.vWrap = TextureWrap.ClampToEdge;
-        if (direction == 'x') page.uWrap = TextureWrap.Repeat;
-        else if (direction == 'y') page.vWrap = TextureWrap.Repeat;
-        else if (direction == 'xy') page.uWrap = page.vWrap = TextureWrap.Repeat;
-        page.texture = textureLoader(line);
-        page.texture.setFilters(page.minFilter, page.magFilter);
-        page.texture.setWraps(page.uWrap, page.vWrap);
-        page.width = page.texture.getImage().width;
-        page.height = page.texture.getImage().height;
-        this.pages.push(page);
-      } else {
-        let region = new TextureAtlasRegion();
-        region.name = line;
-        region.page = page;
-        region.rotate = reader.readValue() == 'true';
-        reader.readTuple(tuple);
-        let x = parseInt(tuple[0]);
-        let y = parseInt(tuple[1]);
-        reader.readTuple(tuple);
-        let width = parseInt(tuple[0]);
-        let height = parseInt(tuple[1]);
-        region.u = x / page.width;
-        region.v = y / page.height;
-        if (region.rotate) {
-          region.u2 = (x + height) / page.width;
-          region.v2 = (y + width) / page.height;
-        } else {
-          region.u2 = (x + width) / page.width;
-          region.v2 = (y + height) / page.height;
-        }
-        region.x = x;
-        region.y = y;
-        region.width = Math.abs(width);
-        region.height = Math.abs(height);
-        if (reader.readTuple(tuple) == 4) {
-          if (reader.readTuple(tuple) == 4) {
-            reader.readTuple(tuple);
-          }
-        }
-        region.originalWidth = parseInt(tuple[0]);
-        region.originalHeight = parseInt(tuple[1]);
-        reader.readTuple(tuple);
-        region.offsetX = parseInt(tuple[0]);
-        region.offsetY = parseInt(tuple[1]);
-        region.index = parseInt(reader.readValue());
-        region.texture = page.texture;
-        this.regions.push(region);
-      }
-    }
-  }
-  findRegion(name) {
-    for (let i = 0; i < this.regions.length; i++) {
-      if (this.regions[i].name == name) {
-        return this.regions[i];
-      }
-    }
-    return null;
-  }
-  dispose() {
-    for (let i = 0; i < this.pages.length; i++) {
-      this.pages[i].texture.dispose();
-    }
-  }
-};
-class TextureAtlasReader {
-  constructor(text) {
-    __publicField(this, 'lines');
-    __publicField(this, 'index', 0);
-    this.lines = text.split(/\r\n|\r|\n/);
-  }
-  readLine() {
-    if (this.index >= this.lines.length) return null;
-    return this.lines[this.index++];
-  }
-  readValue() {
-    let line = this.readLine();
-    let colon = line.indexOf(':');
-    if (colon == -1) throw new Error('Invalid line: ' + line);
-    return line.substring(colon + 1).trim();
-  }
-  readTuple(tuple) {
-    let line = this.readLine();
-    let colon = line.indexOf(':');
-    if (colon == -1) throw new Error('Invalid line: ' + line);
-    let i = 0,
-      lastMatch = colon + 1;
-    for (; i < 3; i++) {
-      let comma = line.indexOf(',', lastMatch);
-      if (comma == -1) break;
-      tuple[i] = line.substr(lastMatch, comma - lastMatch).trim();
-      lastMatch = comma + 1;
-    }
-    tuple[i] = line.substring(lastMatch).trim();
-    return i + 1;
-  }
-}
-class TextureAtlasPage {
-  constructor() {
-    __publicField(this, 'name');
-    __publicField(this, 'minFilter');
-    __publicField(this, 'magFilter');
-    __publicField(this, 'uWrap');
-    __publicField(this, 'vWrap');
-    __publicField(this, 'texture');
-    __publicField(this, 'width');
-    __publicField(this, 'height');
-  }
-  setTexture(texture) {
-    this.texture = texture;
-    texture.setFilters(this.minFilter, this.magFilter);
-    texture.setWraps(this.uWrap, this.vWrap);
-    this.width = this.texture.getImage().width;
-    this.height = this.texture.getImage().height;
-  }
-}
-class TextureAtlasRegion extends TextureRegion {
-  constructor() {
-    super(...arguments);
-    __publicField(this, 'page');
-    __publicField(this, 'name');
-    __publicField(this, 'x');
-    __publicField(this, 'y');
-    __publicField(this, 'index');
-    __publicField(this, 'rotate');
-    __publicField(this, 'texture');
   }
 }
 (() => {
@@ -6607,7 +6604,7 @@ const _SwirlEffect = class _SwirlEffect {
     this.worldY = skeleton.y + this.centerY;
   }
   transform(position, uv, light, dark) {
-    let radAngle = this.angle * MathUtils$1.degreesToRadians;
+    let radAngle = this.angle * MathUtils.degreesToRadians;
     let x = position.x - this.worldX;
     let y = position.y - this.worldY;
     let dist = Math.sqrt(x * x + y * y);
@@ -6712,11 +6709,11 @@ const spineTextureAtlasLoader = {
   resolver: {
     test: value => checkExtension(value, '.atlas'),
     parse: value => {
-      var _a2, _b2;
+      var _a, _b;
       const split = value.split('.');
       return {
         resolution: parseFloat(
-          ((_b2 = (_a2 = Resolver.RETINA_PREFIX) == null ? void 0 : _a2.exec(value)) == null ? void 0 : _b2[1]) ?? '1',
+          ((_b = (_a = Resolver.RETINA_PREFIX) == null ? void 0 : _a.exec(value)) == null ? void 0 : _b[1]) ?? '1',
         ),
         format: split[split.length - 2],
         src: value,
@@ -6746,13 +6743,13 @@ const spineTextureAtlasLoader = {
       atlas.dispose();
     },
     async parse(asset, options, loader) {
-      var _a2;
+      var _a;
       const metadata = options.data || {};
       let basePath = path.dirname(options.src);
       if (basePath && basePath.lastIndexOf('/') !== basePath.length - 1) {
         basePath += '/';
       }
-      const retval = new TextureAtlas$1(asset, path2 => {
+      const retval = new TextureAtlas(asset, path2 => {
         const data = SpineTexture.from(options.data.imageTexture.source);
         return data;
       });
@@ -6765,9 +6762,9 @@ const spineTextureAtlasLoader = {
       for (const page of retval.pages) {
         if (metadata.resolve) {
           const resolvePromise =
-            (_a2 = metadata.resolve()) == null
+            (_a = metadata.resolve()) == null
               ? void 0
-              : _a2.then(texture => {
+              : _a.then(texture => {
                   if (texture) {
                     page.setTexture(SpineTexture.from(texture.source));
                   }
@@ -7153,18 +7150,18 @@ class SpinePipe {
     __publicField(this, '_destroyRenderableBound', this.destroyRenderable.bind(this));
     this.renderer = renderer;
   }
-  validateRenderable(spine2) {
-    spine2._validateAndTransformAttachments();
-    if (spine2.spineAttachmentsDirty) {
+  validateRenderable(spine) {
+    spine._validateAndTransformAttachments();
+    if (spine.spineAttachmentsDirty) {
       return true;
-    } else if (spine2.spineTexturesDirty) {
-      const drawOrder = spine2.skeleton.drawOrder;
-      const gpuSpine = this.gpuSpineData[spine2.uid];
+    } else if (spine.spineTexturesDirty) {
+      const drawOrder = spine.skeleton.drawOrder;
+      const gpuSpine = this.gpuSpineData[spine.uid];
       for (let i = 0, n = drawOrder.length; i < n; i++) {
         const slot = drawOrder[i];
         const attachment = slot.getAttachment();
         if (attachment instanceof RegionAttachment || attachment instanceof MeshAttachment) {
-          const cacheData = spine2._getCachedData(slot, attachment);
+          const cacheData = spine._getCachedData(slot, attachment);
           const batchableSpineSlot = gpuSpine.slotBatches[cacheData.id];
           const texture = cacheData.texture;
           if (texture !== batchableSpineSlot.texture) {
@@ -7177,27 +7174,27 @@ class SpinePipe {
     }
     return false;
   }
-  addRenderable(spine2, instructionSet) {
-    var _a2, _b2;
-    const gpuSpine = this._getSpineData(spine2);
+  addRenderable(spine, instructionSet) {
+    var _a, _b;
+    const gpuSpine = this._getSpineData(spine);
     const batcher = this.renderer.renderPipes.batch;
-    const drawOrder = spine2.skeleton.drawOrder;
-    const roundPixels = this.renderer._roundPixels | spine2._roundPixels;
-    spine2._validateAndTransformAttachments();
+    const drawOrder = spine.skeleton.drawOrder;
+    const roundPixels = this.renderer._roundPixels | spine._roundPixels;
+    spine._validateAndTransformAttachments();
     for (let i = 0, n = drawOrder.length; i < n; i++) {
       const slot = drawOrder[i];
       const attachment = slot.getAttachment();
       const blendMode = spineBlendModeMap[slot.data.blendMode];
       if (attachment instanceof RegionAttachment || attachment instanceof MeshAttachment) {
-        const cacheData = spine2._getCachedData(slot, attachment);
+        const cacheData = spine._getCachedData(slot, attachment);
         const batchableSpineSlot =
-          (_a2 = gpuSpine.slotBatches)[(_b2 = cacheData.id)] || (_a2[_b2] = new BatchableSpineSlot());
-        batchableSpineSlot.setData(spine2, cacheData, blendMode, roundPixels);
+          (_a = gpuSpine.slotBatches)[(_b = cacheData.id)] || (_a[_b] = new BatchableSpineSlot());
+        batchableSpineSlot.setData(spine, cacheData, blendMode, roundPixels);
         if (!cacheData.skipRender) {
           batcher.addToBatch(batchableSpineSlot, instructionSet);
         }
       }
-      const containerAttachment = spine2._slotsObject[slot.data.name];
+      const containerAttachment = spine._slotsObject[slot.data.name];
       if (containerAttachment) {
         const container = containerAttachment.container;
         container.includeInBuild = true;
@@ -7206,38 +7203,38 @@ class SpinePipe {
       }
     }
   }
-  updateRenderable(spine2) {
-    var _a2;
-    const gpuSpine = this.gpuSpineData[spine2.uid];
-    spine2._validateAndTransformAttachments();
-    const drawOrder = spine2.skeleton.drawOrder;
+  updateRenderable(spine) {
+    var _a;
+    const gpuSpine = this.gpuSpineData[spine.uid];
+    spine._validateAndTransformAttachments();
+    const drawOrder = spine.skeleton.drawOrder;
     for (let i = 0, n = drawOrder.length; i < n; i++) {
       const slot = drawOrder[i];
       const attachment = slot.getAttachment();
       if (attachment instanceof RegionAttachment || attachment instanceof MeshAttachment) {
-        const cacheData = spine2._getCachedData(slot, attachment);
+        const cacheData = spine._getCachedData(slot, attachment);
         if (!cacheData.skipRender) {
-          const batchableSpineSlot = gpuSpine.slotBatches[spine2._getCachedData(slot, attachment).id];
-          (_a2 = batchableSpineSlot._batcher) == null ? void 0 : _a2.updateElement(batchableSpineSlot);
+          const batchableSpineSlot = gpuSpine.slotBatches[spine._getCachedData(slot, attachment).id];
+          (_a = batchableSpineSlot._batcher) == null ? void 0 : _a.updateElement(batchableSpineSlot);
         }
       }
     }
   }
-  destroyRenderable(spine2) {
-    this.gpuSpineData[spine2.uid] = null;
-    spine2.off('destroyed', this._destroyRenderableBound);
+  destroyRenderable(spine) {
+    this.gpuSpineData[spine.uid] = null;
+    spine.off('destroyed', this._destroyRenderableBound);
   }
   destroy() {
     this.gpuSpineData = null;
     this.renderer = null;
   }
-  _getSpineData(spine2) {
-    return this.gpuSpineData[spine2.uid] || this._initMeshData(spine2);
+  _getSpineData(spine) {
+    return this.gpuSpineData[spine.uid] || this._initMeshData(spine);
   }
-  _initMeshData(spine2) {
-    this.gpuSpineData[spine2.uid] = { slotBatches: {} };
-    spine2.on('destroyed', this._destroyRenderableBound);
-    return this.gpuSpineData[spine2.uid];
+  _initMeshData(spine) {
+    this.gpuSpineData[spine.uid] = { slotBatches: {} };
+    spine.on('destroyed', this._destroyRenderableBound);
+    return this.gpuSpineData[spine.uid];
   }
 }
 /** @ignore */
@@ -7246,7 +7243,7 @@ __publicField(SpinePipe, 'extension', {
   name: 'spine',
 });
 extensions.add(SpinePipe);
-const vectorAux = new Vector2$1();
+const vectorAux = new Vector2();
 const clipper = new SkeletonClipping();
 const maskPool = new Pool(() => new Graphics());
 class Spine extends ViewContainer {
@@ -7284,6 +7281,7 @@ class Spine extends ViewContainer {
     __publicField(this, 'currentClippingSlot');
     const skeletonData = options instanceof SkeletonData ? options : options.skeletonData;
     this.skeleton = new Skeleton(skeletonData);
+    this.skeleton.flipY = true;
     this.state = new AnimationState(new AnimationStateData(skeletonData));
     this.autoUpdate = (options == null ? void 0 : options.autoUpdate) ?? true;
     this.darkTint =
@@ -7443,12 +7441,12 @@ class Spine extends ViewContainer {
     this.spineAttachmentsDirty = spineAttachmentsDirty;
   }
   updateAndSetPixiMask(slot, last) {
-    var _a2, _b2;
+    var _a, _b;
     const attachment = slot.attachment;
     if (attachment && attachment instanceof ClippingAttachment) {
       const clip =
-        (_a2 = this.clippingSlotToPixiMasks)[(_b2 = slot.data.name)] ||
-        (_a2[_b2] = {
+        (_a = this.clippingSlotToPixiMasks)[(_b = slot.data.name)] ||
+        (_a[_b] = {
           slot,
           vertices: new Array(),
         });
@@ -7497,7 +7495,7 @@ class Spine extends ViewContainer {
     }
   }
   transformAttachments() {
-    var _a2;
+    var _a;
     const currentDrawOrder = this.skeleton.drawOrder;
     for (let i = 0; i < currentDrawOrder.length; i++) {
       const slot = currentDrawOrder[i];
@@ -7510,9 +7508,6 @@ class Spine extends ViewContainer {
             attachment.computeWorldVertices(slot.bone, cacheData.vertices, 0, 2);
           } else {
             attachment.computeWorldVertices(slot, 0, attachment.worldVerticesLength, cacheData.vertices, 0, 2);
-          }
-          for (let i2 = 1; i2 < cacheData.vertices.length; i2 += 2) {
-            cacheData.vertices[i2] = -cacheData.vertices[i2];
           }
           if (cacheData.uvs.length < attachment.uvs.length) {
             cacheData.uvs = new Float32Array(attachment.uvs.length);
@@ -7532,7 +7527,7 @@ class Spine extends ViewContainer {
             cacheData.darkColor.setFromColor(slot.darkColor);
           }
           cacheData.skipRender = cacheData.clipped = false;
-          const texture = ((_a2 = attachment.region) == null ? void 0 : _a2.texture.texture) || Texture$1.EMPTY;
+          const texture = ((_a = attachment.region) == null ? void 0 : _a.texture.texture) || Texture$1.EMPTY;
           if (cacheData.texture !== texture) {
             cacheData.texture = texture;
             this.spineTexturesDirty = true;
@@ -7622,7 +7617,7 @@ class Spine extends ViewContainer {
     return this.attachmentCacheData[slot.data.index][attachment.name] || this.initCachedData(slot, attachment);
   }
   initCachedData(slot, attachment) {
-    var _a2, _b2;
+    var _a, _b;
     let vertices;
     if (attachment instanceof RegionAttachment) {
       vertices = new Float32Array(8);
@@ -7636,7 +7631,7 @@ class Spine extends ViewContainer {
         darkColor: new Color(0, 0, 0, 0),
         darkTint: this.darkTint,
         skipRender: false,
-        texture: (_a2 = attachment.region) == null ? void 0 : _a2.texture.texture,
+        texture: (_a = attachment.region) == null ? void 0 : _a.texture.texture,
       };
     } else {
       vertices = new Float32Array(attachment.worldVerticesLength);
@@ -7650,13 +7645,13 @@ class Spine extends ViewContainer {
         darkColor: new Color(0, 0, 0, 0),
         darkTint: this.darkTint,
         skipRender: false,
-        texture: (_b2 = attachment.region) == null ? void 0 : _b2.texture.texture,
+        texture: (_b = attachment.region) == null ? void 0 : _b.texture.texture,
       };
     }
     return this.attachmentCacheData[slot.data.index][attachment.name];
   }
   onViewUpdate() {
-    var _a2;
+    var _a;
     this._didViewChangeTick++;
     this._boundsDirty = true;
     if (this.didViewUpdate) return;
@@ -7665,7 +7660,7 @@ class Spine extends ViewContainer {
     if (renderGroup) {
       renderGroup.onChildViewUpdate(this);
     }
-    (_a2 = this.debug) == null ? void 0 : _a2.renderDebug(this);
+    (_a = this.debug) == null ? void 0 : _a.renderDebug(this);
   }
   /**
    * Attaches a PixiJS container to a specified slot. This will map the world transform of the slots bone
@@ -7675,10 +7670,10 @@ class Spine extends ViewContainer {
    * @param slotRef - The slot id or  slot to attach to
    */
   addSlotObject(slot, container) {
-    var _a2;
+    var _a;
     slot = this.getSlotFromRef(slot);
     for (const i in this._slotsObject) {
-      if (((_a2 = this._slotsObject[i]) == null ? void 0 : _a2.container) === container) {
+      if (((_a = this._slotsObject[i]) == null ? void 0 : _a.container) === container) {
         this.removeSlotObject(this._slotsObject[i].slot);
       }
     }
@@ -7696,11 +7691,11 @@ class Spine extends ViewContainer {
    * @param slotOrContainer - The container, slot id or slot to detach from
    */
   removeSlotObject(slotOrContainer) {
-    var _a2, _b2;
+    var _a, _b;
     let containerToRemove;
     if (slotOrContainer instanceof Container) {
       for (const i in this._slotsObject) {
-        if (((_a2 = this._slotsObject[i]) == null ? void 0 : _a2.container) === slotOrContainer) {
+        if (((_a = this._slotsObject[i]) == null ? void 0 : _a.container) === slotOrContainer) {
           this._slotsObject[i] = null;
           containerToRemove = slotOrContainer;
           break;
@@ -7708,7 +7703,7 @@ class Spine extends ViewContainer {
       }
     } else {
       const slot = this.getSlotFromRef(slotOrContainer);
-      containerToRemove = (_b2 = this._slotsObject[slot.data.name]) == null ? void 0 : _b2.container;
+      containerToRemove = (_b = this._slotsObject[slot.data.name]) == null ? void 0 : _b.container;
       this._slotsObject[slot.data.name] = null;
     }
     if (containerToRemove) {
@@ -7723,9 +7718,9 @@ class Spine extends ViewContainer {
    * @returns - The container attached to the slot
    */
   getSlotObject(slot) {
-    var _a2;
+    var _a;
     slot = this.getSlotFromRef(slot);
-    return (_a2 = this._slotsObject[slot.data.name]) == null ? void 0 : _a2.container;
+    return (_a = this._slotsObject[slot.data.name]) == null ? void 0 : _a.container;
   }
   updateBounds() {
     this._boundsDirty = false;
@@ -7857,9 +7852,9 @@ class SpineDebugRenderer {
    * The debug is attached by force to each spine object.
    * So we need to create it inside the spine when we get the first update
    */
-  registerSpine(spine2) {
-    if (this.registeredSpines.has(spine2)) {
-      console.warn('SpineDebugRenderer.registerSpine() - this spine is already registered!', spine2);
+  registerSpine(spine) {
+    if (this.registeredSpines.has(spine)) {
+      console.warn('SpineDebugRenderer.registerSpine() - this spine is already registered!', spine);
       return;
     }
     const debugDisplayObjects = {
@@ -7879,7 +7874,7 @@ class SpineDebugRenderer {
       eventCallback: {
         event: (_, event) => {
           if (this.drawEvents) {
-            const scale = Math.abs(spine2.scale.x || spine2.scale.y || 1);
+            const scale = Math.abs(spine.scale.x || spine.scale.y || 1);
             const text = new Text({
               text: event.data.name,
               style: {
@@ -7888,7 +7883,7 @@ class SpineDebugRenderer {
                 fontFamily: 'monospace',
               },
             });
-            text.scale.x = Math.sign(spine2.scale.x);
+            text.scale.x = Math.sign(spine.scale.x);
             text.anchor.set(0.5);
             debugDisplayObjects.eventText.addChild(text);
             setTimeout(() => {
@@ -7916,19 +7911,19 @@ class SpineDebugRenderer {
     debugDisplayObjects.parentDebugContainer.accessibleChildren = false;
     debugDisplayObjects.parentDebugContainer.eventMode = 'none';
     debugDisplayObjects.parentDebugContainer.interactiveChildren = false;
-    spine2.addChild(debugDisplayObjects.parentDebugContainer);
-    spine2.state.addListener(debugDisplayObjects.eventCallback);
-    this.registeredSpines.set(spine2, debugDisplayObjects);
+    spine.addChild(debugDisplayObjects.parentDebugContainer);
+    spine.state.addListener(debugDisplayObjects.eventCallback);
+    this.registeredSpines.set(spine, debugDisplayObjects);
   }
-  renderDebug(spine2) {
-    if (!this.registeredSpines.has(spine2)) {
-      this.registerSpine(spine2);
+  renderDebug(spine) {
+    if (!this.registeredSpines.has(spine)) {
+      this.registerSpine(spine);
     }
-    const debugDisplayObjects = this.registeredSpines.get(spine2);
+    const debugDisplayObjects = this.registeredSpines.get(spine);
     if (!debugDisplayObjects) {
       return;
     }
-    spine2.addChild(debugDisplayObjects.parentDebugContainer);
+    spine.addChild(debugDisplayObjects.parentDebugContainer);
     debugDisplayObjects.skeletonXY.clear();
     debugDisplayObjects.regionAttachmentsShape.clear();
     debugDisplayObjects.meshTrianglesLine.clear();
@@ -7946,25 +7941,25 @@ class SpineDebugRenderer {
         textureSource: true,
       });
     }
-    const scale = Math.abs(spine2.scale.x || spine2.scale.y || 1);
+    const scale = Math.abs(spine.scale.x || spine.scale.y || 1);
     const lineWidth = this.lineWidth / scale;
     if (this.drawBones) {
-      this.drawBonesFunc(spine2, debugDisplayObjects, lineWidth, scale);
+      this.drawBonesFunc(spine, debugDisplayObjects, lineWidth, scale);
     }
     if (this.drawPaths) {
-      this.drawPathsFunc(spine2, debugDisplayObjects, lineWidth);
+      this.drawPathsFunc(spine, debugDisplayObjects, lineWidth);
     }
     if (this.drawBoundingBoxes) {
-      this.drawBoundingBoxesFunc(spine2, debugDisplayObjects, lineWidth);
+      this.drawBoundingBoxesFunc(spine, debugDisplayObjects, lineWidth);
     }
     if (this.drawClipping) {
-      this.drawClippingFunc(spine2, debugDisplayObjects, lineWidth);
+      this.drawClippingFunc(spine, debugDisplayObjects, lineWidth);
     }
     if (this.drawMeshHull || this.drawMeshTriangles) {
-      this.drawMeshHullAndMeshTriangles(spine2, debugDisplayObjects, lineWidth);
+      this.drawMeshHullAndMeshTriangles(spine, debugDisplayObjects, lineWidth);
     }
     if (this.drawRegionAttachments) {
-      this.drawRegionAttachmentsFunc(spine2, debugDisplayObjects, lineWidth);
+      this.drawRegionAttachmentsFunc(spine, debugDisplayObjects, lineWidth);
     }
     if (this.drawEvents) {
       for (const child of debugDisplayObjects.eventText.children) {
@@ -7973,8 +7968,8 @@ class SpineDebugRenderer {
       }
     }
   }
-  drawBonesFunc(spine2, debugDisplayObjects, lineWidth, scale) {
-    const skeleton = spine2.skeleton;
+  drawBonesFunc(spine, debugDisplayObjects, lineWidth, scale) {
+    const skeleton = spine.skeleton;
     const skeletonX = skeleton.x;
     const skeletonY = skeleton.y;
     const bones = skeleton.bones;
@@ -8044,8 +8039,8 @@ class SpineDebugRenderer {
       .lineTo(skeletonX - startDotSize, skeletonY + startDotSize)
       .stroke();
   }
-  drawRegionAttachmentsFunc(spine2, debugDisplayObjects, lineWidth) {
-    const skeleton = spine2.skeleton;
+  drawRegionAttachmentsFunc(spine, debugDisplayObjects, lineWidth) {
+    const skeleton = spine.skeleton;
     const slots = skeleton.slots;
     for (let i = 0, len = slots.length; i < len; i++) {
       const slot = slots[i];
@@ -8063,8 +8058,8 @@ class SpineDebugRenderer {
       width: lineWidth,
     });
   }
-  drawMeshHullAndMeshTriangles(spine2, debugDisplayObjects, lineWidth) {
-    const skeleton = spine2.skeleton;
+  drawMeshHullAndMeshTriangles(spine, debugDisplayObjects, lineWidth) {
+    const skeleton = spine.skeleton;
     const slots = skeleton.slots;
     for (let i = 0, len = slots.length; i < len; i++) {
       const slot = slots[i];
@@ -8113,8 +8108,8 @@ class SpineDebugRenderer {
       color: this.meshTrianglesColor,
     });
   }
-  drawClippingFunc(spine2, debugDisplayObjects, lineWidth) {
-    const skeleton = spine2.skeleton;
+  drawClippingFunc(spine, debugDisplayObjects, lineWidth) {
+    const skeleton = spine.skeleton;
     const slots = skeleton.slots;
     for (let i = 0, len = slots.length; i < len; i++) {
       const slot = slots[i];
@@ -8137,9 +8132,9 @@ class SpineDebugRenderer {
       alpha: 1,
     });
   }
-  drawBoundingBoxesFunc(spine2, debugDisplayObjects, lineWidth) {
+  drawBoundingBoxesFunc(spine, debugDisplayObjects, lineWidth) {
     const bounds = new SkeletonBounds();
-    bounds.update(spine2.skeleton, true);
+    bounds.update(spine.skeleton, true);
     if (bounds.minX !== Infinity) {
       debugDisplayObjects.boundingBoxesRect
         .rect(bounds.minX, bounds.minY, bounds.getWidth(), bounds.getHeight())
@@ -8177,8 +8172,8 @@ class SpineDebugRenderer {
       drawPolygon(polygon, 0, polygon.length);
     }
   }
-  drawPathsFunc(spine2, debugDisplayObjects, lineWidth) {
-    const skeleton = spine2.skeleton;
+  drawPathsFunc(spine, debugDisplayObjects, lineWidth) {
+    const skeleton = spine.skeleton;
     const slots = skeleton.slots;
     for (let i = 0, len = slots.length; i < len; i++) {
       const slot = slots[i];
@@ -8186,7 +8181,7 @@ class SpineDebugRenderer {
         continue;
       }
       const attachment = slot.getAttachment();
-      if (attachment === null || !(attachment instanceof PathAttachment$1)) {
+      if (attachment === null || !(attachment instanceof PathAttachment)) {
         continue;
       }
       const pathAttachment = attachment;
@@ -8238,21 +8233,21 @@ class SpineDebugRenderer {
       color: this.pathsLineColor,
     });
   }
-  unregisterSpine(spine2) {
-    if (!this.registeredSpines.has(spine2)) {
-      console.warn("SpineDebugRenderer.unregisterSpine() - spine is not registered, can't unregister!", spine2);
+  unregisterSpine(spine) {
+    if (!this.registeredSpines.has(spine)) {
+      console.warn("SpineDebugRenderer.unregisterSpine() - spine is not registered, can't unregister!", spine);
     }
-    const debugDisplayObjects = this.registeredSpines.get(spine2);
+    const debugDisplayObjects = this.registeredSpines.get(spine);
     if (!debugDisplayObjects) {
       return;
     }
-    spine2.state.removeListener(debugDisplayObjects.eventCallback);
+    spine.state.removeListener(debugDisplayObjects.eventCallback);
     debugDisplayObjects.parentDebugContainer.destroy({
       textureSource: true,
       children: true,
       texture: true,
     });
-    this.registeredSpines.delete(spine2);
+    this.registeredSpines.delete(spine);
   }
 }
 export {
@@ -8280,18 +8275,18 @@ export {
   EventQueue,
   EventTimeline,
   EventType,
-  FakeTexture$1 as FakeTexture,
+  FakeTexture,
   IkConstraint,
   IkConstraintData,
   IkConstraintTimeline,
   IntSet,
   Interpolation,
   JitterEffect,
-  MathUtils$1 as MathUtils,
+  MathUtils,
   MeshAttachment,
   MixDirection,
   MixPose,
-  PathAttachment$1 as PathAttachment,
+  PathAttachment,
   PathConstraint,
   PathConstraintData,
   PathConstraintMixTimeline,
@@ -8299,11 +8294,11 @@ export {
   PathConstraintSpacingTimeline,
   PointAttachment,
   Pool,
-  PositionMode$1 as PositionMode,
+  PositionMode,
   Pow,
   PowOut,
   RegionAttachment,
-  RotateMode$1 as RotateMode,
+  RotateMode,
   RotateTimeline,
   ScaleTimeline,
   SharedAssetManager,
@@ -8316,14 +8311,14 @@ export {
   Skin,
   Slot,
   SlotData,
-  SpacingMode$1 as SpacingMode,
+  SpacingMode,
   Spine,
   SpineDebugRenderer,
   SpinePipe,
   SpineTexture,
   SwirlEffect,
   Texture,
-  TextureAtlas$1 as TextureAtlas,
+  TextureAtlas,
   TextureAtlasPage,
   TextureAtlasRegion,
   TextureFilter,
@@ -8339,8 +8334,8 @@ export {
   TranslateTimeline,
   Triangulator,
   TwoColorTimeline,
-  Utils$1 as Utils,
-  Vector2$1 as Vector2,
+  Utils,
+  Vector2,
   VertexAttachment,
   WindowedMean,
 };
