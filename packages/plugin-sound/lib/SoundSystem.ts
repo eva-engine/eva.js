@@ -1,6 +1,6 @@
 import { System, decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 import SoundComponent from './Sound';
-import { sound, utils, soundAsset } from '@pixi/sound';
+import { sound, utils, soundAsset } from '@ali/pixi-sound';
 import { extensions } from 'pixi.js';
 
 sound.disableAutoPause = true;
