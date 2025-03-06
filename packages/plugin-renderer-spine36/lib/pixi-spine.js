@@ -8295,7 +8295,7 @@ class SpineDebugRenderer {
     this.registeredSpines.delete(spine);
   }
 }
-export default {
+export {
   Animation,
   AnimationState,
   AnimationStateAdapter2,
