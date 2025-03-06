@@ -1,9 +1,43 @@
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp = (obj, key, value) =>
   key in obj
     ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value })
     : (obj[key] = value);
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== 'symbol' ? key + '' : key, value);
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = value => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = value => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = x => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 import {
   Texture as Texture$1,
   ExtensionType,
@@ -6709,11 +6743,13 @@ const spineTextureAtlasLoader = {
   resolver: {
     test: value => checkExtension(value, '.atlas'),
     parse: value => {
-      var _a, _b;
+      var _a, _b, _c;
       const split = value.split('.');
       return {
         resolution: parseFloat(
-          ((_b = (_a = Resolver.RETINA_PREFIX) == null ? void 0 : _a.exec(value)) == null ? void 0 : _b[1]) ?? '1',
+          (_c = (_b = (_a = Resolver.RETINA_PREFIX) == null ? void 0 : _a.exec(value)) == null ? void 0 : _b[1]) != null
+            ? _c
+            : '1',
         ),
         format: split[split.length - 2],
         src: value,
@@ -6729,10 +6765,12 @@ const spineTextureAtlasLoader = {
     test(url) {
       return checkExtension(url, '.atlas');
     },
-    async load(url) {
-      const response = await DOMAdapter.get().fetch(url);
-      const txt = await response.text();
-      return txt;
+    load(url) {
+      return __async(this, null, function* () {
+        const response = yield DOMAdapter.get().fetch(url);
+        const txt = yield response.text();
+        return txt;
+      });
     },
     testParse(asset, options) {
       const isExtensionRight = checkExtension(options.src, '.atlas');
@@ -6742,57 +6780,61 @@ const spineTextureAtlasLoader = {
     unload(atlas) {
       atlas.dispose();
     },
-    async parse(asset, options, loader) {
-      var _a;
-      const metadata = options.data || {};
-      let basePath = path.dirname(options.src);
-      if (basePath && basePath.lastIndexOf('/') !== basePath.length - 1) {
-        basePath += '/';
-      }
-      const retval = new TextureAtlas(asset, path2 => {
-        const data = SpineTexture.from(options.data.imageTexture.source);
-        return data;
+    parse(asset, options, loader) {
+      return __async(this, null, function* () {
+        var _a;
+        const metadata = options.data || {};
+        let basePath = path.dirname(options.src);
+        if (basePath && basePath.lastIndexOf('/') !== basePath.length - 1) {
+          basePath += '/';
+        }
+        const retval = new TextureAtlas(asset, path2 => {
+          const data = SpineTexture.from(options.data.imageTexture.source);
+          return data;
+        });
+        if (metadata.images instanceof TextureSource || typeof metadata.images === 'string') {
+          const pixiTexture = metadata.images;
+          metadata.images = {};
+          metadata.images[retval.pages[0].name] = pixiTexture;
+        }
+        const textureLoadingPromises = [];
+        for (const page of retval.pages) {
+          if (metadata.resolve) {
+            const resolvePromise =
+              (_a = metadata.resolve()) == null
+                ? void 0
+                : _a.then(texture => {
+                    if (texture) {
+                      page.setTexture(SpineTexture.from(texture.source));
+                    }
+                  });
+            textureLoadingPromises.push(resolvePromise);
+            continue;
+          }
+          const pageName = page.name;
+          const providedPage = (metadata == null ? void 0 : metadata.images) ? metadata.images[pageName] : void 0;
+          if (providedPage instanceof TextureSource) {
+            page.setTexture(SpineTexture.from(providedPage));
+          } else {
+            const url =
+              providedPage != null
+                ? providedPage
+                : path.normalize([...basePath.split(path.sep), pageName].join(path.sep));
+            const assetsToLoadIn = {
+              src: copySearchParams(url, options.src),
+              data: __spreadProps(__spreadValues({}, metadata.imageMetadata), {
+                alphaMode: page.pma ? 'premultiplied-alpha' : 'premultiply-alpha-on-upload',
+              }),
+            };
+            const pixiPromise = loader.load(assetsToLoadIn).then(texture => {
+              page.setTexture(SpineTexture.from(texture.source));
+            });
+            textureLoadingPromises.push(pixiPromise);
+          }
+        }
+        yield Promise.all(textureLoadingPromises);
+        return retval;
       });
-      if (metadata.images instanceof TextureSource || typeof metadata.images === 'string') {
-        const pixiTexture = metadata.images;
-        metadata.images = {};
-        metadata.images[retval.pages[0].name] = pixiTexture;
-      }
-      const textureLoadingPromises = [];
-      for (const page of retval.pages) {
-        if (metadata.resolve) {
-          const resolvePromise =
-            (_a = metadata.resolve()) == null
-              ? void 0
-              : _a.then(texture => {
-                  if (texture) {
-                    page.setTexture(SpineTexture.from(texture.source));
-                  }
-                });
-          textureLoadingPromises.push(resolvePromise);
-          continue;
-        }
-        const pageName = page.name;
-        const providedPage = (metadata == null ? void 0 : metadata.images) ? metadata.images[pageName] : void 0;
-        if (providedPage instanceof TextureSource) {
-          page.setTexture(SpineTexture.from(providedPage));
-        } else {
-          const url = providedPage ?? path.normalize([...basePath.split(path.sep), pageName].join(path.sep));
-          const assetsToLoadIn = {
-            src: copySearchParams(url, options.src),
-            data: {
-              ...metadata.imageMetadata,
-              alphaMode: page.pma ? 'premultiplied-alpha' : 'premultiply-alpha-on-upload',
-            },
-          };
-          const pixiPromise = loader.load(assetsToLoadIn).then(texture => {
-            page.setTexture(SpineTexture.from(texture.source));
-          });
-          textureLoadingPromises.push(pixiPromise);
-        }
-      }
-      await Promise.all(textureLoadingPromises);
-      return retval;
     },
   },
 };
@@ -6814,10 +6856,12 @@ const spineLoaderExtension = {
     test(url) {
       return checkExtension(url, '.skel');
     },
-    async load(url) {
-      const response = await DOMAdapter.get().fetch(url);
-      const buffer = new Uint8Array(await response.arrayBuffer());
-      return buffer;
+    load(url) {
+      return __async(this, null, function* () {
+        const response = yield DOMAdapter.get().fetch(url);
+        const buffer = new Uint8Array(yield response.arrayBuffer());
+        return buffer;
+      });
     },
     testParse(asset, options) {
       const isJsonSpineModel = checkExtension(options.src, '.json') && isJson(asset);
@@ -7248,6 +7292,7 @@ const clipper = new SkeletonClipping();
 const maskPool = new Pool(() => new Graphics());
 class Spine extends ViewContainer {
   constructor(options) {
+    var _a;
     if (options instanceof SkeletonData) {
       options = {
         skeletonData: options,
@@ -7283,7 +7328,7 @@ class Spine extends ViewContainer {
     this.skeleton = new Skeleton(skeletonData);
     this.skeleton.flipY = true;
     this.state = new AnimationState(new AnimationStateData(skeletonData));
-    this.autoUpdate = (options == null ? void 0 : options.autoUpdate) ?? true;
+    this.autoUpdate = (_a = options == null ? void 0 : options.autoUpdate) != null ? _a : true;
     this.darkTint =
       (options == null ? void 0 : options.darkTint) === void 0
         ? this.skeleton.slots.some(slot => !!slot.data.darkColor)
@@ -7335,7 +7380,7 @@ class Spine extends ViewContainer {
     this.internalUpdate(0, dt);
   }
   internalUpdate(_deltaFrame, deltaSeconds) {
-    this._updateAndApplyState(deltaSeconds ?? Ticker.shared.deltaMS / 1e3);
+    this._updateAndApplyState(deltaSeconds != null ? deltaSeconds : Ticker.shared.deltaMS / 1e3);
   }
   get bounds() {
     if (this._boundsDirty) {
@@ -8250,7 +8295,7 @@ class SpineDebugRenderer {
     this.registeredSpines.delete(spine);
   }
 }
-export {
+export default {
   Animation,
   AnimationState,
   AnimationStateAdapter2,
