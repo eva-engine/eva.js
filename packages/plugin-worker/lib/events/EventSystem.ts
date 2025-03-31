@@ -655,18 +655,3 @@ interface CrossCSSStyleDeclaration extends CSSStyleDeclaration {
   msContentZooming: string;
   msTouchAction: string;
 }
-
-interface PixiPointerEvent extends PointerEvent {
-  isPrimary: boolean;
-  width: number;
-  height: number;
-  tiltX: number;
-  tiltY: number;
-  pointerType: string;
-  pointerId: number;
-  pressure: number;
-  twist: number;
-  tangentialPressure: number;
-  isNormalized: boolean;
-  type: string;
-}
