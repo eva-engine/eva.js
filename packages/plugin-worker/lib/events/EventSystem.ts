@@ -163,7 +163,7 @@ export class EventSystem implements System<EventSystemOptions> {
   public resolution = 1;
 
   /** The renderer managing this {@link EventSystem}. */
-  public renderer: Renderer;
+  public renderer: any;
 
   /**
    * The event features that are enabled by the EventSystem

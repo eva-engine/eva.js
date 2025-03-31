@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Point, warn } from 'pixi.js';
-import type { Renderable, Container } from 'pixi.js';
+import type { Container } from 'pixi.js';
 import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
@@ -567,10 +567,10 @@ export class EventBoundary {
       return true;
     }
 
-    if ((container as Renderable)?.containsPoint) {
+    if ((container as any)?.containsPoint) {
       container.worldTransform.applyInverse(location, tempLocalMapping);
 
-      return (container as Renderable).containsPoint(tempLocalMapping) as boolean;
+      return (container as any).containsPoint(tempLocalMapping) as boolean;
     }
 
     // TODO: Should we hit test based on bounds?
@@ -1321,11 +1321,11 @@ export class EventBoundary {
     if (!listeners) return;
 
     if ('fn' in listeners) {
-      if (listeners.once) e.currentTarget.removeListener(type, listeners.fn, undefined, true);
+      if (listeners.once) e.currentTarget.removeListener(type as any, listeners.fn, undefined, true);
       listeners.fn.call(listeners.context, e);
     } else {
       for (let i = 0, j = listeners.length; i < j && !e.propagationImmediatelyStopped; i++) {
-        if (listeners[i].once) e.currentTarget.removeListener(type, listeners[i].fn, undefined, true);
+        if (listeners[i].once) e.currentTarget.removeListener(type as any, listeners[i].fn, undefined, true);
         listeners[i].fn.call(listeners[i].context, e);
       }
     }

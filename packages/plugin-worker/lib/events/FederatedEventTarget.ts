@@ -698,7 +698,7 @@ export const FederatedContainer: IFederatedContainer = {
    *     capture: true,
    * });
    */
-  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: AddListenerOptions) {
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: any) {
     const capture = (typeof options === 'boolean' && options) || (typeof options === 'object' && options.capture);
     const signal = typeof options === 'object' ? options.signal : undefined;
     const once = typeof options === 'object' ? options.once === true : false;
