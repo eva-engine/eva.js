@@ -98,7 +98,9 @@ import { FederatedContainer } from './FederatedEventTarget';
  */
 /* eslint-enable max-len */
 
-extensions.add(EventSystem);
-extensions.mixin(Container, FederatedContainer);
+export const init = () => {
+  extensions.add(EventSystem);
+  extensions.mixin(Container, FederatedContainer);
 
-DOMAdapter.set(WebWorkerAdapter);
+  DOMAdapter.set(WebWorkerAdapter);
+};

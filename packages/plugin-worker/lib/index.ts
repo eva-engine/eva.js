@@ -1,4 +1,4 @@
-import './events/init';
+import { init } from './events/init';
 import { EventSystem } from './events/EventSystem';
 
 export const eventHandler = data => {
@@ -8,3 +8,5 @@ export const eventHandler = data => {
     fn && fn({ ...event, preventDefault() {}, normalizedEvents });
   }
 };
+
+init();
