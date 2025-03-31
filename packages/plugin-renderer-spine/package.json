@@ -22,6 +22,6 @@
     "@eva/plugin-renderer": "2.0.0-beta.15",
     "@eva/eva.js": "2.0.0-beta.15",
     "@eva/spine-base": "2.0.0-beta.15",
-    "pixi.js": "^8.6.5"
+    "pixi.js": "^8.8.1"
   }
 }
