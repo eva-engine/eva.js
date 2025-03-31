@@ -6,7 +6,7 @@ export default class Sprite {
   constructor(image: HTMLImageElement | PIXITexture) {
     this._image = image;
     if (image) {
-      if (image instanceof HTMLImageElement) {
+      if (typeof HTMLImageElement !== 'undefined' && image instanceof HTMLImageElement) {
         this.sprite = PIXISprite.from(image);
       } else if (image instanceof PIXITexture) {
         this.sprite = new PIXISprite(image);
@@ -20,7 +20,7 @@ export default class Sprite {
       return;
     }
 
-    if (val instanceof HTMLImageElement) {
+    if (typeof HTMLImageElement !== 'undefined' && val instanceof HTMLImageElement) {
       this.sprite.texture && this.sprite.texture.destroy(false);
       this.sprite.texture = PIXITexture.from(val);
     } else if (val instanceof PIXITexture) {

@@ -64,19 +64,15 @@ export async function init(canvas) {
 
   let touched = false;
   evt.on('touchstart', e => {
-    console.log(e);
     console.log('touchstart');
     touched = true;
   });
-  evt.on('touchend', () => {
-    console.log('touchend');
+  evt.on('pointerup', () => {
     touched = false;
   });
   evt.on('touchmove', e => {
     if (touched) {
       const transform = e.gameObject.transform;
-      console.log('touchmove');
-      console.log(transform.size.width * (1 - transform.origin.x), transform.size.height * (1 - transform.origin.y));
       transform.position = e.data.position;
     }
   });

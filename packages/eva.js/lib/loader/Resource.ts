@@ -1,7 +1,7 @@
 import { Assets } from 'pixi.js';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
-export { resourceLoader } from './resourceLoader';
+
 /** Load event */
 export enum LOAD_EVENT {
   'START' = 'start',
@@ -250,8 +250,9 @@ class Resource extends EE {
           this.doComplete(name, resolves[name], preload);
         } else {
           let url = res.src[key]?.url;
+          console.log(url);
           if (typeof url === 'string' && url.startsWith('//')) {
-            url = `${window.location.protocol}${res.src[key].url}`;
+            url = `https:${res.src[key].url}`;
           }
           if (key === 'atlas') {
             const loadImagePromise = Assets.load(res.src['image'].url).catch(e => {

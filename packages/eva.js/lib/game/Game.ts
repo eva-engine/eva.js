@@ -152,7 +152,7 @@ class Game extends EventEmitter {
   systems: System[] = [];
 
   async init({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {
-    if (window.__EVA_INSPECTOR_ENV__) {
+    if (typeof window !== 'undefined' && window.__EVA_INSPECTOR_ENV__) {
       window.__EVA_GAME_INSTANCE__ = this;
     }
     this.ticker = new Ticker({ autoStart: false, frameRate });
