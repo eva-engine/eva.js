@@ -70,7 +70,7 @@ function clearLocal() {
   }
 }
 /* istanbul ignore next */
-if (__TEST__) {
+if (typeof __TEST__ !== 'undefined') {
   testUtils.getLocal = getLocal;
   testUtils.clearLocal = clearLocal;
 }

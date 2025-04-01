@@ -104,6 +104,7 @@ export default class Event extends Renderer<EventSystemParams> {
         gameObject: component.gameObject,
       });
     });
+
     container.on('pointerup', e => {
       component.emit('touchend', {
         stopPropagation: () => e.stopPropagation(),
