@@ -24,6 +24,22 @@ export function init(canvas) {
     [offscreenCanvas],
   );
 
+  let events = [];
+
+  const flushEvents = () => {
+    window.requestAnimationFrame(() => {
+      if (events.length) {
+        console.log(events.length);
+        worker.postMessage({
+          type: 'eva-events',
+          events: [...events],
+        });
+        events = [];
+      }
+      flushEvents();
+    });
+  };
+
   const sendEvent = (eventName, target = canvas) => {
     target.addEventListener(
       eventName,
@@ -153,8 +169,7 @@ export function init(canvas) {
           normalizedEvents.push(eventClone);
         }
 
-        worker.postMessage({
-          type: 'eva-event',
+        events.push({
           eventName,
           event: eventClone,
           normalizedEvents,
@@ -179,4 +194,6 @@ export function init(canvas) {
   sendEvent('touchstart');
   sendEvent('touchend');
   sendEvent('touchmove');
+
+  flushEvents();
 }
