@@ -31,7 +31,7 @@ const getInsert = str => {
   const arr = split(str);
   const footers = [];
   const banners = [];
-  let lastFooter = 'window';
+  let lastFooter = 'globalThis';
   arr.forEach((name, i) => {
     lastFooter += `.${name}`;
     let footer;
