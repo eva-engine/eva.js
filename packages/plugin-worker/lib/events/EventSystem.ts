@@ -522,7 +522,9 @@ export class EventSystem implements System<EventSystemOptions> {
    * @param  {number} y - the y coord of the position to map
    */
   public mapPositionToPoint(point: PointData, x: number, y: number): void {
-    const rect = this.domElement.isConnected
+    const rect = globalThis.$canvasRect
+      ? globalThis.$canvasRect
+      : this.domElement.isConnected
       ? this.domElement.getBoundingClientRect()
       : {
           x: 0,

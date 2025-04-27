@@ -387,6 +387,7 @@ onmessage = async ({ data }) => {
   const { type } = data;
   if (type === 'eva-init') {
     initEva(data);
+    globalThis.$canvasRect = data.canvasRect;
   }
 
   eventHandler(data);
