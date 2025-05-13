@@ -193,6 +193,7 @@ class Resource extends EE {
     resource.data = {};
     resource.complete = false;
     resource.instance = undefined;
+    delete this.resourcesMap[name];
   }
 
   /**
