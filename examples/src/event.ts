@@ -64,7 +64,7 @@ export async function init(canvas) {
 
   let touched = false;
   evt.on('touchstart', e => {
-    console.log('touchstart');
+    console.log('touchstart', e.data.position.x, e.data.position.y);
     touched = true;
   });
   evt.on('pointerup', () => {

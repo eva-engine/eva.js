@@ -5,6 +5,7 @@ export const name = 'worker';
 export function init(canvas) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  console.log(window.innerWidth,window.innerHeight)
 
   // Create an OffscreenCanvas from the canvas
   const offscreenCanvas = canvas.transferControlToOffscreen();
@@ -17,8 +18,9 @@ export function init(canvas) {
     {
       type: 'eva-init',
       canvas: offscreenCanvas,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: 750,
+      height: window.innerHeight/ window.innerWidth * 750,
+      canvasRect: canvas.getBoundingClientRect(),
       resolution: 1,
     },
     [offscreenCanvas],

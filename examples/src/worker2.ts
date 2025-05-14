@@ -62,7 +62,7 @@ function events(game) {
 
   let touched = false;
   evt.on('touchstart', e => {
-    console.log('touchstart');
+    console.log('touchstart', e.data.position.x, e.data.position.y);
     touched = true;
   });
   evt.on('touchend', () => {
