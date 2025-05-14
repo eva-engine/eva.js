@@ -1,5 +1,5 @@
 import { Component } from '@eva/eva.js';
-import { Sound as PIXISound, sound } from '@ali/pixi-sound';
+import { Sound as PIXISound, sound } from '@pixi/sound';
 
 export interface SoundParams {
   resource: string;
