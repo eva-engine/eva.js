@@ -363,6 +363,24 @@ const initEva = async data => {
     }),
   );
 
+  resource.addResource([
+    {
+      name: 'nine',
+      type: RESOURCE_TYPE.SPRITE,
+      src: {
+        image: {
+          type: 'png',
+          url: 'https://dev.g.alicdn.com/eva/hd25-spring-assets/0.0.5/gohome/tp.png',
+        },
+        json: {
+          type: 'json',
+          url: 'https://dev.g.alicdn.com/eva/hd25-spring-assets/0.0.5/gohome/tp.json',
+        },
+      },
+      preload: false,
+    },
+  ]);
+
   frame.play(4);
   frame.on('complete', () => {
     console.log('complete');
@@ -380,7 +398,7 @@ const initEva = async data => {
   events(game);
 
   // game.scene.addChild(patch);
-  // game.scene.addChild(patch1);
+  game.scene.addChild(patch1);
 };
 
 onmessage = async ({ data }) => {
