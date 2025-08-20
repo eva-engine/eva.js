@@ -391,12 +391,9 @@ export default class A11ySystem extends System {
       pointerEvents: PointerEvents.AUTO,
       background: this.debug ? MaskBackground.DEBUG : MaskBackground.NONE,
     };
-    const transformProps = {
-      ...transform,
-    };
     setStyle(element, style);
     // 调整 DOM 的位置
-    setTransform(element, transformProps, this.ratioX, this.ratioY);
+    setTransform(element, transform, this.ratioX, this.ratioY);
   }
   onDestroy() {
     this.div.parentElement.removeChild(this.div);
