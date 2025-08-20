@@ -1,6 +1,5 @@
 import { resource } from '@eva/eva.js';
 import { cleanTextures, releaseTexture, retainTexture } from './TexCache';
-import { Assets } from 'pixi.js';
 let dataMap: any = {};
 
 function createSpineData(name, data, scale, pixiSpine) {
@@ -59,16 +58,7 @@ export function clearCache() {
   dataMap = {};
 }
 
-export async function releaseSpineData(res, imageSrc: string) {
-  const resourceName = res.name;
-  await Assets.unload([res.src.image.url, res.src.atlas.url, res.src.ske.url]);
-  const resolver: any = Assets.resolver;
-  delete resolver._assetMap[res.src.image.url];
-  delete resolver._assetMap[res.src.atlas.url];
-  delete resolver._assetMap[res.src.ske.url];
-  delete resolver._resolverHash[res.src.image.url];
-  delete resolver._resolverHash[res.src.atlas.url];
-  delete resolver._resolverHash[res.src.ske.url];
+export function releaseSpineData(resourceName, imageSrc) {
   const data = dataMap[resourceName];
   if (!data) {
     return;
@@ -76,7 +66,6 @@ export async function releaseSpineData(res, imageSrc: string) {
   data.ref--;
   if (data.ref <= 0) {
     releaseTexture(imageSrc);
-    resource.destroy(resourceName);
     delete dataMap[resourceName];
   }
 }

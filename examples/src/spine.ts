@@ -2,9 +2,6 @@ import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { RendererSystem, registerKtx2CompressedTexture } from '@eva/plugin-renderer';
 import { Spine, SpineSystem } from '@eva/plugin-renderer-spine';
 import { StatsSystem } from '@eva/plugin-stats';
-import * as PIXI from 'pixi.js';
-// @ts-ignore
-window.PIXI = PIXI;
 
 export const name = 'spine';
 
@@ -13,6 +10,37 @@ const params = {
   wasmUrl: '/libktx.wasm',
 };
 registerKtx2CompressedTexture(params);
+
+const spineResource = {
+  image: 'https://gw.alicdn.com/imgextra/i4/O1CN01AHYeJo24fxNQdlxOm_!!6000000007419-2-tps-553-551.png',
+  atlas:
+    'https://g.alicdn.com/eva-assets/6f5817dd5a392c6cfbbc03acc2ba8778/0.0.1/tmp/05afd25/8d703ab1-2023-40f4-be69-ec2ed621b1e6.atlas',
+  ske: 'https://g.alicdn.com/eva-assets/32e307f6f38e8223b40fac1e3ccebbd0/0.0.1/tmp/953d6ec/c4c3af1b-d4f4-4436-8735-3353a061839c.json',
+};
+
+resource.addResource([
+  {
+    name: 'anim',
+    type: RESOURCE_TYPE.SPINE,
+    src: {
+      ske: {
+        type: 'ske',
+        url: spineResource.ske,
+      },
+      atlas: {
+        type: 'atlas',
+        url: spineResource.atlas,
+      },
+      image: {
+        type: 'png',
+        url: spineResource.image,
+      },
+    },
+    preload: true,
+  },
+]);
+
+resource.preload();
 
 // <script src="js" crossorigin="anonymous"></script>
 // js
@@ -27,44 +55,6 @@ registerKtx2CompressedTexture(params);
 // callback registry + status
 
 function createGb(game, x, y) {
-  resource.addResource([
-    {
-      name: 'anim',
-      type: RESOURCE_TYPE.SPINE,
-      src: {
-        ske: {
-          type: 'ske',
-          url: '/spine/spineboy/spineboy-pro.skel',
-        },
-        atlas: {
-          type: 'atlas',
-          url: '/spine/spineboy/spineboy-pma.atlas',
-        },
-        image: {
-          type: 'ktx2',
-          url: '/spine/spineboy/spineboy-pma.png',
-          texture: [
-            {
-              type: 'astc',
-              url: '/spine/spineboy/spineboy-pma.ktx2',
-            },
-            {
-              type: 'pvrtc',
-              url: '',
-            },
-            {
-              type: 'etc',
-              url: '',
-            },
-            {
-              type: 's3tc',
-              url: '',
-            },
-          ],
-        },
-      },
-    },
-  ]);
   const gameObject = new GameObject('spine' + x + y, {
     anchor: {
       x: 0.5,
@@ -84,9 +74,11 @@ function createGb(game, x, y) {
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
   });
-  spine.play('run');
+  spine.on('loaded', () => {
+    console.log('>>>loaded');
+  });
+  spine.play('animation');
   game.scene.addChild(gameObject);
-  return gameObject;
 }
 
 export const init = async canvas => {
@@ -113,12 +105,5 @@ export const init = async canvas => {
   //     createGb(game, i, j);
   //   }
   // }
-
-  const gb = createGb(game, 10, 10);
-  setTimeout(() => {
-    gb.destroy();
-    setTimeout(() => {
-      createGb(game, 10, 10);
-    }, 2000);
-  }, 2000);
+  createGb(game, 10, 10);
 };

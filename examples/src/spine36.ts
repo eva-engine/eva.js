@@ -18,6 +18,30 @@ const spineResource = {
   ske: 'https://g.alicdn.com/eva-assets/32e307f6f38e8223b40fac1e3ccebbd0/0.0.1/tmp/953d6ec/c4c3af1b-d4f4-4436-8735-3353a061839c.json',
 };
 
+resource.addResource([
+  {
+    name: 'anim',
+    type: RESOURCE_TYPE.SPINE,
+    src: {
+      ske: {
+        type: 'ske',
+        url: spineResource.ske,
+      },
+      atlas: {
+        type: 'atlas',
+        url: spineResource.atlas,
+      },
+      image: {
+        type: 'png',
+        url: spineResource.image,
+      },
+    },
+    preload: true,
+  },
+]);
+
+resource.preload();
+
 // <script src="js" crossorigin="anonymous"></script>
 // js
 // if swicth  + webgl
@@ -30,61 +54,27 @@ const spineResource = {
 // main.js
 // callback registry + status
 
-async function createGb(game, x, y) {
-  const createGameObject = async () => {
-    resource.addResource([
-      {
-        name: 'anim',
-        type: RESOURCE_TYPE.SPINE,
-        src: {
-          ske: {
-            type: 'ske',
-            url: spineResource.ske,
-          },
-          atlas: {
-            type: 'atlas',
-            url: spineResource.atlas,
-          },
-          image: {
-            type: 'png',
-            url: spineResource.image,
-          },
-        },
-      },
-    ]);
-    console.log('>>>createGameObject');
-    const gameObject = new GameObject('spine' + x + y, {
-      anchor: {
-        x: 0.5,
-        y: 0.5,
-      },
-      scale: {
-        x: 0.5,
-        y: 0.5,
-      },
-    });
-
-    console.log(await resource.getResource('anim'));
-    const spine = new Spine({ resource: 'anim', animationName: 'animation', scale: 1 });
-    gameObject.addComponent(spine);
-    spine.on('complete', e => {
-      console.log('动画播放结束', e.name);
-    });
-    spine.on('loaded', () => {
-      console.log('>>>loaded');
-    });
-    spine.play('animation');
-    game.scene.addChild(gameObject);
-    return gameObject;
-  };
-  const gameObject = await createGameObject();
-
-  setTimeout(() => {
-    gameObject.destroy();
-    setTimeout(() => {
-      const gameObject2 = createGameObject();
-    }, 2000);
-  }, 2000);
+function createGb(game, x, y) {
+  const gameObject = new GameObject('spine' + x + y, {
+    anchor: {
+      x: 0.5,
+      y: 0.5,
+    },
+    scale: {
+      x: 0.5,
+      y: 0.5,
+    },
+  });
+  const spine = new Spine({ resource: 'anim', animationName: 'animation', scale: 1 });
+  gameObject.addComponent(spine);
+  spine.on('complete', e => {
+    console.log('动画播放结束', e.name);
+  });
+  spine.on('loaded', () => {
+    console.log('>>>loaded');
+  });
+  spine.play('animation');
+  game.scene.addChild(gameObject);
 }
 
 export const init = async canvas => {
