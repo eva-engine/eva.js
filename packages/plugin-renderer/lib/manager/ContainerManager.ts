@@ -1,19 +1,34 @@
-import { Transform } from '@eva/eva.js';
+import { GameObject, Transform } from '@eva/eva.js';
 import { Point, ObservablePoint } from 'pixi.js';
 import { Container } from '@eva/renderer-adapter';
 
 export default class ContainerManager {
   containerMap: { [propName: number]: Container } = {};
-  addContainer({ name, container }: { name: number; container: Container }) {
+  gameObjectMap: { [propName: string]: GameObject } = {};
+
+  addContainer({ name, container, gameObject }: { name: number; container: Container; gameObject: GameObject }) {
     this.containerMap[name] = container;
+    container.gName = gameObject.name || name;
+    this.gameObjectMap[gameObject.name || name] = gameObject;
   }
+
   getContainer(name: number) {
     return this.containerMap[name];
   }
+
   removeContainer(name: number) {
-    this.containerMap[name]?.destroy({ children: true });
+    const container = this.containerMap[name];
+    if (container) {
+      delete this.gameObjectMap[container.gName];
+      container.destroy({ children: true });
+    }
     delete this.containerMap[name];
   }
+
+  getGameObjectByName(name: string): GameObject | undefined {
+    return this.gameObjectMap[name];
+  }
+
   updateTransform({ name, transform }: { name: number; transform: Transform }) {
     const container = this.containerMap[name];
     if (!container || !transform) return;
