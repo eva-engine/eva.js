@@ -50,7 +50,7 @@ export function clearCache() {
   dataMap = {};
 }
 
-export function releaseSpineData(res, imageSrc: string) {
+export function releaseSpineData(res, _imageSrc: string) {
   const resourceName = res.name;
   const data = dataMap[resourceName];
   if (!data) {
