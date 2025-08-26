@@ -1,5 +1,5 @@
 import { resource } from '@eva/eva.js';
-import { cleanTextures, releaseTexture, retainTexture } from './TexCache';
+
 import { Assets } from 'pixi.js';
 let dataMap: any = {};
 
@@ -27,12 +27,6 @@ export const registryResource = pixiSpine => {
 
   resource.registerDestroy('SPINE' as any, info => {
     if (info.instance) {
-      // if (info.instance.img) {
-      // 用true，baseTexture的缓存和webgl的绑定一起删除
-      // info.instance.img.destroy(true);
-
-      // }
-      releaseTexture(info.data.image.src as string);
       info.instance = null;
     }
   });
@@ -48,35 +42,33 @@ export default async function getSpineData(res, scale, pixiSpine) {
     }
   }
 
-  retainTexture(res.data.image.label, res.data);
-
   data.ref++;
   return data.spineData;
 }
 
 export function clearCache() {
-  cleanTextures();
   dataMap = {};
 }
 
-export async function releaseSpineData(res, imageSrc: string) {
+export function releaseSpineData(res, imageSrc: string) {
   const resourceName = res.name;
-  await Assets.unload([res.src.image.url, res.src.atlas.url, res.src.ske.url]);
-  const resolver: any = Assets.resolver;
-  delete resolver._assetMap[res.src.image.url];
-  delete resolver._assetMap[res.src.atlas.url];
-  delete resolver._assetMap[res.src.ske.url];
-  delete resolver._resolverHash[res.src.image.url];
-  delete resolver._resolverHash[res.src.atlas.url];
-  delete resolver._resolverHash[res.src.ske.url];
   const data = dataMap[resourceName];
   if (!data) {
     return;
   }
   data.ref--;
-  if (data.ref <= 0) {
-    releaseTexture(imageSrc);
-    resource.destroy(resourceName);
-    delete dataMap[resourceName];
-  }
+  setTimeout(async () => {
+    if (data.ref <= 0) {
+      await Assets.unload([res.src.image.url, res.src.atlas.url, res.src.ske.url]);
+      const resolver: any = Assets.resolver;
+      delete resolver._assetMap[res.src.image.url];
+      delete resolver._assetMap[res.src.atlas.url];
+      delete resolver._assetMap[res.src.ske.url];
+      delete resolver._resolverHash[res.src.image.url];
+      delete resolver._resolverHash[res.src.atlas.url];
+      delete resolver._resolverHash[res.src.ske.url];
+      resource.destroy(resourceName);
+      delete dataMap[resourceName];
+    }
+  }, 100);
 }

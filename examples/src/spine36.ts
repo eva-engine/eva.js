@@ -75,6 +75,7 @@ function createGb(game, x, y) {
   });
   spine.play('animation');
   game.scene.addChild(gameObject);
+  return gameObject;
 }
 
 export const init = async canvas => {
@@ -105,5 +106,9 @@ export const init = async canvas => {
   //     createGb(game, i, j);
   //   }
   // }
-  createGb(game, 10, 10);
+  const gb = createGb(game, 10, 10);
+  setTimeout(() => {
+    gb.destroy();
+    createGb(game, 10, 10);
+  }, 1000);
 };
