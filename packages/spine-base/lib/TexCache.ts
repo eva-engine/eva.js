@@ -1,4 +1,4 @@
-import { Texture } from 'pixi.js';
+import { Texture, Assets } from 'pixi.js';
 
 let texCache: { [name: string]: { tex: Texture; count: number } } = {};
 
@@ -47,13 +47,14 @@ export function cleanTextures() {
 export function releaseTexture(imageSrc: string) {
   if (!imageSrc) return;
   // 如果要取消上一个timeout，注意count--不要写timeout里面
-  setTimeout(() => {
+  setTimeout(async () => {
     // 延迟销毁，避免快速重用
     const cache = texCache[imageSrc];
     if (cache) {
       cache.count--;
       if (cache.count <= 0) {
         if (cache.tex) {
+          await Assets.unload(imageSrc);
           cache.tex.destroy(true);
           cache.tex = null;
         }
