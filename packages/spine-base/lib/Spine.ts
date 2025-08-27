@@ -61,8 +61,9 @@ export default class Spine extends Component<SpineParams> {
     this.destroied = true;
   }
 
-  play(name?: string, loop?: boolean, track?: number) {
+  play(name?: string, loopAnimation?: boolean, track?: number) {
     try {
+      const loop = loopAnimation ?? this.autoPlay;
       if (name) this.animationName = name;
       if (!this.armature) {
         this.waitExecuteInfos.push({
@@ -74,7 +75,7 @@ export default class Spine extends Component<SpineParams> {
            * 解决了不生效的问题以后，加载完成之前调用 play 默认循环是false，导致 autoPlay 下本来循环动画不循环了，和之前表现不一致
            * 为了解决这个问题，在 autoPlay 的情况下，未加载完之前调用 play ，默认循环播放，除非设置不循环参数
            */
-          loop: loop ?? this.autoPlay,
+          loop,
           track,
         });
       } else {
