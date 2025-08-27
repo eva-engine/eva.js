@@ -4,12 +4,10 @@ import { Container } from '@eva/renderer-adapter';
 
 export default class ContainerManager {
   containerMap: { [propName: number]: Container } = {};
-  gameObjectMap: { [propName: string]: GameObject } = {};
 
   addContainer({ name, container, gameObject }: { name: number; container: Container; gameObject: GameObject }) {
     this.containerMap[name] = container;
     container.gName = gameObject.name || name;
-    this.gameObjectMap[gameObject.name || name] = gameObject;
   }
 
   getContainer(name: number) {
@@ -19,14 +17,9 @@ export default class ContainerManager {
   removeContainer(name: number) {
     const container = this.containerMap[name];
     if (container) {
-      delete this.gameObjectMap[container.gName];
       container.destroy({ children: true });
     }
     delete this.containerMap[name];
-  }
-
-  getGameObjectByName(name: string): GameObject | undefined {
-    return this.gameObjectMap[name];
   }
 
   updateTransform({ name, transform }: { name: number; transform: Transform }) {
