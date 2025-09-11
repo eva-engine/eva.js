@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-mesh",
-  "version": "2.0.1-beta.2",
+  "version": "2.0.1-beta.3",
   "description": "@eva/plugin-renderer-mesh",
   "main": "index.js",
   "module": "dist/plugin-renderer-mesh.esm.js",
@@ -19,8 +19,8 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "2.0.1-beta.2",
-    "@eva/eva.js": "2.0.1-beta.2",
+    "@eva/plugin-renderer": "2.0.1-beta.3",
+    "@eva/eva.js": "2.0.1-beta.3",
     "pixi.js": "^8.8.1"
   }
 }
