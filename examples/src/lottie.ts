@@ -1,9 +1,8 @@
-import { Game, GameObject, resource } from "@eva/eva.js";
-import { RendererSystem } from "@eva/plugin-renderer";
+import { Game, GameObject, resource } from '@eva/eva.js';
+import { RendererSystem } from '@eva/plugin-renderer';
 export const name = 'lottie';
-import { Lottie, LottieSystem } from "@eva/plugin-renderer-lottie";
+import { Lottie, LottieSystem } from '@eva/plugin-renderer-lottie';
 export async function init(canvas) {
-
   resource.addResource([
     {
       name: 'Halo',
@@ -29,14 +28,15 @@ export async function init(canvas) {
     },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       //@ts-ignore
       new RendererSystem({
         canvas,
         width: 750,
         height: 1624,
-        transparent: true,
+        backgroundAlpha: 1,
       }),
       //@ts-ignore
       new LottieSystem(),
@@ -50,7 +50,6 @@ export async function init(canvas) {
     height: 1624,
   };
 
-
   function createHalo() {
     const halo = new Lottie({ resource: 'Halo' });
 
@@ -58,7 +57,6 @@ export async function init(canvas) {
       console.log('halo play complete !');
     });
     halo.play([], { repeats: 0 });
-
 
     const haloGameObj = new GameObject('Halo', {
       anchor: {
@@ -72,9 +70,9 @@ export async function init(canvas) {
   function createRed() {
     const red = new Lottie({ resource: 'Red' });
 
-    red.on('complete', () => {
-      console.log('Red play complete !');
-    });
+    // red.on('complete', () => {
+    //   console.log('Red play complete !');
+    // });
 
     red.play([], {
       repeats: 0,
@@ -114,7 +112,6 @@ export async function init(canvas) {
       ],
     });
 
-
     red.onTap('#btn', () => {
       console.log('btn click !');
     });
@@ -129,8 +126,6 @@ export async function init(canvas) {
     game.scene.addChild(redGameObj);
   }
 
-
-  createHalo()
-  createRed()
-
+  createHalo();
+  createRed();
 }

@@ -1,39 +1,10 @@
 import { OBSERVER_TYPE, decorators, ComponentChanged, resource } from '@eva/eva.js';
 import type { RendererManager, ContainerManager, RendererSystem } from '@eva/plugin-renderer';
 import { Renderer } from '@eva/plugin-renderer';
-import {
-  AnimationManager,
-  DisplayRegister,
-  LoaderRegister,
-  CompElement,
-  PathLottie,
-  SolidElement,
-  SpriteElement,
-  Container,
-  LoadTexture,
-  LoadJson,
-} from './lottie-pixi';
+import { AnimationManager } from './lottie-pixi';
 import { imageHandle } from './utils';
 import Lottie from './Lottie';
 import type { Application } from '@eva/renderer-adapter';
-
-function loadTexture(assets, options) {
-  return new LoadTexture(assets, options);
-}
-
-function loadJson(path) {
-  return new LoadJson(path);
-}
-
-LoaderRegister.registerLoaderByType(LoaderRegister.Type.Texture, loadTexture);
-LoaderRegister.registerLoaderByType(LoaderRegister.Type.Ajax, loadJson);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Null, CompElement);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Path, PathLottie);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Shape, CompElement);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Solid, SolidElement);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Sprite, SpriteElement);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Component, CompElement);
-DisplayRegister.registerDisplayByType(DisplayRegister.Type.Container, Container);
 
 @decorators.componentObserver({
   Lottie: [],
