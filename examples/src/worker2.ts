@@ -8,6 +8,7 @@ import { SpriteAnimation, SpriteAnimationSystem } from '@eva/plugin-renderer-spr
 import { Graphics, GraphicsSystem } from '@eva/plugin-renderer-graphics';
 import { Spine, SpineSystem } from '@eva/plugin-renderer-spine36';
 import { NinePatchSystem, NinePatch } from '@eva/plugin-renderer-nine-patch';
+import { LottieSystem, Lottie } from '@eva/plugin-renderer-lottie';
 import { eventHandler } from '@eva/plugin-worker';
 
 const spineResource = {
@@ -29,6 +30,31 @@ function events(game) {
         },
       },
       preload: false,
+    },
+  ]);
+
+  resource.addResource([
+    {
+      name: 'Halo',
+      //@ts-ignore
+      type: 'LOTTIE',
+      src: {
+        json: {
+          type: 'json',
+          url: 'https://gw.alipayobjects.com/os/bmw-prod/61d9cc77-12de-47a7-b6e5-06c836ce7083.json',
+        },
+      },
+    },
+    {
+      name: 'Red',
+      //@ts-ignore
+      type: 'LOTTIE',
+      src: {
+        json: {
+          type: 'json',
+          url: 'https://gw.alipayobjects.com/os/bmw-prod/e327ad5b-80d6-4d3f-8ffc-a7dd15350648.json',
+        },
+      },
     },
   ]);
 
@@ -76,7 +102,7 @@ function events(game) {
     }
   });
 
-  game.scene.addChild(image);
+  // game.scene.addChild(image);
 
   const localPosEventGameObject = new GameObject('', {
     position: {
@@ -105,7 +131,7 @@ function events(game) {
   e.on('tap', e => {
     console.log(`LocalPosition: [x: ${e.data.localPosition.x}, y: ${e.data.localPosition.y}]`);
   });
-  game.scene.addChild(localPosEventGameObject);
+  // game.scene.addChild(localPosEventGameObject);
 }
 
 resource.addResource([
@@ -168,7 +194,7 @@ function createGb(game, x, y) {
     console.log('>>>loaded');
   });
   spine.play('animation');
-  game.scene.addChild(gameObject);
+  // game.scene.addChild(gameObject);
 }
 
 const initEva = async data => {
@@ -188,6 +214,8 @@ const initEva = async data => {
   ]);
   // @ts-ignore
   const game = new Game();
+  // @ts-ignore
+  globalThis.game = game;
   await game.init({
     systems: [
       new RendererSystem({
@@ -204,6 +232,7 @@ const initEva = async data => {
       new SpineSystem(),
       new EventSystem(),
       new GraphicsSystem(),
+      new LottieSystem(),
     ],
   });
 
@@ -265,7 +294,7 @@ const initEva = async data => {
     }),
   );
 
-  game.scene.addChild(text);
+  // game.scene.addChild(text);
   resource.addResource([
     {
       name: 'nine',
@@ -398,7 +427,86 @@ const initEva = async data => {
   events(game);
 
   // game.scene.addChild(patch);
-  game.scene.addChild(patch1);
+  // game.scene.addChild(patch1);
+
+  function createHalo() {
+    const halo = new Lottie({ resource: 'Halo' });
+
+    halo.on('complete', () => {
+      console.log('halo play complete !');
+    });
+    halo.play([], { repeats: 0 });
+
+    const haloGameObj = new GameObject('Halo', {
+      anchor: {
+        x: 0,
+        y: 0,
+      },
+    });
+    haloGameObj.addComponent(halo);
+    game.scene.addChild(haloGameObj);
+  }
+  function createRed() {
+    const red = new Lottie({ resource: 'Red' });
+
+    // red.on('complete', () => {
+    //   console.log('Red play complete !');
+    // });
+
+    red.play([], {
+      repeats: 0,
+      slot: [
+        {
+          name: '#number',
+          type: 'TEXT',
+          value: '10',
+          style: {
+            fontSize: 64,
+          },
+        },
+        {
+          name: '#unit',
+          type: 'TEXT',
+          value: '元',
+          style: {
+            fontSize: 22,
+          },
+        },
+        {
+          name: '#title',
+          type: 'TEXT',
+          value: '我是主标题',
+          style: {
+            fontSize: 32,
+          },
+        },
+        {
+          name: '#subtitle',
+          type: 'TEXT',
+          value: '我是副标题',
+          style: {
+            fontSize: 24,
+          },
+        },
+      ],
+    });
+
+    red.onTap('#btn', () => {
+      console.log('btn click !');
+    });
+
+    const redGameObj = new GameObject('Red', {
+      anchor: { x: 0.5, y: 0.3 },
+      size: { width: 660, height: 757 },
+      origin: { x: 0.5, y: 0.5 },
+    });
+
+    redGameObj.addComponent(red);
+    game.scene.addChild(redGameObj);
+  }
+
+  createHalo();
+  createRed();
 };
 
 onmessage = async ({ data }) => {

@@ -29,6 +29,7 @@ export async function init(canvas) {
   ]);
 
   const game = new Game();
+  globalThis.game = game;
   await game.init({
     systems: [
       //@ts-ignore
@@ -37,6 +38,7 @@ export async function init(canvas) {
         width: 750,
         height: 1624,
         backgroundAlpha: 1,
+        debugMode: true,
       }),
       //@ts-ignore
       new LottieSystem(),

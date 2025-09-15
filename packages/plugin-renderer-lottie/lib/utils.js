@@ -1,6 +1,6 @@
 import iOSVersion from 'ios-version';
 
-const { major } = iOSVersion(window.navigator.userAgent) || {};
+const { major } = iOSVersion(globalThis.navigator.userAgent) || {};
 
 /**
  * dataURL 转成 blob

@@ -30,18 +30,7 @@ export {
   Tools,
   TransformFrames,
 } from './lottie-core';
-import {
-  UPDATE_PRIORITY,
-  Ticker,
-  Graphics,
-  Container,
-  Matrix,
-  Sprite,
-  Rectangle,
-  EventEmitter,
-  Texture as Texture$1,
-  Application,
-} from 'pixi.js';
+import { UPDATE_PRIORITY, Ticker, Graphics, Container, Matrix, Sprite, Assets, Texture, Application } from 'pixi.js';
 
 /* eslint no-cond-assign: "off" */
 /* eslint new-cap: 0 */
@@ -666,8 +655,6 @@ function createSizedArray(len) {
   return Array.apply(null, { length: len });
 }
 
-window.$commands = [];
-
 class MatrixHelper extends Matrix {
   reset() {
     // 重置为单位矩阵
@@ -1198,18 +1185,17 @@ class SpriteElement extends Sprite {
    * @param {object} config layer data information
    */
   constructor(lottieLayer, imageInfo) {
-    const { asset, texture } = imageInfo;
-    super(texture.baseTexture.texture);
+    const { texture: texturePromise } = imageInfo;
+    super();
     this.label = lottieLayer.fullname;
 
-    if (texture.baseTexture.texture.valid) {
-      texture.baseTexture.texture.orig = new Rectangle(0, 0, asset.w, asset.h);
-    } else {
-      texture.baseTexture.on('loaded', () => {
-        this.texture = texture.baseTexture.texture;
-        texture.baseTexture.texture.orig = new Rectangle(0, 0, asset.w, asset.h);
+    texturePromise
+      .then(texture => {
+        this.texture = texture;
+      })
+      .catch(e => {
+        console.error(e);
       });
-    }
 
     this.lottieLayer = lottieLayer;
 
@@ -1282,32 +1268,6 @@ class SpriteElement extends Sprite {
   }
 }
 
-class BaseTexture extends EventEmitter {
-  constructor(url) {
-    super();
-    this.texture = Texture$1.EMPTY;
-    this.img = new Image();
-    this.img.src = url;
-    this.img.onload = () => {
-      this.texture = Texture$1.from(this.img);
-      this.emit('loaded');
-    };
-    this.img.onerror = () => {
-      this.emit('error');
-    };
-  }
-}
-
-class Texture {
-  constructor(url) {
-    this.baseTexture = new BaseTexture(url);
-  }
-
-  static from(url) {
-    return new Texture(url);
-  }
-}
-
 const regHttp = /^(https?:)?\/\//;
 
 /**
@@ -1363,25 +1323,20 @@ class LoadTexture extends Eventer {
     this.assets.forEach(asset => {
       const id = asset.id;
       const url = createUrl(asset, this.prefix);
-      const texture = url ? Texture.from(url, this.textureOptions) : Texture.EMPTY;
-      this.textures[id] = texture;
+      const texturePromise = Assets.load(url);
+      this.textures[id] = texturePromise;
       this._total++;
-      if (texture.baseTexture.valid || texture === Texture.EMPTY) {
-        this._received++;
-        this.emit('update');
-        if (this._received + this._failed >= this._total) this._onComplete();
-      } else {
-        texture.baseTexture.once('loaded', () => {
+      texturePromise
+        .then(() => {
           this._received++;
           this.emit('update');
           if (this._received + this._failed >= this._total) this._onComplete();
-        });
-        texture.baseTexture.once('error', () => {
+        })
+        .catch(e => {
           this._failed++;
           this.emit('update');
           if (this._received + this._failed >= this._total) this._onComplete();
         });
-      }
     });
   }
 
@@ -2393,11 +2348,11 @@ class AnimationGroup extends Eventer {
    * @param {*} image url | texture
    * @return {this}
    */
-  replaceImageByQuerySelector(selector, image = Texture$1.EMPTY) {
+  replaceImageByQuerySelector(selector, image = Texture.EMPTY) {
     const layerDisplay = this.getDisplayByQuerySelector(selector);
     if (layerDisplay && layerDisplay.isSprite) {
       const texture =
-        typeof image === 'string' ? Texture$1.from(image, { resourceOptions: { crossorigin: '*' } }) : image;
+        typeof image === 'string' ? Texture.from(image, { resourceOptions: { crossorigin: '*' } }) : image;
       layerDisplay.texture = texture;
     }
     return this;
@@ -2410,7 +2365,7 @@ class AnimationGroup extends Eventer {
    * @param {*} image url | texture or array[url | texture]
    * @return {this}
    */
-  replaceImageByQuerySelectorAll(selector, image = [Texture$1.EMPTY]) {
+  replaceImageByQuerySelectorAll(selector, image = [Texture.EMPTY]) {
     const layers = this.querySelectorAll(selector);
     const isArrImage = Tools.isArray(image);
     layers.forEach((layer, idx) => {
@@ -2419,7 +2374,7 @@ class AnimationGroup extends Eventer {
         const imageItem = isArrImage ? image[idx] : image;
         const texture =
           typeof imageItem === 'string'
-            ? Texture$1.from(imageItem, { resourceOptions: { crossorigin: '*' } })
+            ? Texture.from(imageItem, { resourceOptions: { crossorigin: '*' } })
             : imageItem;
         layerDisplay.texture = texture;
       }
