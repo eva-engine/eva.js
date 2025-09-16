@@ -54,7 +54,9 @@ export default class LottieSystem extends Renderer {
     const container = this.renderSystem.containerManager.getContainer(changed.gameObject.id);
     if (!container) return;
     const { resource: rn, ...otherOpts } = component.options;
-    const { data } = await resource.getResource(rn);
+    const res = await resource.getResource(rn);
+    const data = res.data;
+    const url = res.src.json.url;
     const json = { ...(data.json || {}) };
     const assets = json.assets || [];
     assets.forEach(item => {
@@ -62,6 +64,7 @@ export default class LottieSystem extends Renderer {
     });
     const anim = this.manager.parseAnimation({
       keyframes: json,
+      prefix: this.getDir(url),
       ...otherOpts,
     }) as any;
     component.anim = anim;
@@ -70,6 +73,10 @@ export default class LottieSystem extends Renderer {
       anim.on(eventName, e => component.emit(eventName, e));
     });
     if (anim.isImagesLoaded) component.emit('success', {});
+  }
+
+  getDir(url: string) {
+    return new URL('./', url).href;
   }
 
   remove(changed: ComponentChanged) {

@@ -55,7 +55,10 @@ export default class Lottie extends Component {
       if (type === 'IMAGE') {
         this.currentSlot[name] = Sprite.from(value);
       } else if (type === 'TEXT') {
-        this.currentSlot[name] = new Text(value, new TextStyle(style));
+        this.currentSlot[name] = new Text({
+          text: value,
+          style: new TextStyle(style),
+        });
       }
       if (x) this.currentSlot[name].x = x;
       if (y) this.currentSlot[name].y = y;
@@ -90,9 +93,7 @@ export default class Lottie extends Component {
     this.on('success', () => {
       const ele = this.anim.querySelector(name);
       const display = ele.display;
-      g.beginFill(0xffffff);
-      g.drawRect(0, 0, 100, 100);
-      g.endFill();
+      g.rect(0, 0, 100, 100).fill(0xffffff);
       g.alpha = 0;
       display.addChild(g);
       ele.display.interactive = true;
