@@ -59,14 +59,14 @@ export default class Renderer extends System<RendererSystemParams> {
       containerManager: this.containerManager,
     });
 
-    this.game.on('sceneChanged', ({ scene, mode, params }) => {
+    this.game.on('sceneChanged', async ({ scene, mode, params }) => {
       let application;
       switch (mode) {
         case LOAD_SCENE_MODE.SINGLE:
           application = this.application;
           break;
         case LOAD_SCENE_MODE.MULTI_CANVAS:
-          application = this.createMultiApplication({ params });
+          application = await this.createMultiApplication({ params });
           break;
       }
       scene.canvas = application.canvas;
@@ -102,12 +102,6 @@ export default class Renderer extends System<RendererSystemParams> {
     if (params.debugMode) {
       globalThis.__PIXI_APP__ = app;
     }
-    const ticker = new Ticker();
-    // @ts-ignore
-    Ticker._system = Ticker._shared = ticker;
-    // @ts-ignore
-    ticker._protected = true;
-
     await app.init({ sharedTicker: true, ...params, hello: true });
     if (params.enableScroll !== undefined) {
       params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
