@@ -1884,7 +1884,8 @@ class AnimationGroup extends Eventer {
       },
     };
     session.fontManager.addChars(data.chars);
-    session.fontManager.addFonts(data.fonts, document.body);
+    // @TODO
+    // session.fontManager.addFonts(data.fonts, document.body);
 
     this._buildElements(session);
 
