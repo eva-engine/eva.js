@@ -26,6 +26,17 @@ export async function init(canvas) {
         },
       },
     },
+    {
+      name: 'test',
+      //@ts-ignore
+      type: 'LOTTIE',
+      src: {
+        json: {
+          type: 'json',
+          url: 'https://dev.g.alicdn.com/iz/tmfarm-assets/0.0.13/lottie/data.json',
+        },
+      },
+    },
   ]);
 
   const game = new Game();
@@ -53,14 +64,14 @@ export async function init(canvas) {
   };
 
   function createHalo() {
-    const halo = new Lottie({ resource: 'Halo' });
+    const halo = new Lottie({ resource: 'test' });
 
     halo.on('complete', () => {
       console.log('halo play complete !');
     });
     halo.play([], { repeats: 0 });
 
-    const haloGameObj = new GameObject('Halo', {
+    const haloGameObj = new GameObject('test', {
       anchor: {
         x: 0,
         y: 0,
@@ -82,7 +93,7 @@ export async function init(canvas) {
         {
           name: '#number',
           type: 'TEXT',
-          value: '10',
+          value: '99',
           style: {
             fontSize: 64,
           },
@@ -128,6 +139,6 @@ export async function init(canvas) {
     game.scene.addChild(redGameObj);
   }
 
-  createHalo();
-  createRed();
+  // createHalo();
+  // createRed();
 }

@@ -7,7 +7,7 @@ export default class TilingSprite {
   constructor(image: HTMLImageElement | PIXITexture) {
     this._image = image;
     if (image) {
-      if (image instanceof HTMLImageElement) {
+      if (typeof HTMLImageElement !== 'undefined' && image instanceof HTMLImageElement) {
         this.tilingSprite = new PIXITilingSprite(PIXITexture.from(image));
       } else if (image instanceof PIXITexture) {
         this.tilingSprite = new PIXITilingSprite(image);
@@ -21,7 +21,7 @@ export default class TilingSprite {
       return;
     }
 
-    if (val instanceof HTMLImageElement) {
+    if (typeof HTMLImageElement !== 'undefined' && val instanceof HTMLImageElement) {
       this.tilingSprite.texture = PIXITexture.from(val);
     } else if (val instanceof PIXITexture) {
       this.tilingSprite.texture = val;

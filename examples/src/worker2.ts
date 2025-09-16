@@ -10,6 +10,7 @@ import { Spine, SpineSystem } from '@eva/plugin-renderer-spine36';
 import { NinePatchSystem, NinePatch } from '@eva/plugin-renderer-nine-patch';
 import { LottieSystem, Lottie } from '@eva/plugin-renderer-lottie';
 import { eventHandler } from '@eva/plugin-worker';
+import { TilingSprite, TilingSpriteSystem } from '@eva/plugin-renderer-tiling-sprite';
 
 const spineResource = {
   image: 'https://gw.alicdn.com/imgextra/i4/O1CN01AHYeJo24fxNQdlxOm_!!6000000007419-2-tps-553-551.png',
@@ -199,19 +200,19 @@ function createGb(game, x, y) {
 
 const initEva = async data => {
   const { type, width, height, resolution, canvas } = data;
-  resource.addResource([
-    {
-      name: 'imageName',
-      type: RESOURCE_TYPE.IMAGE,
-      src: {
-        image: {
-          type: 'png',
-          url: 'https://gw.alicdn.com/tfs/TB1DNzoOvb2gK0jSZK9XXaEgFXa-658-1152.webp',
-        },
-      },
-      preload: true,
-    },
-  ]);
+  // resource.addResource([
+  //   {
+  //     name: 'imageName',
+  //     type: RESOURCE_TYPE.IMAGE,
+  //     src: {
+  //       image: {
+  //         type: 'png',
+  //         url: 'https://gw.alicdn.com/tfs/TB1DNzoOvb2gK0jSZK9XXaEgFXa-658-1152.webp',
+  //       },
+  //     },
+  //     preload: true,
+  //   },
+  // ]);
   // @ts-ignore
   const game = new Game();
   // @ts-ignore
@@ -233,8 +234,37 @@ const initEva = async data => {
       new EventSystem(),
       new GraphicsSystem(),
       new LottieSystem(),
+      new TilingSpriteSystem(),
     ],
   });
+
+  resource.addResource([
+    {
+      name: 'imageName',
+      type: RESOURCE_TYPE.IMAGE,
+      src: {
+        image: {
+          type: 'png',
+          url: 'https://gw.alicdn.com/tfs/TB1t7vtOvb2gK0jSZK9XXaEgFXa-300-431.png',
+        },
+      },
+      preload: true,
+    },
+  ]);
+
+  const tilingSprite = new GameObject('sprite', {
+    size: { width: 750, height: 1000 },
+  });
+
+  tilingSprite.addComponent(
+    new TilingSprite({
+      resource: 'imageName',
+      tileScale: { x: 0.7, y: 0.7 },
+      tilePosition: { x: 10, y: 40 },
+    }),
+  );
+
+  game.scene.addChild(tilingSprite);
 
   const text = new GameObject('text', {
     position: {
@@ -505,8 +535,8 @@ const initEva = async data => {
     game.scene.addChild(redGameObj);
   }
 
-  createHalo();
-  createRed();
+  // createHalo();
+  // createRed();
 };
 
 onmessage = async ({ data }) => {
