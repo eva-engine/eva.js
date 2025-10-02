@@ -1,7 +1,17 @@
 import { RendererSystem } from '@eva/plugin-renderer';
-import { Game, GameObject } from '@eva/eva.js';
+import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { Text, TextSystem } from '@eva/plugin-renderer-text';
 export const name = 'text';
+
+resource.addResource([
+  {
+    type: RESOURCE_TYPE.FONT,
+    name: 'test',
+    src: { font: { type: 'font', url: 'https://hudong.tbcdn.cn/u/tbcoinjump/1iFTgM2SDGhP.woff' } },
+    preload: true,
+  },
+]);
+
 export async function init(canvas) {
   const game = new Game();
   await game.init({
@@ -38,30 +48,22 @@ export async function init(canvas) {
     },
   });
 
-  text.addComponent(
+  const txt = text.addComponent(
     new Text({
-      text: '欢迎使用EVA互动游戏开发体系！',
+      text: '升级了',
       style: {
-        fontFamily: 'Arial',
-        fontSize: 36,
+        fontFamily: 'test',
+        fontSize: 108,
         fontStyle: 'italic',
         fontWeight: 'bold',
-        fill: ['#b35d9e', '#84c35f', '#ebe44f'], // gradient
-        fillGradientType: 1,
-        fillGradientStops: [0.1, 0.4],
-        stroke: '#4a1850',
-        strokeThickness: 5,
-        dropShadow: true,
-        dropShadowColor: '#000000',
-        dropShadowBlur: 4,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 400,
-        breakWords: true,
+        fill: ['#ffffff'],
       },
     }),
   );
+
+  setTimeout(() => {
+    txt.style.fontFamily = 'Arial';
+  }, 3000);
 
   game.scene.addChild(text);
 }

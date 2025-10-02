@@ -1,9 +1,10 @@
-import { decorators, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
+import { decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { Text as TextEngine } from '@eva/renderer-adapter';
 
-import TextComponent from './component';
+import TextComponent, { TextParams } from './component';
+
 @decorators.componentObserver({
   Text: ['text', { prop: ['style'], deep: true }],
 })
@@ -24,6 +25,8 @@ export default class Text extends Renderer {
     if (changed.componentName !== 'Text') return;
     if (changed.type === OBSERVER_TYPE.ADD) {
       const component = changed.component as TextComponent;
+      const fontFamily = component.style.fontFamily;
+      component.style.fontFamily = '';
       const text = new TextEngine(component.text, component.style);
       this.containerManager.getContainer(changed.gameObject.id).addChildAt(text, 0);
       this.texts[changed.gameObject.id] = {
@@ -31,6 +34,7 @@ export default class Text extends Renderer {
         component: changed.component as TextComponent,
       };
       this.setSize(changed);
+      this.asyncUpdateFontFamily(text, fontFamily);
     } else if (changed.type === OBSERVER_TYPE.REMOVE) {
       this.containerManager.getContainer(changed.gameObject.id).removeChild(this.texts[changed.gameObject.id].text);
       this.texts[changed.gameObject.id].text.destroy({ children: true });
@@ -45,9 +49,33 @@ export default class Text extends Renderer {
     if (changed.prop.prop[0] === 'text') {
       text.text = component.text;
     } else if (changed.prop.prop[0] === 'style') {
-      Object.assign(text.style, (changed.component as TextComponent).style);
+      this.asyncChangeTextStyle(text, (changed.component as TextComponent).style);
     }
   }
+
+  asyncChangeTextStyle(text: TextEngine, textStyle: TextParams['style']) {
+    if (textStyle.fontFamily) {
+      const fontFamily = textStyle.fontFamily;
+      textStyle.fontFamily = '';
+      this.asyncUpdateFontFamily(text, fontFamily);
+    }
+    Object.assign(text.style, textStyle);
+  }
+
+  asyncUpdateFontFamily(text: TextEngine, fontFamily: string | string[] | undefined) {
+    if (fontFamily) {
+      if (Array.isArray(fontFamily)) {
+        Promise.all(fontFamily.map(font => resource.getResource(font))).finally(() => {
+          text.style.fontFamily = fontFamily;
+        });
+      } else {
+        resource.getResource(fontFamily).finally(() => {
+          text.style.fontFamily = fontFamily;
+        });
+      }
+    }
+  }
+
   setSize(changed: ComponentChanged) {
     const { transform } = changed.gameObject;
     if (!transform) return;
