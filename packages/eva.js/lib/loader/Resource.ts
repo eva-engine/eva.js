@@ -18,6 +18,7 @@ export enum RESOURCE_TYPE {
   'SPRITE_ANIMATION' = 'SPRITE_ANIMATION',
   'AUDIO' = 'AUDIO',
   'VIDEO' = 'VIDEO',
+  'FONT' = 'FONT',
 }
 
 /** Resource item */
@@ -296,6 +297,10 @@ class Resource extends EE {
                   });
                 }
               }
+            } else if (res.type === RESOURCE_TYPE.FONT) {
+              options.data = {
+                family: name,
+              };
             }
             Assets.add(options);
           }
