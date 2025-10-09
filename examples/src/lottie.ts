@@ -80,17 +80,17 @@ export async function init(canvas) {
       resource: 'red',
       replaceData: true,
     });
+    halo.replaceData({
+      hb1: '¥1888',
+      hb2: '¥188',
+      hb3: '¥564',
+      hb4: '¥27',
+      hb5: '¥19',
+      hb6: '¥3',
+    });
 
     let anim = 'intro';
     setTimeout(() => {
-      halo.replaceData({
-        hb1: '¥1888',
-        hb2: '¥188',
-        hb3: '¥564',
-        hb4: '¥27',
-        hb5: '¥19',
-        hb6: '¥3',
-      });
       halo.play([0, 11], {
         repeats: 0,
       });

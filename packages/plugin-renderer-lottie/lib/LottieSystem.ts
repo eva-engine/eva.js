@@ -68,6 +68,9 @@ export default class LottieSystem extends Renderer {
       ...otherOpts,
     }) as any;
     component.anim = anim;
+    if (component._replaceData) {
+      anim.replaceData(component._replaceData);
+    }
     container.addChildAt(anim.group, 0);
     this.managerLife.forEach(eventName => {
       anim.on(eventName, e => component.emit(eventName, e));

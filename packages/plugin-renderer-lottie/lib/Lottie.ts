@@ -9,6 +9,7 @@ interface ExtendOptions extends IOptions {
 export default class Lottie extends Component {
   // @decorators.IDEProp 复杂编辑后续添加
   slot: { [key: string]: string };
+  _replaceData: Record<string, string> | null = null;
 
   static componentName: string = 'Lottie';
   public anim: any;
@@ -78,7 +79,10 @@ export default class Lottie extends Component {
   }
 
   replaceData(data: Record<string, string>) {
-    if (data) this.anim.replaceData(data);
+    if (data) {
+      if (this.anim) this.anim.replaceData(data);
+      else this._replaceData = data;
+    }
   }
 
   playParamsHandle(params) {
