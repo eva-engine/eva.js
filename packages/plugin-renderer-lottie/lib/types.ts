@@ -15,4 +15,5 @@ export interface IOptions {
   resource: string;
   width?: number;
   height?: number;
+  replaceData?: boolean;
 }

@@ -77,6 +77,10 @@ export default class Lottie extends Component {
     this.anim.playSegment(this.playParamsHandle(params), expandOpts);
   }
 
+  replaceData(data: Record<string, string>) {
+    if (data) this.anim.replaceData(data);
+  }
+
   playParamsHandle(params) {
     let p = [].concat(params);
     const { keyframes } = this.anim;

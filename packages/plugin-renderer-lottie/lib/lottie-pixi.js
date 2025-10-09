@@ -30,7 +30,7 @@ export {
   Tools,
   TransformFrames,
 } from './lottie-core';
-import { UPDATE_PRIORITY, Ticker, Graphics, Container, Matrix, Sprite, Assets, Texture, Application } from 'pixi.js';
+import { Ticker, Graphics, Container, Matrix, Text, Assets, Sprite, Texture, Application } from 'pixi.js';
 
 /* eslint no-cond-assign: "off" */
 /* eslint new-cap: 0 */
@@ -288,7 +288,6 @@ const Tween = {
 };
 
 const _Ticker = {
-  UPDATE_PRIORITY,
   animationTicker: Ticker.shared,
 };
 
@@ -366,6 +365,61 @@ class LottieGraphicsMask extends Graphics {
   }
 }
 
+const updateTransformByHierarchy = (container, transform, parent) => {
+  // const localMatrixA = new Matrix();
+
+  if (transform.p) {
+    container.x = transform.p.v[0];
+    container.y = transform.p.v[1];
+  } else {
+    container.x = transform.px.v;
+    container.y = transform.py.v;
+  }
+
+  container.pivot.x = transform.a.v[0];
+  container.pivot.y = transform.a.v[1];
+
+  container.scale.x = transform.s.v[0];
+  container.scale.y = transform.s.v[1];
+
+  if (transform.r) {
+    container.rotation = transform.r.v + transform.orientation;
+  } else if (transform.rz) {
+    container.rotation = transform.rz.v + transform.or.v[2];
+  }
+
+  // let x = transform.p ? transform.p.v[0] : transform.px.v;
+  // let y = transform.p ? transform.p.v[1] : transform.py.v;
+
+  // const rotation = transform.r
+  //   ? transform.r.v + transform.orientation
+  //   : transform.rz
+  //   ? transform.rz.v + transform.or.v[2]
+  //   : 0;
+
+  // localMatrixA.setTransform(
+  //   x,
+  //   y,
+  //   transform.a.v[0],
+  //   transform.a.v[1],
+  //   transform.s.v[0],
+  //   transform.s.v[1],
+  //   rotation,
+  //   0,
+  //   0
+  // );
+
+  // if (parent) {
+  //   const parentWorldTransform = parent.worldTransform.clone();
+  //   container.setFromMatrix(localMatrixA.append(parentWorldTransform));
+  // } else {
+  //   container.setFromMatrix(localMatrixA);
+  // }
+
+  const parentAlpha = parent ? parent.alpha : 1;
+  container.alpha = parentAlpha * transform.o.v;
+};
+
 /**
  * NullElement class
  * @class
@@ -414,27 +468,7 @@ class CompElement extends Container {
   }
 
   updateLottieTransform(transform) {
-    if (transform.p) {
-      this.x = transform.p.v[0];
-      this.y = transform.p.v[1];
-    } else {
-      this.x = transform.px.v;
-      this.y = transform.py.v;
-    }
-
-    this.pivot.x = transform.a.v[0];
-    this.pivot.y = transform.a.v[1];
-
-    this.scale.x = transform.s.v[0];
-    this.scale.y = transform.s.v[1];
-
-    if (transform.r) {
-      this.rotation = transform.r.v + transform.orientation;
-    } else if (transform.rz) {
-      this.rotation = transform.rz.v + transform.or.v[2];
-    }
-
-    this.alpha = transform.o.v;
+    updateTransformByHierarchy(this, transform, this.hierarchy);
   }
 
   /**
@@ -609,27 +643,7 @@ class ShapeElement extends Graphics {
    * @param {*} transform
    */
   updateLottieTransform(transform) {
-    if (transform.p) {
-      this.x = transform.p.v[0];
-      this.y = transform.p.v[1];
-    } else {
-      this.x = transform.px.v;
-      this.y = transform.py.v;
-    }
-
-    this.pivot.x = transform.a.v[0];
-    this.pivot.y = transform.a.v[1];
-
-    this.scale.x = transform.s.v[0];
-    this.scale.y = transform.s.v[1];
-
-    if (transform.r) {
-      this.rotation = transform.r.v + transform.orientation;
-    } else if (transform.rz) {
-      this.rotation = transform.rz.v + transform.or.v[2];
-    }
-
-    this.alpha = transform.o.v;
+    updateTransformByHierarchy(this, transform, this.hierarchy);
   }
 
   /**
@@ -652,6 +666,154 @@ class ShapeElement extends Graphics {
 }
 
 function createSizedArray(len) {
+  return Array.apply(null, { length: len });
+}
+
+/**
+ * NullElement class
+ * @class
+ * @private
+ */
+class TextElement extends Text {
+  /**
+   * ShapeElement constructor
+   */
+  constructor(lottieLayer) {
+    super();
+    this.label = lottieLayer.fullname;
+    this.lottieLayer = lottieLayer;
+    this.lottieLayer.lettersChangedFlag = true;
+    if (this.lottieLayer.masks) {
+      this.mask = new LottieGraphicsMask(this.lottieLayer.session.local, this.lottieLayer);
+      this.addChild(this.mask);
+    }
+
+    this.init();
+    this.buildNewText();
+    this.updateLottie = this.updateLottie.bind(this);
+    this.updateLottie(this.lottieLayer, true);
+    this.lottieLayer.on('updatelayer', this.updateLottie);
+    this.onRender = () => {
+      this.updateLottie(this.lottieLayer, true);
+    };
+  }
+
+  init() {
+    this._textSpans = [];
+    this._yOffset = 0;
+    this._fillColorAnim = false;
+    this._strokeColorAnim = false;
+    this._strokeWidthAnim = false;
+    this._stroke = false;
+    this._fill = false;
+    this._justifyOffset = 0;
+    this._currentRender = null;
+    this._renderType = 'canvas';
+    this._fillStyle = {};
+    this._values = {
+      fill: '#000000',
+      stroke: '#000000',
+      sWidth: 0,
+      fValue: '',
+    };
+  }
+
+  buildNewText() {
+    const documentData = this.lottieLayer.textProperty.currentData;
+    this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
+    let hasFill = false;
+    if (documentData.fc) {
+      hasFill = true;
+      this._values.fill = Tools.rgb2hex(
+        documentData.fc.map(item => {
+          return item > 1 ? item : item * 255;
+        }),
+        documentData.fc,
+      );
+    } else {
+      this._values.fill = '#000000';
+    }
+    this._fill = hasFill;
+    let hasStroke = false;
+    if (documentData.sc) {
+      hasStroke = true;
+      this._values.stroke = this.buildColor(documentData.sc);
+      this._values.sWidth = documentData.sw;
+    }
+    const fontManager = this.lottieLayer.global.fontManager;
+    this._stroke = hasStroke;
+    this._values.fontSize = documentData.finalSize;
+    this._values.fontFamily = fontManager.getFontByName(documentData.f).fFamily;
+    this._values.fontWeight = documentData.fWeight;
+    this._values.fontStyle = documentData.fStyle;
+    this._values.lineHeight = documentData.finalLineHeight;
+    this._text = documentData.t;
+
+    this.renderText();
+  }
+
+  async renderText() {
+    this.text = this._text;
+    if (this.style.fontFamily) {
+      await Assets.get(this.style.fontFamily);
+    }
+    this.style.fontFamily = this._values.fontFamily;
+    this.style.fontSize = this._values.fontSize;
+    this.style.fill = this._values.fill;
+    this.style.fontWeight = this._values.fontWeight;
+    this.style.fontStyle = this._values.fontStyle;
+    this.style.lineHeight = this._values.lineHeight;
+
+    this.anchor.x = 0.5;
+    this.anchor.y = 1;
+  }
+
+  /**
+   * update lottie information
+   * @param {*} lottieLayer lottie element object
+   * @param {boolean} forceUpdate forceUpdate
+   */
+  updateLottie(lottieLayer, _forceUpdate = false) {
+    let forceUpdate = true;
+    if (lottieLayer.transform && forceUpdate) {
+      this.updateLottieTransform(lottieLayer.transform);
+    }
+    if (lottieLayer.masks && forceUpdate) {
+      this.updateLottieMasks(lottieLayer.masks);
+    }
+    if (lottieLayer._mdf) {
+      this.renderText();
+    }
+    this.visible = lottieLayer.isInRange;
+    this._onUpdate();
+  }
+
+  /**
+   * a
+   * @param {*} parent a
+   */
+  setTransformHierarchy(parent) {
+    this.hierarchy = parent;
+  }
+
+  /**
+   * a
+   * @param {*} transform
+   */
+  updateLottieTransform(transform) {
+    updateTransformByHierarchy(this, transform, this.hierarchy);
+  }
+
+  /**
+   * a
+   * @param {*} masks a
+   */
+  updateLottieMasks(masks) {
+    this.mask.updateMasks(masks);
+  }
+}
+
+function createSizedArray$1(len) {
   return Array.apply(null, { length: len });
 }
 
@@ -728,7 +890,7 @@ class MatrixHelper extends Matrix {
  * @class
  * @private
  */
-class TextElement extends Graphics {
+class TextGlyphsElement extends Graphics {
   /**
    * ShapeElement constructor
    */
@@ -774,15 +936,14 @@ class TextElement extends Graphics {
 
   buildNewText() {
     const documentData = this.lottieLayer.textProperty.currentData;
-    this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
+    this.renderedLetters = createSizedArray$1(documentData.l ? documentData.l.length : 0);
     let hasFill = false;
     if (documentData.fc) {
       hasFill = true;
       this._values.fill = Tools.rgb2hex(
-        // documentData.fc.map((item) => {
-        //   console.log(item)
-        //   return item > 1 ? item : item * 255
-        // }),
+        documentData.fc.map(item => {
+          return item > 1 ? item : item * 255;
+        }),
         documentData.fc,
       );
     } else {
@@ -839,8 +1000,7 @@ class TextElement extends Graphics {
       shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
       jLen = shapes.length;
       matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
-      commands = createSizedArray(jLen - 1);
-      window.$commands.push(commands);
+      commands = createSizedArray$1(jLen - 1);
       let commandsCounter = 0;
       for (j = 0; j < jLen; j += 1) {
         if (shapes[j].ty === 'sh') {
@@ -1055,27 +1215,7 @@ class TextElement extends Graphics {
    * @param {*} transform
    */
   updateLottieTransform(transform) {
-    if (transform.p) {
-      this.x = transform.p.v[0];
-      this.y = transform.p.v[1];
-    } else {
-      this.x = transform.px.v;
-      this.y = transform.py.v;
-    }
-
-    this.pivot.x = transform.a.v[0];
-    this.pivot.y = transform.a.v[1];
-
-    this.scale.x = transform.s.v[0];
-    this.scale.y = transform.s.v[1];
-
-    if (transform.r) {
-      this.rotation = transform.r.v + transform.orientation;
-    } else if (transform.rz) {
-      this.rotation = transform.rz.v + transform.or.v[2];
-    }
-
-    this.alpha = transform.o.v;
+    updateTransformByHierarchy(this, transform, this.hierarchy);
   }
 
   /**
@@ -1141,27 +1281,7 @@ class SolidElement extends Graphics {
    * @param {*} transform
    */
   updateLottieTransform(transform) {
-    if (transform.p) {
-      this.x = transform.p.v[0];
-      this.y = transform.p.v[1];
-    } else {
-      this.x = transform.px.v;
-      this.y = transform.py.v;
-    }
-
-    this.pivot.x = transform.a.v[0];
-    this.pivot.y = transform.a.v[1];
-
-    this.scale.x = transform.s.v[0];
-    this.scale.y = transform.s.v[1];
-
-    if (transform.r) {
-      this.rotation = transform.r.v + transform.orientation;
-    } else if (transform.rz) {
-      this.rotation = transform.rz.v + transform.or.v[2];
-    }
-
-    this.alpha = transform.o.v;
+    updateTransformByHierarchy(this, transform, this.hierarchy);
   }
 
   /**
@@ -1236,27 +1356,7 @@ class SpriteElement extends Sprite {
    * @param {*} transform
    */
   updateLottieTransform(transform) {
-    if (transform.p) {
-      this.x = transform.p.v[0];
-      this.y = transform.p.v[1];
-    } else {
-      this.x = transform.px.v;
-      this.y = transform.py.v;
-    }
-
-    this.pivot.x = transform.a.v[0];
-    this.pivot.y = transform.a.v[1];
-
-    this.scale.x = transform.s.v[0];
-    this.scale.y = transform.s.v[1];
-
-    if (transform.r) {
-      this.rotation = transform.r.v + transform.orientation;
-    } else if (transform.rz) {
-      this.rotation = transform.rz.v + transform.or.v[2];
-    }
-
-    this.alpha = transform.o.v;
+    updateTransformByHierarchy(this, transform, this.hierarchy);
   }
 
   /**
@@ -1475,6 +1575,29 @@ function loadJson(path) {
   return new LoadJson(path);
 }
 
+const getLayerBySubstituteId = (lottieFile, substituteId) => {
+  const { substituteIds } = lottieFile || {};
+  if (!substituteIds || Object.keys(substituteIds).length === 0) return null;
+  let layer;
+  // 在复合图层内部
+  if (substituteId && substituteId.indexOf('_') === -1) {
+    const outerIndex = Number(substituteId);
+    if (!Number.isNaN(outerIndex)) {
+      layer = lottieFile?.layers?.[outerIndex];
+    }
+  } else if (substituteId) {
+    // 在顶层图层
+    const substituteIdArr = substituteId.split('_');
+    const outerIndex = Number(substituteIdArr[0]);
+    const innerIndex = Number(substituteIdArr[1]);
+    if (!Number.isNaN(outerIndex) && !Number.isNaN(innerIndex)) {
+      const asset = lottieFile.assets[outerIndex];
+      layer = asset?.layers?.[innerIndex];
+    }
+  }
+  return layer;
+};
+
 /**
  * an animation group, store and compute frame information, one lottie animate one AnimationGroup
  * @class
@@ -1503,6 +1626,7 @@ class AnimationGroup extends Eventer {
    * @param {boolean} [options.depthTest=true] enable depth test for 3d layer
    * @param {boolean} [options.maskComp=false] add mask for each comp
    * @param {string} [options.prefix=''] assets url prefix, look like link path
+   * @param {boolean} [options.replaceData=''] assets url prefix, look like link path
    */
   constructor(options) {
     super();
@@ -1733,7 +1857,14 @@ class AnimationGroup extends Eventer {
 
     if (options.keyframes) {
       if (!this._prefix && options.keyframes.prefix) this._prefix = options.keyframes.prefix;
-      this._setupDate(options.keyframes);
+      if (!options.replaceData) {
+        this._setupDate(options.keyframes);
+      } else {
+        this._response = options.keyframes;
+        if (this._replaceData) {
+          this._setupReplaceData();
+        }
+      }
     } else if (options.path) {
       let prefix = '';
       if (options.path.lastIndexOf('\\') !== -1) {
@@ -1745,11 +1876,55 @@ class AnimationGroup extends Eventer {
 
       this.jsonLoader = loadJson(options.path);
       this.jsonLoader.once('success', response => {
-        this._setupDate(response);
+        if (!options.replaceData) {
+          this._setupDate(response);
+        } else {
+          this._response = response;
+          if (this._replaceData) {
+            this._setupReplaceData();
+          }
+        }
       });
       this.jsonLoader.once('error', error => {
         this.emit('error', error);
       });
+    }
+  }
+
+  replaceData(data) {
+    this._replaceData = data;
+    this._setupReplaceData();
+  }
+
+  _setupReplaceData() {
+    if (this._response && this._replaceData) {
+      if (this._response.substituteIds) {
+        const revertSubstituteIds = {};
+        for (const key in this._response.substituteIds) {
+          const value = this._response.substituteIds[key];
+          revertSubstituteIds[value] = key;
+        }
+
+        for (const name in this._replaceData) {
+          const data = this._replaceData[name];
+
+          const layer = getLayerBySubstituteId(this._response, revertSubstituteIds[name]);
+          if (!layer) continue;
+          // 更新图片图层或文本图层的内容
+          const { ty } = layer;
+          if (ty === 2) {
+            const asset = lottieFile.assets.find(item => item.id === layer.refId);
+            if (asset) {
+              asset.p = data;
+            }
+          } else if (ty === 5) {
+            if (layer?.t?.d?.k?.[0]?.s?.t) {
+              layer.t.d.k[0].s.t = data;
+            }
+          }
+        }
+      }
+      this._setupDate(this._response);
     }
   }
 
@@ -1883,9 +2058,20 @@ class AnimationGroup extends Eventer {
         st,
       },
     };
-    session.fontManager.addChars(data.chars);
-    // @TODO
-    // session.fontManager.addFonts(data.fonts, document.body);
+    session.fontManager.addChars(data.chars || []);
+    session.fontManager.addFonts(data.fonts, document.body);
+    if (data.fonts?.list?.length) {
+      const fonts = data.fonts.list
+        .map(item => ({
+          alias: item.fFamily,
+          src: item.fPath,
+          data: { family: item.fFamily },
+        }))
+        .filter(item => item.src);
+      Assets.load(fonts).catch(e => {
+        console.error(e);
+      });
+    }
 
     this._buildElements(session);
 
@@ -2121,7 +2307,10 @@ class AnimationGroup extends Eventer {
       //   texture,
       // });
     } else {
-      lottieLayer.display = new SpriteElement(lottieLayer, { asset, texture });
+      lottieLayer.display = new SpriteElement(lottieLayer, {
+        asset,
+        texture,
+      });
     }
     return lottieLayer;
   }
@@ -2164,7 +2353,13 @@ class AnimationGroup extends Eventer {
   _extraText(layer, session) {
     layer.global = session;
     const lottieLayer = new TextLottieLayer(layer, session);
-    lottieLayer.display = new TextElement(lottieLayer);
+    const usesGlyphs = !!session.fontManager.chars?.length;
+    if (usesGlyphs) {
+      lottieLayer.display = new TextGlyphsElement(lottieLayer);
+    } else {
+      lottieLayer.display = new TextElement(lottieLayer);
+    }
+
     return lottieLayer;
   }
 
@@ -3237,6 +3432,7 @@ export {
   SolidElement,
   SpriteElement,
   TextElement,
+  TextGlyphsElement,
   Tween,
   addHandleToTicker,
   loadAnimation,

@@ -2,6 +2,7 @@ import { Game, GameObject, resource } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 export const name = 'lottie';
 import { Lottie, LottieSystem } from '@eva/plugin-renderer-lottie';
+
 export async function init(canvas) {
   resource.addResource([
     {
@@ -37,6 +38,17 @@ export async function init(canvas) {
         },
       },
     },
+    {
+      name: 'red',
+      //@ts-ignore
+      type: 'LOTTIE',
+      src: {
+        json: {
+          type: 'json',
+          url: 'https://g.alicdn.com/ani-assets/fc7b4547f4fdec3d750a6dd47355f8e9/0.0.1/lottie.json',
+        },
+      },
+    },
   ]);
 
   const game = new Game();
@@ -63,82 +75,55 @@ export async function init(canvas) {
     height: 1624,
   };
 
-  function createHalo() {
-    const halo = new Lottie({ resource: 'test' });
+  async function createHalo() {
+    const halo = new Lottie({
+      resource: 'red',
+      replaceData: true,
+    });
+
+    let anim = 'intro';
+    setTimeout(() => {
+      halo.replaceData({
+        hb1: '¥1888',
+        hb2: '¥188',
+        hb3: '¥564',
+        hb4: '¥27',
+        hb5: '¥19',
+        hb6: '¥3',
+      });
+      halo.play([0, 11], {
+        repeats: 0,
+      });
+
+      // halo.play([11, 99], {
+      //   repeats: 0,
+      //   infinite: true,
+      // });
+      // anim = 'mid';
+    }, 3000);
 
     halo.on('complete', () => {
-      console.log('halo play complete !');
+      if (anim === 'intro') {
+        halo.play([11, 99], {
+          repeats: 0,
+          infinite: true,
+        });
+        anim = 'mid';
+        setTimeout(() => {
+          halo.play([99, 130], {
+            repeats: 0,
+            infinite: false,
+          });
+          anim = 'end';
+        }, 5000);
+      }
     });
-    halo.play([], { repeats: 0 });
 
-    const haloGameObj = new GameObject('test', {
-      anchor: {
-        x: 0,
-        y: 0,
-      },
-    });
+    const haloGameObj = new GameObject('test', {});
     haloGameObj.addComponent(halo);
     game.scene.addChild(haloGameObj);
   }
-  function createRed() {
-    const red = new Lottie({ resource: 'Red' });
 
-    // red.on('complete', () => {
-    //   console.log('Red play complete !');
-    // });
-
-    red.play([], {
-      repeats: 0,
-      slot: [
-        {
-          name: '#number',
-          type: 'TEXT',
-          value: '99',
-          style: {
-            fontSize: 64,
-          },
-        },
-        {
-          name: '#unit',
-          type: 'TEXT',
-          value: '元',
-          style: {
-            fontSize: 22,
-          },
-        },
-        {
-          name: '#title',
-          type: 'TEXT',
-          value: '我是主标题',
-          style: {
-            fontSize: 32,
-          },
-        },
-        {
-          name: '#subtitle',
-          type: 'TEXT',
-          value: '我是副标题',
-          style: {
-            fontSize: 24,
-          },
-        },
-      ],
-    });
-
-    red.onTap('#btn', () => {
-      console.log('btn click !');
-    });
-
-    const redGameObj = new GameObject('Red', {
-      anchor: { x: 0.5, y: 0.3 },
-      size: { width: 660, height: 757 },
-      origin: { x: 0.5, y: 0.5 },
-    });
-
-    redGameObj.addComponent(red);
-    game.scene.addChild(redGameObj);
-  }
-
-  // createHalo();
+  createHalo();
   // createRed();
 }
