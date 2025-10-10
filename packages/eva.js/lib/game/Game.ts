@@ -56,6 +56,10 @@ interface LoadSceneParams {
   };
 }
 
+interface DestroySceneParams {
+  scene: Scene;
+}
+
 const triggerStart = (obj: System | Component) => {
   if (!(obj instanceof System) && !(obj instanceof Component)) return;
   if (obj.started) return;
@@ -392,6 +396,14 @@ class Game extends EventEmitter {
         break;
     }
     this.emit('sceneChanged', { scene, mode, params });
+  }
+
+  destroyScene({ scene }: DestroySceneParams) {
+    const index = this.multiScenes.findIndex(item => item === scene);
+    if (index > -1) {
+      const scene = this.multiScenes.splice(index, 1)[0];
+      this.emit('sceneDestroyed', { scene });
+    }
   }
 }
 

@@ -76,6 +76,15 @@ export default class Renderer extends System<RendererSystemParams> {
         application,
       });
     });
+
+    this.game.on('sceneDestroyed', async ({ scene }) => {
+      const index = this.multiApps.findIndex(app => app.canvas === scene.canvas);
+      if (index > -1) {
+        const app = this.multiApps.splice(index, 1)[0];
+        app.destroy();
+        scene.destroy();
+      }
+    });
   }
 
   registerObserver(observerInfo) {
