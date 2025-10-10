@@ -748,7 +748,6 @@ class TextElement extends Text {
     this._values.fontStyle = documentData.fStyle;
     this._values.lineHeight = documentData.finalLineHeight;
     this._text = documentData.t;
-    this._yOffset = documentData.yOffset;
 
     this.renderText();
   }
@@ -2595,9 +2594,7 @@ class AnimationGroup extends Eventer {
    */
   update(snippetCache, firstFrame = false) {
     if (!this.living || !this.isDisplayLoaded || (this.isPaused && !firstFrame)) return;
-
     const isEnd = this._updateTime(snippetCache);
-
     const correctedFrameNum = this.beginFrame + this.frameNum;
     this.root.updateFrame(correctedFrameNum);
 
@@ -2700,6 +2697,7 @@ class AnimationGroup extends Eventer {
    * @param {boolean} [options.alternate=false] alternate direction every round
    * @param {number} [options.wait=0] need wait how much millisecond to start
    * @param {number} [options.delay=0] need delay how much millisecond to begin, effect every loop round
+   * @param {number} [options.direction=1] need direction
    * @return {this}
    */
   playSegment(name, options = {}) {
@@ -2723,6 +2721,11 @@ class AnimationGroup extends Eventer {
     if (Tools.isBoolean(options.alternate)) this.alternate = options.alternate;
     if (Tools.isNumber(options.wait)) this.wait = options.wait;
     if (Tools.isNumber(options.delay)) this.delay = options.delay;
+    if (Tools.isNumber(options.direction)) {
+      this.direction = options.direction;
+    } else {
+      this.direction = 1;
+    }
 
     this.replay();
     return this;
@@ -2828,9 +2831,15 @@ class AnimationGroup extends Eventer {
     this._repeatsCut = this.repeats;
     this._delayCut = this.delay;
     this.living = true;
-    this.frameNum = 0;
+    // 根据播放方向设置初始帧位置
+    if (this.direction === -1) {
+      // 倒着播放从duration开始
+      this.frameNum = this.duration;
+    } else {
+      // 正常播放从0开始
+      this.frameNum = 0;
+    }
     this.duration = Math.floor(this.endFrame - this.beginFrame);
-    this.direction = 1;
     return this;
   }
 

@@ -9,6 +9,7 @@ export interface IExpandOpts {
       [key: string]: any;
     };
   }>;
+  direction?: 1 | -1;
 }
 
 export interface IOptions {

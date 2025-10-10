@@ -113,9 +113,23 @@ export async function init(canvas) {
           halo.play([99, 130], {
             repeats: 0,
             infinite: false,
+            direction: 1,
           });
           anim = 'end';
         }, 5000);
+      } else if (anim === 'end') {
+        halo.play([99, 130], {
+          repeats: 0,
+          infinite: false,
+          direction: -1,
+        });
+        anim = 'reEnd';
+      } else if (anim === 'reEnd') {
+        halo.play([99, 130], {
+          repeats: 0,
+          infinite: false,
+        });
+        anim = 'end';
       }
     });
 
