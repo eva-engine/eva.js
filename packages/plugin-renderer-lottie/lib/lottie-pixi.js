@@ -416,8 +416,8 @@ const updateTransformByHierarchy = (container, transform, parent) => {
   //   container.setFromMatrix(localMatrixA);
   // }
 
-  // const parentAlpha = parent ? parent.alpha : 1;
-  // container.alpha = parentAlpha * transform.o.v;
+  const parentAlpha = parent ? parent.alpha : 1;
+  container.alpha = parentAlpha * transform.o.v;
 };
 
 /**
