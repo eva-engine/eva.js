@@ -416,8 +416,8 @@ const updateTransformByHierarchy = (container, transform, parent) => {
   //   container.setFromMatrix(localMatrixA);
   // }
 
-  const parentAlpha = parent ? parent.alpha : 1;
-  container.alpha = parentAlpha * transform.o.v;
+  // const parentAlpha = parent ? parent.alpha : 1;
+  // container.alpha = parentAlpha * transform.o.v;
 };
 
 /**
@@ -748,6 +748,7 @@ class TextElement extends Text {
     this._values.fontStyle = documentData.fStyle;
     this._values.lineHeight = documentData.finalLineHeight;
     this._text = documentData.t;
+    this._yOffset = documentData.yOffset;
 
     this.renderText();
   }
@@ -765,7 +766,7 @@ class TextElement extends Text {
     this.style.lineHeight = this._values.lineHeight;
 
     this.anchor.x = 0.5;
-    this.anchor.y = 1;
+    this.anchor.y = 0.8;
   }
 
   /**
