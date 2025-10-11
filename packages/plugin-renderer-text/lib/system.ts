@@ -25,8 +25,6 @@ export default class Text extends Renderer {
     if (changed.componentName !== 'Text') return;
     if (changed.type === OBSERVER_TYPE.ADD) {
       const component = changed.component as TextComponent;
-      const fontFamily = component.style.fontFamily;
-      component.style.fontFamily = '';
       const text = new TextEngine(component.text, component.style);
       this.containerManager.getContainer(changed.gameObject.id).addChildAt(text, 0);
       this.texts[changed.gameObject.id] = {
@@ -34,7 +32,6 @@ export default class Text extends Renderer {
         component: changed.component as TextComponent,
       };
       this.setSize(changed);
-      this.asyncUpdateFontFamily(text, fontFamily);
     } else if (changed.type === OBSERVER_TYPE.REMOVE) {
       this.containerManager.getContainer(changed.gameObject.id).removeChild(this.texts[changed.gameObject.id].text);
       this.texts[changed.gameObject.id].text.destroy({ children: true });
@@ -49,7 +46,7 @@ export default class Text extends Renderer {
     if (changed.prop.prop[0] === 'text') {
       text.text = component.text;
     } else if (changed.prop.prop[0] === 'style') {
-      this.asyncChangeTextStyle(text, (changed.component as TextComponent).style);
+      Object.assign(text.style, (changed.component as TextComponent).style);
     }
   }
 
