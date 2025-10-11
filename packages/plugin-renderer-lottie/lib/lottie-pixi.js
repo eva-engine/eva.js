@@ -2839,7 +2839,6 @@ class AnimationGroup extends Eventer {
       // 正常播放从0开始
       this.frameNum = 0;
     }
-    console.log('>>>frameNum', this.direction, this.frameNum);
     this.duration = Math.floor(this.endFrame - this.beginFrame);
     return this;
   }
