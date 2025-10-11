@@ -75,7 +75,7 @@ export async function init(canvas) {
     height: 1624,
   };
 
-  async function createHalo() {
+  async function createHalo(direction: number) {
     const halo = new Lottie({
       resource: 'red',
       replaceData: true,
@@ -88,56 +88,19 @@ export async function init(canvas) {
       hb5: '¥19',
       hb6: '¥3',
     });
-
-    let anim = 'intro';
-    setTimeout(() => {
-      halo.play([0, 11], {
-        repeats: 0,
-      });
-
-      // halo.play([11, 99], {
-      //   repeats: 0,
-      //   infinite: true,
-      // });
-      // anim = 'mid';
-    }, 3000);
-
-    halo.on('complete', () => {
-      if (anim === 'intro') {
-        halo.play([11, 99], {
-          repeats: 0,
-          infinite: true,
-        });
-        anim = 'mid';
-        setTimeout(() => {
-          halo.play([99, 130], {
-            repeats: 0,
-            infinite: false,
-            direction: 1,
-          });
-          anim = 'end';
-        }, 5000);
-      } else if (anim === 'end') {
-        halo.play([99, 130], {
-          repeats: 0,
-          infinite: false,
-          direction: -1,
-        });
-        anim = 'reEnd';
-      } else if (anim === 'reEnd') {
-        halo.play([99, 130], {
-          repeats: 0,
-          infinite: false,
-        });
-        anim = 'end';
-      }
+    halo.play([99, 130], {
+      repeats: 0,
+      infinite: false,
+      direction: direction as any,
     });
 
     const haloGameObj = new GameObject('test', {});
     haloGameObj.addComponent(halo);
     game.scene.addChild(haloGameObj);
+    haloGameObj.transform.position.x = 100 * direction;
   }
 
-  createHalo();
+  createHalo(1);
+  createHalo(-1);
   // createRed();
 }

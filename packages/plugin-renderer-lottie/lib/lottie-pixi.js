@@ -2595,7 +2595,7 @@ class AnimationGroup extends Eventer {
   update(snippetCache, firstFrame = false) {
     if (!this.living || !this.isDisplayLoaded || (this.isPaused && !firstFrame)) return;
     const isEnd = this._updateTime(snippetCache);
-    const correctedFrameNum = this.beginFrame + this.frameNum;
+    const correctedFrameNum = this.direction === 1 ? this.beginFrame + this.frameNum : this.frameNum;
     this.root.updateFrame(correctedFrameNum);
 
     const np = correctedFrameNum >> 0;
@@ -2839,6 +2839,7 @@ class AnimationGroup extends Eventer {
       // 正常播放从0开始
       this.frameNum = 0;
     }
+    console.log('>>>frameNum', this.direction, this.frameNum);
     this.duration = Math.floor(this.endFrame - this.beginFrame);
     return this;
   }
