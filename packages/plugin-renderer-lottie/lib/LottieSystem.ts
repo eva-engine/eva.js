@@ -56,7 +56,7 @@ export default class LottieSystem extends Renderer {
     const { resource: rn, ...otherOpts } = component.options;
     const res = await resource.getResource(rn);
     const data = res.data;
-    const url = res.src.json.url;
+    const url = res.src?.json?.url || '';
     const json = { ...(data.json || {}) };
     const assets = json.assets || [];
     assets.forEach(item => {
@@ -79,6 +79,7 @@ export default class LottieSystem extends Renderer {
   }
 
   getDir(url: string) {
+    if (!url) return url;
     return new URL('./', url).href;
   }
 

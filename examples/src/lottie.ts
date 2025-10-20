@@ -94,13 +94,21 @@ export async function init(canvas) {
       direction: direction as any,
     });
 
+    halo.on('complete', () => {
+      console.log('>>>complete');
+      halo.play([39, 95], {
+        repeats: 0,
+        infinite: true,
+      });
+    });
+
     const haloGameObj = new GameObject('test', {});
     haloGameObj.addComponent(halo);
     game.scene.addChild(haloGameObj);
     haloGameObj.transform.position.x = 100 * direction;
   }
 
-  createHalo(1);
+  // createHalo(1);
   createHalo(-1);
   // createRed();
 }

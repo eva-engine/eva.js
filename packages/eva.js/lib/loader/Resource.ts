@@ -132,8 +132,10 @@ class Resource extends EE {
         continue;
       }
 
-      this.resourcesMap[res.name] = res;
-      this.resourcesMap[res.name].data = {};
+      if (res) {
+        this.resourcesMap[res.name] = res;
+        this.resourcesMap[res.name].data = {};
+      }
     }
   }
 
@@ -389,6 +391,10 @@ class Resource extends EE {
       data,
     } = resource;
     const res = this.resourcesMap[name];
+    if (!res) {
+      console.warn('no resource data found');
+      return;
+    }
     res.data[key] = data;
     this.doComplete(name, resolves[name], preload);
   }

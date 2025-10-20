@@ -2594,8 +2594,11 @@ class AnimationGroup extends Eventer {
    */
   update(snippetCache, firstFrame = false) {
     if (!this.living || !this.isDisplayLoaded || (this.isPaused && !firstFrame)) return;
-    const isEnd = this._updateTime(snippetCache);
+    let isEnd = this._updateTime(snippetCache);
     const correctedFrameNum = this.direction === 1 ? this.beginFrame + this.frameNum : this.frameNum;
+    if (this.direction === -1 && correctedFrameNum <= this.beginFrame) {
+      isEnd = true;
+    }
     this.root.updateFrame(correctedFrameNum);
 
     const np = correctedFrameNum >> 0;
