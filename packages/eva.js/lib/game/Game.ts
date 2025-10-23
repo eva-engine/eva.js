@@ -398,6 +398,14 @@ class Game extends EventEmitter {
     this.emit('sceneChanged', { scene, mode, params });
   }
 
+  pauseScene({ scene }) {
+    this.emit('pauseScene', { scene });
+  }
+
+  startScene({ scene }) {
+    this.emit('startScene', { scene });
+  }
+
   destroyScene({ scene }: DestroySceneParams) {
     const index = this.multiScenes.findIndex(item => item === scene);
     if (index > -1) {

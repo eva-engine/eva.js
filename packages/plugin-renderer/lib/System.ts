@@ -77,6 +77,14 @@ export default class Renderer extends System<RendererSystemParams> {
       });
     });
 
+    this.game.on('pauseScene', ({ scene }) => {
+      this.onPauseScene(scene);
+    });
+
+    this.game.on('startScene', ({ scene }) => {
+      this.onStartScene(scene);
+    });
+
     this.game.on('sceneDestroyed', async ({ scene }) => {
       const index = this.multiApps.findIndex(app => app.canvas === scene.canvas);
       if (index > -1) {
@@ -166,14 +174,35 @@ export default class Renderer extends System<RendererSystemParams> {
     this.application.renderer.resize(width, height);
   }
 
-  resizeByScene(scene, width: number, height: number) {
+  private getApplicationByScene(scene) {
     const index = this.multiApps.findIndex(app => app.canvas === scene.canvas);
     if (index > -1) {
       const application = this.multiApps[index];
-      // @ts-ignore
-      application.renderer.resize(width, height);
+      return application;
     } else {
       console.warn('application not found');
+    }
+  }
+
+  private onPauseScene(scene) {
+    const app = this.getApplicationByScene(scene);
+    if (app) {
+      app.stop();
+    }
+  }
+
+  private onStartScene(scene) {
+    const app = this.getApplicationByScene(scene);
+    if (app) {
+      app.start();
+    }
+  }
+
+  resizeByScene(scene, width: number, height: number) {
+    const app = this.getApplicationByScene(scene);
+    if (app) {
+      // @ts-ignore
+      app.renderer.resize(width, height);
     }
   }
 }
