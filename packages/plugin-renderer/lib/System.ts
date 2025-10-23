@@ -162,6 +162,7 @@ export default class Renderer extends System<RendererSystemParams> {
   resize(width, height) {
     this.params.width = width;
     this.params.height = height;
+    // @ts-ignore
     this.application.renderer.resize(width, height);
   }
 
