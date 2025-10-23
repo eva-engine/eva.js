@@ -170,6 +170,7 @@ export default class Renderer extends System<RendererSystemParams> {
     const index = this.multiApps.findIndex(app => app.canvas === scene.canvas);
     if (index > -1) {
       const application = this.multiApps[index];
+      // @ts-ignore
       application.renderer.resize(width, height);
     } else {
       console.warn('application not found');
