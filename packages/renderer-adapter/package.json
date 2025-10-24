@@ -1,6 +1,6 @@
 {
   "name": "@eva/renderer-adapter",
-  "version": "2.0.1-beta.10",
+  "version": "2.0.1-beta.11",
   "description": "@eva/renderer-adapter",
   "main": "index.js",
   "module": "dist/renderer-adapter.esm.js",
