@@ -87,7 +87,8 @@ export class EventSystem implements System<EventSystemOptions> {
     priority: -1,
   };
 
-  public static eventsHandler = {};
+  public static canvasMap: Record<string, OffscreenCanvas> = {};
+  public static eventsHandler: Record<string, any> = {};
 
   /**
    * The event features that are enabled by the EventSystem
@@ -463,12 +464,19 @@ export class EventSystem implements System<EventSystemOptions> {
       }
     }
 
+    let id = '0';
+    for (const key in EventSystem.canvasMap) {
+      const domElement: any = EventSystem.canvasMap[key];
+      if (domElement === this.domElement) {
+        id = key;
+      }
+    }
     /*
      * These events are added first, so that if pointer events are normalized, they are fired
      * in the same order as non-normalized events. ie. pointer event 1st, mouse / touch 2nd
      */
 
-    EventSystem.eventsHandler = {
+    EventSystem.eventsHandler[id] = {
       pointermove: this._onPointerMove.bind(this),
       pointerdown: this._onPointerDown.bind(this),
       pointerleave: this._onPointerOverOut.bind(this),
@@ -484,7 +492,7 @@ export class EventSystem implements System<EventSystemOptions> {
       touchmove: this._onPointerMove.bind(this),
     };
 
-    EventSystem.eventsHandler['wheel'] = this.onWheel.bind(this);
+    EventSystem.eventsHandler[id]['wheel'] = this.onWheel.bind(this);
 
     this._eventsAdded = true;
   }
@@ -508,7 +516,6 @@ export class EventSystem implements System<EventSystemOptions> {
         style.touchAction = '';
       }
     }
-    EventSystem.eventsHandler = [];
 
     this.domElement = null;
     this._eventsAdded = false;

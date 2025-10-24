@@ -17,7 +17,9 @@ export function init(canvas) {
   worker.postMessage(
     {
       type: 'eva-init',
-      canvas: offscreenCanvas,
+      canvasMap: {
+        [canvas.id]: offscreenCanvas,
+      },
       width: 750,
       height: (window.innerHeight / window.innerWidth) * 750,
       resolution: 1,
@@ -35,6 +37,7 @@ export function init(canvas) {
           type: 'eva-events',
           events: [...events],
           canvasRect: canvas.getBoundingClientRect(),
+          id: canvas.id,
           domElement: {
             width: canvas.width,
             height: canvas.height,

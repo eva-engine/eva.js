@@ -1,5 +1,6 @@
 import { Game, GameObject, resource, RESOURCE_TYPE, Scene, LOAD_SCENE_MODE } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
+import { EventSystem, Event } from '@eva/plugin-renderer-event';
 import { Img, ImgSystem } from '@eva/plugin-renderer-img';
 
 export const name = 'multi-canavs';
@@ -27,6 +28,7 @@ export async function init(canvas) {
         height: 500,
       }),
       new ImgSystem(),
+      new EventSystem(),
     ],
   });
 
@@ -48,6 +50,11 @@ export async function init(canvas) {
       resource: 'imageName',
     }),
   );
+
+  const evts = image.addComponent(new Event());
+  evts.on('tap', () => {
+    console.log('>>>TAP');
+  });
 
   game.scene.addChild(image);
 
@@ -76,6 +83,11 @@ export async function init(canvas) {
       x: 0,
       y: 0,
     },
+  });
+
+  const evts2 = image2.addComponent(new Event());
+  evts2.on('tap', () => {
+    console.log('>>>TAP2');
   });
 
   image2.addComponent(

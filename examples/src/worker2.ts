@@ -132,7 +132,7 @@ function events(game) {
   e.on('tap', e => {
     console.log(`LocalPosition: [x: ${e.data.localPosition.x}, y: ${e.data.localPosition.y}]`);
   });
-  // game.scene.addChild(localPosEventGameObject);
+  game.scene.addChild(localPosEventGameObject);
 }
 
 resource.addResource([
@@ -199,7 +199,9 @@ function createGb(game, x, y) {
 }
 
 const initEva = async data => {
-  const { type, width, height, resolution, canvas } = data;
+  const { type, width, height, resolution, canvasMap } = data;
+  console.log('>>>canvasMap', canvasMap);
+  const canvas = canvasMap['canvas'];
   // resource.addResource([
   //   {
   //     name: 'imageName',
@@ -264,7 +266,7 @@ const initEva = async data => {
     }),
   );
 
-  game.scene.addChild(tilingSprite);
+  // game.scene.addChild(tilingSprite);
 
   const text = new GameObject('text', {
     position: {
@@ -451,8 +453,8 @@ const initEva = async data => {
     console.log('frameChange');
   });
 
-  // game.scene.addChild(cut);
-  // createGb(game, 200, 200);
+  game.scene.addChild(cut);
+  createGb(game, 200, 200);
 
   events(game);
 
@@ -543,7 +545,6 @@ onmessage = async ({ data }) => {
   const { type } = data;
   if (type === 'eva-init') {
     initEva(data);
-    globalThis.$canvasRect = data.canvasRect;
   }
 
   eventHandler(data);
