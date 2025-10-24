@@ -5,7 +5,7 @@ export const name = 'worker';
 export function init(canvas) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  console.log(window.innerWidth,window.innerHeight)
+  console.log(window.innerWidth, window.innerHeight);
 
   // Create an OffscreenCanvas from the canvas
   const offscreenCanvas = canvas.transferControlToOffscreen();
@@ -19,8 +19,7 @@ export function init(canvas) {
       type: 'eva-init',
       canvas: offscreenCanvas,
       width: 750,
-      height: window.innerHeight/ window.innerWidth * 750,
-      canvasRect: canvas.getBoundingClientRect(),
+      height: (window.innerHeight / window.innerWidth) * 750,
       resolution: 1,
     },
     [offscreenCanvas],
@@ -35,6 +34,11 @@ export function init(canvas) {
         worker.postMessage({
           type: 'eva-events',
           events: [...events],
+          canvasRect: canvas.getBoundingClientRect(),
+          domElement: {
+            width: canvas.width,
+            height: canvas.height,
+          },
         });
         events = [];
       }

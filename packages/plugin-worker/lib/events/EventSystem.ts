@@ -346,9 +346,10 @@ export class EventSystem implements System<EventSystemOptions> {
       }
     }
 
+    const nEvent = nativeEvent;
     for (let i = 0, j = events.length; i < j; i++) {
       const nativeEvent = events[i];
-      const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent);
+      const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent, nEvent);
 
       this.rootBoundary.mapEvent(federatedEvent);
     }
@@ -369,7 +370,7 @@ export class EventSystem implements System<EventSystemOptions> {
     const normalizedEvents = this._normalizeToPointerData(nativeEvent);
 
     for (let i = 0, j = normalizedEvents.length; i < j; i++) {
-      const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+      const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i], nativeEvent);
 
       this.rootBoundary.mapEvent(event);
     }
@@ -389,7 +390,7 @@ export class EventSystem implements System<EventSystemOptions> {
     const normalizedEvents = this._normalizeToPointerData(nativeEvent);
 
     for (let i = 0, j = normalizedEvents.length; i < j; i++) {
-      const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+      const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i], nativeEvent);
 
       event.type += outside;
 
@@ -410,7 +411,7 @@ export class EventSystem implements System<EventSystemOptions> {
     const normalizedEvents = this._normalizeToPointerData(nativeEvent);
 
     for (let i = 0, j = normalizedEvents.length; i < j; i++) {
-      const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+      const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i], nativeEvent);
 
       this.rootBoundary.mapEvent(event);
     }
@@ -521,24 +522,20 @@ export class EventSystem implements System<EventSystemOptions> {
    * @param  {number} x - the x coord of the position to map
    * @param  {number} y - the y coord of the position to map
    */
-  public mapPositionToPoint(point: PointData, x: number, y: number): void {
-    const rect = globalThis.$canvasRect
-      ? globalThis.$canvasRect
-      : this.domElement.isConnected
-      ? this.domElement.getBoundingClientRect()
-      : {
-          x: 0,
-          y: 0,
-          width: (this.domElement as any).width,
-          height: (this.domElement as any).height,
-          left: 0,
-          top: 0,
-        };
-
+  public mapPositionToPoint(point: PointData, x: number, y: number, e: any): void {
     const resolutionMultiplier = 1.0 / this.resolution;
+    const rect = e.canvasRect || {
+      x: 0,
+      y: 0,
+      width: (this.domElement as any).width,
+      height: (this.domElement as any).height,
+      left: 0,
+      top: 0,
+    };
+    const domElement = e.domElement || this.domElement;
 
-    point.x = (x - rect.left) * ((this.domElement as any).width / rect.width) * resolutionMultiplier;
-    point.y = (y - rect.top) * ((this.domElement as any).height / rect.height) * resolutionMultiplier;
+    point.x = (x - rect.left) * (domElement.width / rect.width) * resolutionMultiplier;
+    point.y = (y - rect.top) * (domElement.height / rect.height) * resolutionMultiplier;
   }
 
   /**
@@ -577,7 +574,7 @@ export class EventSystem implements System<EventSystemOptions> {
     event.deltaZ = nativeEvent.deltaZ;
     event.deltaMode = nativeEvent.deltaMode;
 
-    this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
+    this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY, nativeEvent);
     event.global.copyFrom(event.screen);
     event.offset.copyFrom(event.screen);
 
@@ -592,7 +589,7 @@ export class EventSystem implements System<EventSystemOptions> {
    * @param event
    * @param nativeEvent
    */
-  private _bootstrapEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent): FederatedPointerEvent {
+  private _bootstrapEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent, nEvent): FederatedPointerEvent {
     event.originalEvent = null;
     event.nativeEvent = nativeEvent;
 
@@ -608,7 +605,7 @@ export class EventSystem implements System<EventSystemOptions> {
     event.twist = nativeEvent.twist;
     this._transferMouseData(event, nativeEvent);
 
-    this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
+    this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY, nEvent);
     event.global.copyFrom(event.screen); // global = screen for top-level
     event.offset.copyFrom(event.screen); // EventBoundary recalculates using its rootTarget
 
