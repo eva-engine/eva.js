@@ -23,6 +23,9 @@ export default class Spine extends Component<SpineParams> {
   @type('boolean')
   autoPlay: boolean = true;
 
+  @type('boolean')
+  keepResource: boolean = false;
+
   private _armature: any;
 
   private waitExecuteInfos: { playType: boolean; track?: number; name?: string; loop?: boolean }[] = [];

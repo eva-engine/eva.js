@@ -121,6 +121,7 @@ export default class SpineSystem extends Renderer {
       skeletonData: spineData,
       autoUpdate: false,
     });
+
     this.armatures[changed.gameObject.id] = armature;
     if (changed.gameObject && changed.gameObject.transform) {
       const tran = changed.gameObject.transform;
@@ -178,9 +179,11 @@ export default class SpineSystem extends Renderer {
 
     if (component.armature) {
       component.armature.destroy({ children: true });
-      const res = await resource.getResource(component.lastResource);
-      const imageSrc = res.data?.image?.src || (res.data?.image as any)?.label;
-      releaseSpineData(res, imageSrc);
+      if (!component.keepResource) {
+        const res = await resource.getResource(component.lastResource);
+        const imageSrc = res.data?.image?.src || (res.data?.image as any)?.label;
+        releaseSpineData(res, imageSrc);
+      }
     }
 
     component.armature = null;
