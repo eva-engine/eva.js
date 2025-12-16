@@ -238,7 +238,6 @@ class GameObject {
   /** Destory this gameObject */
   destroy() {
     if (!this.transform) {
-      console.error('Cannot destroy gameObject that have already been destroyed.');
       return;
     }
     Array.from(this.transform.children).forEach(({ gameObject }) => {
