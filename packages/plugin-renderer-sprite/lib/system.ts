@@ -13,6 +13,7 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
     const texture = data.image instanceof Texture ? data.image : Texture.from(data.image);
     const frames = textureObj.frames || {};
     const animations = textureObj.animations || {};
+    const newAnimations = {};
     const newFrames = {};
     for (const key in frames) {
       const newKey = name + resourceKeySplit + key;
@@ -26,10 +27,9 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
           spriteList.push(newSpriteName);
         }
       }
-      animations[key] = spriteList;
+      newAnimations[key] = spriteList;
     }
-    textureObj.frames = newFrames;
-    const spriteSheet = new Spritesheet(texture, textureObj);
+    const spriteSheet = new Spritesheet(texture, { ...textureObj, frames: newFrames, animations: newAnimations });
     spriteSheet.parse().then(() => {
       r(spriteSheet.textures);
     });
