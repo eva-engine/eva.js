@@ -62,6 +62,15 @@ class GameObject {
   }
 
   /**
+   * Get children gameObjects
+   * @returns children gameObjects
+   * @readonly
+   */
+  get children(): GameObject[] {
+    return this.transform.children.map(child => child.gameObject);
+  }
+
+  /**
    * Get the name of this gameObject
    * @readonly
    */
