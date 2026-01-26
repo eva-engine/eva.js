@@ -94,6 +94,7 @@ export default class Transition extends Component<TransitionParams> {
   newAnimation(name) {
     const animation = new Animation(this.group[name], this.tweenGroup);
     animation.on('finish', () => this.emit('finish', name));
+    animation.on('update', value => this.emit('update', { name, value }));
     this.animations[name] = animation;
   }
 }

@@ -135,5 +135,9 @@ export async function init(canvas) {
     }
   });
 
+  animation.on('update', value => {
+    console.log('update', value);
+  });
+
   game.scene.addChild(image);
 }

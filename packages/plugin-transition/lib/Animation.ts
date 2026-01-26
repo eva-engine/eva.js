@@ -45,10 +45,10 @@ export default class Animation {
     this.callbacks.get(eventName).push(callback);
   }
 
-  emit(eventName) {
+  emit(eventName, ...args) {
     const callbacks = this.callbacks.get(eventName);
     if (!callbacks || !callbacks.length) return;
-    callbacks.forEach(fn => fn());
+    callbacks.forEach(fn => fn(...args));
   }
 
   checkFinish() {
@@ -104,6 +104,7 @@ export default class Animation {
               name: timeline.name,
               value: props.value,
             });
+            this.emit('update', props.value);
           });
 
         if (j === 0) {
