@@ -7,7 +7,7 @@ resource.addResource([
   {
     type: RESOURCE_TYPE.FONT,
     name: 'test',
-    src: { font: { type: 'font', url: 'https://hudong.tbcdn.cn/u/tbcoinjump/1iFTgM2SDGhP.woff' } },
+    src: { font: { type: 'font', url: 'https://g.alicdn.com/eva-assets/06b942920d2f310cffb0f22cc6d123ef/0.0.1/tmp/b52fe6c/1dccb0d7-0aae-4811-b763-88bee5675f65.otf?t=' + Date.now() } },
     preload: true,
   },
 ]);
@@ -50,7 +50,7 @@ export async function init(canvas) {
 
   const txt = text.addComponent(
     new Text({
-      text: '升级了',
+      text: '¥0.02',
       style: {
         fontFamily: 'test',
         fontSize: 108,
@@ -62,8 +62,8 @@ export async function init(canvas) {
   );
 
   setTimeout(() => {
-    txt.style.fontFamily = 'Arial';
-  }, 3000);
+    txt.text = '¥0.03';
+  }, 2000);
 
   game.scene.addChild(text);
 }

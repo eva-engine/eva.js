@@ -17,6 +17,7 @@ export default class Text extends Renderer {
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
+  _lastFontFamily: string | string[] | undefined = undefined;
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
@@ -47,6 +48,10 @@ export default class Text extends Renderer {
       text.text = component.text;
     } else if (changed.prop.prop[0] === 'style') {
       Object.assign(text.style, (changed.component as TextComponent).style);
+    }
+    if(text.style.fontFamily && text.style.fontFamily !== this._lastFontFamily) {
+      this._lastFontFamily = text.style.fontFamily;
+      this.asyncChangeTextStyle(text, text.style as any)
     }
   }
 

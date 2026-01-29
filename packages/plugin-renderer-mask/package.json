@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-mask",
-  "version": "2.0.1-beta.17",
+  "version": "2.0.1-beta.18",
   "description": "@eva/plugin-renderer-mask",
   "main": "index.js",
   "module": "dist/plugin-renderer-mask.esm.js",
@@ -19,9 +19,9 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "2.0.1-beta.17",
-    "@eva/renderer-adapter": "2.0.1-beta.17",
-    "@eva/eva.js": "2.0.1-beta.17",
+    "@eva/plugin-renderer": "2.0.1-beta.18",
+    "@eva/renderer-adapter": "2.0.1-beta.18",
+    "@eva/eva.js": "2.0.1-beta.18",
     "pixi.js": "^8.8.1"
   }
 }
