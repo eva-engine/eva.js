@@ -3150,54 +3150,6 @@ class AnimationManager extends Eventer {
 }
 
 /**
- * `lottie-pixi` 中使用 `lottie动画` 功能有两种方式:
- * - 你可以通过 `loadAnimation` 一键创建渲染引擎、动画管理器、lottie动画实例。
- * - 你也可以在你想要的时机单独创建它们。
- *
- * 一键创建
- * ```javascript
- * import { loadAnimation } from '@ali/lottie-pixi';
- *
- * const animation = loadAnimation({
- *   view: '#load-animation',
- *   path: 'http://image.uc.cn/s/uae/g/01/lottieperformance/webglcanvas/game-preview/data.json',
- * });
- * ```
- *
- * 自由创建
- * ```javascript
- * import { Application } from '@pixi/app'; // pixi v5 import
- * // import { Application } from 'pixi.js'; // pixi v4 import
- * import { AnimationManager } from '@ali/lottie-pixi';
- * import data from './animations/data.js';
- *
- * // create pixi Application in some where
- * const app = new Application({
- *   view: document.getElementById('demo-canvas'), // canvas dom
- *   width: window.innerWidth,
- *   height: window.innerHeight,
- *   transparent: true,
- *   antialias: true,
- * });
- *
- * // just need single instance, one app one animationManager.
- * const animationManager = new AnimationManager(app);
- *
- * // parse one or more anims
- * const anim = animationManager.parseAnimation({
- *   keyframes: data,
- *   // infinite: true,
- *   // ...
- * });
- *
- * // addChild anim.group
- * app.stage.addChild(anim.group);
- * ```
- * 如果你的项目本身已经有 `PIXI` 的内容，自由创建的方式会更适合你。
- * @namespace LottieAnimation
- */
-
-/**
  * animate application
  * @alias AnimateApplication
  * @memberof LottieAnimation
