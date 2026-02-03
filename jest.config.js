@@ -32,7 +32,10 @@ module.exports = {
     'packages/plugin-alive',
   ],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  testMatch: ['<rootDir>/packages/**/__tests__/**/*.spec.ts'],
+  testMatch: [
+    '<rootDir>/packages/**/__tests__/**/*.spec.ts',
+    '<rootDir>/packages/**/__tests__/**/*.test.ts',
+  ],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/resource-loader/',

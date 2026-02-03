@@ -192,6 +192,31 @@ class Resource extends EE {
         console.warn(`destroy resource ${resource.name} error with '${e.message}'`);
       }
     }
+
+    // Unload assets using PixiJS Assets API
+    if (resource.src) {
+      const urlsToUnload: string[] = [];
+      for (const key in resource.src) {
+        let url = resource.src[key]?.url;
+        if (url) {
+          // Normalize URL (same logic as in loadResource)
+          if (typeof url === 'string' && url.startsWith('//')) {
+            url = `https:${url}`;
+          }
+          urlsToUnload.push(url);
+        }
+      }
+
+      // Unload all URLs associated with this resource
+      if (urlsToUnload.length > 0) {
+        try {
+          await Assets.unload(urlsToUnload);
+        } catch (e) {
+          console.warn(`Failed to unload assets for ${name}: ${e.message}`);
+        }
+      }
+    }
+
     delete this.promiseMap[name];
     resource.data = {};
     resource.complete = false;

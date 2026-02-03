@@ -197,20 +197,30 @@ describe('resource management', () => {
     expect(resourceDestroyCallback).not.toHaveBeenCalled();
   });
 
-  it('regist destroy callback which throw an error', async () => {
-    res.addResource([imageRes]);
+  it('regist destroy callback which throw an error', done => {
     res.registerDestroy(RESOURCE_TYPE.IMAGE, () => {
       throw new Error('destroy error');
     });
-    await res.destroy(imageRes.name);
-    expect(`destroy resource ${imageRes.name} error with 'destroy error'`).toHaveBeenWarned();
+    res.addResource([imageRes]);
+    res.on(LOAD_EVENT.COMPLETE, async () => {
+      await res.destroy(imageRes.name);
+      expect(`destroy resource ${imageRes.name} error with 'destroy error'`).toHaveBeenWarned();
+      expect('PixiJS Warning:').toHaveBeenWarned();
+      done();
+    });
+    res.preload();
   });
 
-  it('destroy resource by resource name', async () => {
+  it('destroy resource by resource name', done => {
     const imageResourceCallback = jest.fn();
     res.registerDestroy(RESOURCE_TYPE.IMAGE, imageResourceCallback);
     res.addResource([imageRes]);
-    await res.destroy(imageRes.name);
-    expect(imageResourceCallback).toBeCalled();
+    res.on(LOAD_EVENT.COMPLETE, async () => {
+      await res.destroy(imageRes.name);
+      expect(imageResourceCallback).toBeCalled();
+      expect('PixiJS Warning:').toHaveBeenWarned();
+      done();
+    });
+    res.preload();
   });
 });

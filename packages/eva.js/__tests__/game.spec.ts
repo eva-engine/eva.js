@@ -38,16 +38,18 @@ describe('Game', () => {
     mockTickerBindEvent.mockClear();
   });
 
-  it('make game with default props', () => {
+  it('make game with default props', async () => {
     const game = new Game();
+    await game.init();
     expect(game.scene).toBeInstanceOf(Scene);
     expect(MockTicker).toHaveBeenCalledTimes(1);
     expect(mockTickerAdd).toHaveBeenCalledTimes(1);
     expect(mockTickerStart).toHaveBeenCalledTimes(1);
   });
 
-  it('make game with custom props', () => {
-    const game = new Game({
+  it('make game with custom props', async () => {
+    const game = new Game();
+    await game.init({
       systems: [new TestSystem(), new Test2System()],
       needScene: false,
       autoStart: false,
@@ -57,143 +59,159 @@ describe('Game', () => {
     expect(mockTickerAdd).toHaveBeenCalledTimes(1);
   });
 
-  it('add system instance', () => {
+  it('add system instance', async () => {
     const game = new Game();
+    await game.init();
     const system1 = new TestSystem();
     const system2 = new Test2System();
-    game.addSystem(system1);
-    game.addSystem(system2);
+    await game.addSystem(system1);
+    await game.addSystem(system2);
     expect(game.systems).toContain(system1);
     expect(game.systems).toContain(system2);
     expect(game.systems.length).toBe(2);
   });
 
-  it('add system constructor', () => {
+  it('add system constructor', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
-    game.addSystem(Test2System);
+    await game.init();
+    await game.addSystem(TestSystem);
+    await game.addSystem(Test2System);
     expect(game.systems.length).toBe(2);
     expect(game.systems[0]).toBeInstanceOf(TestSystem);
     expect(game.systems[1]).toBeInstanceOf(Test2System);
   });
 
-  it('add system twice', () => {
+  it('add system twice', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
-    game.addSystem(TestSystem);
+    await game.init();
+    await game.addSystem(TestSystem);
+    await game.addSystem(TestSystem);
     expect(`${TestSystem.systemName} System has been added`).toHaveBeenWarned();
   });
 
-  it('add any other things', () => {
+  it('add any other things', async () => {
     const system: any = null;
     const game = new Game();
-    game.addSystem(system);
+    await game.init();
+    await game.addSystem(system);
     expect('can only add System').toHaveBeenWarned();
   });
-  it('remove system successfully by systemName', () => {
+  it('remove system successfully by systemName', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
+    await game.init();
+    await game.addSystem(TestSystem);
     expect(game.systems.length).toBe(1);
     game.removeSystem(TestSystem.systemName);
     expect(game.systems.length).toBe(0);
-    game.addSystem(Test2System);
+    await game.addSystem(Test2System);
     expect(game.systems.length).toBe(1);
     game.removeSystem(Test2System.systemName);
     expect(game.systems.length).toBe(0);
   });
 
-  it('remove system successfully by constructor', () => {
+  it('remove system successfully by constructor', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
+    await game.init();
+    await game.addSystem(TestSystem);
     expect(game.systems.length).toBe(1);
     game.removeSystem(TestSystem);
     expect(game.systems.length).toBe(0);
-    game.addSystem(Test2System);
+    await game.addSystem(Test2System);
     expect(game.systems.length).toBe(1);
     game.removeSystem(Test2System);
     expect(game.systems.length).toBe(0);
   });
 
-  it('remove system successfully by system instance', () => {
+  it('remove system successfully by system instance', async () => {
     const game = new Game();
+    await game.init();
     let testSys: System = new TestSystem();
-    game.addSystem(testSys);
+    await game.addSystem(testSys);
     expect(game.systems.length).toBe(1);
     game.removeSystem(testSys);
     expect(game.systems.length).toBe(0);
     testSys = new Test2System();
-    game.addSystem(testSys);
+    await game.addSystem(testSys);
     expect(game.systems.length).toBe(1);
     game.removeSystem(testSys);
     expect(game.systems.length).toBe(0);
   });
 
-  it('when throug in anything else', () => {
+  it('when throug in anything else', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
+    await game.init();
+    await game.addSystem(TestSystem);
     expect(game.systems.length).toBe(1);
     const system = null;
     game.removeSystem(system);
     expect(game.systems.length).toBe(1);
   });
 
-  it('get system by systemName', () => {
+  it('get system by systemName', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
+    await game.init();
+    await game.addSystem(TestSystem);
     const system = game.getSystem(TestSystem.systemName);
     expect(system).toBeInstanceOf(TestSystem);
   });
 
-  it('get system by system constructor', () => {
+  it('get system by system constructor', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
+    await game.init();
+    await game.addSystem(TestSystem);
     const system = game.getSystem(TestSystem);
     expect(system).toBeInstanceOf(TestSystem);
   });
 
-  it('pause', () => {
+  it('pause', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
-    game.addSystem(Test2System);
+    await game.init();
+    await game.addSystem(TestSystem);
+    await game.addSystem(Test2System);
     game.pause();
     expect(mockTickerPause).toBeCalled();
     expect(game.playing).toBeFalsy();
   });
 
-  it('pause when pausing', () => {
-    const game = new Game({ autoStart: false });
+  it('pause when pausing', async () => {
+    const game = new Game();
+    await game.init({ autoStart: false });
     game.pause();
     expect(mockTickerPause).not.toBeCalled();
     expect(game.playing).toBeFalsy();
   });
 
-  it('start', () => {
-    const game = new Game({ autoStart: false });
-    game.addSystem(TestSystem);
-    game.addSystem(Test2System);
-    game.start();
-    expect(mockTickerStart).toBeCalled();
-    expect(game.playing).toBeTruthy();
-  });
-
-  it('start when playing', () => {
+  it('start', async () => {
     const game = new Game();
+    await game.init({ autoStart: false });
+    await game.addSystem(TestSystem);
+    await game.addSystem(Test2System);
     game.start();
     expect(mockTickerStart).toBeCalled();
     expect(game.playing).toBeTruthy();
   });
 
-  it('resume', () => {
-    const game = new Game({ autoStart: false });
-    game.addSystem(TestSystem);
-    game.addSystem(Test2System);
+  it('start when playing', async () => {
+    const game = new Game();
+    await game.init();
+    game.start();
+    expect(mockTickerStart).toBeCalled();
+    expect(game.playing).toBeTruthy();
+  });
+
+  it('resume', async () => {
+    const game = new Game();
+    await game.init({ autoStart: false });
+    await game.addSystem(TestSystem);
+    await game.addSystem(Test2System);
     game.resume();
     expect(mockTickerStart).toBeCalled();
     expect(game.playing).toBeTruthy();
   });
 
-  it('resume when playing', () => {
+  it('resume when playing', async () => {
     const game = new Game();
+    await game.init();
     game.resume();
     expect(mockTickerStart).toBeCalled();
     expect(game.playing).toBeTruthy();
@@ -204,8 +222,9 @@ describe('Game', () => {
    * system start method called
    * component onPlay method Called
    */
-  it('trigger Start', () => {
-    const game = new Game({
+  it('trigger Start', async () => {
+    const game = new Game();
+    await game.init({
       systems: [new TestSystem(), new Test2System()],
     });
 
@@ -217,8 +236,9 @@ describe('Game', () => {
     game.triggerResume();
   });
 
-  it('tritter Pause', () => {
-    const game = new Game({
+  it('tritter Pause', async () => {
+    const game = new Game();
+    await game.init({
       systems: [new TestSystem(), new Test2System()],
     });
 
@@ -230,14 +250,16 @@ describe('Game', () => {
     game.triggerPause();
   });
 
-  it('trigger pause without scene', () => {
-    const game = new Game({ needScene: false, systems: [new TestSystem(), new Test2System()] });
+  it('trigger pause without scene', async () => {
+    const game = new Game();
+    await game.init({ needScene: false, systems: [new TestSystem(), new Test2System()] });
     game.triggerPause();
   });
 
-  it('init tracker', () => {
+  it('init tracker', async () => {
     // first called in constructor
-    const game = new Game({
+    const game = new Game();
+    await game.init({
       systems: [new TestSystem()],
     });
 
@@ -253,18 +275,20 @@ describe('Game', () => {
     expect(mockTickerAdd).toBeCalledTimes(2);
   });
 
-  it('init ticker without scene', () => {
-    new Game({ needScene: false });
+  it('init ticker without scene', async () => {
+    const game = new Game();
+    await game.init({ needScene: false });
     const fn = mockTickerAdd.mock.calls[0][0];
     fn();
     expect(mockTickerAdd).toBeCalled();
     expect(mockTickerAdd).toBeCalledTimes(1);
   });
 
-  it('destory System', () => {
+  it('destory System', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
-    game.addSystem(Test2System);
+    await game.init();
+    await game.addSystem(TestSystem);
+    await game.addSystem(Test2System);
     expect(game.systems.length).toBe(2);
 
     game.destroySystems();
