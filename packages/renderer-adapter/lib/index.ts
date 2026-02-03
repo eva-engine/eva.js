@@ -2,6 +2,7 @@ export { default as Application } from './Application';
 export { default as Container } from './Container';
 export { default as Graphics } from './Graphics';
 export { default as HTMLText } from './HTMLText';
+export type { HTMLTextOptions, HTMLTextStyle } from './HTMLText';
 export { default as NinePatch } from './NinePatch';
 export { default as Sprite } from './Sprite';
 export { default as SpriteAnimation } from './SpriteAnimation';
