@@ -56,10 +56,13 @@ export default class Text extends Renderer {
   private async addTextComponent(changed: ComponentChanged) {
     const component = changed.component as TextComponent;
 
-    // 如果有字体资源，先创建空文本，等字体加载后再设置文本内容
-    const fontFamily = component.style?.fontFamily;
+    // 创建文本样式副本，先不设置 fontFamily
+    const styleWithoutFont = { ...component.style };
+    const fontFamily = styleWithoutFont.fontFamily;
+    delete styleWithoutFont.fontFamily;
     const initialText = fontFamily ? '' : component.text;
-    const text = new TextEngine(initialText, component.style);
+
+    const text = new TextEngine(initialText, styleWithoutFont);
     this.containerManager.getContainer(changed.gameObject.id).addChildAt(text, 0);
     this.texts[changed.gameObject.id] = {
       text,
@@ -67,7 +70,7 @@ export default class Text extends Renderer {
     };
     this.setSize(changed);
 
-    // 如果指定了字体资源，等待资源加载完成后设置文本内容
+    // 如果指定了字体资源，等待资源加载完成后设置 fontFamily
     if (fontFamily) {
       await this.waitForFontResource(text, changed, fontFamily);
     }
@@ -76,12 +79,15 @@ export default class Text extends Renderer {
   private async addHTMLTextComponent(changed: ComponentChanged) {
     const component = changed.component as HTMLTextComponent;
 
-    // 如果有字体资源，先创建空文本，等字体加载后再设置文本内容
-    const fontFamily = component.style?.fontFamily;
+    // 创建样式副本，先不设置 fontFamily
+    const styleWithoutFont = { ...component.style };
+    const fontFamily = styleWithoutFont.fontFamily;
+    delete styleWithoutFont.fontFamily;
     const initialText = fontFamily ? '' : component.text;
+
     const htmlText = new HTMLTextEngine({
       text: initialText,
-      style: component.style,
+      style: styleWithoutFont,
       ...(component.textureStyle && { textureStyle: component.textureStyle })
     } as any);
 
@@ -92,7 +98,7 @@ export default class Text extends Renderer {
     };
     this.setSize(changed);
 
-    // 如果指定了字体资源，等待资源加载完成后设置文本内容
+    // 如果指定了字体资源，等待资源加载完成后设置 fontFamily
     if (fontFamily) {
       await this.waitForFontResource(htmlText, changed, fontFamily);
     }
@@ -120,8 +126,9 @@ export default class Text extends Renderer {
       // 验证异步操作是否仍然有效（防止组件已被移除）
       if (!this.validateAsyncId(changed.gameObject.id, asyncId)) return;
 
-      // 字体资源加载成功后，设置文本内容
+      // 字体资源加载成功后，设置 fontFamily 并重新设置文本内容以触发重新渲染
       const component = this.texts[changed.gameObject.id].component;
+      text.style.fontFamily = fontFamily;
       text.text = component.text;
       // 更新尺寸
       this.setSize(changed);

@@ -25,4 +25,7 @@ export default defineConfig({
   resolve: {
     alias
   },
+  optimizeDeps: {
+    exclude: ['pixi-spine', 'pixi-spine36']
+  },
 });
