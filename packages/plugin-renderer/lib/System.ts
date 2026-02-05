@@ -143,13 +143,6 @@ export default class Renderer extends System<RendererSystemParams> {
     }
   }
   lateUpdate(e) {
-    for (const gameObject of this.game.gameObjects) {
-      this.containerManager.updateTransform({
-        name: gameObject.id,
-        transform: gameObject.transform,
-      });
-      this.rendererManager.update(gameObject);
-    }
     this.transform.update();
     this.application.ticker.update(e.time);
   }

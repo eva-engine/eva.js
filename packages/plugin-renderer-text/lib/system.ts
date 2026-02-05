@@ -36,13 +36,13 @@ export default class Text extends Renderer {
       } else {
         await this.addHTMLTextComponent(changed);
       }
+      this.setSize(changed);
     } else if (changed.type === OBSERVER_TYPE.REMOVE) {
       this.containerManager.getContainer(changed.gameObject.id).removeChild(this.texts[changed.gameObject.id].text);
       this.texts[changed.gameObject.id].text.destroy({ children: true });
       delete this.texts[changed.gameObject.id];
     } else {
       this.change(changed);
-      this.setSize(changed);
 
       // 如果样式改变且涉及字体，也需要等待字体资源加载
       const component = changed.component as TextComponent | HTMLTextComponent;
@@ -50,6 +50,7 @@ export default class Text extends Renderer {
         const { text } = this.texts[changed.gameObject.id];
         await this.waitForFontResource(text, changed, component.style.fontFamily);
       }
+      this.setSize(changed);
     }
   }
 
@@ -68,7 +69,6 @@ export default class Text extends Renderer {
       text,
       component,
     };
-    this.setSize(changed);
 
     // 如果指定了字体资源，等待资源加载完成后设置 fontFamily
     if (fontFamily) {
@@ -96,8 +96,6 @@ export default class Text extends Renderer {
       text: htmlText,
       component,
     };
-    this.setSize(changed);
-
     // 如果指定了字体资源，等待资源加载完成后设置 fontFamily
     if (fontFamily) {
       await this.waitForFontResource(htmlText, changed, fontFamily);
@@ -131,7 +129,6 @@ export default class Text extends Renderer {
       text.style.fontFamily = fontFamily;
       text.text = component.text;
       // 更新尺寸
-      this.setSize(changed);
     } catch (error) {
       console.warn(`字体资源 ${fontFamily} 加载失败:`, error);
     }
@@ -165,7 +162,9 @@ export default class Text extends Renderer {
   setSize(changed: ComponentChanged) {
     const { transform } = changed.gameObject;
     if (!transform) return;
-    transform.size.width = this.texts[changed.gameObject.id].text.width;
-    transform.size.height = this.texts[changed.gameObject.id].text.height;
+    const { text } = this.texts[changed.gameObject.id];
+    const size = text.getSize()
+    transform.size.width = size.width;
+    transform.size.height = size.height;
   }
 }
