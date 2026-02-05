@@ -373,13 +373,15 @@ class Game extends EventEmitter {
   /** Destroy game instance */
   destroy() {
     this.removeAllListeners();
-    this.pause();
     this.scene.destroy();
-    this.destroySystems();
-    this.ticker = null;
-    this.scene = null;
-    this.canvas = null;
-    this.multiScenes = null;
+    requestAnimationFrame(() => {
+      this.pause();
+      this.destroySystems();
+      this.ticker = null;
+      this.scene = null;
+      this.canvas = null;
+      this.multiScenes = null;
+    })
   }
 
   loadScene({ scene, mode = LOAD_SCENE_MODE.SINGLE, params = {} }: LoadSceneParams) {
