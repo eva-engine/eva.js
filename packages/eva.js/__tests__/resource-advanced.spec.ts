@@ -354,8 +354,9 @@ describe('Resource Advanced Tests - Assets Management', () => {
       res.addResource([emptyRes]);
       await res.destroy('emptyUrl');
 
-      // Should not crash, just not call unload with invalid data
-      expect(Assets.unload).toHaveBeenCalledWith([]);
+      // Should not crash - may not call unload if no URLs to unload
+      // The behavior is to skip unload if urlsToUnload is empty
+      expect(res.resourcesMap['emptyUrl']).toBeUndefined();
     });
 
     it('should handle timeout configuration', () => {
@@ -378,6 +379,248 @@ describe('Resource Advanced Tests - Assets Management', () => {
       // After data is set
       res.resourcesMap['checkLoaded'].data = { image: 'loaded data' as any };
       expect((res as any).checkAllLoaded('checkLoaded')).toBe(true);
+    });
+  });
+
+  describe('URL Mapping Storage and Cleanup', () => {
+    it('should store resource URLs in resourceUrlsMap during load', async () => {
+      const imageRes = EVAImage.from({
+        name: 'testUrlMapping',
+        preload: false,
+        image: 'https://example.com/url-mapping.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([imageRes]);
+      await res.getResource('testUrlMapping');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Check that URL was tracked
+      const urlsMap = (res as any).resourceUrlsMap;
+      expect(urlsMap['testUrlMapping']).toBeDefined();
+      expect(urlsMap['testUrlMapping']).toContain('https://example.com/url-mapping.png');
+    });
+
+    it('should store multiple URLs for sprite resources', async () => {
+      const spriteRes = EVASprite.from({
+        name: 'testSpriteMapping',
+        preload: false,
+        image: 'https://example.com/sprite.png',
+        json: 'https://example.com/sprite.json',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([spriteRes]);
+      await res.getResource('testSpriteMapping');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const urlsMap = (res as any).resourceUrlsMap;
+      expect(urlsMap['testSpriteMapping']).toBeDefined();
+      expect(urlsMap['testSpriteMapping'].length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should clear resourceUrlsMap entry after destroy', async () => {
+      const imageRes = EVAImage.from({
+        name: 'clearUrlMapping',
+        preload: false,
+        image: 'https://example.com/clear-mapping.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([imageRes]);
+      await res.getResource('clearUrlMapping');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Verify mapping exists
+      expect((res as any).resourceUrlsMap['clearUrlMapping']).toBeDefined();
+
+      await res.destroy('clearUrlMapping');
+
+      // Verify mapping is cleared
+      expect((res as any).resourceUrlsMap['clearUrlMapping']).toBeUndefined();
+    });
+
+    it('should verify all three maps are cleared (promiseMap, resourcesMap, resourceUrlsMap)', async () => {
+      const imageRes = EVAImage.from({
+        name: 'fullMapCleanup',
+        preload: false,
+        image: 'https://example.com/full-map.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([imageRes]);
+      await res.getResource('fullMapCleanup');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Verify all maps have the resource
+      expect((res as any).promiseMap['fullMapCleanup']).toBeDefined();
+      expect(res.resourcesMap['fullMapCleanup']).toBeDefined();
+      expect((res as any).resourceUrlsMap['fullMapCleanup']).toBeDefined();
+
+      await res.destroy('fullMapCleanup');
+
+      // Verify all maps are cleared
+      expect((res as any).promiseMap['fullMapCleanup']).toBeUndefined();
+      expect(res.resourcesMap['fullMapCleanup']).toBeUndefined();
+      expect((res as any).resourceUrlsMap['fullMapCleanup']).toBeUndefined();
+    });
+
+    it('should use resourceUrlsMap to unload assets', async () => {
+      const imageRes = EVAImage.from({
+        name: 'useUrlMapping',
+        preload: false,
+        image: 'https://example.com/use-mapping.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([imageRes]);
+      await res.getResource('useUrlMapping');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Manually set resourceUrlsMap to ensure it's used
+      (res as any).resourceUrlsMap['useUrlMapping'] = ['https://example.com/use-mapping.png'];
+
+      await res.destroy('useUrlMapping');
+
+      expect(Assets.unload).toHaveBeenCalledWith(['https://example.com/use-mapping.png']);
+    });
+
+    it('should fallback to src URLs if resourceUrlsMap is empty', async () => {
+      const imageRes = EVAImage.from({
+        name: 'fallbackToSrc',
+        preload: false,
+        image: 'https://example.com/fallback-src.png',
+      });
+
+      res.addResource([imageRes]);
+
+      // Don't load, so resourceUrlsMap won't be populated
+
+      await res.destroy('fallbackToSrc');
+
+      expect(Assets.unload).toHaveBeenCalledWith(['https://example.com/fallback-src.png']);
+    });
+
+    it('should not store duplicate URLs for the same resource', async () => {
+      const imageRes = EVAImage.from({
+        name: 'noDuplicateUrls',
+        preload: false,
+        image: 'https://example.com/no-dup.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([imageRes]);
+
+      // Try to load the same resource twice
+      await res.getResource('noDuplicateUrls');
+      await res.getResource('noDuplicateUrls');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const urlsMap = (res as any).resourceUrlsMap;
+      const urls = urlsMap['noDuplicateUrls'] || [];
+      const uniqueUrls = new Set(urls);
+
+      expect(urls.length).toBe(uniqueUrls.size); // No duplicates
+    });
+
+    it('should maintain separate URL mappings for different resources', async () => {
+      const res1 = EVAImage.from({
+        name: 'separate1',
+        preload: false,
+        image: 'https://example.com/separate1.png',
+      });
+
+      const res2 = EVAImage.from({
+        name: 'separate2',
+        preload: false,
+        image: 'https://example.com/separate2.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([res1, res2]);
+      await Promise.all([res.getResource('separate1'), res.getResource('separate2')]);
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const urlsMap = (res as any).resourceUrlsMap;
+
+      expect(urlsMap['separate1']).toBeDefined();
+      expect(urlsMap['separate2']).toBeDefined();
+      expect(urlsMap['separate1']).not.toEqual(urlsMap['separate2']);
+    });
+
+    it('should properly destroy multiple resources independently', async () => {
+      const res1 = EVAImage.from({
+        name: 'indep1',
+        preload: false,
+        image: 'https://example.com/indep1.png',
+      });
+
+      const res2 = EVAImage.from({
+        name: 'indep2',
+        preload: false,
+        image: 'https://example.com/indep2.png',
+      });
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([res1, res2]);
+      await Promise.all([res.getResource('indep1'), res.getResource('indep2')]);
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Destroy first resource
+      await res.destroy('indep1');
+
+      // Verify first is destroyed, second still exists
+      expect(res.resourcesMap['indep1']).toBeUndefined();
+      expect(res.resourcesMap['indep2']).toBeDefined();
+      expect((res as any).resourceUrlsMap['indep1']).toBeUndefined();
+      expect((res as any).resourceUrlsMap['indep2']).toBeDefined();
+
+      // Destroy second resource
+      await res.destroy('indep2');
+
+      // Verify both are destroyed
+      expect(res.resourcesMap['indep2']).toBeUndefined();
+      expect((res as any).resourceUrlsMap['indep2']).toBeUndefined();
+    });
+
+    it('should normalize protocol-relative URLs before storing', async () => {
+      const imageRes = {
+        name: 'protocolRelativeUrl',
+        type: RESOURCE_TYPE.IMAGE,
+        preload: false,
+        src: {
+          image: {
+            type: 'png',
+            url: '//example.com/protocol-relative.png',
+          },
+        },
+      };
+
+      (Assets.load as jest.Mock).mockResolvedValue({ texture: 'mock-texture' });
+
+      res.addResource([imageRes]);
+      await res.getResource('protocolRelativeUrl');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const urlsMap = (res as any).resourceUrlsMap;
+      expect(urlsMap['protocolRelativeUrl']).toContain('https://example.com/protocol-relative.png');
     });
   });
 });

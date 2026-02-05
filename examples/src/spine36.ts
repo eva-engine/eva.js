@@ -18,29 +18,7 @@ const spineResource = {
   ske: 'https://g.alicdn.com/eva-assets/32e307f6f38e8223b40fac1e3ccebbd0/0.0.1/tmp/953d6ec/c4c3af1b-d4f4-4436-8735-3353a061839c.json',
 };
 
-resource.addResource([
-  {
-    name: 'anim',
-    type: RESOURCE_TYPE.SPINE,
-    src: {
-      ske: {
-        type: 'ske',
-        url: spineResource.ske,
-      },
-      atlas: {
-        type: 'atlas',
-        url: spineResource.atlas,
-      },
-      image: {
-        type: 'png',
-        url: spineResource.image,
-      },
-    },
-    preload: true,
-  },
-]);
 
-resource.preload();
 
 // <script src="js" crossorigin="anonymous"></script>
 // js
@@ -55,6 +33,26 @@ resource.preload();
 // callback registry + status
 
 function createGb(game, x, y) {
+  resource.addResource([
+    {
+      name: 'anim',
+      type: RESOURCE_TYPE.SPINE,
+      src: {
+        ske: {
+          type: 'ske',
+          url: spineResource.ske,
+        },
+        atlas: {
+          type: 'atlas',
+          url: spineResource.atlas,
+        },
+        image: {
+          type: 'png',
+          url: spineResource.image,
+        },
+      },
+    },
+  ]);
   const gameObject = new GameObject('spine' + x + y, {
     anchor: {
       x: 0.5,
@@ -109,6 +107,8 @@ export const init = async canvas => {
   const gb = createGb(game, 10, 10);
   setTimeout(() => {
     gb.destroy();
-    createGb(game, 10, 10);
+    setTimeout(() => {
+      createGb(game, 10, 10);
+    },1000)
   }, 1000);
 };

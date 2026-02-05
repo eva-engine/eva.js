@@ -99,6 +99,9 @@ class Resource extends EE {
   /** Resource load promise */
   private promiseMap = {};
 
+  /** Map of resource name to loaded asset URLs for cleanup */
+  private resourceUrlsMap: Record<ResourceName, string[]> = {};
+
   progress: Progress;
 
   constructor(options?: { timeout: number }) {
@@ -194,8 +197,11 @@ class Resource extends EE {
     }
 
     // Unload assets using PixiJS Assets API
-    if (resource.src) {
-      const urlsToUnload: string[] = [];
+    // Prefer using resourceUrlsMap which tracks loaded URLs, fallback to src URLs
+    const urlsToUnload: string[] = this.resourceUrlsMap[name] || [];
+
+    // If resourceUrlsMap doesn't have URLs, try to extract from src (fallback)
+    if (urlsToUnload.length === 0 && resource.src) {
       for (const key in resource.src) {
         let url = resource.src[key]?.url;
         if (url) {
@@ -206,18 +212,36 @@ class Resource extends EE {
           urlsToUnload.push(url);
         }
       }
+    }
 
-      // Unload all URLs associated with this resource
-      if (urlsToUnload.length > 0) {
-        try {
-          await Assets.unload(urlsToUnload);
-        } catch (e) {
-          console.warn(`Failed to unload assets for ${name}: ${e.message}`);
+    // Unload all URLs associated with this resource
+    if (urlsToUnload.length > 0) {
+      try {
+        // 1. Unload assets (releases textures and WebGL resources)
+        await Assets.unload(urlsToUnload);
+
+        // 2. Remove from Cache explicitly
+        // PixiJS Assets uses an internal Cache that needs to be cleared
+        for (const url of urlsToUnload) {
+          try {
+            // Also try to remove from resolver if it exists
+            const resolver = (Assets as any).resolver || (Assets as any)._resolver;
+            if (resolver && resolver._assetMap) {
+              delete resolver._assetMap[url]
+              delete resolver._resolverHash[url]
+            }
+          } catch (err) {
+            // Ignore errors from internal cleanup attempts
+          }
         }
+      } catch (e) {
+        console.warn(`Failed to unload assets for ${name}: ${e.message}`);
       }
     }
 
+    // Clean up all tracking data
     delete this.promiseMap[name];
+    delete this.resourceUrlsMap[name];
     resource.data = {};
     resource.complete = false;
     resource.instance = undefined;
@@ -269,6 +293,12 @@ class Resource extends EE {
     unLoadNames.forEach(async name => {
       this.promiseMap[name] = new Promise(r => (resolves[name] = r));
       const res = this.resourcesMap[name];
+
+      // Initialize URL tracking for this resource
+      if (!this.resourceUrlsMap[name]) {
+        this.resourceUrlsMap[name] = [];
+      }
+
       for (const handler of this.preProcessResourceHandlers) {
         handler(res);
       }
@@ -279,10 +309,15 @@ class Resource extends EE {
           this.doComplete(name, resolves[name], preload);
         } else {
           let url = res.src[key]?.url;
-          console.log(url);
           if (typeof url === 'string' && url.startsWith('//')) {
             url = `https:${res.src[key].url}`;
           }
+
+          // Track this URL for later cleanup
+          if (url && !this.resourceUrlsMap[name].includes(url)) {
+            this.resourceUrlsMap[name].push(url);
+          }
+
           if (key === 'atlas') {
             const loadImagePromise = Assets.load(res.src['image'].url).catch(e => {
               this.onError({

@@ -13,6 +13,16 @@ paths.forEach(path => {
   }
 });
 
+// Add pixi-spine aliases (internal project files, not npm packages)
+alias.push({
+  find: 'pixi-spine',
+  replacement: resolve(__dirname, '../packages/plugin-renderer-spine/lib/pixi-spine.js')
+});
+alias.push({
+  find: 'pixi-spine36',
+  replacement: resolve(__dirname, '../packages/plugin-renderer-spine36/lib/pixi-spine.js')
+});
+
 export default defineConfig({
   server: {
     open: true,

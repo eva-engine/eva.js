@@ -59,14 +59,6 @@ export function releaseSpineData(res, _imageSrc: string) {
   data.ref--;
   setTimeout(async () => {
     if (data.ref <= 0) {
-      await Assets.unload([res.src.image.url, res.src.atlas.url, res.src.ske.url]);
-      const resolver: any = Assets.resolver;
-      delete resolver._assetMap[res.src.image.url];
-      delete resolver._assetMap[res.src.atlas.url];
-      delete resolver._assetMap[res.src.ske.url];
-      delete resolver._resolverHash[res.src.image.url];
-      delete resolver._resolverHash[res.src.atlas.url];
-      delete resolver._resolverHash[res.src.ske.url];
       resource.destroy(resourceName);
       delete dataMap[resourceName];
     }
