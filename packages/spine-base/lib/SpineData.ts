@@ -1,6 +1,5 @@
 import { resource } from '@eva/eva.js';
 
-import { Assets } from 'pixi.js';
 let dataMap: any = {};
 
 function createSpineData(name, data, scale, pixiSpine) {
