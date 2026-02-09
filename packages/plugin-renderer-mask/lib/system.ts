@@ -185,10 +185,14 @@ export default class Mask extends Renderer {
     }
     if (component.type === MASK_TYPE.Sprite) {
       const img = component.resource + resourceKeySplit + component.spriteName;
-      const texture = res.instance[img];
-      sprite.image = texture;
+      const texture = res?.instance?.[img];
+      if(texture) {
+        sprite.image = texture;
+      }
     } else {
-      sprite.image = res.data.image;
+      if(res?.data?.image) {
+        sprite.image = res.data.image;
+      }
     }
     sprite.sprite.width = component.style.width;
     sprite.sprite.height = component.style.height;
