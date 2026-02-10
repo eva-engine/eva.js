@@ -1,4 +1,4 @@
-import { Assets } from 'pixi.js';
+import { Assets, LoadParserName } from 'pixi.js';
 import EE from 'eventemitter3';
 import Progress, { EventParam } from './Progress';
 
@@ -28,6 +28,7 @@ interface SrcBase {
   data?: any;
   size?: Size2;
   texture?: TextureBase[] | TextureBase;
+  loadParser?: LoadParserName;
 }
 interface Size2 {
   width: number;
@@ -331,6 +332,7 @@ class Resource extends EE {
             Assets.add({
               alias: url,
               src: url,
+              loadParser: res.src[key].loadParser,
               data: {
                 resolve: () => loadImagePromise,
                 imageTexture: await loadImagePromise,
@@ -341,6 +343,12 @@ class Resource extends EE {
               alias: url,
               src: url,
             };
+
+            // Add loadParser if provided
+            if (res.src[key].loadParser) {
+              options.loadParser = res.src[key].loadParser;
+            }
+
             if (res.type === RESOURCE_TYPE.SPRITE || res.type === RESOURCE_TYPE.SPRITE_ANIMATION) {
               if (res.src[key].type === 'json') {
                 try {
