@@ -44,13 +44,51 @@ export async function init(canvas) {
     },
     anchor: {
       x: 0.5,
-      y: 0.5,
+      y: 0.7,
     },
+    scale: {
+      x: 3,
+      y: 3,
+    }
   });
 
   const txt = text.addComponent(
     new Text({
       text: '¥0.02',
+      "resolution": 4,
+      style: {
+        fontFamily: 'test',
+        fontSize: 108,
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        fill: ['#ffffff'],
+      },
+    }),
+  );
+
+  const text2 = new GameObject('text', {
+    position: {
+      x: 0,
+      y: 0,
+    },
+    origin: {
+      x: 0.5,
+      y: 0.5,
+    },
+    anchor: {
+      x: 0.5,
+      y: 0.3,
+    },
+    scale: {
+      x: 3,
+      y: 3,
+    }
+  });
+
+  const txt2 = text2.addComponent(
+    new Text({
+      text: '¥0.02',
+      // "resolution": 4,
       style: {
         fontFamily: 'test',
         fontSize: 108,
@@ -66,4 +104,5 @@ export async function init(canvas) {
   }, 2000);
 
   game.scene.addChild(text);
+  game.scene.addChild(text2);
 }

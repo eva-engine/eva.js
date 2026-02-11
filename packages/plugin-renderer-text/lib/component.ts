@@ -43,6 +43,7 @@ export interface TextParams {
     wordWrapWidth?: number;
     leading?: number;
   };
+  resolution?: number;
 }
 
 export default class Text extends Component<TextParams> {
@@ -50,6 +51,7 @@ export default class Text extends Component<TextParams> {
   @type('string') text: string = '';
   // @decorators.IDEProp 复杂编辑后续添加
   style: TextParams['style'] = {};
+  @type('number') resolution: number = 1;
   init(obj?: TextParams) {
     const style = new TextStyle({
       fontSize: 20,
@@ -65,6 +67,9 @@ export default class Text extends Component<TextParams> {
     if (obj) {
       this.text = obj.text;
       Object.assign(this.style, obj.style);
+      if (obj.resolution !== undefined) {
+        this.resolution = obj.resolution;
+      }
     }
   }
 }
