@@ -125,6 +125,7 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
         sourceMap: output.sourcemap,
         declaration: shouldEmitDeclaration,
         declarationMap: shouldEmitDeclaration,
+        removeComments: false,
       },
       exclude: ['**/__tests__'],
     },
