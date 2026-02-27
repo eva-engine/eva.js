@@ -3,14 +3,53 @@ import { GameObject, Game, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
 import Renderer from '../Renderer';
 import RendererSystem from '../System';
 
+/**
+ * 渲染管理器类
+ *
+ * RendererManager 负责管理和协调所有渲染器。
+ * 它将组件变化事件分发给相应的渲染器，
+ * 并在每帧调用渲染器的更新方法。
+ *
+ * @example
+ * ```typescript
+ * const rendererManager = new RendererManager({
+ *   game,
+ *   rendererSystem
+ * });
+ *
+ * rendererManager.register(
+ *   new SpriteRenderer(),
+ *   new TextRenderer()
+ * );
+ * ```
+ */
 class RendererManager {
+  /** 游戏实例引用 */
   game: Game;
+
+  /** 渲染系统引用 */
   rendererSystem: RendererSystem;
+
+  /**
+   * 构造渲染管理器
+   * @param game - 游戏实例
+   * @param rendererSystem - 渲染系统实例
+   */
   constructor({ game, rendererSystem }) {
     this.game = game;
     this.rendererSystem = rendererSystem;
   }
+
+  /** 注册的渲染器列表 */
   renderers: Renderer[] = [];
+
+  /**
+   * 注册渲染器
+   *
+   * 将渲染器添加到管理器，并为其设置必要的引用。
+   *
+   * @param renderers - 要注册的渲染器列表
+   */
   register(...renderers: Renderer[]) {
     for (const renderer of renderers) {
       renderer.game = this.game;

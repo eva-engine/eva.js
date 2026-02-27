@@ -76,8 +76,30 @@ export interface EventSystemFeatures {
 }
 
 /**
- * The system for handling UI events.
- * @memberof events
+ * 事件系统类
+ *
+ * EventSystem 负责处理所有 UI 交互事件（鼠标、触摸、指针等）。
+ * 它将原生 DOM 事件转换为统一的 FederatedEvent，
+ * 并通过事件边界（EventBoundary）将事件传播到场景图中的对象。
+ *
+ * 支持的事件类型：
+ * - 指针事件：pointerdown、pointermove、pointerup 等
+ * - 鼠标事件：mousedown、mousemove、mouseup 等
+ * - 触摸事件：touchstart、touchmove、touchend 等
+ * - 滚轮事件：wheel
+ *
+ * @example
+ * ```typescript
+ * const eventSystem = new EventSystem(renderer);
+ * eventSystem.init({
+ *   eventMode: 'passive',
+ *   eventFeatures: {
+ *     move: true,
+ *     click: true,
+ *     wheel: true
+ *   }
+ * });
+ * ```
  */
 export class EventSystem implements System<EventSystemOptions> {
   /** @ignore */
@@ -87,22 +109,24 @@ export class EventSystem implements System<EventSystemOptions> {
     priority: -1,
   };
 
+  /** 画布映射表 */
   public static canvasMap: Record<string, OffscreenCanvas> = {};
+
+  /** 事件处理器映射表 */
   public static eventsHandler: Record<string, any> = {};
 
   /**
-   * The event features that are enabled by the EventSystem
-   * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+   * 事件系统的默认功能配置
    * @since 7.2.0
    */
   public static defaultEventFeatures: EventSystemFeatures = {
-    /** Enables pointer events associated with pointer movement. */
+    /** 启用指针移动相关事件 */
     move: true,
-    /** Enables global pointer move events. */
+    /** 启用全局指针移动事件 */
     globalMove: true,
-    /** Enables pointer events associated with clicking. */
+    /** 启用点击相关事件 */
     click: true,
-    /** Enables wheel events. */
+    /** 启用滚轮事件 */
     wheel: true,
   };
 

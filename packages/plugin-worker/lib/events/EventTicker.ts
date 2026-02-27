@@ -3,19 +3,29 @@ import { UPDATE_PRIORITY, Ticker } from 'pixi.js';
 import type { EventSystem } from './EventSystem';
 
 /**
- * This class handles automatic firing of PointerEvents
- * in the case where the pointer is stationary for too long.
- * This is to ensure that hit-tests are still run on moving objects.
+ * 事件时钟类
+ *
+ * EventsTicker 用于在指针静止时自动触发指针事件，
+ * 确保即使指针不移动，移动的对象也能正确触发悬停测试。
+ * 这对于实现动态对象的鼠标交互至关重要。
+ *
+ * @example
+ * ```typescript
+ * EventsTicker.init(eventSystem);
+ * EventsTicker.addTickerListener();
+ * EventsTicker.pointerMoved(); // 标记指针已移动
+ * ```
+ *
  * @since 7.2.0
- * @memberof events
- * @class EventsTicker
  */
 class EventsTickerClass {
-  /** The event system. */
+  /** 事件系统引用 */
   public events: EventSystem;
-  /** The DOM element to listen to events on. */
+
+  /** 监听事件的 DOM 元素 */
   public domElement: HTMLElement;
-  /** The frequency that fake events will be fired. */
+
+  /** 触发模拟事件的频率（毫秒） */
   public interactionFrequency = 10;
 
   private _deltaTime = 0;

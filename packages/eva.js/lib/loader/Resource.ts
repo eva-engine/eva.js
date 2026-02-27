@@ -78,31 +78,55 @@ type ResourceProcessFn = (resource: ResourceStruct) => any;
 type PreProcessResourceHandler = (res: ResourceBase) => void;
 
 /**
- * Resource manager
- * @public
+ * 资源管理器类
+ *
+ * Resource 负责管理游戏中所有资源的加载、缓存和销毁。
+ * 支持多种资源类型（图片、音频、视频、JSON 等），
+ * 提供预加载、异步加载、资源实例化等功能。
+ *
+ * @example
+ * ```typescript
+ * import { resource, RESOURCE_TYPE } from '@eva/eva.js';
+ *
+ * // 添加资源配置
+ * resource.addResource([{
+ *   name: 'player',
+ *   type: RESOURCE_TYPE.IMAGE,
+ *   src: { image: { type: 'png', url: 'player.png' } },
+ *   preload: true
+ * }]);
+ *
+ * // 预加载资源
+ * resource.preload();
+ *
+ * // 获取资源
+ * const playerResource = await resource.getResource('player');
+ * ```
  */
 class Resource extends EE {
   // TODO: specify timeout in config to overwrite it
-  /** load resource timeout */
+  /** 资源加载超时时间（毫秒） */
   public timeout: number = 6000;
 
+  /** 资源预处理器列表 */
   private preProcessResourceHandlers: PreProcessResourceHandler[] = [];
 
-  /** Resource cache  */
+  /** 资源缓存映射表 */
   public resourcesMap: Record<ResourceName, ResourceStruct> = {};
 
-  /** Collection of make resource instance function */
+  /** 资源实例化函数集合 */
   private makeInstanceFunctions: Record<string, ResourceProcessFn> = {};
 
-  /** Collection of destroy resource instance function */
+  /** 资源销毁函数集合 */
   private destroyInstanceFunctions: Record<string, ResourceProcessFn> = {};
 
-  /** Resource load promise */
+  /** 资源加载 Promise 映射表 */
   private promiseMap = {};
 
-  /** Map of resource name to loaded asset URLs for cleanup */
+  /** 资源名称到已加载资源 URL 的映射，用于清理 */
   private resourceUrlsMap: Record<ResourceName, string[]> = {};
 
+  /** 加载进度管理器 */
   progress: Progress;
 
   constructor(options?: { timeout: number }) {

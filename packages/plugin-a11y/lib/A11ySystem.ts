@@ -37,63 +37,99 @@ const getEventFunc = function (event: EE, gameObject: GameObject, e: MouseEvent)
   });
 };
 
+/**
+ * 无障碍系统（A11y System）
+ *
+ * A11ySystem 管理游戏中所有无障碍组件，在游戏画布上方创建无障碍覆盖层。
+ * 它会自动将游戏对象的位置、尺寸同步到对应的 DOM 元素上，
+ * 并处理与屏幕阅读器的交互。
+ *
+ * 主要功能：
+ * - 创建和管理无障碍 DOM 覆盖层
+ * - 同步游戏对象的变换到 DOM 元素
+ * - 处理无障碍元素的事件绑定
+ * - 支持调试模式（可视化无障碍区域）
+ * - 自动检测或手动配置无障碍功能开关
+ *
+ * @example
+ * ```typescript
+ * // 自动检测系统读屏功能
+ * game.addSystem(new A11ySystem());
+ *
+ * // 开启调试模式
+ * game.addSystem(new A11ySystem({ debug: true }));
+ *
+ * // 强制启用无障碍功能
+ * game.addSystem(new A11ySystem({
+ *   activate: A11yActivate.ENABLE,
+ *   zIndex: 10000
+ * }));
+ * ```
+ */
 @decorators.componentObserver({
   A11y: ['hint'],
   Transform: ['inScene'],
   Event: [],
 })
 export default class A11ySystem extends System {
+  /** 系统名称 */
   static systemName = 'A11ySystem';
 
-  /**
-   * 无障碍覆盖层
-   */
+  /** 无障碍覆盖层容器 */
   div: HTMLDivElement;
-  /**
-   * 是否开启调试
-   */
+
+  /** 是否开启调试模式（显示无障碍区域背景色） */
   debug: boolean;
-  /**
-   * 横向的比例
-   */
+
+  /** 画布横向缩放比例 */
   _ratioX: number;
-  /**
-   * 纵向的比例
-   */
+
+  /** 画布纵向缩放比例 */
   _ratioY: number;
-  /**
-   * 事件坐标
-   */
+
+  /** 当前事件触发的坐标位置 */
   eventPosition: EventPosition;
-  /**
-   * 是否开启无障碍能力
-   */
+
+  /** 是否启用无障碍功能 */
   activate: boolean;
-  /**
-   * dom 延迟放置
-   */
+
+  /** DOM 元素延迟放置时间（毫秒） */
   delay: number;
+
+  /** 无障碍 DOM 元素缓存 */
   cache: Map<string, HTMLElement> = new Map();
+
+  /** 事件处理函数缓存 */
   eventCache: Map<string, (e: MouseEvent) => void> = new Map();
-  /**
-   *
-   * dom 的 zIndex
-   */
+
+  /** 无障碍覆盖层的 z-index 值 */
   zIndex: number = ZINDEX;
-  /**
-   *
-   * @param opt
-   */
 
   /**
-   * 无障碍插件初始化函数
-   * @param opt 无障碍插件选项
-   * @param opt.activate 是否开启无障碍能力，默认为自动根据系统读屏能力进行开启 AUTO | ENABLE | DISABLE
+   * 构造无障碍系统
+   *
+   * @param opt - 系统配置选项
+   * @param opt.debug - 是否开启调试模式，默认 false
+   * @param opt.activate - 无障碍功能开关模式，默认 CHECK（自动检测）
+   * @param opt.delay - DOM 元素延迟创建时间（毫秒），默认 100
+   * @param opt.zIndex - 覆盖层的 z-index，默认 10000
+   * @param opt.checkA11yOpen - 自定义检测无障碍功能是否开启的函数
+   *
    * @example
+   * ```typescript
    * // 开启调试，无障碍区域会显示红色透明背景
-   * new A11ySystem({debug: true})
-   * // 禁用无障碍
-   * new A11ySystem({activate: A11yActivate.DISABLE})
+   * new A11ySystem({ debug: true })
+   *
+   * // 禁用无障碍功能
+   * new A11ySystem({ activate: A11yActivate.DISABLE })
+   *
+   * // 自定义检测逻辑
+   * new A11ySystem({
+   *   checkA11yOpen: async () => {
+   *     return await isScreenReaderActive();
+   *   }
+   * })
+   * ```
    */
   constructor(opt?: SystemParam) {
     super(opt);

@@ -6,51 +6,69 @@ interface TickerOptions {
   frameRate?: number;
 }
 
-/** Default Ticker Options */
+/** Ticker 的默认配置选项 */
 const defaultOptions: Partial<TickerOptions> = {
   autoStart: true,
   frameRate: 60,
 };
 
 /**
- * Timeline tool
+ * 时钟管理器类
+ *
+ * Ticker 负责管理游戏的主循环，基于 requestAnimationFrame 实现帧率控制。
+ * 它协调所有需要在每帧执行的回调函数，确保游戏以稳定的帧率运行。
+ *
+ * @example
+ * ```typescript
+ * const ticker = new Ticker({ frameRate: 60, autoStart: true });
+ *
+ * ticker.add((frameInfo) => {
+ *   console.log('FPS:', frameInfo.fps);
+ *   console.log('Delta Time:', frameInfo.deltaTime);
+ * });
+ *
+ * ticker.start();
+ * ```
  */
 class Ticker {
-  /** Whether or not ticker should auto start */
+  /** 是否自动启动时钟 */
   autoStart: boolean;
 
-  /** FPS, The number of times that raf method is called per second */
+  /** 目标帧率，表示每秒调用 RAF 的次数 */
   frameRate: number;
 
-  /** Global Timeline **/
+  /** 全局时间线管理器 */
   private timeline: Timeline;
 
-  /** Time between two frame */
+  /** 两帧之间的时间间隔（毫秒） */
   private _frameDuration: number;
 
-  /** Ticker is a function will called in each raf */
+  /** 每帧调用的回调函数集合 */
   private _tickers: Set<unknown>;
 
-  /** raf handle id */
+  /** requestAnimationFrame 的句柄 ID */
   _requestId: number;
 
-  /** Last frame render time */
+  /** 上一帧的渲染时间 */
   private _lastFrameTime: number;
 
-  /** Frame count since from ticker beigning */
+  /** 从时钟开始以来的帧计数 */
   private _frameCount: number;
 
-  // private _activeWithPause: boolean;
-
-  /** Main ticker method handle */
+  /** 主时钟方法的句柄 */
   private _ticker: (time?: number) => void;
 
-  /** Represents the status of the Ticker, If ticker has started, the value is true */
+  /**
+   * 时钟的运行状态
+   * @defaultValue false
+   */
   private _started: boolean;
 
   /**
-   * @param autoStart - auto start game
-   * @param frameRate - game frame rate
+   * 构造一个新的时钟管理器
+   * @param options - 时钟配置选项
+   * @param options.autoStart - 是否自动启动
+   * @param options.frameRate - 目标帧率
    */
   constructor(options?: TickerOptions) {
     options = Object.assign({}, defaultOptions, options);
@@ -78,7 +96,12 @@ class Ticker {
     }
   }
 
-  /** Main loop, all _tickers will called in this method */
+  /**
+   * 主循环更新方法
+   *
+   * 计算帧时间差，当达到目标帧间隔时调用所有注册的回调函数。
+   * 这种方式实现了帧率控制，避免帧率过高导致的性能问题。
+   */
   update() {
     const currentTime = this.timeline.currentTime;
 
@@ -104,17 +127,27 @@ class Ticker {
     }
   }
 
-  /** Add ticker function */
+  /**
+   * 添加每帧执行的回调函数
+   * @param fn - 回调函数，每帧会接收帧信息参数
+   */
   add(fn) {
     this._tickers.add(fn);
   }
 
-  /** Remove ticker function */
+  /**
+   * 移除回调函数
+   * @param fn - 要移除的回调函数
+   */
   remove(fn) {
     this._tickers.delete(fn);
   }
 
-  /** Start main loop */
+  /**
+   * 启动主循环
+   *
+   * 如果已经启动则忽略。启动后时间线播放速率设为 1.0。
+   */
   start() {
     if (this._started) return;
     this._started = true;
@@ -122,11 +155,20 @@ class Ticker {
     this._requestId = requestAnimationFrame(this._ticker);
   }
 
-  /** Pause main loop */
+  /**
+   * 暂停主循环
+   *
+   * 将时间线播放速率设为 0，停止帧更新。
+   */
   pause() {
     this._started = false;
     this.timeline.playbackRate = 0;
   }
+
+  /**
+   * 设置时间线播放速率
+   * @param rate - 播放速率（1.0 为正常速度）
+   */
   setPlaybackRate(rate: number) {
     this.timeline.playbackRate = rate;
   }

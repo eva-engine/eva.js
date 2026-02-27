@@ -5,16 +5,47 @@ import Spine from './Spine';
 import getSpineData, { releaseSpineData } from './SpineData';
 const MaxRetryCount = 20;
 
+/**
+ * Spine 骨骼动画系统
+ *
+ * SpineSystem 负责管理所有 Spine 组件的骨架创建、动画更新和资源管理。
+ * 系统会监听 Spine 组件的变化，自动加载骨骼数据并创建动画实例，
+ * 并在每帧更新所有活跃的 Spine 动画。
+ *
+ * 主要功能：
+ * - 骨骼数据加载和缓存
+ * - 动画实例创建和销毁
+ * - 每帧动画状态更新
+ * - WebGL 上下文恢复处理
+ * - 资源重试机制
+ */
 @decorators.componentObserver({
   Spine: ['resource'],
 })
 export default class SpineSystem extends Renderer {
+  /** 系统名称 */
   static systemName = 'SpineSystem';
+
+  /** 骨架实例映射表（游戏对象 ID -> 骨架容器） */
   armatures: Record<number, Container> = {};
+
+  /** 渲染系统引用 */
   renderSystem: RendererSystem;
+
+  /** 渲染器管理器 */
   rendererManager: RendererManager;
+
+  /** 容器管理器 */
   containerManager: ContainerManager;
+
+  /** PixiJS Spine 插件实例 */
   pixiSpine: any;
+
+  /**
+   * 初始化系统
+   * @param obj - 初始化参数
+   * @param obj.pixiSpine - PixiJS Spine 插件实例
+   */
   init({ pixiSpine }) {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
@@ -60,6 +91,11 @@ export default class SpineSystem extends Renderer {
       false,
     );
   }
+
+  /**
+   * 每帧更新所有 Spine 动画
+   * @param e - 更新参数，包含帧间隔时间
+   */
   update(e: UpdateParams) {
     for (let key in this.armatures) {
       // TODO: 类型

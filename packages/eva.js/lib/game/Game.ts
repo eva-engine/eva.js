@@ -135,24 +135,48 @@ const gameObjectPause = gameObjects => {
   }
 };
 
+/**
+ * 游戏实例类，EVA.js 的核心管理类
+ *
+ * Game 类负责管理游戏的生命周期、系统、场景和主循环。
+ * 它协调各个系统的执行，处理游戏对象的更新，管理游戏的运行状态。
+ *
+ * @example
+ * ```typescript
+ * const game = new Game();
+ * await game.init({
+ *   systems: [new RendererSystem(), new PhysicsSystem()],
+ *   autoStart: true,
+ *   frameRate: 60
+ * });
+ *
+ * const scene = new Scene('main');
+ * game.loadScene(scene);
+ * ```
+ */
 class Game extends EventEmitter {
+  /** 私有场景引用 */
   _scene: Scene;
+
+  /** 画布元素 */
   canvas: HTMLCanvasElement;
 
   /**
-   * State of game
+   * 游戏运行状态
    * @defaultValue false
    */
   playing: boolean = false;
+
+  /** 游戏是否已启动 */
   started: boolean = false;
+
+  /** 多场景列表（用于多画布渲染模式） */
   multiScenes: Scene[] = [];
 
-  /**
-   * Ticker
-   */
+  /** 时钟管理器，控制游戏主循环 */
   ticker: Ticker;
 
-  /** Systems alled to this game */
+  /** 游戏中注册的所有系统 */
   systems: System[] = [];
 
   async init({ systems, frameRate = 60, autoStart = true, needScene = true }: GameParams = {}) {

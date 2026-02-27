@@ -29,21 +29,38 @@ export interface PixiTouch extends Touch {
 }
 
 /**
- * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
- * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
- * @typeParam N - The type of native event held.
- * @memberof events
+ * 联合事件类
+ *
+ * FederatedEvent 是一个兼容 DOM 的合成事件实现，
+ * 代表原始的 FederatedEvent 或原生 DOM 事件进行传播。
+ * 它提供了统一的事件接口，抹平了不同浏览器和设备之间的差异。
+ *
+ * 主要特性：
+ * - 兼容 DOM Event API
+ * - 支持事件冒泡和捕获
+ * - 提供事件传播控制
+ * - 记录事件路径
+ *
+ * @typeParam N - 持有的原生事件类型
+ *
+ * @example
+ * ```typescript
+ * sprite.on('pointerdown', (event: FederatedPointerEvent) => {
+ *   console.log('Clicked at:', event.global.x, event.global.y);
+ *   event.stopPropagation(); // 停止事件传播
+ * });
+ * ```
  */
 export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch> implements UIEvent {
-  /** Flags whether this event bubbles. This will take effect only if it is set before propagation. */
+  /** 事件是否冒泡（仅在传播前设置有效） */
   public bubbles = true;
 
-  /** @deprecated since 7.0.0 */
+  /** @deprecated 自 7.0.0 起弃用 */
   public cancelBubble = true;
 
   /**
-   * Flags whether this event can be canceled using {@link FederatedEvent.preventDefault}. This is always
-   * false (for now).
+   * 事件是否可以被取消
+   * @readonly
    */
   public readonly cancelable = false;
 

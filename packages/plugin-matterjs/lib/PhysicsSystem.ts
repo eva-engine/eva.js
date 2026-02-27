@@ -21,19 +21,68 @@ export interface PhysicsSystemParams {
   world: DeepPartial<Matter.IWorldDefinition>;
 }
 
+/**
+ * 物理系统（基于 Matter.js）
+ *
+ * PhysicsSystem 集成了 Matter.js 2D 物理引擎，为游戏提供完整的刚体物理模拟。
+ * 它管理物理世界、物理引擎的运行，并自动同步物理引擎的状态到游戏对象。
+ *
+ * 主要功能：
+ * - 集成 Matter.js 物理引擎
+ * - 管理物理世界和物理体
+ * - 自动同步物理状态到游戏对象
+ * - 支持鼠标交互约束
+ * - 可配置物理引擎参数和渲染调试
+ *
+ * @example
+ * ```typescript
+ * // 基础配置
+ * game.addSystem(new PhysicsSystem({
+ *   resolution: 2,
+ *   fps: 60,
+ *   world: {
+ *     gravity: { x: 0, y: 1 } // 重力方向
+ *   }
+ * }));
+ *
+ * // 开启调试渲染和鼠标交互
+ * game.addSystem(new PhysicsSystem({
+ *   isTest: true, // 显示物理调试绘制
+ *   canvas: debugCanvas,
+ *   mouse: {
+ *     open: true // 启用鼠标拖拽物理体
+ *   },
+ *   world: {
+ *     gravity: { x: 0, y: 1 }
+ *   }
+ * }));
+ * ```
+ */
 @decorators.componentObserver({
   Physics: [{ prop: ['bodyParams'], deep: true }],
   Transform: ['_parent'],
 })
 export default class PhysicsSystem extends System<PhysicsSystemParams> {
+  /** 系统名称 */
   static systemName = 'PhysicsSystem';
+
+  /** 物理引擎实例 */
   private engine: PhysicsEngine;
 
   /**
-   * System 初始化用，可以配置参数，游戏未开始
+   * 初始化物理系统
    *
-   * System init, set params, game is not begain
-   * @param param init params
+   * 配置物理引擎参数、创建物理世界、设置渲染分辨率等。
+   *
+   * @param param - 物理系统配置参数
+   * @param param.resolution - 渲染分辨率，默认 1
+   * @param param.fps - 物理引擎更新帧率，默认 60
+   * @param param.isTest - 是否开启调试渲染模式
+   * @param param.element - 物理调试渲染的容器元素
+   * @param param.canvas - 物理调试渲染的画布
+   * @param param.deltaSampleSize - 时间步长采样大小
+   * @param param.mouse - 鼠标交互配置
+   * @param param.world - Matter.js 世界配置（重力、边界等）
    */
   init(param?: PhysicsSystemParams) {
     this.engine = new PhysicsEngine(this.game, param);

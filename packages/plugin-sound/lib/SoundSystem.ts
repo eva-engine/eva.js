@@ -18,19 +18,40 @@ interface SoundSystemParams {
   onError: (error: any) => void;
 }
 
+/**
+ * 音频系统
+ *
+ * SoundSystem 负责管理游戏中所有音频组件的加载和播放。
+ * 支持自动与游戏生命周期同步（暂停/恢复），
+ * 提供全局音频控制功能（全部暂停/恢复/停止）。
+ *
+ * @example
+ * ```typescript
+ * const soundSystem = new SoundSystem({
+ *   autoPauseAndStart: true,
+ *   onError: (error) => console.error('Sound error:', error)
+ * });
+ *
+ * game.addSystem(soundSystem);
+ * ```
+ */
 @decorators.componentObserver({
   Sound: [],
 })
 class SoundSystem extends System {
+  /** 系统名称 */
   static systemName = 'SoundSystem';
 
-  /** 是否和游戏同步暂停和启动 */
+  /** 是否与游戏生命周期同步暂停和启动 */
   private autoPauseAndStart = true;
 
+  /** 错误回调函数 */
   private onError: (error: any) => void;
 
+  /** 管理的音频组件列表 */
   private components: SoundComponent[] = [];
 
+  /** 音频缓冲区缓存 */
   private audioBufferCache = {};
 
   constructor(obj?: SoundSystemParams) {

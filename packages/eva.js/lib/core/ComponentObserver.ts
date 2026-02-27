@@ -16,26 +16,31 @@ export interface ObserverEvent extends ObserverEventParams {
 }
 
 /**
- * Management observe events
- * @remarks
- * See {@link System} for more details
- * @public
+ * 组件观察者，管理组件属性变化事件
+ *
+ * 用于收集和管理组件属性的变化事件，供系统订阅和响应。
+ * 系统可以通过 ComponentObserver 获取组件的变化记录，
+ * 实现数据驱动的更新机制。
+ *
+ * @see {@link System}
  */
 class ComponentObserver {
   /**
-   * Component property change events
+   * 组件属性变化事件列表
    * @defaultValue []
    */
   private events: ObserverEvent[] = [];
 
   /**
-   * Add event
-   * @remarks
-   * The same event will be placed last
-   * @param component - changed component
-   * @param prop - changed property on `component`
-   * @param type - change event type
-   * @param componentName - `component.name` this parameter will deprecated
+   * 添加组件变化事件
+   *
+   * 将组件的属性变化记录到事件列表中。
+   * 相同的事件会被移动到列表末尾，避免重复记录。
+   *
+   * @param component - 发生变化的组件
+   * @param prop - 组件上变化的属性
+   * @param type - 变化事件类型（添加、移除、修改等）
+   * @param componentName - 组件名称（该参数将被废弃）
    */
   add({ component, prop, type, componentName }: ObserverEventParams) {
     if (type === ObserverType.REMOVE) {
@@ -66,20 +71,30 @@ class ComponentObserver {
     });
   }
 
-  /** Return change events */
+  /**
+   * 获取变化事件列表
+   * @returns 所有记录的变化事件
+   */
   getChanged() {
     return this.events;
   }
 
   /**
-   * Return change events
-   * @readonly
+   * 获取变化事件列表（只读属性）
+   * @returns 所有记录的变化事件
    */
   get changed() {
     return this.events;
   }
 
-  /** Clear events */
+  /**
+   * 清空并返回所有变化事件
+   *
+   * 获取当前记录的所有事件，然后清空事件列表。
+   * 通常在系统处理完变化事件后调用。
+   *
+   * @returns 清空前的所有变化事件
+   */
   clear() {
     const events = this.events;
     this.events = [];

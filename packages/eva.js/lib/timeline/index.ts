@@ -17,15 +17,40 @@ type NowTimeFactor = () => number;
 
 const _nowtime: NowTimeFactor = createNowTime();
 
+/** Timeline 的默认配置 */
 const defaultOptions: TimelineOptions = {
   originTime: 0,
   playbackRate: 1.0,
 };
 
+/**
+ * 时间线类
+ *
+ * Timeline 用于管理游戏时间流，支持时间缩放、暂停、倒放等功能。
+ * 可以创建嵌套的时间线，实现复杂的时间控制效果。
+ *
+ * @example
+ * ```typescript
+ * const timeline = new Timeline({ playbackRate: 1.0 });
+ *
+ * // 创建子时间线
+ * const slowMotion = timeline.fork({ playbackRate: 0.5 });
+ *
+ * // 暂停时间
+ * timeline.playbackRate = 0;
+ * ```
+ */
 class Timeline {
+  /** 时间标记列表，记录时间线的各个关键时刻 */
   private _timeMark: TimeMark[];
+
+  /** 播放速率 */
   private _playbackRate: number;
+
+  /** 父时间线 */
   private _parent: Timeline;
+
+  /** 时间线创建时间 */
   private _createTime: number;
 
   constructor(options: TimelineOptions | Timeline, parent?: Timeline) {

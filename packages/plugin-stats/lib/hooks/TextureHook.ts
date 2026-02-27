@@ -1,13 +1,42 @@
+/**
+ * WebGL 纹理 Hook 类
+ *
+ * TextureHook 通过拦截 WebGL 的纹理创建和删除方法，
+ * 统计当前活跃的纹理数量和历史最大纹理数量。
+ * 纹理数量直接影响显存占用和渲染性能。
+ *
+ * @example
+ * ```typescript
+ * const textureHook = new TextureHook(gl);
+ * console.log('Current Textures:', textureHook.currentTextureCount);
+ * console.log('Max Textures:', textureHook.maxTexturesCount);
+ * textureHook.reset(); // 重置统计
+ * textureHook.release(); // 移除 Hook
+ * ```
+ */
 export class TextureHook {
+  /** 当前创建的纹理列表 */
   public createdTextures: Array<any> = new Array<any>();
+
+  /** 历史最大纹理数量 */
   public maxTexturesCount: number = 0;
 
+  /** 是否已初始化 Hook */
   public isInit: boolean = false;
+
+  /** 原始的 createTexture 方法 */
   private realGLCreateTexture: Function = function () {};
+
+  /** 原始的 deleteTexture 方法 */
   private realGLDeleteTexture: Function = function () {};
 
+  /** WebGL 上下文引用 */
   private gl: any;
 
+  /**
+   * 构造纹理 Hook
+   * @param _gl - WebGL 渲染上下文
+   */
   constructor(_gl?: any) {
     if (_gl) {
       if (_gl.__proto__.createTexture) {

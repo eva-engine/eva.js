@@ -46,12 +46,69 @@ export interface TextParams {
   resolution?: number;
 }
 
+/**
+ * 文本组件（基于 PixiJS Text）
+ *
+ * Text 组件用于渲染文本内容，支持丰富的文本样式配置。
+ * 它基于 PixiJS 的 Text 实现，支持字体、颜色、描边、阴影、对齐等多种样式。
+ *
+ * 主要特性：
+ * - 支持多种字体和字号
+ * - 支持文本颜色、渐变填充
+ * - 支持描边和投影效果
+ * - 支持文本对齐和换行
+ * - 可配置渲染分辨率
+ *
+ * @example
+ * ```typescript
+ * // 基础文本
+ * const label = new GameObject('label');
+ * label.addComponent(new Text({
+ *   text: 'Hello EVA!',
+ *   style: {
+ *     fontSize: 32,
+ *     fill: 0xffffff
+ *   }
+ * }));
+ *
+ * // 带样式的文本
+ * label.addComponent(new Text({
+ *   text: '得分: 9999',
+ *   style: {
+ *     fontFamily: 'Arial',
+ *     fontSize: 48,
+ *     fontWeight: 'bold',
+ *     fill: ['#ff0000', '#ffff00'], // 渐变色
+ *     stroke: '#000000',
+ *     strokeThickness: 4,
+ *     dropShadow: true,
+ *     dropShadowDistance: 3
+ *   },
+ *   resolution: 2 // 高清渲染
+ * }));
+ * ```
+ */
 export default class Text extends Component<TextParams> {
+  /** 组件名称 */
   static componentName: string = 'Text';
+
+  /** 文本内容 */
   @type('string') text: string = '';
+
+  /** 文本样式配置 */
   // @decorators.IDEProp 复杂编辑后续添加
   style: TextParams['style'] = {};
+
+  /** 渲染分辨率，值越大文本越清晰但性能消耗越大 */
   @type('number') resolution: number = 1;
+
+  /**
+   * 初始化组件
+   * @param obj - 初始化参数
+   * @param obj.text - 文本内容
+   * @param obj.style - 文本样式
+   * @param obj.resolution - 渲染分辨率
+   */
   init(obj?: TextParams) {
     const style = new TextStyle({
       fontSize: 20,
