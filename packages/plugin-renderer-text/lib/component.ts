@@ -43,7 +43,6 @@ export interface TextParams {
     wordWrapWidth?: number;
     leading?: number;
   };
-  resolution?: number;
 }
 
 /**
@@ -57,7 +56,6 @@ export interface TextParams {
  * - 支持文本颜色、渐变填充
  * - 支持描边和投影效果
  * - 支持文本对齐和换行
- * - 可配置渲染分辨率
  *
  * @example
  * ```typescript
@@ -83,9 +81,10 @@ export interface TextParams {
  *     strokeThickness: 4,
  *     dropShadow: true,
  *     dropShadowDistance: 3
- *   },
- *   resolution: 2 // 高清渲染
+ *   }
  * }));
+ * // 如需高清渲染，使用 Render 组件的 resolution 属性
+ * label.addComponent(new Render({ resolution: 2 }));
  * ```
  */
 export default class Text extends Component<TextParams> {
@@ -99,15 +98,11 @@ export default class Text extends Component<TextParams> {
   // @decorators.IDEProp 复杂编辑后续添加
   style: TextParams['style'] = {};
 
-  /** 渲染分辨率，值越大文本越清晰但性能消耗越大 */
-  @type('number') resolution: number = 1;
-
   /**
    * 初始化组件
    * @param obj - 初始化参数
    * @param obj.text - 文本内容
    * @param obj.style - 文本样式
-   * @param obj.resolution - 渲染分辨率
    */
   init(obj?: TextParams) {
     const style = new TextStyle({
@@ -124,9 +119,6 @@ export default class Text extends Component<TextParams> {
     if (obj) {
       this.text = obj.text;
       Object.assign(this.style, obj.style);
-      if (obj.resolution !== undefined) {
-        this.resolution = obj.resolution;
-      }
     }
   }
 }

@@ -5,6 +5,7 @@ export interface RenderParams {
   zIndex?: number;
   visible?: boolean;
   sortableChildren?: boolean;
+  resolution?: number;
 }
 /**
  * 渲染属性组件
@@ -18,6 +19,7 @@ export interface RenderParams {
  * - alpha - 控制对象透明度（0-1）
  * - zIndex - 控制对象渲染层级
  * - sortableChildren - 是否对子对象按 zIndex 排序
+ * - resolution - 渲染分辨率，值越大越清晰但性能消耗越大
  *
  * @example
  * ```typescript
@@ -50,6 +52,13 @@ export interface RenderParams {
  * container.addComponent(new Render({
  *   sortableChildren: true // 子对象将按 zIndex 排序
  * }));
+ *
+ * // 设置渲染分辨率
+ * const text = new GameObject('text');
+ * text.addComponent(new Text({ text: 'High Resolution' }));
+ * text.addComponent(new Render({
+ *   resolution: 2 // 2倍分辨率，使渲染更清晰
+ * }));
  * ```
  */
 export default class Render extends Component<RenderParams> {
@@ -71,6 +80,9 @@ export default class Render extends Component<RenderParams> {
   /** 是否对子对象按 zIndex 排序 */
   @type('boolean') sortableChildren: boolean = false;
 
+  /** 渲染分辨率（值越大越清晰但性能消耗越大，默认为 1） */
+  @type('number') @step(0.1) resolution: number = 1;
+
   /**
    * 初始化组件
    * @param obj - 初始化参数
@@ -78,6 +90,7 @@ export default class Render extends Component<RenderParams> {
    * @param obj.alpha - 透明度
    * @param obj.zIndex - 渲染层级
    * @param obj.sortableChildren - 是否对子对象排序
+   * @param obj.resolution - 渲染分辨率
    */
   init(obj?: RenderParams) {
     obj && Object.assign(this, obj);

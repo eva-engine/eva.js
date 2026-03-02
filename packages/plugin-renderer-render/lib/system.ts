@@ -4,7 +4,7 @@ import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@ev
 import RenderComponent from './component';
 
 @decorators.componentObserver({
-  Render: ['zIndex'],
+  Render: ['zIndex', 'resolution'],
 })
 export default class Render extends Renderer {
   static systemName: string = 'Render';
@@ -37,11 +37,27 @@ export default class Render extends Renderer {
   add(changed: ComponentChanged) {
     if (changed.component.name === 'Render') {
       this.setDirty(changed);
+
+      // 初始化时应用 resolution
+      const component = changed.component as RenderComponent;
+      const container = this.containerManager.getContainer(changed.gameObject.id);
+      if (component.resolution !== undefined && component.resolution > 0) {
+        this.applyResolution(container, component.resolution);
+      }
     }
   }
   change(changed: ComponentChanged) {
-    if (changed.component.name === 'Render' && changed.prop.prop[0] === 'zIndex') {
-      this.setDirty(changed);
+    if (changed.component.name === 'Render') {
+      if (changed.prop.prop[0] === 'zIndex') {
+        this.setDirty(changed);
+      } else if (changed.prop.prop[0] === 'resolution') {
+        // 当 resolution 改变时，重新应用到子对象
+        const component = changed.component as RenderComponent;
+        const container = this.containerManager.getContainer(changed.gameObject.id);
+        if (component.resolution !== undefined && component.resolution > 0) {
+          this.applyResolution(container, component.resolution);
+        }
+      }
     }
   }
   remove(changed: ComponentChanged) {
@@ -56,5 +72,20 @@ export default class Render extends Renderer {
     if (parentRender) {
       parentRender.sortDirty = true;
     }
+  }
+
+  /**
+   * 递归应用 resolution 到容器中所有支持该属性的子对象
+   */
+  private applyResolution(container: any, resolution: number) {
+    if (!container) return;
+    window.requestAnimationFrame(() => {
+      // 遍历容器的所有子对象
+      if (container.children && Array.isArray(container.children)) {
+        for (const child of container.children) {
+          child.resolution = resolution;
+        }
+      }
+    })
   }
 }

@@ -1,13 +1,21 @@
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
 import { Text, TextSystem } from '@eva/plugin-renderer-text';
+import { Render, RenderSystem } from '@eva/plugin-renderer-render';
 export const name = 'text';
 
 resource.addResource([
   {
     type: RESOURCE_TYPE.FONT,
     name: 'test',
-    src: { font: { type: 'font', url: 'https://g.alicdn.com/eva-assets/06b942920d2f310cffb0f22cc6d123ef/0.0.1/tmp/b52fe6c/1dccb0d7-0aae-4811-b763-88bee5675f65.otf?t=' + Date.now() } },
+    src: {
+      font: {
+        type: 'font',
+        url:
+          'https://g.alicdn.com/eva-assets/06b942920d2f310cffb0f22cc6d123ef/0.0.1/tmp/b52fe6c/1dccb0d7-0aae-4811-b763-88bee5675f65.otf?t=' +
+          Date.now(),
+      },
+    },
     preload: true,
   },
 ]);
@@ -22,6 +30,8 @@ export async function init(canvas) {
         width: 750,
         height: 1000,
       }),
+      //@ts-ignore
+      new RenderSystem(),
       //@ts-ignore
       new TextSystem(),
     ],
@@ -49,13 +59,12 @@ export async function init(canvas) {
     scale: {
       x: 3,
       y: 3,
-    }
+    },
   });
 
   const txt = text.addComponent(
     new Text({
       text: '¥0.02',
-      "resolution": 4,
       style: {
         fontFamily: 'test',
         fontSize: 108,
@@ -63,6 +72,13 @@ export async function init(canvas) {
         fontWeight: 'bold',
         fill: ['#ffffff'],
       },
+    }),
+  );
+
+  // 使用 Render 组件的 resolution 属性提升渲染清晰度
+  text.addComponent(
+    new Render({
+      resolution: 4,
     }),
   );
 
@@ -82,13 +98,12 @@ export async function init(canvas) {
     scale: {
       x: 3,
       y: 3,
-    }
+    },
   });
 
   const txt2 = text2.addComponent(
     new Text({
       text: '¥0.02',
-      // "resolution": 4,
       style: {
         fontFamily: 'test',
         fontSize: 108,
@@ -98,6 +113,8 @@ export async function init(canvas) {
       },
     }),
   );
+
+  // 不添加 Render 组件或 resolution 为 1 时使用默认渲染清晰度
 
   setTimeout(() => {
     txt.text = '¥0.03';

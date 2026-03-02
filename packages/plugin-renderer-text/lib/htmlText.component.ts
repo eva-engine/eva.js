@@ -91,14 +91,14 @@ export interface HTMLTextParams {
  *   }
  * }));
  *
- * // 高分辨率渲染
+ * // 高分辨率渲染（推荐使用 Render 组件的 resolution 属性）
  * label.addComponent(new HTMLText({
  *   text: '高清文本',
  *   textureStyle: {
- *     resolution: 2,
  *     scaleMode: 'linear'
  *   }
  * }));
+ * label.addComponent(new Render({ resolution: 2 }));
  * ```
  */
 export default class HTMLText extends Component<HTMLTextParams> {

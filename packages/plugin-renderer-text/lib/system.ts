@@ -7,7 +7,7 @@ import TextComponent from './component';
 import HTMLTextComponent from './htmlText.component';
 
 @decorators.componentObserver({
-  Text: ['text', { prop: ['style'], deep: true }, 'resolution'],
+  Text: ['text', { prop: ['style'], deep: true }],
   HTMLText: ['text', { prop: ['style'], deep: true }, { prop: ['textureStyle'], deep: true }],
 })
 export default class Text extends Renderer {
@@ -64,11 +64,6 @@ export default class Text extends Renderer {
     const initialText = fontFamily ? '' : component.text;
 
     const text = new TextEngine(initialText, styleWithoutFont);
-
-    // 设置 resolution 以提升清晰度
-    if (component.resolution !== undefined && component.resolution > 0) {
-      text.resolution = component.resolution;
-    }
 
     this.containerManager.getContainer(changed.gameObject.id).addChildAt(text, 0);
     this.texts[changed.gameObject.id] = {
@@ -147,12 +142,6 @@ export default class Text extends Renderer {
       text.text = component.text;
     } else if (changed.prop.prop[0] === 'style') {
       Object.assign(text.style, component.style);
-    } else if (changed.prop.prop[0] === 'resolution' && !isHTMLText) {
-      // 更新 resolution
-      const textComponent = component as TextComponent;
-      if (textComponent.resolution !== undefined && textComponent.resolution > 0) {
-        text.resolution = textComponent.resolution;
-      }
     } else if (changed.prop.prop[0] === 'textureStyle' && isHTMLText) {
       // HTMLText 纹理样式变化需要重新创建
       const htmlComponent = component as HTMLTextComponent;
