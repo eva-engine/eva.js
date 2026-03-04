@@ -100,23 +100,29 @@ class Ticker {
    * 主循环更新方法
    *
    * 计算帧时间差，当达到目标帧间隔时调用所有注册的回调函数。
-   * 这种方式实现了帧率控制，避免帧率过高导致的性能问题。
+   * 改进的算法：保持帧率限制的同时，使用固定的deltaTime避免突变。
    */
   update() {
     const currentTime = this.timeline.currentTime;
+    const realDeltaTime = currentTime - this._lastFrameTime;
 
-    const durationTime = currentTime - this._lastFrameTime;
-    if (durationTime >= this._frameDuration) {
-      const frameTime = currentTime - (durationTime % this._frameDuration);
-      const deltaTime = frameTime - this._lastFrameTime;
-      this._lastFrameTime = frameTime;
+    // 只在达到目标帧时间时才更新，实现帧率限制
+    if (realDeltaTime >= this._frameDuration) {
+      // 更新lastFrameTime，使用目标帧时间作为增量，保持稳定的步进
+      this._lastFrameTime += this._frameDuration;
+
+      // 如果落后太多（超过2帧），重新同步到当前时间避免连续跳帧
+      const drift = currentTime - this._lastFrameTime;
+      if (drift >= this._frameDuration * 2) {
+        this._lastFrameTime = currentTime - this._frameDuration;
+      }
 
       const options: UpdateParams = {
-        deltaTime,
-        time: frameTime,
-        currentTime: frameTime,
+        deltaTime: this._frameDuration, // 使用固定的目标帧时间
+        time: this._lastFrameTime,
+        currentTime: this._lastFrameTime,
         frameCount: ++this._frameCount,
-        fps: Math.round(1000 / deltaTime),
+        fps: this.frameRate,
       };
 
       for (const func of this._tickers) {
