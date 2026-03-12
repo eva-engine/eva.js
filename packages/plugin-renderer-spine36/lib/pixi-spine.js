@@ -7298,7 +7298,7 @@ class Spine extends ViewContainer {
         skeletonData: options,
       };
     }
-    super();
+    super({});
     // Pixi properties
     __publicField(this, 'batched', true);
     __publicField(this, 'buildId', 0);
