@@ -1,78 +1,31 @@
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) =>
-  key in obj
-    ? __defProp(obj, key, {
-        enumerable: true,
-        configurable: true,
-        writable: true,
-        value,
-      })
-    : (obj[key] = value);
-var __spreadValues = (a, b) => {
-  if (!b) b = {};
-  for (var prop in b) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __async = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = value => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = value => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = x => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-
 // spine-pixi-v8/src/require-shim.ts
-if (typeof window !== 'undefined' && window.PIXI) {
+if (typeof window !== "undefined" && window.PIXI) {
   const prevRequire = window.require;
-  window.require = x => {
+  window.require = (x) => {
     if (prevRequire) return prevRequire(x);
-    else if (x.startsWith('@pixi/') || x.startsWith('pixi.js')) return window.PIXI;
+    else if (x.startsWith("@pixi/") || x.startsWith("pixi.js")) return window.PIXI;
   };
 }
 
 // spine-pixi-v8/src/assets/atlasLoader.ts
 import {
   checkExtension,
+  copySearchParams,
   DOMAdapter,
   extensions,
   ExtensionType,
   LoaderParserPriority,
   path,
   Resolver,
-  TextureSource,
-} from 'pixi.js';
+  TextureSource
+} from "pixi.js";
 
 // spine-pixi-v8/src/SpineTexture.ts
-import { Texture as PixiTexture } from 'pixi.js';
+import { Texture as PixiTexture } from "pixi.js";
 
 // spine-core/src/Utils.ts
 var IntSet = class {
-  constructor() {
-    this.array = new Array();
-  }
+  array = new Array();
   add(value) {
     let contains = this.contains(value);
     this.array[value | 0] = value | 0;
@@ -89,10 +42,8 @@ var IntSet = class {
   }
 };
 var StringSet = class {
-  constructor() {
-    this.entries = {};
-    this.size = 0;
-  }
+  entries = {};
+  size = 0;
   add(value) {
     let contains = this.entries[value];
     this.entries[value] = true;
@@ -104,7 +55,8 @@ var StringSet = class {
   }
   addAll(values) {
     let oldSize = this.size;
-    for (var i = 0, n = values.length; i < n; i++) this.add(values[i]);
+    for (var i = 0, n = values.length; i < n; i++)
+      this.add(values[i]);
     return oldSize != this.size;
   }
   contains(value) {
@@ -115,13 +67,18 @@ var StringSet = class {
     this.size = 0;
   }
 };
-var _Color = class {
+var Color = class _Color {
   constructor(r = 0, g = 0, b = 0, a = 0) {
     this.r = r;
     this.g = g;
     this.b = b;
     this.a = a;
   }
+  static WHITE = new _Color(1, 1, 1, 1);
+  static RED = new _Color(1, 0, 0, 1);
+  static GREEN = new _Color(0, 1, 0, 1);
+  static BLUE = new _Color(0, 0, 1, 1);
+  static MAGENTA = new _Color(1, 0, 1, 1);
   set(r, g, b, a) {
     this.r = r;
     this.g = g;
@@ -137,7 +94,7 @@ var _Color = class {
     return this;
   }
   setFromString(hex) {
-    hex = hex.charAt(0) == '#' ? hex.substr(1) : hex;
+    hex = hex.charAt(0) == "#" ? hex.substr(1) : hex;
     this.r = parseInt(hex.substr(0, 2), 16) / 255;
     this.g = parseInt(hex.substr(2, 2), 16) / 255;
     this.b = parseInt(hex.substr(4, 2), 16) / 255;
@@ -174,20 +131,21 @@ var _Color = class {
     color.b = (value & 255) / 255;
   }
   toRgb888() {
-    const hex = x => ('0' + (x * 255).toString(16)).slice(-2);
-    return Number('0x' + hex(this.r) + hex(this.g) + hex(this.b));
+    const hex = (x) => ("0" + (x * 255).toString(16)).slice(-2);
+    return Number("0x" + hex(this.r) + hex(this.g) + hex(this.b));
   }
   static fromString(hex) {
     return new _Color().setFromString(hex);
   }
 };
-var Color = _Color;
-Color.WHITE = new _Color(1, 1, 1, 1);
-Color.RED = new _Color(1, 0, 0, 1);
-Color.GREEN = new _Color(0, 1, 0, 1);
-Color.BLUE = new _Color(0, 0, 1, 1);
-Color.MAGENTA = new _Color(1, 0, 1, 1);
-var _MathUtils = class {
+var MathUtils = class _MathUtils {
+  static PI = 3.1415927;
+  static PI2 = _MathUtils.PI * 2;
+  static invPI2 = 1 / _MathUtils.PI2;
+  static radiansToDegrees = 180 / _MathUtils.PI;
+  static radDeg = _MathUtils.radiansToDegrees;
+  static degreesToRadians = _MathUtils.PI / 180;
+  static degRad = _MathUtils.degreesToRadians;
   static clamp(value, min, max) {
     if (value < min) return min;
     if (value > max) return max;
@@ -222,26 +180,18 @@ var _MathUtils = class {
     return max - Math.sqrt((1 - u) * d * (max - mode));
   }
   static isPowerOfTwo(value) {
-    return value && (value & (value - 1)) === 0;
+    return value && (value & value - 1) === 0;
   }
 };
-var MathUtils = _MathUtils;
-MathUtils.PI = 3.1415927;
-MathUtils.PI2 = _MathUtils.PI * 2;
-MathUtils.invPI2 = 1 / _MathUtils.PI2;
-MathUtils.radiansToDegrees = 180 / _MathUtils.PI;
-MathUtils.radDeg = _MathUtils.radiansToDegrees;
-MathUtils.degreesToRadians = _MathUtils.PI / 180;
-MathUtils.degRad = _MathUtils.degreesToRadians;
 var Interpolation = class {
   apply(start, end, a) {
     return start + (end - start) * this.applyInternal(a);
   }
 };
 var Pow = class extends Interpolation {
+  power = 2;
   constructor(power) {
     super();
-    this.power = 2;
     this.power = power;
   }
   applyInternal(a) {
@@ -257,14 +207,16 @@ var PowOut = class extends Pow {
     return Math.pow(a - 1, this.power) * (this.power % 2 == 0 ? -1 : 1) + 1;
   }
 };
-var _Utils = class {
+var Utils = class _Utils {
+  static SUPPORTS_TYPED_ARRAYS = typeof Float32Array !== "undefined";
   static arrayCopy(source, sourceStart, dest, destStart, numElements) {
     for (let i = sourceStart, j = destStart; i < sourceStart + numElements; i++, j++) {
       dest[j] = source[i];
     }
   }
   static arrayFill(array, fromIndex, toIndex, value) {
-    for (let i = fromIndex; i < toIndex; i++) array[i] = value;
+    for (let i = fromIndex; i < toIndex; i++)
+      array[i] = value;
   }
   static setArraySize(array, size, value = 0) {
     let oldSize = array.length;
@@ -285,7 +237,8 @@ var _Utils = class {
     return array;
   }
   static newFloatArray(size) {
-    if (_Utils.SUPPORTS_TYPED_ARRAYS) return new Float32Array(size);
+    if (_Utils.SUPPORTS_TYPED_ARRAYS)
+      return new Float32Array(size);
     else {
       let array = new Array(size);
       for (let i = 0; i < array.length; i++) array[i] = 0;
@@ -293,7 +246,8 @@ var _Utils = class {
     }
   }
   static newShortArray(size) {
-    if (_Utils.SUPPORTS_TYPED_ARRAYS) return new Int16Array(size);
+    if (_Utils.SUPPORTS_TYPED_ARRAYS)
+      return new Int16Array(size);
     else {
       let array = new Array(size);
       for (let i = 0; i < array.length; i++) array[i] = 0;
@@ -307,42 +261,29 @@ var _Utils = class {
     return _Utils.SUPPORTS_TYPED_ARRAYS ? Math.fround(value) : value;
   }
   // This function is used to fix WebKit 602 specific issue described at http://esotericsoftware.com/forum/iOS-10-disappearing-graphics-10109
-  static webkit602BugfixHelper(alpha, blend) {}
+  static webkit602BugfixHelper(alpha, blend) {
+  }
   static contains(array, element, identity = true) {
-    for (var i = 0; i < array.length; i++) if (array[i] == element) return true;
+    for (var i = 0; i < array.length; i++)
+      if (array[i] == element) return true;
     return false;
   }
   static enumValue(type, name) {
     return type[name[0].toUpperCase() + name.slice(1)];
   }
 };
-var Utils = _Utils;
-Utils.SUPPORTS_TYPED_ARRAYS = typeof Float32Array !== 'undefined';
 var DebugUtils = class {
   static logBones(skeleton) {
     for (let i = 0; i < skeleton.bones.length; i++) {
       let bone = skeleton.bones[i];
-      console.log(
-        bone.data.name +
-          ', ' +
-          bone.a +
-          ', ' +
-          bone.b +
-          ', ' +
-          bone.c +
-          ', ' +
-          bone.d +
-          ', ' +
-          bone.worldX +
-          ', ' +
-          bone.worldY,
-      );
+      console.log(bone.data.name + ", " + bone.a + ", " + bone.b + ", " + bone.c + ", " + bone.d + ", " + bone.worldX + ", " + bone.worldY);
     }
   }
 };
 var Pool = class {
+  items = new Array();
+  instantiator;
   constructor(instantiator) {
-    this.items = new Array();
     this.instantiator = instantiator;
   }
   obtain() {
@@ -353,7 +294,8 @@ var Pool = class {
     this.items.push(item);
   }
   freeAll(items) {
-    for (let i = 0; i < items.length; i++) this.free(items[i]);
+    for (let i = 0; i < items.length; i++)
+      this.free(items[i]);
   }
   clear() {
     this.items.length = 0;
@@ -384,15 +326,13 @@ var Vector2 = class {
   }
 };
 var TimeKeeper = class {
-  constructor() {
-    this.maxDelta = 0.064;
-    this.framesPerSecond = 0;
-    this.delta = 0;
-    this.totalTime = 0;
-    this.lastTime = Date.now() / 1e3;
-    this.frameCount = 0;
-    this.frameTime = 0;
-  }
+  maxDelta = 0.064;
+  framesPerSecond = 0;
+  delta = 0;
+  totalTime = 0;
+  lastTime = Date.now() / 1e3;
+  frameCount = 0;
+  frameTime = 0;
   update() {
     let now = Date.now() / 1e3;
     this.delta = now - this.lastTime;
@@ -409,11 +349,12 @@ var TimeKeeper = class {
   }
 };
 var WindowedMean = class {
+  values;
+  addedValues = 0;
+  lastValue = 0;
+  mean = 0;
+  dirty = true;
   constructor(windowSize = 32) {
-    this.addedValues = 0;
-    this.lastValue = 0;
-    this.mean = 0;
-    this.dirty = true;
     this.values = new Array(windowSize);
   }
   hasEnoughData() {
@@ -429,7 +370,8 @@ var WindowedMean = class {
     if (this.hasEnoughData()) {
       if (this.dirty) {
         let mean = 0;
-        for (let i = 0; i < this.values.length; i++) mean += this.values[i];
+        for (let i = 0; i < this.values.length; i++)
+          mean += this.values[i];
         this.mean = mean / this.values.length;
         this.dirty = false;
       }
@@ -441,30 +383,32 @@ var WindowedMean = class {
 
 // spine-core/src/attachments/Attachment.ts
 var Attachment = class {
+  name;
   constructor(name) {
-    if (!name) throw new Error('name cannot be null.');
+    if (!name) throw new Error("name cannot be null.");
     this.name = name;
   }
 };
-var _VertexAttachment = class extends Attachment {
+var VertexAttachment = class _VertexAttachment extends Attachment {
+  static nextID = 0;
+  /** The unique ID for this attachment. */
+  id = _VertexAttachment.nextID++;
+  /** The bones which affect the {@link #getVertices()}. The array entries are, for each vertex, the number of bones affecting
+   * the vertex followed by that many bone indices, which is the index of the bone in {@link Skeleton#bones}. Will be null
+   * if this attachment has no weights. */
+  bones = null;
+  /** The vertex positions in the bone's coordinate system. For a non-weighted attachment, the values are `x,y`
+   * entries for each vertex. For a weighted attachment, the values are `x,y,weight` entries for each bone affecting
+   * each vertex. */
+  vertices = [];
+  /** The maximum number of world vertex values that can be output by
+   * {@link #computeWorldVertices()} using the `count` parameter. */
+  worldVerticesLength = 0;
+  /** Timelines for the timeline attachment are also applied to this attachment.
+   * May be null if no attachment-specific timelines should be applied. */
+  timelineAttachment = this;
   constructor(name) {
     super(name);
-    /** The unique ID for this attachment. */
-    this.id = _VertexAttachment.nextID++;
-    /** The bones which affect the {@link #getVertices()}. The array entries are, for each vertex, the number of bones affecting
-     * the vertex followed by that many bone indices, which is the index of the bone in {@link Skeleton#bones}. Will be null
-     * if this attachment has no weights. */
-    this.bones = null;
-    /** The vertex positions in the bone's coordinate system. For a non-weighted attachment, the values are `x,y`
-     * entries for each vertex. For a weighted attachment, the values are `x,y,weight` entries for each bone affecting
-     * each vertex. */
-    this.vertices = [];
-    /** The maximum number of world vertex values that can be output by
-     * {@link #computeWorldVertices()} using the `count` parameter. */
-    this.worldVerticesLength = 0;
-    /** Timelines for the timeline attachment are also applied to this attachment.
-     * May be null if no attachment-specific timelines should be applied. */
-    this.timelineAttachment = this;
   }
   /** Transforms the attachment's local {@link #vertices} to world coordinates. If the slot's {@link Slot#deform} is
    * not empty, it is used to deform the vertices.
@@ -488,20 +432,15 @@ var _VertexAttachment = class extends Attachment {
       let bone = slot.bone;
       let x = bone.worldX;
       let y = bone.worldY;
-      let a = bone.a,
-        b = bone.b,
-        c = bone.c,
-        d = bone.d;
+      let a = bone.a, b = bone.b, c = bone.c, d = bone.d;
       for (let v2 = start, w = offset; w < count; v2 += 2, w += stride) {
-        let vx = vertices[v2],
-          vy = vertices[v2 + 1];
+        let vx = vertices[v2], vy = vertices[v2 + 1];
         worldVertices[w] = vx * a + vy * b + x;
         worldVertices[w + 1] = vx * c + vy * d + y;
       }
       return;
     }
-    let v = 0,
-      skip = 0;
+    let v = 0, skip = 0;
     for (let i = 0; i < start; i += 2) {
       let n = bones[v];
       v += n + 1;
@@ -510,15 +449,12 @@ var _VertexAttachment = class extends Attachment {
     let skeletonBones = skeleton.bones;
     if (deformArray.length == 0) {
       for (let w = offset, b = skip * 3; w < count; w += stride) {
-        let wx = 0,
-          wy = 0;
+        let wx = 0, wy = 0;
         let n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3) {
           let bone = skeletonBones[bones[v]];
-          let vx = vertices[b],
-            vy = vertices[b + 1],
-            weight = vertices[b + 2];
+          let vx = vertices[b], vy = vertices[b + 1], weight = vertices[b + 2];
           wx += (vx * bone.a + vy * bone.b + bone.worldX) * weight;
           wy += (vx * bone.c + vy * bone.d + bone.worldY) * weight;
         }
@@ -528,15 +464,12 @@ var _VertexAttachment = class extends Attachment {
     } else {
       let deform = deformArray;
       for (let w = offset, b = skip * 3, f = skip << 1; w < count; w += stride) {
-        let wx = 0,
-          wy = 0;
+        let wx = 0, wy = 0;
         let n = bones[v++];
         n += v;
         for (; v < n; v++, b += 3, f += 2) {
           let bone = skeletonBones[bones[v]];
-          let vx = vertices[b] + deform[f],
-            vy = vertices[b + 1] + deform[f + 1],
-            weight = vertices[b + 2];
+          let vx = vertices[b] + deform[f], vy = vertices[b + 1] + deform[f + 1], weight = vertices[b + 2];
           wx += (vx * bone.a + vy * bone.b + bone.worldX) * weight;
           wy += (vx * bone.c + vy * bone.d + bone.worldY) * weight;
         }
@@ -550,7 +483,8 @@ var _VertexAttachment = class extends Attachment {
     if (this.bones) {
       attachment.bones = new Array(this.bones.length);
       Utils.arrayCopy(this.bones, 0, attachment.bones, 0, this.bones.length);
-    } else attachment.bones = null;
+    } else
+      attachment.bones = null;
     if (this.vertices) {
       attachment.vertices = Utils.newFloatArray(this.vertices.length);
       Utils.arrayCopy(this.vertices, 0, attachment.vertices, 0, this.vertices.length);
@@ -559,17 +493,17 @@ var _VertexAttachment = class extends Attachment {
     attachment.timelineAttachment = this.timelineAttachment;
   }
 };
-var VertexAttachment = _VertexAttachment;
-VertexAttachment.nextID = 0;
 
 // spine-core/src/attachments/Sequence.ts
-var _Sequence = class {
+var Sequence = class _Sequence {
+  static _nextID = 0;
+  id = _Sequence.nextID();
+  regions;
+  start = 0;
+  digits = 0;
+  /** The index of the region to show for the setup pose. */
+  setupIndex = 0;
   constructor(count) {
-    this.id = _Sequence.nextID();
-    this.start = 0;
-    this.digits = 0;
-    /** The index of the region to show for the setup pose. */
-    this.setupIndex = 0;
     this.regions = new Array(count);
   }
   copy() {
@@ -593,7 +527,8 @@ var _Sequence = class {
   getPath(basePath, index) {
     let result = basePath;
     let frame = (this.start + index).toString();
-    for (let i = this.digits - frame.length; i > 0; i--) result += '0';
+    for (let i = this.digits - frame.length; i > 0; i--)
+      result += "0";
     result += frame;
     return result;
   }
@@ -601,41 +536,50 @@ var _Sequence = class {
     return _Sequence._nextID++;
   }
 };
-var Sequence = _Sequence;
-Sequence._nextID = 0;
-var SequenceMode = /* @__PURE__ */ (SequenceMode2 => {
-  SequenceMode2[(SequenceMode2['hold'] = 0)] = 'hold';
-  SequenceMode2[(SequenceMode2['once'] = 1)] = 'once';
-  SequenceMode2[(SequenceMode2['loop'] = 2)] = 'loop';
-  SequenceMode2[(SequenceMode2['pingpong'] = 3)] = 'pingpong';
-  SequenceMode2[(SequenceMode2['onceReverse'] = 4)] = 'onceReverse';
-  SequenceMode2[(SequenceMode2['loopReverse'] = 5)] = 'loopReverse';
-  SequenceMode2[(SequenceMode2['pingpongReverse'] = 6)] = 'pingpongReverse';
+var SequenceMode = /* @__PURE__ */ ((SequenceMode2) => {
+  SequenceMode2[SequenceMode2["hold"] = 0] = "hold";
+  SequenceMode2[SequenceMode2["once"] = 1] = "once";
+  SequenceMode2[SequenceMode2["loop"] = 2] = "loop";
+  SequenceMode2[SequenceMode2["pingpong"] = 3] = "pingpong";
+  SequenceMode2[SequenceMode2["onceReverse"] = 4] = "onceReverse";
+  SequenceMode2[SequenceMode2["loopReverse"] = 5] = "loopReverse";
+  SequenceMode2[SequenceMode2["pingpongReverse"] = 6] = "pingpongReverse";
   return SequenceMode2;
 })(SequenceMode || {});
 var SequenceModeValues = [
-  0 /* hold */, 1 /* once */, 2 /* loop */, 3 /* pingpong */, 4 /* onceReverse */, 5 /* loopReverse */,
-  6 /* pingpongReverse */,
+  0 /* hold */,
+  1 /* once */,
+  2 /* loop */,
+  3 /* pingpong */,
+  4 /* onceReverse */,
+  5 /* loopReverse */,
+  6 /* pingpongReverse */
 ];
 
 // spine-core/src/Animation.ts
 var Animation = class {
+  /** The animation's name, which is unique across all animations in the skeleton. */
+  name;
+  timelines = [];
+  timelineIds = new StringSet();
+  /** The duration of the animation in seconds, which is the highest time of all keys in the timeline. */
+  duration;
   constructor(name, timelines, duration) {
-    this.timelines = [];
-    this.timelineIds = new StringSet();
-    if (!name) throw new Error('name cannot be null.');
+    if (!name) throw new Error("name cannot be null.");
     this.name = name;
     this.setTimelines(timelines);
     this.duration = duration;
   }
   setTimelines(timelines) {
-    if (!timelines) throw new Error('timelines cannot be null.');
+    if (!timelines) throw new Error("timelines cannot be null.");
     this.timelines = timelines;
     this.timelineIds.clear();
-    for (var i = 0; i < timelines.length; i++) this.timelineIds.addAll(timelines[i].getPropertyIds());
+    for (var i = 0; i < timelines.length; i++)
+      this.timelineIds.addAll(timelines[i].getPropertyIds());
   }
   hasTimeline(ids) {
-    for (let i = 0; i < ids.length; i++) if (this.timelineIds.contains(ids[i])) return true;
+    for (let i = 0; i < ids.length; i++)
+      if (this.timelineIds.contains(ids[i])) return true;
     return false;
   }
   /** Applies all the animation's timelines to the specified skeleton.
@@ -644,7 +588,7 @@ var Animation = class {
    * @param loop If true, the animation repeats after {@link #getDuration()}.
    * @param events May be null to ignore fired events. */
   apply(skeleton, lastTime, time, loop, events, alpha, blend, direction) {
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     if (loop && this.duration != 0) {
       time %= this.duration;
       if (lastTime > 0) lastTime %= this.duration;
@@ -654,16 +598,16 @@ var Animation = class {
       timelines[i].apply(skeleton, lastTime, time, events, alpha, blend, direction);
   }
 };
-var MixBlend = /* @__PURE__ */ (MixBlend2 => {
-  MixBlend2[(MixBlend2['setup'] = 0)] = 'setup';
-  MixBlend2[(MixBlend2['first'] = 1)] = 'first';
-  MixBlend2[(MixBlend2['replace'] = 2)] = 'replace';
-  MixBlend2[(MixBlend2['add'] = 3)] = 'add';
+var MixBlend = /* @__PURE__ */ ((MixBlend2) => {
+  MixBlend2[MixBlend2["setup"] = 0] = "setup";
+  MixBlend2[MixBlend2["first"] = 1] = "first";
+  MixBlend2[MixBlend2["replace"] = 2] = "replace";
+  MixBlend2[MixBlend2["add"] = 3] = "add";
   return MixBlend2;
 })(MixBlend || {});
-var MixDirection = /* @__PURE__ */ (MixDirection2 => {
-  MixDirection2[(MixDirection2['mixIn'] = 0)] = 'mixIn';
-  MixDirection2[(MixDirection2['mixOut'] = 1)] = 'mixOut';
+var MixDirection = /* @__PURE__ */ ((MixDirection2) => {
+  MixDirection2[MixDirection2["mixIn"] = 0] = "mixIn";
+  MixDirection2[MixDirection2["mixOut"] = 1] = "mixOut";
   return MixDirection2;
 })(MixDirection || {});
 var Property = {
@@ -695,9 +639,11 @@ var Property = {
   physicsConstraintGravity: 25,
   physicsConstraintMix: 26,
   physicsConstraintReset: 27,
-  sequence: 28,
+  sequence: 28
 };
 var Timeline = class {
+  propertyIds;
+  frames;
   constructor(frameCount, propertyIds) {
     this.propertyIds = propertyIds;
     this.frames = Utils.newFloatArray(frameCount * this.getFrameEntries());
@@ -716,21 +662,24 @@ var Timeline = class {
   }
   static search1(frames, time) {
     let n = frames.length;
-    for (let i = 1; i < n; i++) if (frames[i] > time) return i - 1;
+    for (let i = 1; i < n; i++)
+      if (frames[i] > time) return i - 1;
     return n - 1;
   }
   static search(frames, time, step) {
     let n = frames.length;
-    for (let i = step; i < n; i += step) if (frames[i] > time) return i - step;
+    for (let i = step; i < n; i += step)
+      if (frames[i] > time) return i - step;
     return n - step;
   }
 };
 var CurveTimeline = class extends Timeline {
+  curves;
   // type, x, y, ...
   constructor(frameCount, bezierCount, propertyIds) {
     super(frameCount, propertyIds);
     this.curves = Utils.newFloatArray(
-      frameCount + bezierCount * 18,
+      frameCount + bezierCount * 18
       /*BEZIER_SIZE*/
     );
     this.curves[frameCount - 1] = 1;
@@ -771,16 +720,11 @@ var CurveTimeline = class extends Timeline {
     let curves = this.curves;
     let i = this.getFrameCount() + bezier * 18;
     if (value == 0) curves[frame] = 2 + i;
-    let tmpx = (time1 - cx1 * 2 + cx2) * 0.03,
-      tmpy = (value1 - cy1 * 2 + cy2) * 0.03;
-    let dddx = ((cx1 - cx2) * 3 - time1 + time2) * 6e-3,
-      dddy = ((cy1 - cy2) * 3 - value1 + value2) * 6e-3;
-    let ddx = tmpx * 2 + dddx,
-      ddy = tmpy * 2 + dddy;
-    let dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667,
-      dy = (cy1 - value1) * 0.3 + tmpy + dddy * 0.16666667;
-    let x = time1 + dx,
-      y = value1 + dy;
+    let tmpx = (time1 - cx1 * 2 + cx2) * 0.03, tmpy = (value1 - cy1 * 2 + cy2) * 0.03;
+    let dddx = ((cx1 - cx2) * 3 - time1 + time2) * 6e-3, dddy = ((cy1 - cy2) * 3 - value1 + value2) * 6e-3;
+    let ddx = tmpx * 2 + dddx, ddy = tmpy * 2 + dddy;
+    let dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667, dy = (cy1 - value1) * 0.3 + tmpy + dddy * 0.16666667;
+    let x = time1 + dx, y = value1 + dy;
     for (let n = i + 18; i < n; i += 2) {
       curves[i] = x;
       curves[i + 1] = y;
@@ -799,22 +743,19 @@ var CurveTimeline = class extends Timeline {
   getBezierValue(time, frameIndex, valueOffset, i) {
     let curves = this.curves;
     if (curves[i] > time) {
-      let x2 = this.frames[frameIndex],
-        y2 = this.frames[frameIndex + valueOffset];
-      return y2 + ((time - x2) / (curves[i] - x2)) * (curves[i + 1] - y2);
+      let x2 = this.frames[frameIndex], y2 = this.frames[frameIndex + valueOffset];
+      return y2 + (time - x2) / (curves[i] - x2) * (curves[i + 1] - y2);
     }
     let n = i + 18;
     for (i += 2; i < n; i += 2) {
       if (curves[i] >= time) {
-        let x2 = curves[i - 2],
-          y2 = curves[i - 1];
-        return y2 + ((time - x2) / (curves[i] - x2)) * (curves[i + 1] - y2);
+        let x2 = curves[i - 2], y2 = curves[i - 1];
+        return y2 + (time - x2) / (curves[i] - x2) * (curves[i + 1] - y2);
       }
     }
     frameIndex += this.getFrameEntries();
-    let x = curves[n - 2],
-      y = curves[n - 1];
-    return y + ((time - x) / (this.frames[frameIndex] - x)) * (this.frames[frameIndex + valueOffset] - y);
+    let x = curves[n - 2], y = curves[n - 1];
+    return y + (time - x) / (this.frames[frameIndex] - x) * (this.frames[frameIndex + valueOffset] - y);
   }
 };
 var CurveTimeline1 = class extends CurveTimeline {
@@ -848,26 +789,17 @@ var CurveTimeline1 = class extends CurveTimeline {
     let curveType = this.curves[i >> 1];
     switch (curveType) {
       case 0:
-        let before = frames[i],
-          value =
-            frames[
-              i + 1
-              /*VALUE*/
-            ];
-        return (
-          value +
-          ((time - before) /
-            (frames[
-              i + 2
-              /*ENTRIES*/
-            ] -
-              before)) *
-            (frames[
-              i + 2 + 1
-              /*VALUE*/
-            ] -
-              value)
-        );
+        let before = frames[i], value = frames[
+          i + 1
+          /*VALUE*/
+        ];
+        return value + (time - before) / (frames[
+          i + 2
+          /*ENTRIES*/
+        ] - before) * (frames[
+          i + 2 + 1
+          /*VALUE*/
+        ] - value);
       case 1:
         return frames[
           i + 1
@@ -878,7 +810,7 @@ var CurveTimeline1 = class extends CurveTimeline {
       time,
       i,
       1,
-      curveType - 2,
+      curveType - 2
       /*BEZIER*/
     );
   }
@@ -994,9 +926,9 @@ var CurveTimeline2 = class extends CurveTimeline {
   }
 };
 var RotateTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.rotate + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.rotate + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1005,9 +937,14 @@ var RotateTimeline = class extends CurveTimeline1 {
   }
 };
 var TranslateTimeline = class extends CurveTimeline2 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.x + '|' + boneIndex, Property.y + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(
+      frameCount,
+      bezierCount,
+      Property.x + "|" + boneIndex,
+      Property.y + "|" + boneIndex
+    );
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1026,79 +963,64 @@ var TranslateTimeline = class extends CurveTimeline2 {
       }
       return;
     }
-    let x = 0,
-      y = 0;
+    let x = 0, y = 0;
     let i = Timeline.search(
       frames,
       time,
-      3,
+      3
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 3
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 3
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        x =
-          frames[
-            i + 1
-            /*VALUE1*/
-          ];
-        y =
-          frames[
-            i + 2
-            /*VALUE2*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 3
-            /*ENTRIES*/
-          ] -
-            before);
-        x +=
-          (frames[
-            i + 3 + 1
-            /*VALUE1*/
-          ] -
-            x) *
-          t;
-        y +=
-          (frames[
-            i + 3 + 2
-            /*VALUE2*/
-          ] -
-            y) *
-          t;
+        x = frames[
+          i + 1
+          /*VALUE1*/
+        ];
+        y = frames[
+          i + 2
+          /*VALUE2*/
+        ];
+        let t = (time - before) / (frames[
+          i + 3
+          /*ENTRIES*/
+        ] - before);
+        x += (frames[
+          i + 3 + 1
+          /*VALUE1*/
+        ] - x) * t;
+        y += (frames[
+          i + 3 + 2
+          /*VALUE2*/
+        ] - y) * t;
         break;
       case 1:
-        x =
-          frames[
-            i + 1
-            /*VALUE1*/
-          ];
-        y =
-          frames[
-            i + 2
-            /*VALUE2*/
-          ];
+        x = frames[
+          i + 1
+          /*VALUE1*/
+        ];
+        y = frames[
+          i + 2
+          /*VALUE2*/
+        ];
         break;
       default:
         x = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         y = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
     }
@@ -1119,9 +1041,9 @@ var TranslateTimeline = class extends CurveTimeline2 {
   }
 };
 var TranslateXTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.x + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.x + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1130,9 +1052,9 @@ var TranslateXTimeline = class extends CurveTimeline1 {
   }
 };
 var TranslateYTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.y + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.y + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1141,9 +1063,14 @@ var TranslateYTimeline = class extends CurveTimeline1 {
   }
 };
 var ScaleTimeline = class extends CurveTimeline2 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.scaleX + '|' + boneIndex, Property.scaleY + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(
+      frameCount,
+      bezierCount,
+      Property.scaleX + "|" + boneIndex,
+      Property.scaleY + "|" + boneIndex
+    );
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1166,74 +1093,60 @@ var ScaleTimeline = class extends CurveTimeline2 {
     let i = Timeline.search(
       frames,
       time,
-      3,
+      3
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 3
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 3
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        x =
-          frames[
-            i + 1
-            /*VALUE1*/
-          ];
-        y =
-          frames[
-            i + 2
-            /*VALUE2*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 3
-            /*ENTRIES*/
-          ] -
-            before);
-        x +=
-          (frames[
-            i + 3 + 1
-            /*VALUE1*/
-          ] -
-            x) *
-          t;
-        y +=
-          (frames[
-            i + 3 + 2
-            /*VALUE2*/
-          ] -
-            y) *
-          t;
+        x = frames[
+          i + 1
+          /*VALUE1*/
+        ];
+        y = frames[
+          i + 2
+          /*VALUE2*/
+        ];
+        let t = (time - before) / (frames[
+          i + 3
+          /*ENTRIES*/
+        ] - before);
+        x += (frames[
+          i + 3 + 1
+          /*VALUE1*/
+        ] - x) * t;
+        y += (frames[
+          i + 3 + 2
+          /*VALUE2*/
+        ] - y) * t;
         break;
       case 1:
-        x =
-          frames[
-            i + 1
-            /*VALUE1*/
-          ];
-        y =
-          frames[
-            i + 2
-            /*VALUE2*/
-          ];
+        x = frames[
+          i + 1
+          /*VALUE1*/
+        ];
+        y = frames[
+          i + 2
+          /*VALUE2*/
+        ];
         break;
       default:
         x = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         y = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
     }
@@ -1248,8 +1161,7 @@ var ScaleTimeline = class extends CurveTimeline2 {
         bone.scaleY = y;
       }
     } else {
-      let bx = 0,
-        by = 0;
+      let bx = 0, by = 0;
       if (direction == 1 /* mixOut */) {
         switch (blend) {
           case 0 /* setup */:
@@ -1293,9 +1205,9 @@ var ScaleTimeline = class extends CurveTimeline2 {
   }
 };
 var ScaleXTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.scaleX + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.scaleX + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1304,9 +1216,9 @@ var ScaleXTimeline = class extends CurveTimeline1 {
   }
 };
 var ScaleYTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.scaleY + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.scaleY + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1315,9 +1227,14 @@ var ScaleYTimeline = class extends CurveTimeline1 {
   }
 };
 var ShearTimeline = class extends CurveTimeline2 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.shearX + '|' + boneIndex, Property.shearY + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(
+      frameCount,
+      bezierCount,
+      Property.shearX + "|" + boneIndex,
+      Property.shearY + "|" + boneIndex
+    );
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1336,79 +1253,64 @@ var ShearTimeline = class extends CurveTimeline2 {
       }
       return;
     }
-    let x = 0,
-      y = 0;
+    let x = 0, y = 0;
     let i = Timeline.search(
       frames,
       time,
-      3,
+      3
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 3
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 3
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        x =
-          frames[
-            i + 1
-            /*VALUE1*/
-          ];
-        y =
-          frames[
-            i + 2
-            /*VALUE2*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 3
-            /*ENTRIES*/
-          ] -
-            before);
-        x +=
-          (frames[
-            i + 3 + 1
-            /*VALUE1*/
-          ] -
-            x) *
-          t;
-        y +=
-          (frames[
-            i + 3 + 2
-            /*VALUE2*/
-          ] -
-            y) *
-          t;
+        x = frames[
+          i + 1
+          /*VALUE1*/
+        ];
+        y = frames[
+          i + 2
+          /*VALUE2*/
+        ];
+        let t = (time - before) / (frames[
+          i + 3
+          /*ENTRIES*/
+        ] - before);
+        x += (frames[
+          i + 3 + 1
+          /*VALUE1*/
+        ] - x) * t;
+        y += (frames[
+          i + 3 + 2
+          /*VALUE2*/
+        ] - y) * t;
         break;
       case 1:
-        x =
-          frames[
-            i + 1
-            /*VALUE1*/
-          ];
-        y =
-          frames[
-            i + 2
-            /*VALUE2*/
-          ];
+        x = frames[
+          i + 1
+          /*VALUE1*/
+        ];
+        y = frames[
+          i + 2
+          /*VALUE2*/
+        ];
         break;
       default:
         x = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         y = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
     }
@@ -1429,9 +1331,9 @@ var ShearTimeline = class extends CurveTimeline2 {
   }
 };
 var ShearXTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.shearX + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.shearX + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1440,9 +1342,9 @@ var ShearXTimeline = class extends CurveTimeline1 {
   }
 };
 var ShearYTimeline = class extends CurveTimeline1 {
+  boneIndex = 0;
   constructor(frameCount, bezierCount, boneIndex) {
-    super(frameCount, bezierCount, Property.shearY + '|' + boneIndex);
-    this.boneIndex = 0;
+    super(frameCount, bezierCount, Property.shearY + "|" + boneIndex);
     this.boneIndex = boneIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1451,9 +1353,9 @@ var ShearYTimeline = class extends CurveTimeline1 {
   }
 };
 var InheritTimeline = class extends Timeline {
+  boneIndex = 0;
   constructor(frameCount, boneIndex) {
-    super(frameCount, [Property.inherit + '|' + boneIndex]);
-    this.boneIndex = 0;
+    super(frameCount, [Property.inherit + "|" + boneIndex]);
     this.boneIndex = boneIndex;
   }
   getFrameEntries() {
@@ -1482,22 +1384,24 @@ var InheritTimeline = class extends Timeline {
       if (blend == 0 /* setup */ || blend == 1 /* first */) bone.inherit = bone.data.inherit;
       return;
     }
-    bone.inherit =
-      this.frames[
-        Timeline.search(
-          frames,
-          time,
-          2,
-          /*ENTRIES*/
-        ) + 1
-        /*INHERIT*/
-      ];
+    bone.inherit = this.frames[
+      Timeline.search(
+        frames,
+        time,
+        2
+        /*ENTRIES*/
+      ) + 1
+      /*INHERIT*/
+    ];
   }
 };
 var RGBATimeline = class extends CurveTimeline {
+  slotIndex = 0;
   constructor(frameCount, bezierCount, slotIndex) {
-    super(frameCount, bezierCount, [Property.rgb + '|' + slotIndex, Property.alpha + '|' + slotIndex]);
-    this.slotIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.rgb + "|" + slotIndex,
+      Property.alpha + "|" + slotIndex
+    ]);
     this.slotIndex = slotIndex;
   }
   getFrameEntries() {
@@ -1540,138 +1444,112 @@ var RGBATimeline = class extends CurveTimeline {
             (setup.r - color.r) * alpha,
             (setup.g - color.g) * alpha,
             (setup.b - color.b) * alpha,
-            (setup.a - color.a) * alpha,
+            (setup.a - color.a) * alpha
           );
       }
       return;
     }
-    let r = 0,
-      g = 0,
-      b = 0,
-      a = 0;
+    let r = 0, g = 0, b = 0, a = 0;
     let i = Timeline.search(
       frames,
       time,
-      5,
+      5
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 5
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 5
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        a =
-          frames[
-            i + 4
-            /*A*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 5
-            /*ENTRIES*/
-          ] -
-            before);
-        r +=
-          (frames[
-            i + 5 + 1
-            /*R*/
-          ] -
-            r) *
-          t;
-        g +=
-          (frames[
-            i + 5 + 2
-            /*G*/
-          ] -
-            g) *
-          t;
-        b +=
-          (frames[
-            i + 5 + 3
-            /*B*/
-          ] -
-            b) *
-          t;
-        a +=
-          (frames[
-            i + 5 + 4
-            /*A*/
-          ] -
-            a) *
-          t;
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        a = frames[
+          i + 4
+          /*A*/
+        ];
+        let t = (time - before) / (frames[
+          i + 5
+          /*ENTRIES*/
+        ] - before);
+        r += (frames[
+          i + 5 + 1
+          /*R*/
+        ] - r) * t;
+        g += (frames[
+          i + 5 + 2
+          /*G*/
+        ] - g) * t;
+        b += (frames[
+          i + 5 + 3
+          /*B*/
+        ] - b) * t;
+        a += (frames[
+          i + 5 + 4
+          /*A*/
+        ] - a) * t;
         break;
       case 1:
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        a =
-          frames[
-            i + 4
-            /*A*/
-          ];
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        a = frames[
+          i + 4
+          /*A*/
+        ];
         break;
       default:
         r = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         g = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
         b = this.getBezierValue(
           time,
           i,
           3,
-          curveType + 18 * 2 - 2,
+          curveType + 18 * 2 - 2
           /*BEZIER*/
         );
         a = this.getBezierValue(
           time,
           i,
           4,
-          curveType + 18 * 3 - 2,
+          curveType + 18 * 3 - 2
           /*BEZIER*/
         );
     }
-    if (alpha == 1) color.set(r, g, b, a);
+    if (alpha == 1)
+      color.set(r, g, b, a);
     else {
       if (blend == 0 /* setup */) color.setFromColor(slot.data.color);
       color.add((r - color.r) * alpha, (g - color.g) * alpha, (b - color.b) * alpha, (a - color.a) * alpha);
@@ -1679,9 +1557,11 @@ var RGBATimeline = class extends CurveTimeline {
   }
 };
 var RGBTimeline = class extends CurveTimeline {
+  slotIndex = 0;
   constructor(frameCount, bezierCount, slotIndex) {
-    super(frameCount, bezierCount, [Property.rgb + '|' + slotIndex]);
-    this.slotIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.rgb + "|" + slotIndex
+    ]);
     this.slotIndex = slotIndex;
   }
   getFrameEntries() {
@@ -1724,100 +1604,80 @@ var RGBTimeline = class extends CurveTimeline {
       }
       return;
     }
-    let r = 0,
-      g = 0,
-      b = 0;
+    let r = 0, g = 0, b = 0;
     let i = Timeline.search(
       frames,
       time,
-      4,
+      4
       /*ENTRIES*/
     );
     let curveType = this.curves[i >> 2];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 4
-            /*ENTRIES*/
-          ] -
-            before);
-        r +=
-          (frames[
-            i + 4 + 1
-            /*R*/
-          ] -
-            r) *
-          t;
-        g +=
-          (frames[
-            i + 4 + 2
-            /*G*/
-          ] -
-            g) *
-          t;
-        b +=
-          (frames[
-            i + 4 + 3
-            /*B*/
-          ] -
-            b) *
-          t;
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        let t = (time - before) / (frames[
+          i + 4
+          /*ENTRIES*/
+        ] - before);
+        r += (frames[
+          i + 4 + 1
+          /*R*/
+        ] - r) * t;
+        g += (frames[
+          i + 4 + 2
+          /*G*/
+        ] - g) * t;
+        b += (frames[
+          i + 4 + 3
+          /*B*/
+        ] - b) * t;
         break;
       case 1:
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
         break;
       default:
         r = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         g = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
         b = this.getBezierValue(
           time,
           i,
           3,
-          curveType + 18 * 2 - 2,
+          curveType + 18 * 2 - 2
           /*BEZIER*/
         );
     }
@@ -1839,9 +1699,9 @@ var RGBTimeline = class extends CurveTimeline {
   }
 };
 var AlphaTimeline = class extends CurveTimeline1 {
+  slotIndex = 0;
   constructor(frameCount, bezierCount, slotIndex) {
-    super(frameCount, bezierCount, Property.alpha + '|' + slotIndex);
-    this.slotIndex = 0;
+    super(frameCount, bezierCount, Property.alpha + "|" + slotIndex);
     this.slotIndex = slotIndex;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -1860,7 +1720,8 @@ var AlphaTimeline = class extends CurveTimeline1 {
       return;
     }
     let a = this.getCurveValue(time);
-    if (alpha == 1) color.a = a;
+    if (alpha == 1)
+      color.a = a;
     else {
       if (blend == 0 /* setup */) color.a = slot.data.color.a;
       color.a += (a - color.a) * alpha;
@@ -1868,13 +1729,13 @@ var AlphaTimeline = class extends CurveTimeline1 {
   }
 };
 var RGBA2Timeline = class extends CurveTimeline {
+  slotIndex = 0;
   constructor(frameCount, bezierCount, slotIndex) {
     super(frameCount, bezierCount, [
-      Property.rgb + '|' + slotIndex,
-      Property.alpha + '|' + slotIndex,
-      Property.rgb2 + '|' + slotIndex,
+      Property.rgb + "|" + slotIndex,
+      Property.alpha + "|" + slotIndex,
+      Property.rgb2 + "|" + slotIndex
     ]);
-    this.slotIndex = 0;
     this.slotIndex = slotIndex;
   }
   getFrameEntries() {
@@ -1917,11 +1778,9 @@ var RGBA2Timeline = class extends CurveTimeline {
     let slot = skeleton.slots[this.slotIndex];
     if (!slot.bone.active) return;
     let frames = this.frames;
-    let light = slot.color,
-      dark = slot.darkColor;
+    let light = slot.color, dark = slot.darkColor;
     if (time < frames[0]) {
-      let setupLight = slot.data.color,
-        setupDark = slot.data.darkColor;
+      let setupLight = slot.data.color, setupDark = slot.data.darkColor;
       switch (blend) {
         case 0 /* setup */:
           light.setFromColor(setupLight);
@@ -1934,7 +1793,7 @@ var RGBA2Timeline = class extends CurveTimeline {
             (setupLight.r - light.r) * alpha,
             (setupLight.g - light.g) * alpha,
             (setupLight.b - light.b) * alpha,
-            (setupLight.a - light.a) * alpha,
+            (setupLight.a - light.a) * alpha
           );
           dark.r += (setupDark.r - dark.r) * alpha;
           dark.g += (setupDark.g - dark.g) * alpha;
@@ -1942,200 +1801,156 @@ var RGBA2Timeline = class extends CurveTimeline {
       }
       return;
     }
-    let r = 0,
-      g = 0,
-      b = 0,
-      a = 0,
-      r2 = 0,
-      g2 = 0,
-      b2 = 0;
+    let r = 0, g = 0, b = 0, a = 0, r2 = 0, g2 = 0, b2 = 0;
     let i = Timeline.search(
       frames,
       time,
-      8,
+      8
       /*ENTRIES*/
     );
     let curveType = this.curves[i >> 3];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        a =
-          frames[
-            i + 4
-            /*A*/
-          ];
-        r2 =
-          frames[
-            i + 5
-            /*R2*/
-          ];
-        g2 =
-          frames[
-            i + 6
-            /*G2*/
-          ];
-        b2 =
-          frames[
-            i + 7
-            /*B2*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 8
-            /*ENTRIES*/
-          ] -
-            before);
-        r +=
-          (frames[
-            i + 8 + 1
-            /*R*/
-          ] -
-            r) *
-          t;
-        g +=
-          (frames[
-            i + 8 + 2
-            /*G*/
-          ] -
-            g) *
-          t;
-        b +=
-          (frames[
-            i + 8 + 3
-            /*B*/
-          ] -
-            b) *
-          t;
-        a +=
-          (frames[
-            i + 8 + 4
-            /*A*/
-          ] -
-            a) *
-          t;
-        r2 +=
-          (frames[
-            i + 8 + 5
-            /*R2*/
-          ] -
-            r2) *
-          t;
-        g2 +=
-          (frames[
-            i + 8 + 6
-            /*G2*/
-          ] -
-            g2) *
-          t;
-        b2 +=
-          (frames[
-            i + 8 + 7
-            /*B2*/
-          ] -
-            b2) *
-          t;
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        a = frames[
+          i + 4
+          /*A*/
+        ];
+        r2 = frames[
+          i + 5
+          /*R2*/
+        ];
+        g2 = frames[
+          i + 6
+          /*G2*/
+        ];
+        b2 = frames[
+          i + 7
+          /*B2*/
+        ];
+        let t = (time - before) / (frames[
+          i + 8
+          /*ENTRIES*/
+        ] - before);
+        r += (frames[
+          i + 8 + 1
+          /*R*/
+        ] - r) * t;
+        g += (frames[
+          i + 8 + 2
+          /*G*/
+        ] - g) * t;
+        b += (frames[
+          i + 8 + 3
+          /*B*/
+        ] - b) * t;
+        a += (frames[
+          i + 8 + 4
+          /*A*/
+        ] - a) * t;
+        r2 += (frames[
+          i + 8 + 5
+          /*R2*/
+        ] - r2) * t;
+        g2 += (frames[
+          i + 8 + 6
+          /*G2*/
+        ] - g2) * t;
+        b2 += (frames[
+          i + 8 + 7
+          /*B2*/
+        ] - b2) * t;
         break;
       case 1:
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        a =
-          frames[
-            i + 4
-            /*A*/
-          ];
-        r2 =
-          frames[
-            i + 5
-            /*R2*/
-          ];
-        g2 =
-          frames[
-            i + 6
-            /*G2*/
-          ];
-        b2 =
-          frames[
-            i + 7
-            /*B2*/
-          ];
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        a = frames[
+          i + 4
+          /*A*/
+        ];
+        r2 = frames[
+          i + 5
+          /*R2*/
+        ];
+        g2 = frames[
+          i + 6
+          /*G2*/
+        ];
+        b2 = frames[
+          i + 7
+          /*B2*/
+        ];
         break;
       default:
         r = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         g = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
         b = this.getBezierValue(
           time,
           i,
           3,
-          curveType + 18 * 2 - 2,
+          curveType + 18 * 2 - 2
           /*BEZIER*/
         );
         a = this.getBezierValue(
           time,
           i,
           4,
-          curveType + 18 * 3 - 2,
+          curveType + 18 * 3 - 2
           /*BEZIER*/
         );
         r2 = this.getBezierValue(
           time,
           i,
           5,
-          curveType + 18 * 4 - 2,
+          curveType + 18 * 4 - 2
           /*BEZIER*/
         );
         g2 = this.getBezierValue(
           time,
           i,
           6,
-          curveType + 18 * 5 - 2,
+          curveType + 18 * 5 - 2
           /*BEZIER*/
         );
         b2 = this.getBezierValue(
           time,
           i,
           7,
-          curveType + 18 * 6 - 2,
+          curveType + 18 * 6 - 2
           /*BEZIER*/
         );
     }
@@ -2160,9 +1975,12 @@ var RGBA2Timeline = class extends CurveTimeline {
   }
 };
 var RGB2Timeline = class extends CurveTimeline {
+  slotIndex = 0;
   constructor(frameCount, bezierCount, slotIndex) {
-    super(frameCount, bezierCount, [Property.rgb + '|' + slotIndex, Property.rgb2 + '|' + slotIndex]);
-    this.slotIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.rgb + "|" + slotIndex,
+      Property.rgb2 + "|" + slotIndex
+    ]);
     this.slotIndex = slotIndex;
   }
   getFrameEntries() {
@@ -2201,11 +2019,9 @@ var RGB2Timeline = class extends CurveTimeline {
     let slot = skeleton.slots[this.slotIndex];
     if (!slot.bone.active) return;
     let frames = this.frames;
-    let light = slot.color,
-      dark = slot.darkColor;
+    let light = slot.color, dark = slot.darkColor;
     if (time < frames[0]) {
-      let setupLight = slot.data.color,
-        setupDark = slot.data.darkColor;
+      let setupLight = slot.data.color, setupDark = slot.data.darkColor;
       switch (blend) {
         case 0 /* setup */:
           light.r = setupLight.r;
@@ -2225,180 +2041,140 @@ var RGB2Timeline = class extends CurveTimeline {
       }
       return;
     }
-    let r = 0,
-      g = 0,
-      b = 0,
-      a = 0,
-      r2 = 0,
-      g2 = 0,
-      b2 = 0;
+    let r = 0, g = 0, b = 0, a = 0, r2 = 0, g2 = 0, b2 = 0;
     let i = Timeline.search(
       frames,
       time,
-      7,
+      7
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 7
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 7
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        r2 =
-          frames[
-            i + 4
-            /*R2*/
-          ];
-        g2 =
-          frames[
-            i + 5
-            /*G2*/
-          ];
-        b2 =
-          frames[
-            i + 6
-            /*B2*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 7
-            /*ENTRIES*/
-          ] -
-            before);
-        r +=
-          (frames[
-            i + 7 + 1
-            /*R*/
-          ] -
-            r) *
-          t;
-        g +=
-          (frames[
-            i + 7 + 2
-            /*G*/
-          ] -
-            g) *
-          t;
-        b +=
-          (frames[
-            i + 7 + 3
-            /*B*/
-          ] -
-            b) *
-          t;
-        r2 +=
-          (frames[
-            i + 7 + 4
-            /*R2*/
-          ] -
-            r2) *
-          t;
-        g2 +=
-          (frames[
-            i + 7 + 5
-            /*G2*/
-          ] -
-            g2) *
-          t;
-        b2 +=
-          (frames[
-            i + 7 + 6
-            /*B2*/
-          ] -
-            b2) *
-          t;
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        r2 = frames[
+          i + 4
+          /*R2*/
+        ];
+        g2 = frames[
+          i + 5
+          /*G2*/
+        ];
+        b2 = frames[
+          i + 6
+          /*B2*/
+        ];
+        let t = (time - before) / (frames[
+          i + 7
+          /*ENTRIES*/
+        ] - before);
+        r += (frames[
+          i + 7 + 1
+          /*R*/
+        ] - r) * t;
+        g += (frames[
+          i + 7 + 2
+          /*G*/
+        ] - g) * t;
+        b += (frames[
+          i + 7 + 3
+          /*B*/
+        ] - b) * t;
+        r2 += (frames[
+          i + 7 + 4
+          /*R2*/
+        ] - r2) * t;
+        g2 += (frames[
+          i + 7 + 5
+          /*G2*/
+        ] - g2) * t;
+        b2 += (frames[
+          i + 7 + 6
+          /*B2*/
+        ] - b2) * t;
         break;
       case 1:
-        r =
-          frames[
-            i + 1
-            /*R*/
-          ];
-        g =
-          frames[
-            i + 2
-            /*G*/
-          ];
-        b =
-          frames[
-            i + 3
-            /*B*/
-          ];
-        r2 =
-          frames[
-            i + 4
-            /*R2*/
-          ];
-        g2 =
-          frames[
-            i + 5
-            /*G2*/
-          ];
-        b2 =
-          frames[
-            i + 6
-            /*B2*/
-          ];
+        r = frames[
+          i + 1
+          /*R*/
+        ];
+        g = frames[
+          i + 2
+          /*G*/
+        ];
+        b = frames[
+          i + 3
+          /*B*/
+        ];
+        r2 = frames[
+          i + 4
+          /*R2*/
+        ];
+        g2 = frames[
+          i + 5
+          /*G2*/
+        ];
+        b2 = frames[
+          i + 6
+          /*B2*/
+        ];
         break;
       default:
         r = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         g = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
         b = this.getBezierValue(
           time,
           i,
           3,
-          curveType + 18 * 2 - 2,
+          curveType + 18 * 2 - 2
           /*BEZIER*/
         );
         r2 = this.getBezierValue(
           time,
           i,
           4,
-          curveType + 18 * 3 - 2,
+          curveType + 18 * 3 - 2
           /*BEZIER*/
         );
         g2 = this.getBezierValue(
           time,
           i,
           5,
-          curveType + 18 * 4 - 2,
+          curveType + 18 * 4 - 2
           /*BEZIER*/
         );
         b2 = this.getBezierValue(
           time,
           i,
           6,
-          curveType + 18 * 5 - 2,
+          curveType + 18 * 5 - 2
           /*BEZIER*/
         );
     }
@@ -2411,8 +2187,7 @@ var RGB2Timeline = class extends CurveTimeline {
       dark.b = b2;
     } else {
       if (blend == 0 /* setup */) {
-        let setupLight = slot.data.color,
-          setupDark = slot.data.darkColor;
+        let setupLight = slot.data.color, setupDark = slot.data.darkColor;
         light.r = setupLight.r;
         light.g = setupLight.g;
         light.b = setupLight.b;
@@ -2430,9 +2205,13 @@ var RGB2Timeline = class extends CurveTimeline {
   }
 };
 var AttachmentTimeline = class extends Timeline {
+  slotIndex = 0;
+  /** The attachment name for each key frame. May contain null values to clear the attachment. */
+  attachmentNames;
   constructor(frameCount, slotIndex) {
-    super(frameCount, [Property.attachment + '|' + slotIndex]);
-    this.slotIndex = 0;
+    super(frameCount, [
+      Property.attachment + "|" + slotIndex
+    ]);
     this.slotIndex = slotIndex;
     this.attachmentNames = new Array(frameCount);
   }
@@ -2452,8 +2231,7 @@ var AttachmentTimeline = class extends Timeline {
       return;
     }
     if (time < this.frames[0]) {
-      if (blend == 0 /* setup */ || blend == 1 /* first */)
-        this.setAttachment(skeleton, slot, slot.data.attachmentName);
+      if (blend == 0 /* setup */ || blend == 1 /* first */) this.setAttachment(skeleton, slot, slot.data.attachmentName);
       return;
     }
     this.setAttachment(skeleton, slot, this.attachmentNames[Timeline.search1(this.frames, time)]);
@@ -2463,9 +2241,15 @@ var AttachmentTimeline = class extends Timeline {
   }
 };
 var DeformTimeline = class extends CurveTimeline {
+  slotIndex = 0;
+  /** The attachment that will be deformed. */
+  attachment;
+  /** The vertices for each key frame. */
+  vertices;
   constructor(frameCount, bezierCount, slotIndex, attachment) {
-    super(frameCount, bezierCount, [Property.deform + '|' + slotIndex + '|' + attachment.id]);
-    this.slotIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.deform + "|" + slotIndex + "|" + attachment.id
+    ]);
     this.slotIndex = slotIndex;
     this.attachment = attachment;
     this.vertices = new Array(frameCount);
@@ -2485,16 +2269,11 @@ var DeformTimeline = class extends CurveTimeline {
     let curves = this.curves;
     let i = this.getFrameCount() + bezier * 18;
     if (value == 0) curves[frame] = 2 + i;
-    let tmpx = (time1 - cx1 * 2 + cx2) * 0.03,
-      tmpy = cy2 * 0.03 - cy1 * 0.06;
-    let dddx = ((cx1 - cx2) * 3 - time1 + time2) * 6e-3,
-      dddy = (cy1 - cy2 + 0.33333333) * 0.018;
-    let ddx = tmpx * 2 + dddx,
-      ddy = tmpy * 2 + dddy;
-    let dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667,
-      dy = cy1 * 0.3 + tmpy + dddy * 0.16666667;
-    let x = time1 + dx,
-      y = dy;
+    let tmpx = (time1 - cx1 * 2 + cx2) * 0.03, tmpy = cy2 * 0.03 - cy1 * 0.06;
+    let dddx = ((cx1 - cx2) * 3 - time1 + time2) * 6e-3, dddy = (cy1 - cy2 + 0.33333333) * 0.018;
+    let ddx = tmpx * 2 + dddx, ddy = tmpy * 2 + dddy;
+    let dx = (cx1 - time1) * 0.3 + tmpx + dddx * 0.16666667, dy = cy1 * 0.3 + tmpy + dddy * 0.16666667;
+    let x = time1 + dx, y = dy;
     for (let n = i + 18; i < n; i += 2) {
       curves[i] = x;
       curves[i + 1] = y;
@@ -2519,19 +2298,17 @@ var DeformTimeline = class extends CurveTimeline {
     i -= 2;
     if (curves[i] > time) {
       let x2 = this.frames[frame];
-      return (curves[i + 1] * (time - x2)) / (curves[i] - x2);
+      return curves[i + 1] * (time - x2) / (curves[i] - x2);
     }
     let n = i + 18;
     for (i += 2; i < n; i += 2) {
       if (curves[i] >= time) {
-        let x2 = curves[i - 2],
-          y2 = curves[i - 1];
-        return y2 + ((time - x2) / (curves[i] - x2)) * (curves[i + 1] - y2);
+        let x2 = curves[i - 2], y2 = curves[i - 1];
+        return y2 + (time - x2) / (curves[i] - x2) * (curves[i + 1] - y2);
       }
     }
-    let x = curves[n - 2],
-      y = curves[n - 1];
-    return y + ((1 - y) * (time - x)) / (this.frames[frame + this.getFrameEntries()] - x);
+    let x = curves[n - 2], y = curves[n - 1];
+    return y + (1 - y) * (time - x) / (this.frames[frame + this.getFrameEntries()] - x);
   }
   apply(skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
     let slot = skeleton.slots[this.slotIndex];
@@ -2558,10 +2335,12 @@ var DeformTimeline = class extends CurveTimeline {
           let vertexAttachment = slotAttachment;
           if (!vertexAttachment.bones) {
             let setupVertices = vertexAttachment.vertices;
-            for (var i = 0; i < vertexCount; i++) deform[i] += (setupVertices[i] - deform[i]) * alpha;
+            for (var i = 0; i < vertexCount; i++)
+              deform[i] += (setupVertices[i] - deform[i]) * alpha;
           } else {
             alpha = 1 - alpha;
-            for (var i = 0; i < vertexCount; i++) deform[i] *= alpha;
+            for (var i = 0; i < vertexCount; i++)
+              deform[i] *= alpha;
           }
       }
       return;
@@ -2574,11 +2353,14 @@ var DeformTimeline = class extends CurveTimeline {
           let vertexAttachment = slotAttachment;
           if (!vertexAttachment.bones) {
             let setupVertices = vertexAttachment.vertices;
-            for (let i2 = 0; i2 < vertexCount; i2++) deform[i2] += lastVertices[i2] - setupVertices[i2];
+            for (let i2 = 0; i2 < vertexCount; i2++)
+              deform[i2] += lastVertices[i2] - setupVertices[i2];
           } else {
-            for (let i2 = 0; i2 < vertexCount; i2++) deform[i2] += lastVertices[i2];
+            for (let i2 = 0; i2 < vertexCount; i2++)
+              deform[i2] += lastVertices[i2];
           }
-        } else Utils.arrayCopy(lastVertices, 0, deform, 0, vertexCount);
+        } else
+          Utils.arrayCopy(lastVertices, 0, deform, 0, vertexCount);
       } else {
         switch (blend) {
           case 0 /* setup */: {
@@ -2590,21 +2372,25 @@ var DeformTimeline = class extends CurveTimeline {
                 deform[i2] = setup + (lastVertices[i2] - setup) * alpha;
               }
             } else {
-              for (let i2 = 0; i2 < vertexCount; i2++) deform[i2] = lastVertices[i2] * alpha;
+              for (let i2 = 0; i2 < vertexCount; i2++)
+                deform[i2] = lastVertices[i2] * alpha;
             }
             break;
           }
           case 1 /* first */:
           case 2 /* replace */:
-            for (let i2 = 0; i2 < vertexCount; i2++) deform[i2] += (lastVertices[i2] - deform[i2]) * alpha;
+            for (let i2 = 0; i2 < vertexCount; i2++)
+              deform[i2] += (lastVertices[i2] - deform[i2]) * alpha;
             break;
           case 3 /* add */:
             let vertexAttachment = slotAttachment;
             if (!vertexAttachment.bones) {
               let setupVertices = vertexAttachment.vertices;
-              for (let i2 = 0; i2 < vertexCount; i2++) deform[i2] += (lastVertices[i2] - setupVertices[i2]) * alpha;
+              for (let i2 = 0; i2 < vertexCount; i2++)
+                deform[i2] += (lastVertices[i2] - setupVertices[i2]) * alpha;
             } else {
-              for (let i2 = 0; i2 < vertexCount; i2++) deform[i2] += lastVertices[i2] * alpha;
+              for (let i2 = 0; i2 < vertexCount; i2++)
+                deform[i2] += lastVertices[i2] * alpha;
             }
         }
       }
@@ -2642,8 +2428,7 @@ var DeformTimeline = class extends CurveTimeline {
           if (!vertexAttachment2.bones) {
             let setupVertices = vertexAttachment2.vertices;
             for (let i2 = 0; i2 < vertexCount; i2++) {
-              let prev = prevVertices[i2],
-                setup = setupVertices[i2];
+              let prev = prevVertices[i2], setup = setupVertices[i2];
               deform[i2] = setup + (prev + (nextVertices[i2] - prev) * percent - setup) * alpha;
             }
           } else {
@@ -2679,7 +2464,10 @@ var DeformTimeline = class extends CurveTimeline {
     }
   }
 };
-var _EventTimeline = class extends Timeline {
+var EventTimeline = class _EventTimeline extends Timeline {
+  static propertyIds = ["" + Property.event];
+  /** The event for each key frame. */
+  events;
   constructor(frameCount) {
     super(frameCount, _EventTimeline.propertyIds);
     this.events = new Array(frameCount);
@@ -2700,10 +2488,12 @@ var _EventTimeline = class extends Timeline {
     if (lastTime > time) {
       this.apply(skeleton, lastTime, Number.MAX_VALUE, firedEvents, alpha, blend, direction);
       lastTime = -1;
-    } else if (lastTime >= frames[frameCount - 1]) return;
+    } else if (lastTime >= frames[frameCount - 1])
+      return;
     if (time < frames[0]) return;
     let i = 0;
-    if (lastTime < frames[0]) i = 0;
+    if (lastTime < frames[0])
+      i = 0;
     else {
       i = Timeline.search1(frames, lastTime) + 1;
       let frameTime = frames[i];
@@ -2712,12 +2502,14 @@ var _EventTimeline = class extends Timeline {
         i--;
       }
     }
-    for (; i < frameCount && time >= frames[i]; i++) firedEvents.push(this.events[i]);
+    for (; i < frameCount && time >= frames[i]; i++)
+      firedEvents.push(this.events[i]);
   }
 };
-var EventTimeline = _EventTimeline;
-EventTimeline.propertyIds = ['' + Property.event];
-var _DrawOrderTimeline = class extends Timeline {
+var DrawOrderTimeline = class _DrawOrderTimeline extends Timeline {
+  static propertyIds = ["" + Property.drawOrder];
+  /** The draw order for each key frame. See {@link #setFrame(int, float, int[])}. */
+  drawOrders;
   constructor(frameCount) {
     super(frameCount, _DrawOrderTimeline.propertyIds);
     this.drawOrders = new Array(frameCount);
@@ -2738,27 +2530,28 @@ var _DrawOrderTimeline = class extends Timeline {
       return;
     }
     if (time < this.frames[0]) {
-      if (blend == 0 /* setup */ || blend == 1 /* first */)
-        Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
+      if (blend == 0 /* setup */ || blend == 1 /* first */) Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
       return;
     }
     let idx = Timeline.search1(this.frames, time);
     let drawOrderToSetupIndex = this.drawOrders[idx];
-    if (!drawOrderToSetupIndex) Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
+    if (!drawOrderToSetupIndex)
+      Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
     else {
       let drawOrder = skeleton.drawOrder;
       let slots = skeleton.slots;
-      for (let i = 0, n = drawOrderToSetupIndex.length; i < n; i++) drawOrder[i] = slots[drawOrderToSetupIndex[i]];
+      for (let i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
+        drawOrder[i] = slots[drawOrderToSetupIndex[i]];
     }
   }
 };
-var DrawOrderTimeline = _DrawOrderTimeline;
-DrawOrderTimeline.propertyIds = ['' + Property.drawOrder];
 var IkConstraintTimeline = class extends CurveTimeline {
+  /** The index of the IK constraint in {@link Skeleton#getIkConstraints()} that will be changed when this timeline is applied */
+  constraintIndex = 0;
   constructor(frameCount, bezierCount, ikConstraintIndex) {
-    super(frameCount, bezierCount, [Property.ikConstraint + '|' + ikConstraintIndex]);
-    /** The index of the IK constraint in {@link Skeleton#getIkConstraints()} that will be changed when this timeline is applied */
-    this.constraintIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.ikConstraint + "|" + ikConstraintIndex
+    ]);
     this.constraintIndex = ikConstraintIndex;
   }
   getFrameEntries() {
@@ -2811,79 +2604,64 @@ var IkConstraintTimeline = class extends CurveTimeline {
       }
       return;
     }
-    let mix = 0,
-      softness = 0;
+    let mix = 0, softness = 0;
     let i = Timeline.search(
       frames,
       time,
-      6,
+      6
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 6
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 6
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        mix =
-          frames[
-            i + 1
-            /*MIX*/
-          ];
-        softness =
-          frames[
-            i + 2
-            /*SOFTNESS*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 6
-            /*ENTRIES*/
-          ] -
-            before);
-        mix +=
-          (frames[
-            i + 6 + 1
-            /*MIX*/
-          ] -
-            mix) *
-          t;
-        softness +=
-          (frames[
-            i + 6 + 2
-            /*SOFTNESS*/
-          ] -
-            softness) *
-          t;
+        mix = frames[
+          i + 1
+          /*MIX*/
+        ];
+        softness = frames[
+          i + 2
+          /*SOFTNESS*/
+        ];
+        let t = (time - before) / (frames[
+          i + 6
+          /*ENTRIES*/
+        ] - before);
+        mix += (frames[
+          i + 6 + 1
+          /*MIX*/
+        ] - mix) * t;
+        softness += (frames[
+          i + 6 + 2
+          /*SOFTNESS*/
+        ] - softness) * t;
         break;
       case 1:
-        mix =
-          frames[
-            i + 1
-            /*MIX*/
-          ];
-        softness =
-          frames[
-            i + 2
-            /*SOFTNESS*/
-          ];
+        mix = frames[
+          i + 1
+          /*MIX*/
+        ];
+        softness = frames[
+          i + 2
+          /*SOFTNESS*/
+        ];
         break;
       default:
         mix = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         softness = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
     }
@@ -2895,50 +2673,46 @@ var IkConstraintTimeline = class extends CurveTimeline {
         constraint.compress = constraint.data.compress;
         constraint.stretch = constraint.data.stretch;
       } else {
-        constraint.bendDirection =
-          frames[
-            i + 3
-            /*BEND_DIRECTION*/
-          ];
-        constraint.compress =
-          frames[
-            i + 4
-            /*COMPRESS*/
-          ] != 0;
-        constraint.stretch =
-          frames[
-            i + 5
-            /*STRETCH*/
-          ] != 0;
+        constraint.bendDirection = frames[
+          i + 3
+          /*BEND_DIRECTION*/
+        ];
+        constraint.compress = frames[
+          i + 4
+          /*COMPRESS*/
+        ] != 0;
+        constraint.stretch = frames[
+          i + 5
+          /*STRETCH*/
+        ] != 0;
       }
     } else {
       constraint.mix += (mix - constraint.mix) * alpha;
       constraint.softness += (softness - constraint.softness) * alpha;
       if (direction == 0 /* mixIn */) {
-        constraint.bendDirection =
-          frames[
-            i + 3
-            /*BEND_DIRECTION*/
-          ];
-        constraint.compress =
-          frames[
-            i + 4
-            /*COMPRESS*/
-          ] != 0;
-        constraint.stretch =
-          frames[
-            i + 5
-            /*STRETCH*/
-          ] != 0;
+        constraint.bendDirection = frames[
+          i + 3
+          /*BEND_DIRECTION*/
+        ];
+        constraint.compress = frames[
+          i + 4
+          /*COMPRESS*/
+        ] != 0;
+        constraint.stretch = frames[
+          i + 5
+          /*STRETCH*/
+        ] != 0;
       }
     }
   }
 };
 var TransformConstraintTimeline = class extends CurveTimeline {
+  /** The index of the transform constraint slot in {@link Skeleton#transformConstraints} that will be changed. */
+  constraintIndex = 0;
   constructor(frameCount, bezierCount, transformConstraintIndex) {
-    super(frameCount, bezierCount, [Property.transformConstraint + '|' + transformConstraintIndex]);
-    /** The index of the transform constraint slot in {@link Skeleton#transformConstraints} that will be changed. */
-    this.constraintIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.transformConstraint + "|" + transformConstraintIndex
+    ]);
     this.constraintIndex = transformConstraintIndex;
   }
   getFrameEntries() {
@@ -3003,170 +2777,136 @@ var TransformConstraintTimeline = class extends CurveTimeline {
     let i = Timeline.search(
       frames,
       time,
-      7,
+      7
       /*ENTRIES*/
     );
-    let curveType =
-      this.curves[
-        i / 7
-        /*ENTRIES*/
-      ];
+    let curveType = this.curves[
+      i / 7
+      /*ENTRIES*/
+    ];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        rotate =
-          frames[
-            i + 1
-            /*ROTATE*/
-          ];
-        x =
-          frames[
-            i + 2
-            /*X*/
-          ];
-        y =
-          frames[
-            i + 3
-            /*Y*/
-          ];
-        scaleX =
-          frames[
-            i + 4
-            /*SCALEX*/
-          ];
-        scaleY =
-          frames[
-            i + 5
-            /*SCALEY*/
-          ];
-        shearY =
-          frames[
-            i + 6
-            /*SHEARY*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 7
-            /*ENTRIES*/
-          ] -
-            before);
-        rotate +=
-          (frames[
-            i + 7 + 1
-            /*ROTATE*/
-          ] -
-            rotate) *
-          t;
-        x +=
-          (frames[
-            i + 7 + 2
-            /*X*/
-          ] -
-            x) *
-          t;
-        y +=
-          (frames[
-            i + 7 + 3
-            /*Y*/
-          ] -
-            y) *
-          t;
-        scaleX +=
-          (frames[
-            i + 7 + 4
-            /*SCALEX*/
-          ] -
-            scaleX) *
-          t;
-        scaleY +=
-          (frames[
-            i + 7 + 5
-            /*SCALEY*/
-          ] -
-            scaleY) *
-          t;
-        shearY +=
-          (frames[
-            i + 7 + 6
-            /*SHEARY*/
-          ] -
-            shearY) *
-          t;
+        rotate = frames[
+          i + 1
+          /*ROTATE*/
+        ];
+        x = frames[
+          i + 2
+          /*X*/
+        ];
+        y = frames[
+          i + 3
+          /*Y*/
+        ];
+        scaleX = frames[
+          i + 4
+          /*SCALEX*/
+        ];
+        scaleY = frames[
+          i + 5
+          /*SCALEY*/
+        ];
+        shearY = frames[
+          i + 6
+          /*SHEARY*/
+        ];
+        let t = (time - before) / (frames[
+          i + 7
+          /*ENTRIES*/
+        ] - before);
+        rotate += (frames[
+          i + 7 + 1
+          /*ROTATE*/
+        ] - rotate) * t;
+        x += (frames[
+          i + 7 + 2
+          /*X*/
+        ] - x) * t;
+        y += (frames[
+          i + 7 + 3
+          /*Y*/
+        ] - y) * t;
+        scaleX += (frames[
+          i + 7 + 4
+          /*SCALEX*/
+        ] - scaleX) * t;
+        scaleY += (frames[
+          i + 7 + 5
+          /*SCALEY*/
+        ] - scaleY) * t;
+        shearY += (frames[
+          i + 7 + 6
+          /*SHEARY*/
+        ] - shearY) * t;
         break;
       case 1:
-        rotate =
-          frames[
-            i + 1
-            /*ROTATE*/
-          ];
-        x =
-          frames[
-            i + 2
-            /*X*/
-          ];
-        y =
-          frames[
-            i + 3
-            /*Y*/
-          ];
-        scaleX =
-          frames[
-            i + 4
-            /*SCALEX*/
-          ];
-        scaleY =
-          frames[
-            i + 5
-            /*SCALEY*/
-          ];
-        shearY =
-          frames[
-            i + 6
-            /*SHEARY*/
-          ];
+        rotate = frames[
+          i + 1
+          /*ROTATE*/
+        ];
+        x = frames[
+          i + 2
+          /*X*/
+        ];
+        y = frames[
+          i + 3
+          /*Y*/
+        ];
+        scaleX = frames[
+          i + 4
+          /*SCALEX*/
+        ];
+        scaleY = frames[
+          i + 5
+          /*SCALEY*/
+        ];
+        shearY = frames[
+          i + 6
+          /*SHEARY*/
+        ];
         break;
       default:
         rotate = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         x = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
         y = this.getBezierValue(
           time,
           i,
           3,
-          curveType + 18 * 2 - 2,
+          curveType + 18 * 2 - 2
           /*BEZIER*/
         );
         scaleX = this.getBezierValue(
           time,
           i,
           4,
-          curveType + 18 * 3 - 2,
+          curveType + 18 * 3 - 2
           /*BEZIER*/
         );
         scaleY = this.getBezierValue(
           time,
           i,
           5,
-          curveType + 18 * 4 - 2,
+          curveType + 18 * 4 - 2
           /*BEZIER*/
         );
         shearY = this.getBezierValue(
           time,
           i,
           6,
-          curveType + 18 * 5 - 2,
+          curveType + 18 * 5 - 2
           /*BEZIER*/
         );
     }
@@ -3189,11 +2929,11 @@ var TransformConstraintTimeline = class extends CurveTimeline {
   }
 };
 var PathConstraintPositionTimeline = class extends CurveTimeline1 {
+  /** The index of the path constraint in {@link Skeleton#getPathConstraints()} that will be changed when this timeline is
+   * applied. */
+  constraintIndex = 0;
   constructor(frameCount, bezierCount, pathConstraintIndex) {
-    super(frameCount, bezierCount, Property.pathConstraintPosition + '|' + pathConstraintIndex);
-    /** The index of the path constraint in {@link Skeleton#getPathConstraints()} that will be changed when this timeline is
-     * applied. */
-    this.constraintIndex = 0;
+    super(frameCount, bezierCount, Property.pathConstraintPosition + "|" + pathConstraintIndex);
     this.constraintIndex = pathConstraintIndex;
   }
   apply(skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
@@ -3203,11 +2943,11 @@ var PathConstraintPositionTimeline = class extends CurveTimeline1 {
   }
 };
 var PathConstraintSpacingTimeline = class extends CurveTimeline1 {
+  /** The index of the path constraint in {@link Skeleton#getPathConstraints()} that will be changed when this timeline is
+   * applied. */
+  constraintIndex = 0;
   constructor(frameCount, bezierCount, pathConstraintIndex) {
-    super(frameCount, bezierCount, Property.pathConstraintSpacing + '|' + pathConstraintIndex);
-    /** The index of the path constraint in {@link Skeleton#getPathConstraints()} that will be changed when this timeline is
-     * applied. */
-    this.constraintIndex = 0;
+    super(frameCount, bezierCount, Property.pathConstraintSpacing + "|" + pathConstraintIndex);
     this.constraintIndex = pathConstraintIndex;
   }
   apply(skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
@@ -3217,11 +2957,13 @@ var PathConstraintSpacingTimeline = class extends CurveTimeline1 {
   }
 };
 var PathConstraintMixTimeline = class extends CurveTimeline {
+  /** The index of the path constraint in {@link Skeleton#getPathConstraints()} that will be changed when this timeline is
+   * applied. */
+  constraintIndex = 0;
   constructor(frameCount, bezierCount, pathConstraintIndex) {
-    super(frameCount, bezierCount, [Property.pathConstraintMix + '|' + pathConstraintIndex]);
-    /** The index of the path constraint in {@link Skeleton#getPathConstraints()} that will be changed when this timeline is
-     * applied. */
-    this.constraintIndex = 0;
+    super(frameCount, bezierCount, [
+      Property.pathConstraintMix + "|" + pathConstraintIndex
+    ]);
     this.constraintIndex = pathConstraintIndex;
   }
   getFrameEntries() {
@@ -3266,94 +3008,76 @@ var PathConstraintMixTimeline = class extends CurveTimeline {
     let i = Timeline.search(
       frames,
       time,
-      4,
+      4
       /*ENTRIES*/
     );
     let curveType = this.curves[i >> 2];
     switch (curveType) {
       case 0:
         let before = frames[i];
-        rotate =
-          frames[
-            i + 1
-            /*ROTATE*/
-          ];
-        x =
-          frames[
-            i + 2
-            /*X*/
-          ];
-        y =
-          frames[
-            i + 3
-            /*Y*/
-          ];
-        let t =
-          (time - before) /
-          (frames[
-            i + 4
-            /*ENTRIES*/
-          ] -
-            before);
-        rotate +=
-          (frames[
-            i + 4 + 1
-            /*ROTATE*/
-          ] -
-            rotate) *
-          t;
-        x +=
-          (frames[
-            i + 4 + 2
-            /*X*/
-          ] -
-            x) *
-          t;
-        y +=
-          (frames[
-            i + 4 + 3
-            /*Y*/
-          ] -
-            y) *
-          t;
+        rotate = frames[
+          i + 1
+          /*ROTATE*/
+        ];
+        x = frames[
+          i + 2
+          /*X*/
+        ];
+        y = frames[
+          i + 3
+          /*Y*/
+        ];
+        let t = (time - before) / (frames[
+          i + 4
+          /*ENTRIES*/
+        ] - before);
+        rotate += (frames[
+          i + 4 + 1
+          /*ROTATE*/
+        ] - rotate) * t;
+        x += (frames[
+          i + 4 + 2
+          /*X*/
+        ] - x) * t;
+        y += (frames[
+          i + 4 + 3
+          /*Y*/
+        ] - y) * t;
         break;
       case 1:
-        rotate =
-          frames[
-            i + 1
-            /*ROTATE*/
-          ];
-        x =
-          frames[
-            i + 2
-            /*X*/
-          ];
-        y =
-          frames[
-            i + 3
-            /*Y*/
-          ];
+        rotate = frames[
+          i + 1
+          /*ROTATE*/
+        ];
+        x = frames[
+          i + 2
+          /*X*/
+        ];
+        y = frames[
+          i + 3
+          /*Y*/
+        ];
         break;
       default:
         rotate = this.getBezierValue(
           time,
           i,
           1,
-          curveType - 2,
+          curveType - 2
           /*BEZIER*/
         );
         x = this.getBezierValue(
           time,
           i,
           2,
-          curveType + 18 - 2,
+          curveType + 18 - 2
           /*BEZIER*/
         );
         y = this.getBezierValue(
           time,
           i,
           3,
-          curveType + 18 * 2 - 2,
+          curveType + 18 * 2 - 2
           /*BEZIER*/
         );
     }
@@ -3370,12 +3094,12 @@ var PathConstraintMixTimeline = class extends CurveTimeline {
   }
 };
 var PhysicsConstraintTimeline = class extends CurveTimeline1 {
+  /** The index of the physics constraint in {@link Skeleton#getPhysicsConstraints()} that will be changed when this timeline
+   * is applied, or -1 if all physics constraints in the skeleton will be changed. */
+  constraintIndex = 0;
   /** @param physicsConstraintIndex -1 for all physics constraints in the skeleton. */
   constructor(frameCount, bezierCount, physicsConstraintIndex, property) {
-    super(frameCount, bezierCount, property + '|' + physicsConstraintIndex);
-    /** The index of the physics constraint in {@link Skeleton#getPhysicsConstraints()} that will be changed when this timeline
-     * is applied, or -1 if all physics constraints in the skeleton will be changed. */
-    this.constraintIndex = 0;
+    super(frameCount, bezierCount, property + "|" + physicsConstraintIndex);
     this.constraintIndex = physicsConstraintIndex;
   }
   apply(skeleton, lastTime, time, firedEvents, alpha, blend, direction) {
@@ -3384,15 +3108,11 @@ var PhysicsConstraintTimeline = class extends CurveTimeline1 {
       const value = time >= this.frames[0] ? this.getCurveValue(time) : 0;
       for (const constraint2 of skeleton.physicsConstraints) {
         if (constraint2.active && this.global(constraint2.data))
-          this.set(
-            constraint2,
-            this.getAbsoluteValue2(time, alpha, blend, this.get(constraint2), this.setup(constraint2), value),
-          );
+          this.set(constraint2, this.getAbsoluteValue2(time, alpha, blend, this.get(constraint2), this.setup(constraint2), value));
       }
     } else {
       constraint = skeleton.physicsConstraints[this.constraintIndex];
-      if (constraint.active)
-        this.set(constraint, this.getAbsoluteValue(time, alpha, blend, this.get(constraint), this.setup(constraint)));
+      if (constraint.active) this.set(constraint, this.getAbsoluteValue(time, alpha, blend, this.get(constraint), this.setup(constraint)));
     }
   }
 };
@@ -3515,7 +3235,11 @@ var PhysicsConstraintMixTimeline = class extends PhysicsConstraintTimeline {
     return constraint.mixGlobal;
   }
 };
-var _PhysicsConstraintResetTimeline = class extends Timeline {
+var PhysicsConstraintResetTimeline = class _PhysicsConstraintResetTimeline extends Timeline {
+  static propertyIds = [Property.physicsConstraintReset.toString()];
+  /** The index of the physics constraint in {@link Skeleton#getPhysicsConstraints()} that will be reset when this timeline is
+  * applied, or -1 if all physics constraints in the skeleton will be reset. */
+  constraintIndex;
   /** @param physicsConstraintIndex -1 for all physics constraints in the skeleton. */
   constructor(frameCount, physicsConstraintIndex) {
     super(frameCount, _PhysicsConstraintResetTimeline.propertyIds);
@@ -3540,10 +3264,12 @@ var _PhysicsConstraintResetTimeline = class extends Timeline {
     if (lastTime > time) {
       this.apply(skeleton, lastTime, Number.MAX_VALUE, [], alpha, blend, direction);
       lastTime = -1;
-    } else if (lastTime >= frames[frames.length - 1]) return;
+    } else if (lastTime >= frames[frames.length - 1])
+      return;
     if (time < frames[0]) return;
     if (lastTime < frames[0] || time >= frames[Timeline.search1(frames, lastTime) + 1]) {
-      if (constraint != null) constraint.reset();
+      if (constraint != null)
+        constraint.reset();
       else {
         for (const constraint2 of skeleton.physicsConstraints) {
           if (constraint2.active) constraint2.reset();
@@ -3552,11 +3278,16 @@ var _PhysicsConstraintResetTimeline = class extends Timeline {
     }
   }
 };
-var PhysicsConstraintResetTimeline = _PhysicsConstraintResetTimeline;
-PhysicsConstraintResetTimeline.propertyIds = [Property.physicsConstraintReset.toString()];
-var _SequenceTimeline = class extends Timeline {
+var SequenceTimeline = class _SequenceTimeline extends Timeline {
+  static ENTRIES = 3;
+  static MODE = 1;
+  static DELAY = 2;
+  slotIndex;
+  attachment;
   constructor(frameCount, slotIndex, attachment) {
-    super(frameCount, [Property.sequence + '|' + slotIndex + '|' + attachment.sequence.id]);
+    super(frameCount, [
+      Property.sequence + "|" + slotIndex + "|" + attachment.sequence.id
+    ]);
     this.slotIndex = slotIndex;
     this.attachment = attachment;
   }
@@ -3576,7 +3307,7 @@ var _SequenceTimeline = class extends Timeline {
     let frames = this.frames;
     frame *= _SequenceTimeline.ENTRIES;
     frames[frame] = time;
-    frames[frame + _SequenceTimeline.MODE] = mode | (index << 4);
+    frames[frame + _SequenceTimeline.MODE] = mode | index << 4;
     frames[frame + _SequenceTimeline.DELAY] = delay;
   }
   apply(skeleton, lastTime, time, events, alpha, blend, direction) {
@@ -3601,11 +3332,10 @@ var _SequenceTimeline = class extends Timeline {
     let modeAndIndex = frames[i + _SequenceTimeline.MODE];
     let delay = frames[i + _SequenceTimeline.DELAY];
     if (!this.attachment.sequence) return;
-    let index = modeAndIndex >> 4,
-      count = this.attachment.sequence.regions.length;
+    let index = modeAndIndex >> 4, count = this.attachment.sequence.regions.length;
     let mode = SequenceModeValues[modeAndIndex & 15];
     if (mode != 0 /* hold */) {
-      index += ((time - before) / delay + 1e-5) | 0;
+      index += (time - before) / delay + 1e-5 | 0;
       switch (mode) {
         case 1 /* once */:
           index = Math.min(count - 1, index);
@@ -3623,7 +3353,7 @@ var _SequenceTimeline = class extends Timeline {
           index = Math.max(count - 1 - index, 0);
           break;
         case 5 /* loopReverse */:
-          index = count - 1 - (index % count);
+          index = count - 1 - index % count;
           break;
         case 6 /* pingpongReverse */: {
           let n = (count << 1) - 2;
@@ -3635,32 +3365,31 @@ var _SequenceTimeline = class extends Timeline {
     slot.sequenceIndex = index;
   }
 };
-var SequenceTimeline = _SequenceTimeline;
-SequenceTimeline.ENTRIES = 3;
-SequenceTimeline.MODE = 1;
-SequenceTimeline.DELAY = 2;
 
 // spine-core/src/AnimationState.ts
-var _AnimationState = class {
-  constructor(data) {
-    /** The list of tracks that currently have animations, which may contain null entries. */
-    this.tracks = new Array();
-    /** Multiplier for the delta time when the animation state is updated, causing time for all animations and mixes to play slower
-     * or faster. Defaults to 1.
-     *
-     * See TrackEntry {@link TrackEntry#timeScale} for affecting a single animation. */
-    this.timeScale = 1;
-    this.unkeyedState = 0;
-    this.events = new Array();
-    this.listeners = new Array();
-    this.queue = new EventQueue(this);
-    this.propertyIDs = new StringSet();
-    this.animationsChanged = false;
-    this.trackEntryPool = new Pool(() => new TrackEntry());
-    this.data = data;
-  }
+var AnimationState = class _AnimationState {
+  static _emptyAnimation = new Animation("<empty>", [], 0);
   static emptyAnimation() {
     return _AnimationState._emptyAnimation;
+  }
+  /** The AnimationStateData to look up mix durations. */
+  data;
+  /** The list of tracks that currently have animations, which may contain null entries. */
+  tracks = new Array();
+  /** Multiplier for the delta time when the animation state is updated, causing time for all animations and mixes to play slower
+   * or faster. Defaults to 1.
+   *
+   * See TrackEntry {@link TrackEntry#timeScale} for affecting a single animation. */
+  timeScale = 1;
+  unkeyedState = 0;
+  events = new Array();
+  listeners = new Array();
+  queue = new EventQueue(this);
+  propertyIDs = new StringSet();
+  animationsChanged = false;
+  trackEntryPool = new Pool(() => new TrackEntry());
+  constructor(data) {
+    this.data = data;
   }
   /** Increments each track entry {@link TrackEntry#trackTime()}, setting queued animations as current if needed. */
   update(delta) {
@@ -3738,7 +3467,7 @@ var _AnimationState = class {
    * animation state can be applied to multiple skeletons to pose them identically.
    * @returns True if any animations were applied. */
   apply(skeleton) {
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     if (this.animationsChanged) this._animationsChanged();
     let events = this.events;
     let tracks = this.tracks;
@@ -3749,12 +3478,12 @@ var _AnimationState = class {
       applied = true;
       let blend = i2 == 0 ? 1 /* first */ : current.mixBlend;
       let alpha = current.alpha;
-      if (current.mixingFrom) alpha *= this.applyMixingFrom(current, skeleton, blend);
-      else if (current.trackTime >= current.trackEnd && !current.next) alpha = 0;
+      if (current.mixingFrom)
+        alpha *= this.applyMixingFrom(current, skeleton, blend);
+      else if (current.trackTime >= current.trackEnd && !current.next)
+        alpha = 0;
       let attachments = alpha >= current.alphaAttachmentThreshold;
-      let animationLast = current.animationLast,
-        animationTime = current.getAnimationTime(),
-        applyTime = animationTime;
+      let animationLast = current.animationLast, animationTime = current.getAnimationTime(), applyTime = animationTime;
       let applyEvents = events;
       if (current.reverse) {
         applyTime = current.animation.duration - applyTime;
@@ -3762,14 +3491,15 @@ var _AnimationState = class {
       }
       let timelines = current.animation.timelines;
       let timelineCount = timelines.length;
-      if ((i2 == 0 && alpha == 1) || blend == 3 /* add */) {
+      if (i2 == 0 && alpha == 1 || blend == 3 /* add */) {
         if (i2 == 0) attachments = true;
         for (let ii = 0; ii < timelineCount; ii++) {
           Utils.webkit602BugfixHelper(alpha, blend);
           var timeline = timelines[ii];
           if (timeline instanceof AttachmentTimeline)
             this.applyAttachmentTimeline(timeline, skeleton, applyTime, blend, attachments);
-          else timeline.apply(skeleton, animationLast, applyTime, applyEvents, alpha, blend, 0 /* mixIn */);
+          else
+            timeline.apply(skeleton, animationLast, applyTime, applyEvents, alpha, blend, 0 /* mixIn */);
         }
       } else {
         let timelineMode = current.timelineMode;
@@ -3778,18 +3508,9 @@ var _AnimationState = class {
         if (firstFrame) current.timelinesRotation.length = timelineCount << 1;
         for (let ii = 0; ii < timelineCount; ii++) {
           let timeline2 = timelines[ii];
-          let timelineBlend = timelineMode[ii] == SUBSEQUENT ? blend : 0; /* setup */
+          let timelineBlend = timelineMode[ii] == SUBSEQUENT ? blend : 0 /* setup */;
           if (!shortestRotation && timeline2 instanceof RotateTimeline) {
-            this.applyRotateTimeline(
-              timeline2,
-              skeleton,
-              applyTime,
-              alpha,
-              timelineBlend,
-              current.timelinesRotation,
-              ii << 1,
-              firstFrame,
-            );
+            this.applyRotateTimeline(timeline2, skeleton, applyTime, alpha, timelineBlend, current.timelinesRotation, ii << 1, firstFrame);
           } else if (timeline2 instanceof AttachmentTimeline) {
             this.applyAttachmentTimeline(timeline2, skeleton, applyTime, blend, attachments);
           } else {
@@ -3828,18 +3549,16 @@ var _AnimationState = class {
       if (mix > 1) mix = 1;
       if (blend != 1 /* first */) blend = from.mixBlend;
     }
-    let attachments = mix < from.mixAttachmentThreshold,
-      drawOrder = mix < from.mixDrawOrderThreshold;
+    let attachments = mix < from.mixAttachmentThreshold, drawOrder = mix < from.mixDrawOrderThreshold;
     let timelines = from.animation.timelines;
     let timelineCount = timelines.length;
-    let alphaHold = from.alpha * to.interruptAlpha,
-      alphaMix = alphaHold * (1 - mix);
-    let animationLast = from.animationLast,
-      animationTime = from.getAnimationTime(),
-      applyTime = animationTime;
+    let alphaHold = from.alpha * to.interruptAlpha, alphaMix = alphaHold * (1 - mix);
+    let animationLast = from.animationLast, animationTime = from.getAnimationTime(), applyTime = animationTime;
     let events = null;
-    if (from.reverse) applyTime = from.animation.duration - applyTime;
-    else if (mix < from.eventThreshold) events = this.events;
+    if (from.reverse)
+      applyTime = from.animation.duration - applyTime;
+    else if (mix < from.eventThreshold)
+      events = this.events;
     if (blend == 3 /* add */) {
       for (let i = 0; i < timelineCount; i++)
         timelines[i].apply(skeleton, animationLast, applyTime, events, alphaMix, blend, 1 /* mixOut */);
@@ -3852,7 +3571,7 @@ var _AnimationState = class {
       from.totalAlpha = 0;
       for (let i = 0; i < timelineCount; i++) {
         let timeline = timelines[i];
-        let direction = 1; /* mixOut */
+        let direction = 1 /* mixOut */;
         let timelineBlend;
         let alpha = 0;
         switch (timelineMode[i]) {
@@ -3881,24 +3600,9 @@ var _AnimationState = class {
         }
         from.totalAlpha += alpha;
         if (!shortestRotation && timeline instanceof RotateTimeline)
-          this.applyRotateTimeline(
-            timeline,
-            skeleton,
-            applyTime,
-            alpha,
-            timelineBlend,
-            from.timelinesRotation,
-            i << 1,
-            firstFrame,
-          );
+          this.applyRotateTimeline(timeline, skeleton, applyTime, alpha, timelineBlend, from.timelinesRotation, i << 1, firstFrame);
         else if (timeline instanceof AttachmentTimeline)
-          this.applyAttachmentTimeline(
-            timeline,
-            skeleton,
-            applyTime,
-            timelineBlend,
-            attachments && alpha >= from.alphaAttachmentThreshold,
-          );
+          this.applyAttachmentTimeline(timeline, skeleton, applyTime, timelineBlend, attachments && alpha >= from.alphaAttachmentThreshold);
         else {
           Utils.webkit602BugfixHelper(alpha, blend);
           if (drawOrder && timeline instanceof DrawOrderTimeline && timelineBlend == 0 /* setup */)
@@ -3920,12 +3624,7 @@ var _AnimationState = class {
       if (blend == 0 /* setup */ || blend == 1 /* first */)
         this.setAttachment(skeleton, slot, slot.data.attachmentName, attachments);
     } else
-      this.setAttachment(
-        skeleton,
-        slot,
-        timeline.attachmentNames[Timeline.search1(timeline.frames, time)],
-        attachments,
-      );
+      this.setAttachment(skeleton, slot, timeline.attachmentNames[Timeline.search1(timeline.frames, time)], attachments);
     if (slot.attachmentState <= this.unkeyedState) slot.attachmentState = this.unkeyedState + SETUP;
   }
   setAttachment(skeleton, slot, attachmentName, attachments) {
@@ -3941,8 +3640,7 @@ var _AnimationState = class {
     let bone = skeleton.bones[timeline.boneIndex];
     if (!bone.active) return;
     let frames = timeline.frames;
-    let r1 = 0,
-      r2 = 0;
+    let r1 = 0, r2 = 0;
     if (time < frames[0]) {
       switch (blend) {
         case 0 /* setup */:
@@ -3957,14 +3655,12 @@ var _AnimationState = class {
       r1 = blend == 0 /* setup */ ? bone.data.rotation : bone.rotation;
       r2 = bone.data.rotation + timeline.getCurveValue(time);
     }
-    let total = 0,
-      diff = r2 - r1;
+    let total = 0, diff = r2 - r1;
     diff -= Math.ceil(diff / 360 - 0.5) * 360;
     if (diff == 0) {
       total = timelinesRotation[i];
     } else {
-      let lastTotal = 0,
-        lastDiff = 0;
+      let lastTotal = 0, lastDiff = 0;
       if (firstFrame) {
         lastTotal = 0;
         lastDiff = diff;
@@ -3972,16 +3668,17 @@ var _AnimationState = class {
         lastTotal = timelinesRotation[i];
         lastDiff = timelinesRotation[i + 1];
       }
-      let loops = lastTotal - (lastTotal % 360);
+      let loops = lastTotal - lastTotal % 360;
       total = diff + loops;
-      let current = diff >= 0,
-        dir = lastTotal >= 0;
+      let current = diff >= 0, dir = lastTotal >= 0;
       if (Math.abs(lastDiff) <= 90 && MathUtils.signum(lastDiff) != MathUtils.signum(diff)) {
         if (Math.abs(lastTotal - loops) > 180) {
           total += 360 * MathUtils.signum(lastTotal);
           dir = current;
-        } else if (loops != 0) total -= 360 * MathUtils.signum(lastTotal);
-        else dir = current;
+        } else if (loops != 0)
+          total -= 360 * MathUtils.signum(lastTotal);
+        else
+          dir = current;
       }
       if (dir != current) total += 360 * MathUtils.signum(lastTotal);
       timelinesRotation[i] = total;
@@ -3990,13 +3687,11 @@ var _AnimationState = class {
     bone.rotation = r1 + total * alpha;
   }
   queueEvents(entry, animationTime) {
-    let animationStart = entry.animationStart,
-      animationEnd = entry.animationEnd;
+    let animationStart = entry.animationStart, animationEnd = entry.animationEnd;
     let duration = animationEnd - animationStart;
     let trackLastWrapped = entry.trackLast % duration;
     let events = this.events;
-    let i = 0,
-      n = events.length;
+    let i = 0, n = events.length;
     for (; i < n; i++) {
       let event = events[i];
       if (event.time < trackLastWrapped) break;
@@ -4005,12 +3700,14 @@ var _AnimationState = class {
     }
     let complete = false;
     if (entry.loop) {
-      if (duration == 0) complete = true;
+      if (duration == 0)
+        complete = true;
       else {
         const cycles = Math.floor(entry.trackTime / duration);
         complete = cycles > 0 && cycles > Math.floor(entry.trackLast / duration);
       }
-    } else complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
+    } else
+      complete = animationTime >= animationEnd && entry.animationLast < animationEnd;
     if (complete) this.queue.complete(entry);
     for (; i < n; i++) {
       let event = events[i];
@@ -4025,7 +3722,8 @@ var _AnimationState = class {
   clearTracks() {
     let oldDrainDisabled = this.queue.drainDisabled;
     this.queue.drainDisabled = true;
-    for (let i = 0, n = this.tracks.length; i < n; i++) this.clearTrack(i);
+    for (let i = 0, n = this.tracks.length; i < n; i++)
+      this.clearTrack(i);
     this.tracks.length = 0;
     this.queue.drainDisabled = oldDrainDisabled;
     this.queue.drain();
@@ -4068,11 +3766,11 @@ var _AnimationState = class {
     this.queue.start(current);
   }
   /** Sets an animation by name.
-   *
-   * See {@link #setAnimationWith()}. */
+    *
+    * See {@link #setAnimationWith()}. */
   setAnimation(trackIndex, animationName, loop = false) {
     let animation = this.data.skeletonData.findAnimation(animationName);
-    if (!animation) throw new Error('Animation not found: ' + animationName);
+    if (!animation) throw new Error("Animation not found: " + animationName);
     return this.setAnimationWith(trackIndex, animation, loop);
   }
   /** Sets the current animation for a track, discarding any queued animations. If the formerly current track entry was never
@@ -4082,7 +3780,7 @@ var _AnimationState = class {
    * @returns A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   setAnimationWith(trackIndex, animation, loop = false) {
-    if (!animation) throw new Error('animation cannot be null.');
+    if (!animation) throw new Error("animation cannot be null.");
     let interrupt = true;
     let current = this.expandToIndex(trackIndex);
     if (current) {
@@ -4093,7 +3791,8 @@ var _AnimationState = class {
         this.clearNext(current);
         current = current.mixingFrom;
         interrupt = false;
-      } else this.clearNext(current);
+      } else
+        this.clearNext(current);
     }
     let entry = this.trackEntry(trackIndex, animation, loop, current);
     this.setCurrent(trackIndex, entry, interrupt);
@@ -4105,7 +3804,7 @@ var _AnimationState = class {
    * See {@link #addAnimationWith()}. */
   addAnimation(trackIndex, animationName, loop = false, delay = 0) {
     let animation = this.data.skeletonData.findAnimation(animationName);
-    if (!animation) throw new Error('Animation not found: ' + animationName);
+    if (!animation) throw new Error("Animation not found: " + animationName);
     return this.addAnimationWith(trackIndex, animation, loop, delay);
   }
   /** Adds an animation to be played after the current or last queued animation for a track. If the track is empty, it is
@@ -4117,10 +3816,11 @@ var _AnimationState = class {
    * @returns A track entry to allow further customization of animation playback. References to the track entry must not be kept
    *         after the {@link AnimationStateListener#dispose()} event occurs. */
   addAnimationWith(trackIndex, animation, loop = false, delay = 0) {
-    if (!animation) throw new Error('animation cannot be null.');
+    if (!animation) throw new Error("animation cannot be null.");
     let last = this.expandToIndex(trackIndex);
     if (last) {
-      while (last.next) last = last.next;
+      while (last.next)
+        last = last.next;
     }
     let entry = this.trackEntry(trackIndex, animation, loop, last);
     if (!last) {
@@ -4173,7 +3873,7 @@ var _AnimationState = class {
     return entry;
   }
   /** Sets an empty animation for every track, discarding any queued animations, and mixes to it over the specified mix
-   * duration. */
+    * duration. */
   setEmptyAnimations(mixDuration = 0) {
     let oldDrainDisabled = this.queue.drainDisabled;
     this.queue.drainDisabled = true;
@@ -4238,7 +3938,8 @@ var _AnimationState = class {
     for (let i = 0, n = tracks.length; i < n; i++) {
       let entry = tracks[i];
       if (!entry) continue;
-      while (entry.mixingFrom) entry = entry.mixingFrom;
+      while (entry.mixingFrom)
+        entry = entry.mixingFrom;
       do {
         if (!entry.mixingTo || entry.mixBlend != 3 /* add */) this.computeHold(entry);
         entry = entry.mixingTo;
@@ -4259,31 +3960,27 @@ var _AnimationState = class {
         timelineMode[i] = propertyIDs.addAll(timelines[i].getPropertyIds()) ? HOLD_FIRST : HOLD_SUBSEQUENT;
       return;
     }
-    outer: for (let i = 0; i < timelinesCount; i++) {
-      let timeline = timelines[i];
-      let ids = timeline.getPropertyIds();
-      if (!propertyIDs.addAll(ids)) timelineMode[i] = SUBSEQUENT;
-      else if (
-        !to ||
-        timeline instanceof AttachmentTimeline ||
-        timeline instanceof DrawOrderTimeline ||
-        timeline instanceof EventTimeline ||
-        !to.animation.hasTimeline(ids)
-      ) {
-        timelineMode[i] = FIRST;
-      } else {
-        for (let next = to.mixingTo; next; next = next.mixingTo) {
-          if (next.animation.hasTimeline(ids)) continue;
-          if (entry.mixDuration > 0) {
-            timelineMode[i] = HOLD_MIX;
-            timelineHoldMix[i] = next;
-            continue outer;
+    outer:
+      for (let i = 0; i < timelinesCount; i++) {
+        let timeline = timelines[i];
+        let ids = timeline.getPropertyIds();
+        if (!propertyIDs.addAll(ids))
+          timelineMode[i] = SUBSEQUENT;
+        else if (!to || timeline instanceof AttachmentTimeline || timeline instanceof DrawOrderTimeline || timeline instanceof EventTimeline || !to.animation.hasTimeline(ids)) {
+          timelineMode[i] = FIRST;
+        } else {
+          for (let next = to.mixingTo; next; next = next.mixingTo) {
+            if (next.animation.hasTimeline(ids)) continue;
+            if (entry.mixDuration > 0) {
+              timelineMode[i] = HOLD_MIX;
+              timelineHoldMix[i] = next;
+              continue outer;
+            }
+            break;
           }
-          break;
+          timelineMode[i] = HOLD_FIRST;
         }
-        timelineMode[i] = HOLD_FIRST;
       }
-    }
   }
   /** Returns the track entry for the animation currently playing on the track, or null if no animation is currently playing. */
   getCurrent(trackIndex) {
@@ -4292,7 +3989,7 @@ var _AnimationState = class {
   }
   /** Adds a listener to receive events for all track entries. */
   addListener(listener) {
-    if (!listener) throw new Error('listener cannot be null.');
+    if (!listener) throw new Error("listener cannot be null.");
     this.listeners.push(listener);
   }
   /** Removes the listener added with {@link #addListener()}. */
@@ -4311,145 +4008,131 @@ var _AnimationState = class {
     this.queue.clear();
   }
 };
-var AnimationState = _AnimationState;
-AnimationState._emptyAnimation = new Animation('<empty>', [], 0);
 var TrackEntry = class {
-  constructor() {
-    /** The animation to apply for this track entry. */
-    this.animation = null;
-    this.previous = null;
-    /** The animation queued to start after this animation, or null. `next` makes up a linked list. */
-    this.next = null;
-    /** The track entry for the previous animation when mixing from the previous animation to this animation, or null if no
-     * mixing is currently occuring. When mixing from multiple animations, `mixingFrom` makes up a linked list. */
-    this.mixingFrom = null;
-    /** The track entry for the next animation when mixing from this animation to the next animation, or null if no mixing is
-     * currently occuring. When mixing to multiple animations, `mixingTo` makes up a linked list. */
-    this.mixingTo = null;
-    /** The listener for events generated by this track entry, or null.
-     *
-     * A track entry returned from {@link AnimationState#setAnimation()} is already the current animation
-     * for the track, so the track entry listener {@link AnimationStateListener#start()} will not be called. */
-    this.listener = null;
-    /** The index of the track where this track entry is either current or queued.
-     *
-     * See {@link AnimationState#getCurrent()}. */
-    this.trackIndex = 0;
-    /** If true, the animation will repeat. If false it will not, instead its last frame is applied if played beyond its
-     * duration. */
-    this.loop = false;
-    /** If true, when mixing from the previous animation to this animation, the previous animation is applied as normal instead
-     * of being mixed out.
-     *
-     * When mixing between animations that key the same property, if a lower track also keys that property then the value will
-     * briefly dip toward the lower track value during the mix. This happens because the first animation mixes from 100% to 0%
-     * while the second animation mixes from 0% to 100%. Setting `holdPrevious` to true applies the first animation
-     * at 100% during the mix so the lower track value is overwritten. Such dipping does not occur on the lowest track which
-     * keys the property, only when a higher track also keys the property.
-     *
-     * Snapping will occur if `holdPrevious` is true and this animation does not key all the same properties as the
-     * previous animation. */
-    this.holdPrevious = false;
-    this.reverse = false;
-    this.shortestRotation = false;
-    /** When the mix percentage ({@link #mixTime} / {@link #mixDuration}) is less than the
-     * `eventThreshold`, event timelines are applied while this animation is being mixed out. Defaults to 0, so event
-     * timelines are not applied while this animation is being mixed out. */
-    this.eventThreshold = 0;
-    /** When the mix percentage ({@link #mixtime} / {@link #mixDuration}) is less than the
-     * `attachmentThreshold`, attachment timelines are applied while this animation is being mixed out. Defaults to
-     * 0, so attachment timelines are not applied while this animation is being mixed out. */
-    this.mixAttachmentThreshold = 0;
-    /** When {@link #getAlpha()} is greater than <code>alphaAttachmentThreshold</code>, attachment timelines are applied.
-     * Defaults to 0, so attachment timelines are always applied. */
-    this.alphaAttachmentThreshold = 0;
-    /** When the mix percentage ({@link #getMixTime()} / {@link #getMixDuration()}) is less than the
-     * <code>mixDrawOrderThreshold</code>, draw order timelines are applied while this animation is being mixed out. Defaults to
-     * 0, so draw order timelines are not applied while this animation is being mixed out. */
-    this.mixDrawOrderThreshold = 0;
-    /** Seconds when this animation starts, both initially and after looping. Defaults to 0.
-     *
-     * When changing the `animationStart` time, it often makes sense to set {@link #animationLast} to the same
-     * value to prevent timeline keys before the start time from triggering. */
-    this.animationStart = 0;
-    /** Seconds for the last frame of this animation. Non-looping animations won't play past this time. Looping animations will
-     * loop back to {@link #animationStart} at this time. Defaults to the animation {@link Animation#duration}. */
-    this.animationEnd = 0;
-    /** The time in seconds this animation was last applied. Some timelines use this for one-time triggers. Eg, when this
-     * animation is applied, event timelines will fire all events between the `animationLast` time (exclusive) and
-     * `animationTime` (inclusive). Defaults to -1 to ensure triggers on frame 0 happen the first time this animation
-     * is applied. */
-    this.animationLast = 0;
-    this.nextAnimationLast = 0;
-    /** Seconds to postpone playing the animation. When this track entry is the current track entry, `delay`
-     * postpones incrementing the {@link #trackTime}. When this track entry is queued, `delay` is the time from
-     * the start of the previous animation to when this track entry will become the current track entry (ie when the previous
-     * track entry {@link TrackEntry#trackTime} >= this track entry's `delay`).
-     *
-     * {@link #timeScale} affects the delay. */
-    this.delay = 0;
-    /** Current time in seconds this track entry has been the current track entry. The track time determines
-     * {@link #animationTime}. The track time can be set to start the animation at a time other than 0, without affecting
-     * looping. */
-    this.trackTime = 0;
-    this.trackLast = 0;
-    this.nextTrackLast = 0;
-    /** The track time in seconds when this animation will be removed from the track. Defaults to the highest possible float
-     * value, meaning the animation will be applied until a new animation is set or the track is cleared. If the track end time
-     * is reached, no other animations are queued for playback, and mixing from any previous animations is complete, then the
-     * properties keyed by the animation are set to the setup pose and the track is cleared.
-     *
-     * It may be desired to use {@link AnimationState#addEmptyAnimation()} rather than have the animation
-     * abruptly cease being applied. */
-    this.trackEnd = 0;
-    /** Multiplier for the delta time when this track entry is updated, causing time for this animation to pass slower or
-     * faster. Defaults to 1.
-     *
-     * {@link #mixTime} is not affected by track entry time scale, so {@link #mixDuration} may need to be adjusted to
-     * match the animation speed.
-     *
-     * When using {@link AnimationState#addAnimation()} with a `delay` <= 0, note the
-     * {@link #delay} is set using the mix duration from the {@link AnimationStateData}, assuming time scale to be 1. If
-     * the time scale is not 1, the delay may need to be adjusted.
-     *
-     * See AnimationState {@link AnimationState#timeScale} for affecting all animations. */
-    this.timeScale = 0;
-    /** Values < 1 mix this animation with the skeleton's current pose (usually the pose resulting from lower tracks). Defaults
-     * to 1, which overwrites the skeleton's current pose with this animation.
-     *
-     * Typically track 0 is used to completely pose the skeleton, then alpha is used on higher tracks. It doesn't make sense to
-     * use alpha on track 0 if the skeleton pose is from the last frame render. */
-    this.alpha = 0;
-    /** Seconds from 0 to the {@link #getMixDuration()} when mixing from the previous animation to this animation. May be
-     * slightly more than `mixDuration` when the mix is complete. */
-    this.mixTime = 0;
-    /** Seconds for mixing from the previous animation to this animation. Defaults to the value provided by AnimationStateData
-     * {@link AnimationStateData#getMix()} based on the animation before this animation (if any).
-     *
-     * A mix duration of 0 still mixes out over one frame to provide the track entry being mixed out a chance to revert the
-     * properties it was animating.
-     *
-     * The `mixDuration` can be set manually rather than use the value from
-     * {@link AnimationStateData#getMix()}. In that case, the `mixDuration` can be set for a new
-     * track entry only before {@link AnimationState#update(float)} is first called.
-     *
-     * When using {@link AnimationState#addAnimation()} with a `delay` <= 0, note the
-     * {@link #delay} is set using the mix duration from the {@link AnimationStateData}, not a mix duration set
-     * afterward. */
-    this._mixDuration = 0;
-    this.interruptAlpha = 0;
-    this.totalAlpha = 0;
-    /** Controls how properties keyed in the animation are mixed with lower tracks. Defaults to {@link MixBlend#replace}, which
-     * replaces the values from the lower tracks with the animation values. {@link MixBlend#add} adds the animation values to
-     * the values from the lower tracks.
-     *
-     * The `mixBlend` can be set for a new track entry only before {@link AnimationState#apply()} is first
-     * called. */
-    this.mixBlend = 2 /* replace */;
-    this.timelineMode = new Array();
-    this.timelineHoldMix = new Array();
-    this.timelinesRotation = new Array();
-  }
+  /** The animation to apply for this track entry. */
+  animation = null;
+  previous = null;
+  /** The animation queued to start after this animation, or null. `next` makes up a linked list. */
+  next = null;
+  /** The track entry for the previous animation when mixing from the previous animation to this animation, or null if no
+   * mixing is currently occuring. When mixing from multiple animations, `mixingFrom` makes up a linked list. */
+  mixingFrom = null;
+  /** The track entry for the next animation when mixing from this animation to the next animation, or null if no mixing is
+   * currently occuring. When mixing to multiple animations, `mixingTo` makes up a linked list. */
+  mixingTo = null;
+  /** The listener for events generated by this track entry, or null.
+   *
+   * A track entry returned from {@link AnimationState#setAnimation()} is already the current animation
+   * for the track, so the track entry listener {@link AnimationStateListener#start()} will not be called. */
+  listener = null;
+  /** The index of the track where this track entry is either current or queued.
+   *
+   * See {@link AnimationState#getCurrent()}. */
+  trackIndex = 0;
+  /** If true, the animation will repeat. If false it will not, instead its last frame is applied if played beyond its
+   * duration. */
+  loop = false;
+  /** If true, when mixing from the previous animation to this animation, the previous animation is applied as normal instead
+   * of being mixed out.
+   *
+   * When mixing between animations that key the same property, if a lower track also keys that property then the value will
+   * briefly dip toward the lower track value during the mix. This happens because the first animation mixes from 100% to 0%
+   * while the second animation mixes from 0% to 100%. Setting `holdPrevious` to true applies the first animation
+   * at 100% during the mix so the lower track value is overwritten. Such dipping does not occur on the lowest track which
+   * keys the property, only when a higher track also keys the property.
+   *
+   * Snapping will occur if `holdPrevious` is true and this animation does not key all the same properties as the
+   * previous animation. */
+  holdPrevious = false;
+  reverse = false;
+  shortestRotation = false;
+  /** When the mix percentage ({@link #mixTime} / {@link #mixDuration}) is less than the
+   * `eventThreshold`, event timelines are applied while this animation is being mixed out. Defaults to 0, so event
+   * timelines are not applied while this animation is being mixed out. */
+  eventThreshold = 0;
+  /** When the mix percentage ({@link #mixtime} / {@link #mixDuration}) is less than the
+   * `attachmentThreshold`, attachment timelines are applied while this animation is being mixed out. Defaults to
+   * 0, so attachment timelines are not applied while this animation is being mixed out. */
+  mixAttachmentThreshold = 0;
+  /** When {@link #getAlpha()} is greater than <code>alphaAttachmentThreshold</code>, attachment timelines are applied.
+   * Defaults to 0, so attachment timelines are always applied. */
+  alphaAttachmentThreshold = 0;
+  /** When the mix percentage ({@link #getMixTime()} / {@link #getMixDuration()}) is less than the
+   * <code>mixDrawOrderThreshold</code>, draw order timelines are applied while this animation is being mixed out. Defaults to
+   * 0, so draw order timelines are not applied while this animation is being mixed out. */
+  mixDrawOrderThreshold = 0;
+  /** Seconds when this animation starts, both initially and after looping. Defaults to 0.
+   *
+   * When changing the `animationStart` time, it often makes sense to set {@link #animationLast} to the same
+   * value to prevent timeline keys before the start time from triggering. */
+  animationStart = 0;
+  /** Seconds for the last frame of this animation. Non-looping animations won't play past this time. Looping animations will
+   * loop back to {@link #animationStart} at this time. Defaults to the animation {@link Animation#duration}. */
+  animationEnd = 0;
+  /** The time in seconds this animation was last applied. Some timelines use this for one-time triggers. Eg, when this
+   * animation is applied, event timelines will fire all events between the `animationLast` time (exclusive) and
+   * `animationTime` (inclusive). Defaults to -1 to ensure triggers on frame 0 happen the first time this animation
+   * is applied. */
+  animationLast = 0;
+  nextAnimationLast = 0;
+  /** Seconds to postpone playing the animation. When this track entry is the current track entry, `delay`
+   * postpones incrementing the {@link #trackTime}. When this track entry is queued, `delay` is the time from
+   * the start of the previous animation to when this track entry will become the current track entry (ie when the previous
+   * track entry {@link TrackEntry#trackTime} >= this track entry's `delay`).
+   *
+   * {@link #timeScale} affects the delay. */
+  delay = 0;
+  /** Current time in seconds this track entry has been the current track entry. The track time determines
+   * {@link #animationTime}. The track time can be set to start the animation at a time other than 0, without affecting
+   * looping. */
+  trackTime = 0;
+  trackLast = 0;
+  nextTrackLast = 0;
+  /** The track time in seconds when this animation will be removed from the track. Defaults to the highest possible float
+   * value, meaning the animation will be applied until a new animation is set or the track is cleared. If the track end time
+   * is reached, no other animations are queued for playback, and mixing from any previous animations is complete, then the
+   * properties keyed by the animation are set to the setup pose and the track is cleared.
+   *
+   * It may be desired to use {@link AnimationState#addEmptyAnimation()} rather than have the animation
+   * abruptly cease being applied. */
+  trackEnd = 0;
+  /** Multiplier for the delta time when this track entry is updated, causing time for this animation to pass slower or
+   * faster. Defaults to 1.
+   *
+   * {@link #mixTime} is not affected by track entry time scale, so {@link #mixDuration} may need to be adjusted to
+   * match the animation speed.
+   *
+   * When using {@link AnimationState#addAnimation()} with a `delay` <= 0, note the
+   * {@link #delay} is set using the mix duration from the {@link AnimationStateData}, assuming time scale to be 1. If
+   * the time scale is not 1, the delay may need to be adjusted.
+   *
+   * See AnimationState {@link AnimationState#timeScale} for affecting all animations. */
+  timeScale = 0;
+  /** Values < 1 mix this animation with the skeleton's current pose (usually the pose resulting from lower tracks). Defaults
+   * to 1, which overwrites the skeleton's current pose with this animation.
+   *
+   * Typically track 0 is used to completely pose the skeleton, then alpha is used on higher tracks. It doesn't make sense to
+   * use alpha on track 0 if the skeleton pose is from the last frame render. */
+  alpha = 0;
+  /** Seconds from 0 to the {@link #getMixDuration()} when mixing from the previous animation to this animation. May be
+   * slightly more than `mixDuration` when the mix is complete. */
+  mixTime = 0;
+  /** Seconds for mixing from the previous animation to this animation. Defaults to the value provided by AnimationStateData
+   * {@link AnimationStateData#getMix()} based on the animation before this animation (if any).
+   *
+   * A mix duration of 0 still mixes out over one frame to provide the track entry being mixed out a chance to revert the
+   * properties it was animating.
+   *
+   * The `mixDuration` can be set manually rather than use the value from
+   * {@link AnimationStateData#getMix()}. In that case, the `mixDuration` can be set for a new
+   * track entry only before {@link AnimationState#update(float)} is first called.
+   *
+   * When using {@link AnimationState#addAnimation()} with a `delay` <= 0, note the
+   * {@link #delay} is set using the mix duration from the {@link AnimationStateData}, not a mix duration set
+   * afterward. */
+  _mixDuration = 0;
+  interruptAlpha = 0;
+  totalAlpha = 0;
   get mixDuration() {
     return this._mixDuration;
   }
@@ -4461,6 +4144,16 @@ var TrackEntry = class {
     if (this.previous != null && delay <= 0) delay += this.previous.getTrackComplete() - mixDuration;
     this.delay = delay;
   }
+  /** Controls how properties keyed in the animation are mixed with lower tracks. Defaults to {@link MixBlend#replace}, which
+   * replaces the values from the lower tracks with the animation values. {@link MixBlend#add} adds the animation values to
+   * the values from the lower tracks.
+   *
+   * The `mixBlend` can be set for a new track entry only before {@link AnimationState#apply()} is first
+   * called. */
+  mixBlend = 2 /* replace */;
+  timelineMode = new Array();
+  timelineHoldMix = new Array();
+  timelinesRotation = new Array();
   reset() {
     this.next = null;
     this.previous = null;
@@ -4479,7 +4172,7 @@ var TrackEntry = class {
     if (this.loop) {
       let duration = this.animationEnd - this.animationStart;
       if (duration == 0) return this.animationStart;
-      return (this.trackTime % duration) + this.animationStart;
+      return this.trackTime % duration + this.animationStart;
     }
     return Math.min(this.trackTime + this.animationStart, this.animationEnd);
   }
@@ -4506,7 +4199,7 @@ var TrackEntry = class {
   getTrackComplete() {
     let duration = this.animationEnd - this.animationStart;
     if (duration != 0) {
-      if (this.loop) return duration * (1 + ((this.trackTime / duration) | 0));
+      if (this.loop) return duration * (1 + (this.trackTime / duration | 0));
       if (this.trackTime < duration) return duration;
     }
     return this.trackTime;
@@ -4524,35 +4217,36 @@ var TrackEntry = class {
   }
 };
 var EventQueue = class {
+  objects = [];
+  drainDisabled = false;
+  animState;
   constructor(animState) {
-    this.objects = [];
-    this.drainDisabled = false;
     this.animState = animState;
   }
   start(entry) {
-    this.objects.push(EventType.start);
+    this.objects.push(0 /* start */);
     this.objects.push(entry);
     this.animState.animationsChanged = true;
   }
   interrupt(entry) {
-    this.objects.push(EventType.interrupt);
+    this.objects.push(1 /* interrupt */);
     this.objects.push(entry);
   }
   end(entry) {
-    this.objects.push(EventType.end);
+    this.objects.push(2 /* end */);
     this.objects.push(entry);
     this.animState.animationsChanged = true;
   }
   dispose(entry) {
-    this.objects.push(EventType.dispose);
+    this.objects.push(3 /* dispose */);
     this.objects.push(entry);
   }
   complete(entry) {
-    this.objects.push(EventType.complete);
+    this.objects.push(4 /* complete */);
     this.objects.push(entry);
   }
   event(entry, event) {
-    this.objects.push(EventType.event);
+    this.objects.push(5 /* event */);
     this.objects.push(entry);
     this.objects.push(event);
   }
@@ -4565,27 +4259,28 @@ var EventQueue = class {
       let type = objects[i];
       let entry = objects[i + 1];
       switch (type) {
-        case EventType.start:
+        case 0 /* start */:
           if (entry.listener && entry.listener.start) entry.listener.start(entry);
           for (let ii = 0; ii < listeners.length; ii++) {
             let listener = listeners[ii];
             if (listener.start) listener.start(entry);
           }
           break;
-        case EventType.interrupt:
+        case 1 /* interrupt */:
           if (entry.listener && entry.listener.interrupt) entry.listener.interrupt(entry);
           for (let ii = 0; ii < listeners.length; ii++) {
             let listener = listeners[ii];
             if (listener.interrupt) listener.interrupt(entry);
           }
           break;
-        case EventType.end:
+        case 2 /* end */:
           if (entry.listener && entry.listener.end) entry.listener.end(entry);
           for (let ii = 0; ii < listeners.length; ii++) {
             let listener = listeners[ii];
             if (listener.end) listener.end(entry);
           }
-        case EventType.dispose:
+        // Fall through.
+        case 3 /* dispose */:
           if (entry.listener && entry.listener.dispose) entry.listener.dispose(entry);
           for (let ii = 0; ii < listeners.length; ii++) {
             let listener = listeners[ii];
@@ -4593,14 +4288,14 @@ var EventQueue = class {
           }
           this.animState.trackEntryPool.free(entry);
           break;
-        case EventType.complete:
+        case 4 /* complete */:
           if (entry.listener && entry.listener.complete) entry.listener.complete(entry);
           for (let ii = 0; ii < listeners.length; ii++) {
             let listener = listeners[ii];
             if (listener.complete) listener.complete(entry);
           }
           break;
-        case EventType.event:
+        case 5 /* event */:
           let event = objects[i++ + 2];
           if (entry.listener && entry.listener.event) entry.listener.event(entry, event);
           for (let ii = 0; ii < listeners.length; ii++) {
@@ -4617,22 +4312,28 @@ var EventQueue = class {
     this.objects.length = 0;
   }
 };
-var EventType = /* @__PURE__ */ (EventType2 => {
-  EventType2[(EventType2['start'] = 0)] = 'start';
-  EventType2[(EventType2['interrupt'] = 1)] = 'interrupt';
-  EventType2[(EventType2['end'] = 2)] = 'end';
-  EventType2[(EventType2['dispose'] = 3)] = 'dispose';
-  EventType2[(EventType2['complete'] = 4)] = 'complete';
-  EventType2[(EventType2['event'] = 5)] = 'event';
+var EventType = /* @__PURE__ */ ((EventType2) => {
+  EventType2[EventType2["start"] = 0] = "start";
+  EventType2[EventType2["interrupt"] = 1] = "interrupt";
+  EventType2[EventType2["end"] = 2] = "end";
+  EventType2[EventType2["dispose"] = 3] = "dispose";
+  EventType2[EventType2["complete"] = 4] = "complete";
+  EventType2[EventType2["event"] = 5] = "event";
   return EventType2;
 })(EventType || {});
 var AnimationStateAdapter = class {
-  start(entry) {}
-  interrupt(entry) {}
-  end(entry) {}
-  dispose(entry) {}
-  complete(entry) {}
-  event(entry, event) {}
+  start(entry) {
+  }
+  interrupt(entry) {
+  }
+  end(entry) {
+  }
+  dispose(entry) {
+  }
+  complete(entry) {
+  }
+  event(entry, event) {
+  }
 };
 var SUBSEQUENT = 0;
 var FIRST = 1;
@@ -4644,11 +4345,13 @@ var CURRENT = 2;
 
 // spine-core/src/AnimationStateData.ts
 var AnimationStateData = class {
+  /** The SkeletonData to look up animations when they are specified by name. */
+  skeletonData;
+  animationToMixTime = {};
+  /** The mix duration to use when no mix duration has been defined between two animations. */
+  defaultMix = 0;
   constructor(skeletonData) {
-    this.animationToMixTime = {};
-    /** The mix duration to use when no mix duration has been defined between two animations. */
-    this.defaultMix = 0;
-    if (!skeletonData) throw new Error('skeletonData cannot be null.');
+    if (!skeletonData) throw new Error("skeletonData cannot be null.");
     this.skeletonData = skeletonData;
   }
   /** Sets a mix duration by animation name.
@@ -4656,37 +4359,37 @@ var AnimationStateData = class {
    * See {@link #setMixWith()}. */
   setMix(fromName, toName, duration) {
     let from = this.skeletonData.findAnimation(fromName);
-    if (!from) throw new Error('Animation not found: ' + fromName);
+    if (!from) throw new Error("Animation not found: " + fromName);
     let to = this.skeletonData.findAnimation(toName);
-    if (!to) throw new Error('Animation not found: ' + toName);
+    if (!to) throw new Error("Animation not found: " + toName);
     this.setMixWith(from, to, duration);
   }
   /** Sets the mix duration when changing from the specified animation to the other.
    *
    * See {@link TrackEntry#mixDuration}. */
   setMixWith(from, to, duration) {
-    if (!from) throw new Error('from cannot be null.');
-    if (!to) throw new Error('to cannot be null.');
-    let key = from.name + '.' + to.name;
+    if (!from) throw new Error("from cannot be null.");
+    if (!to) throw new Error("to cannot be null.");
+    let key = from.name + "." + to.name;
     this.animationToMixTime[key] = duration;
   }
   /** Returns the mix duration to use when changing from the specified animation to the other, or the {@link #defaultMix} if
-   * no mix duration has been set. */
+    * no mix duration has been set. */
   getMix(from, to) {
-    let key = from.name + '.' + to.name;
+    let key = from.name + "." + to.name;
     let value = this.animationToMixTime[key];
     return value === void 0 ? this.defaultMix : value;
   }
 };
 
 // spine-core/src/attachments/BoundingBoxAttachment.ts
-var BoundingBoxAttachment = class extends VertexAttachment {
+var BoundingBoxAttachment = class _BoundingBoxAttachment extends VertexAttachment {
+  color = new Color(1, 1, 1, 1);
   constructor(name) {
     super(name);
-    this.color = new Color(1, 1, 1, 1);
   }
   copy() {
-    let copy = new BoundingBoxAttachment(this.name);
+    let copy = new _BoundingBoxAttachment(this.name);
     this.copyTo(copy);
     copy.color.setFromColor(this.color);
     return copy;
@@ -4694,20 +4397,20 @@ var BoundingBoxAttachment = class extends VertexAttachment {
 };
 
 // spine-core/src/attachments/ClippingAttachment.ts
-var ClippingAttachment = class extends VertexAttachment {
+var ClippingAttachment = class _ClippingAttachment extends VertexAttachment {
+  /** Clipping is performed between the clipping polygon's slot and the end slot. Returns null if clipping is done until the end of
+   * the skeleton's rendering. */
+  endSlot = null;
+  // Nonessential.
+  /** The color of the clipping polygon as it was in Spine. Available only when nonessential data was exported. Clipping polygons
+   * are not usually rendered at runtime. */
+  color = new Color(0.2275, 0.2275, 0.8078, 1);
   // ce3a3aff
   constructor(name) {
     super(name);
-    /** Clipping is performed between the clipping polygon's slot and the end slot. Returns null if clipping is done until the end of
-     * the skeleton's rendering. */
-    this.endSlot = null;
-    // Nonessential.
-    /** The color of the clipping polygon as it was in Spine. Available only when nonessential data was exported. Clipping polygons
-     * are not usually rendered at runtime. */
-    this.color = new Color(0.2275, 0.2275, 0.8078, 1);
   }
   copy() {
-    let copy = new ClippingAttachment(this.name);
+    let copy = new _ClippingAttachment(this.name);
     this.copyTo(copy);
     copy.endSlot = this.endSlot;
     copy.color.setFromColor(this.color);
@@ -4717,6 +4420,7 @@ var ClippingAttachment = class extends VertexAttachment {
 
 // spine-core/src/Texture.ts
 var Texture = class {
+  _image;
   constructor(image) {
     this._image = image;
   }
@@ -4724,106 +4428,112 @@ var Texture = class {
     return this._image;
   }
 };
-var TextureFilter = /* @__PURE__ */ (TextureFilter2 => {
-  TextureFilter2[(TextureFilter2['Nearest'] = 9728)] = 'Nearest';
-  TextureFilter2[(TextureFilter2['Linear'] = 9729)] = 'Linear';
-  TextureFilter2[(TextureFilter2['MipMap'] = 9987)] = 'MipMap';
-  TextureFilter2[(TextureFilter2['MipMapNearestNearest'] = 9984)] = 'MipMapNearestNearest';
-  TextureFilter2[(TextureFilter2['MipMapLinearNearest'] = 9985)] = 'MipMapLinearNearest';
-  TextureFilter2[(TextureFilter2['MipMapNearestLinear'] = 9986)] = 'MipMapNearestLinear';
-  TextureFilter2[(TextureFilter2['MipMapLinearLinear'] = 9987)] = 'MipMapLinearLinear';
+var TextureFilter = /* @__PURE__ */ ((TextureFilter2) => {
+  TextureFilter2[TextureFilter2["Nearest"] = 9728] = "Nearest";
+  TextureFilter2[TextureFilter2["Linear"] = 9729] = "Linear";
+  TextureFilter2[TextureFilter2["MipMap"] = 9987] = "MipMap";
+  TextureFilter2[TextureFilter2["MipMapNearestNearest"] = 9984] = "MipMapNearestNearest";
+  TextureFilter2[TextureFilter2["MipMapLinearNearest"] = 9985] = "MipMapLinearNearest";
+  TextureFilter2[TextureFilter2["MipMapNearestLinear"] = 9986] = "MipMapNearestLinear";
+  TextureFilter2[TextureFilter2["MipMapLinearLinear"] = 9987] = "MipMapLinearLinear";
   return TextureFilter2;
 })(TextureFilter || {});
-var TextureWrap = /* @__PURE__ */ (TextureWrap2 => {
-  TextureWrap2[(TextureWrap2['MirroredRepeat'] = 33648)] = 'MirroredRepeat';
-  TextureWrap2[(TextureWrap2['ClampToEdge'] = 33071)] = 'ClampToEdge';
-  TextureWrap2[(TextureWrap2['Repeat'] = 10497)] = 'Repeat';
+var TextureWrap = /* @__PURE__ */ ((TextureWrap2) => {
+  TextureWrap2[TextureWrap2["MirroredRepeat"] = 33648] = "MirroredRepeat";
+  TextureWrap2[TextureWrap2["ClampToEdge"] = 33071] = "ClampToEdge";
+  TextureWrap2[TextureWrap2["Repeat"] = 10497] = "Repeat";
   return TextureWrap2;
 })(TextureWrap || {});
 var TextureRegion = class {
-  constructor() {
-    this.u = 0;
-    this.v = 0;
-    this.u2 = 0;
-    this.v2 = 0;
-    this.width = 0;
-    this.height = 0;
-    this.degrees = 0;
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.originalWidth = 0;
-    this.originalHeight = 0;
-  }
+  texture;
+  u = 0;
+  v = 0;
+  u2 = 0;
+  v2 = 0;
+  width = 0;
+  height = 0;
+  degrees = 0;
+  offsetX = 0;
+  offsetY = 0;
+  originalWidth = 0;
+  originalHeight = 0;
 };
 var FakeTexture = class extends Texture {
-  setFilters(minFilter, magFilter) {}
-  setWraps(uWrap, vWrap) {}
-  dispose() {}
+  setFilters(minFilter, magFilter) {
+  }
+  setWraps(uWrap, vWrap) {
+  }
+  dispose() {
+  }
 };
 
 // spine-core/src/TextureAtlas.ts
 var TextureAtlas = class {
+  pages = new Array();
+  regions = new Array();
   constructor(atlasText) {
-    this.pages = new Array();
-    this.regions = new Array();
     let reader = new TextureAtlasReader(atlasText);
     let entry = new Array(4);
     let pageFields = {};
-    pageFields['size'] = page2 => {
+    pageFields["size"] = (page2) => {
       page2.width = parseInt(entry[1]);
       page2.height = parseInt(entry[2]);
     };
-    pageFields['format'] = () => {};
-    pageFields['filter'] = page2 => {
+    pageFields["format"] = () => {
+    };
+    pageFields["filter"] = (page2) => {
       page2.minFilter = Utils.enumValue(TextureFilter, entry[1]);
       page2.magFilter = Utils.enumValue(TextureFilter, entry[2]);
     };
-    pageFields['repeat'] = page2 => {
-      if (entry[1].indexOf('x') != -1) page2.uWrap = 10497 /* Repeat */;
-      if (entry[1].indexOf('y') != -1) page2.vWrap = 10497 /* Repeat */;
+    pageFields["repeat"] = (page2) => {
+      if (entry[1].indexOf("x") != -1) page2.uWrap = 10497 /* Repeat */;
+      if (entry[1].indexOf("y") != -1) page2.vWrap = 10497 /* Repeat */;
     };
-    pageFields['pma'] = page2 => {
-      page2.pma = entry[1] == 'true';
+    pageFields["pma"] = (page2) => {
+      page2.pma = entry[1] == "true";
     };
     var regionFields = {};
-    regionFields['xy'] = region => {
+    regionFields["xy"] = (region) => {
       region.x = parseInt(entry[1]);
       region.y = parseInt(entry[2]);
     };
-    regionFields['size'] = region => {
+    regionFields["size"] = (region) => {
       region.width = parseInt(entry[1]);
       region.height = parseInt(entry[2]);
     };
-    regionFields['bounds'] = region => {
+    regionFields["bounds"] = (region) => {
       region.x = parseInt(entry[1]);
       region.y = parseInt(entry[2]);
       region.width = parseInt(entry[3]);
       region.height = parseInt(entry[4]);
     };
-    regionFields['offset'] = region => {
+    regionFields["offset"] = (region) => {
       region.offsetX = parseInt(entry[1]);
       region.offsetY = parseInt(entry[2]);
     };
-    regionFields['orig'] = region => {
+    regionFields["orig"] = (region) => {
       region.originalWidth = parseInt(entry[1]);
       region.originalHeight = parseInt(entry[2]);
     };
-    regionFields['offsets'] = region => {
+    regionFields["offsets"] = (region) => {
       region.offsetX = parseInt(entry[1]);
       region.offsetY = parseInt(entry[2]);
       region.originalWidth = parseInt(entry[3]);
       region.originalHeight = parseInt(entry[4]);
     };
-    regionFields['rotate'] = region => {
+    regionFields["rotate"] = (region) => {
       let value = entry[1];
-      if (value == 'true') region.degrees = 90;
-      else if (value != 'false') region.degrees = parseInt(value);
+      if (value == "true")
+        region.degrees = 90;
+      else if (value != "false")
+        region.degrees = parseInt(value);
     };
-    regionFields['index'] = region => {
+    regionFields["index"] = (region) => {
       region.index = parseInt(entry[1]);
     };
     let line = reader.readLine();
-    while (line && line.trim().length == 0) line = reader.readLine();
+    while (line && line.trim().length == 0)
+      line = reader.readLine();
     while (true) {
       if (!line || line.trim().length == 0) break;
       if (reader.readEntry(entry, line) == 0) break;
@@ -4840,7 +4550,7 @@ var TextureAtlas = class {
       } else if (!page) {
         page = new TextureAtlasPage(line.trim());
         while (true) {
-          if (reader.readEntry(entry, (line = reader.readLine())) == 0) break;
+          if (reader.readEntry(entry, line = reader.readLine()) == 0) break;
           let field = pageFields[entry[0]];
           if (field) field(page);
         }
@@ -4848,16 +4558,18 @@ var TextureAtlas = class {
       } else {
         let region = new TextureAtlasRegion(page, line);
         while (true) {
-          let count = reader.readEntry(entry, (line = reader.readLine()));
+          let count = reader.readEntry(entry, line = reader.readLine());
           if (count == 0) break;
           let field = regionFields[entry[0]];
-          if (field) field(region);
+          if (field)
+            field(region);
           else {
             if (!names) names = [];
             if (!values) values = [];
             names.push(entry[0]);
             let entryValues = [];
-            for (let i = 0; i < count; i++) entryValues.push(parseInt(entry[i + 1]));
+            for (let i = 0; i < count; i++)
+              entryValues.push(parseInt(entry[i + 1]));
             values.push(entryValues);
           }
         }
@@ -4892,34 +4604,36 @@ var TextureAtlas = class {
     }
     return null;
   }
-  setTextures(assetManager, pathPrefix = '') {
-    for (let page of this.pages) page.setTexture(assetManager.get(pathPrefix + page.name));
+  setTextures(assetManager, pathPrefix = "") {
+    for (let page of this.pages)
+      page.setTexture(assetManager.get(pathPrefix + page.name));
   }
   dispose() {
-    var _a;
     for (let i = 0; i < this.pages.length; i++) {
-      (_a = this.pages[i].texture) == null ? void 0 : _a.dispose();
+      this.pages[i].texture?.dispose();
     }
   }
 };
 var TextureAtlasReader = class {
+  lines;
+  index = 0;
   constructor(text) {
-    this.index = 0;
     this.lines = text.split(/\r\n|\r|\n/);
   }
   readLine() {
-    if (this.index >= this.lines.length) return null;
+    if (this.index >= this.lines.length)
+      return null;
     return this.lines[this.index++];
   }
   readEntry(entry, line) {
     if (!line) return 0;
     line = line.trim();
     if (line.length == 0) return 0;
-    let colon = line.indexOf(':');
+    let colon = line.indexOf(":");
     if (colon == -1) return 0;
     entry[0] = line.substr(0, colon).trim();
     for (let i = 1, lastMatch = colon + 1; ; i++) {
-      let comma = line.indexOf(',', lastMatch);
+      let comma = line.indexOf(",", lastMatch);
       if (comma == -1) {
         entry[i] = line.substr(lastMatch).trim();
         return i;
@@ -4931,38 +4645,42 @@ var TextureAtlasReader = class {
   }
 };
 var TextureAtlasPage = class {
+  name;
+  minFilter = 9728 /* Nearest */;
+  magFilter = 9728 /* Nearest */;
+  uWrap = 33071 /* ClampToEdge */;
+  vWrap = 33071 /* ClampToEdge */;
+  texture = null;
+  width = 0;
+  height = 0;
+  pma = false;
+  regions = new Array();
   constructor(name) {
-    this.minFilter = 9728 /* Nearest */;
-    this.magFilter = 9728 /* Nearest */;
-    this.uWrap = 33071 /* ClampToEdge */;
-    this.vWrap = 33071 /* ClampToEdge */;
-    this.texture = null;
-    this.width = 0;
-    this.height = 0;
-    this.pma = false;
-    this.regions = new Array();
     this.name = name;
   }
   setTexture(texture) {
     this.texture = texture;
     texture.setFilters(this.minFilter, this.magFilter);
     texture.setWraps(this.uWrap, this.vWrap);
-    for (let region of this.regions) region.texture = texture;
+    for (let region of this.regions)
+      region.texture = texture;
   }
 };
 var TextureAtlasRegion = class extends TextureRegion {
+  page;
+  name;
+  x = 0;
+  y = 0;
+  offsetX = 0;
+  offsetY = 0;
+  originalWidth = 0;
+  originalHeight = 0;
+  index = 0;
+  degrees = 0;
+  names = null;
+  values = null;
   constructor(page, name) {
     super();
-    this.x = 0;
-    this.y = 0;
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.originalWidth = 0;
-    this.originalHeight = 0;
-    this.index = 0;
-    this.degrees = 0;
-    this.names = null;
-    this.values = null;
     this.page = page;
     this.name = name;
     page.regions.push(this);
@@ -4970,51 +4688,48 @@ var TextureAtlasRegion = class extends TextureRegion {
 };
 
 // spine-core/src/attachments/MeshAttachment.ts
-var MeshAttachment = class extends VertexAttachment {
+var MeshAttachment = class _MeshAttachment extends VertexAttachment {
+  region = null;
+  /** The name of the texture region for this attachment. */
+  path;
+  /** The UV pair for each vertex, normalized within the texture region. */
+  regionUVs = [];
+  /** The UV pair for each vertex, normalized within the entire texture.
+   *
+   * See {@link #updateUVs}. */
+  uvs = [];
+  /** Triplets of vertex indices which describe the mesh's triangulation. */
+  triangles = [];
+  /** The color to tint the mesh. */
+  color = new Color(1, 1, 1, 1);
+  /** The width of the mesh's image. Available only when nonessential data was exported. */
+  width = 0;
+  /** The height of the mesh's image. Available only when nonessential data was exported. */
+  height = 0;
+  /** The number of entries at the beginning of {@link #vertices} that make up the mesh hull. */
+  hullLength = 0;
+  /** Vertex index pairs describing edges for controling triangulation. Mesh triangles will never cross edges. Only available if
+   * nonessential data was exported. Triangulation is not performed at runtime. */
+  edges = [];
+  parentMesh = null;
+  sequence = null;
+  tempColor = new Color(0, 0, 0, 0);
   constructor(name, path2) {
     super(name);
-    this.region = null;
-    /** The UV pair for each vertex, normalized within the texture region. */
-    this.regionUVs = [];
-    /** The UV pair for each vertex, normalized within the entire texture.
-     *
-     * See {@link #updateUVs}. */
-    this.uvs = [];
-    /** Triplets of vertex indices which describe the mesh's triangulation. */
-    this.triangles = [];
-    /** The color to tint the mesh. */
-    this.color = new Color(1, 1, 1, 1);
-    /** The width of the mesh's image. Available only when nonessential data was exported. */
-    this.width = 0;
-    /** The height of the mesh's image. Available only when nonessential data was exported. */
-    this.height = 0;
-    /** The number of entries at the beginning of {@link #vertices} that make up the mesh hull. */
-    this.hullLength = 0;
-    /** Vertex index pairs describing edges for controling triangulation. Mesh triangles will never cross edges. Only available if
-     * nonessential data was exported. Triangulation is not performed at runtime. */
-    this.edges = [];
-    this.parentMesh = null;
-    this.sequence = null;
-    this.tempColor = new Color(0, 0, 0, 0);
     this.path = path2;
   }
   /** Calculates {@link #uvs} using the {@link #regionUVs} and region. Must be called if the region, the region's properties, or
    * the {@link #regionUVs} are changed. */
   updateRegion() {
-    if (!this.region) throw new Error('Region not set.');
+    if (!this.region) throw new Error("Region not set.");
     let regionUVs = this.regionUVs;
     if (!this.uvs || this.uvs.length != regionUVs.length) this.uvs = Utils.newFloatArray(regionUVs.length);
     let uvs = this.uvs;
     let n = this.uvs.length;
-    let u = this.region.u,
-      v = this.region.v,
-      width = 0,
-      height = 0;
+    let u = this.region.u, v = this.region.v, width = 0, height = 0;
     if (this.region instanceof TextureAtlasRegion) {
-      let region = this.region,
-        page = region.page;
-      let textureWidth = page.width,
-        textureHeight = page.height;
+      let region = this.region, page = region.page;
+      let textureWidth = page.width, textureHeight = page.height;
       switch (region.degrees) {
         case 90:
           u -= (region.originalHeight - region.offsetY - region.height) / textureWidth;
@@ -5084,7 +4799,7 @@ var MeshAttachment = class extends VertexAttachment {
   }
   copy() {
     if (this.parentMesh) return this.newLinkedMesh();
-    let copy = new MeshAttachment(this.name, this.path);
+    let copy = new _MeshAttachment(this.name, this.path);
     copy.region = this.region;
     copy.color.setFromColor(this.color);
     this.copyTo(copy);
@@ -5110,7 +4825,7 @@ var MeshAttachment = class extends VertexAttachment {
   }
   /** Returns a new mesh with the {@link #parentMesh} set to this mesh's parent mesh, if any, else to this mesh. **/
   newLinkedMesh() {
-    let copy = new MeshAttachment(this.name, this.path);
+    let copy = new _MeshAttachment(this.name, this.path);
     copy.region = this.region;
     copy.color.setFromColor(this.color);
     copy.timelineAttachment = this.timelineAttachment;
@@ -5121,22 +4836,22 @@ var MeshAttachment = class extends VertexAttachment {
 };
 
 // spine-core/src/attachments/PathAttachment.ts
-var PathAttachment = class extends VertexAttachment {
+var PathAttachment = class _PathAttachment extends VertexAttachment {
+  /** The lengths along the path in the setup pose from the start of the path to the end of each Bezier curve. */
+  lengths = [];
+  /** If true, the start and end knots are connected. */
+  closed = false;
+  /** If true, additional calculations are performed to make calculating positions along the path more accurate. If false, fewer
+   * calculations are performed but calculating positions along the path is less accurate. */
+  constantSpeed = false;
+  /** The color of the path as it was in Spine. Available only when nonessential data was exported. Paths are not usually
+   * rendered at runtime. */
+  color = new Color(1, 1, 1, 1);
   constructor(name) {
     super(name);
-    /** The lengths along the path in the setup pose from the start of the path to the end of each Bezier curve. */
-    this.lengths = [];
-    /** If true, the start and end knots are connected. */
-    this.closed = false;
-    /** If true, additional calculations are performed to make calculating positions along the path more accurate. If false, fewer
-     * calculations are performed but calculating positions along the path is less accurate. */
-    this.constantSpeed = false;
-    /** The color of the path as it was in Spine. Available only when nonessential data was exported. Paths are not usually
-     * rendered at runtime. */
-    this.color = new Color(1, 1, 1, 1);
   }
   copy() {
-    let copy = new PathAttachment(this.name);
+    let copy = new _PathAttachment(this.name);
     this.copyTo(copy);
     copy.lengths = new Array(this.lengths.length);
     Utils.arrayCopy(this.lengths, 0, copy.lengths, 0, this.lengths.length);
@@ -5148,15 +4863,15 @@ var PathAttachment = class extends VertexAttachment {
 };
 
 // spine-core/src/attachments/PointAttachment.ts
-var PointAttachment = class extends VertexAttachment {
+var PointAttachment = class _PointAttachment extends VertexAttachment {
+  x = 0;
+  y = 0;
+  rotation = 0;
+  /** The color of the point attachment as it was in Spine. Available only when nonessential data was exported. Point attachments
+   * are not usually rendered at runtime. */
+  color = new Color(0.38, 0.94, 0, 1);
   constructor(name) {
     super(name);
-    this.x = 0;
-    this.y = 0;
-    this.rotation = 0;
-    /** The color of the point attachment as it was in Spine. Available only when nonessential data was exported. Point attachments
-     * are not usually rendered at runtime. */
-    this.color = new Color(0.38, 0.94, 0, 1);
   }
   computeWorldPosition(bone, point) {
     point.x = this.x * bone.a + this.y * bone.b + bone.worldX;
@@ -5164,15 +4879,13 @@ var PointAttachment = class extends VertexAttachment {
     return point;
   }
   computeWorldRotation(bone) {
-    const r = this.rotation * MathUtils.degRad,
-      cos = Math.cos(r),
-      sin = Math.sin(r);
+    const r = this.rotation * MathUtils.degRad, cos = Math.cos(r), sin = Math.sin(r);
     const x = cos * bone.a + sin * bone.b;
     const y = cos * bone.c + sin * bone.d;
     return MathUtils.atan2Deg(y, x);
   }
   copy() {
-    let copy = new PointAttachment(this.name);
+    let copy = new _PointAttachment(this.name);
     copy.x = this.x;
     copy.y = this.y;
     copy.rotation = this.rotation;
@@ -5182,38 +4895,40 @@ var PointAttachment = class extends VertexAttachment {
 };
 
 // spine-core/src/attachments/RegionAttachment.ts
-var _RegionAttachment = class extends Attachment {
+var RegionAttachment = class _RegionAttachment extends Attachment {
+  /** The local x translation. */
+  x = 0;
+  /** The local y translation. */
+  y = 0;
+  /** The local scaleX. */
+  scaleX = 1;
+  /** The local scaleY. */
+  scaleY = 1;
+  /** The local rotation. */
+  rotation = 0;
+  /** The width of the region attachment in Spine. */
+  width = 0;
+  /** The height of the region attachment in Spine. */
+  height = 0;
+  /** The color to tint the region attachment. */
+  color = new Color(1, 1, 1, 1);
+  /** The name of the texture region for this attachment. */
+  path;
+  region = null;
+  sequence = null;
+  /** For each of the 4 vertices, a pair of <code>x,y</code> values that is the local position of the vertex.
+   *
+   * See {@link #updateOffset()}. */
+  offset = Utils.newFloatArray(8);
+  uvs = Utils.newFloatArray(8);
+  tempColor = new Color(1, 1, 1, 1);
   constructor(name, path2) {
     super(name);
-    /** The local x translation. */
-    this.x = 0;
-    /** The local y translation. */
-    this.y = 0;
-    /** The local scaleX. */
-    this.scaleX = 1;
-    /** The local scaleY. */
-    this.scaleY = 1;
-    /** The local rotation. */
-    this.rotation = 0;
-    /** The width of the region attachment in Spine. */
-    this.width = 0;
-    /** The height of the region attachment in Spine. */
-    this.height = 0;
-    /** The color to tint the region attachment. */
-    this.color = new Color(1, 1, 1, 1);
-    this.region = null;
-    this.sequence = null;
-    /** For each of the 4 vertices, a pair of <code>x,y</code> values that is the local position of the vertex.
-     *
-     * See {@link #updateOffset()}. */
-    this.offset = Utils.newFloatArray(8);
-    this.uvs = Utils.newFloatArray(8);
-    this.tempColor = new Color(1, 1, 1, 1);
     this.path = path2;
   }
   /** Calculates the {@link #offset} using the region settings. Must be called after changing region settings. */
   updateRegion() {
-    if (!this.region) throw new Error('Region not set.');
+    if (!this.region) throw new Error("Region not set.");
     let region = this.region;
     let uvs = this.uvs;
     if (region == null) {
@@ -5227,17 +4942,16 @@ var _RegionAttachment = class extends Attachment {
       uvs[7] = 0;
       return;
     }
-    let regionScaleX = (this.width / this.region.originalWidth) * this.scaleX;
-    let regionScaleY = (this.height / this.region.originalHeight) * this.scaleY;
-    let localX = (-this.width / 2) * this.scaleX + this.region.offsetX * regionScaleX;
-    let localY = (-this.height / 2) * this.scaleY + this.region.offsetY * regionScaleY;
+    let regionScaleX = this.width / this.region.originalWidth * this.scaleX;
+    let regionScaleY = this.height / this.region.originalHeight * this.scaleY;
+    let localX = -this.width / 2 * this.scaleX + this.region.offsetX * regionScaleX;
+    let localY = -this.height / 2 * this.scaleY + this.region.offsetY * regionScaleY;
     let localX2 = localX + this.region.width * regionScaleX;
     let localY2 = localY + this.region.height * regionScaleY;
     let radians = this.rotation * MathUtils.degRad;
     let cos = Math.cos(radians);
     let sin = Math.sin(radians);
-    let x = this.x,
-      y = this.y;
+    let x = this.x, y = this.y;
     let localXCos = localX * cos + x;
     let localXSin = localX * sin;
     let localYCos = localY * cos + y;
@@ -5284,17 +4998,13 @@ var _RegionAttachment = class extends Attachment {
    * @param offset The <code>worldVertices</code> index to begin writing values.
    * @param stride The number of <code>worldVertices</code> entries between the value pairs written. */
   computeWorldVertices(slot, worldVertices, offset, stride) {
-    if (this.sequence != null) this.sequence.apply(slot, this);
+    if (this.sequence != null)
+      this.sequence.apply(slot, this);
     let bone = slot.bone;
     let vertexOffset = this.offset;
-    let x = bone.worldX,
-      y = bone.worldY;
-    let a = bone.a,
-      b = bone.b,
-      c = bone.c,
-      d = bone.d;
-    let offsetX = 0,
-      offsetY = 0;
+    let x = bone.worldX, y = bone.worldY;
+    let a = bone.a, b = bone.b, c = bone.c, d = bone.d;
+    let offsetX = 0, offsetY = 0;
     offsetX = vertexOffset[0];
     offsetY = vertexOffset[1];
     worldVertices[offset] = offsetX * a + offsetY * b + x;
@@ -5331,43 +5041,43 @@ var _RegionAttachment = class extends Attachment {
     copy.sequence = this.sequence != null ? this.sequence.copy() : null;
     return copy;
   }
+  static X1 = 0;
+  static Y1 = 1;
+  static C1R = 2;
+  static C1G = 3;
+  static C1B = 4;
+  static C1A = 5;
+  static U1 = 6;
+  static V1 = 7;
+  static X2 = 8;
+  static Y2 = 9;
+  static C2R = 10;
+  static C2G = 11;
+  static C2B = 12;
+  static C2A = 13;
+  static U2 = 14;
+  static V2 = 15;
+  static X3 = 16;
+  static Y3 = 17;
+  static C3R = 18;
+  static C3G = 19;
+  static C3B = 20;
+  static C3A = 21;
+  static U3 = 22;
+  static V3 = 23;
+  static X4 = 24;
+  static Y4 = 25;
+  static C4R = 26;
+  static C4G = 27;
+  static C4B = 28;
+  static C4A = 29;
+  static U4 = 30;
+  static V4 = 31;
 };
-var RegionAttachment = _RegionAttachment;
-RegionAttachment.X1 = 0;
-RegionAttachment.Y1 = 1;
-RegionAttachment.C1R = 2;
-RegionAttachment.C1G = 3;
-RegionAttachment.C1B = 4;
-RegionAttachment.C1A = 5;
-RegionAttachment.U1 = 6;
-RegionAttachment.V1 = 7;
-RegionAttachment.X2 = 8;
-RegionAttachment.Y2 = 9;
-RegionAttachment.C2R = 10;
-RegionAttachment.C2G = 11;
-RegionAttachment.C2B = 12;
-RegionAttachment.C2A = 13;
-RegionAttachment.U2 = 14;
-RegionAttachment.V2 = 15;
-RegionAttachment.X3 = 16;
-RegionAttachment.Y3 = 17;
-RegionAttachment.C3R = 18;
-RegionAttachment.C3G = 19;
-RegionAttachment.C3B = 20;
-RegionAttachment.C3A = 21;
-RegionAttachment.U3 = 22;
-RegionAttachment.V3 = 23;
-RegionAttachment.X4 = 24;
-RegionAttachment.Y4 = 25;
-RegionAttachment.C4R = 26;
-RegionAttachment.C4G = 27;
-RegionAttachment.C4B = 28;
-RegionAttachment.C4A = 29;
-RegionAttachment.U4 = 30;
-RegionAttachment.V4 = 31;
 
 // spine-core/src/AtlasAttachmentLoader.ts
 var AtlasAttachmentLoader = class {
+  atlas;
   constructor(atlas) {
     this.atlas = atlas;
   }
@@ -5376,7 +5086,7 @@ var AtlasAttachmentLoader = class {
     for (let i = 0, n = regions.length; i < n; i++) {
       let path2 = sequence.getPath(basePath, i);
       let region = this.atlas.findRegion(path2);
-      if (region == null) throw new Error('Region not found in atlas: ' + path2 + ' (sequence: ' + name + ')');
+      if (region == null) throw new Error("Region not found in atlas: " + path2 + " (sequence: " + name + ")");
       regions[i] = region;
     }
   }
@@ -5386,7 +5096,7 @@ var AtlasAttachmentLoader = class {
       this.loadSequence(name, path2, sequence);
     } else {
       let region = this.atlas.findRegion(path2);
-      if (!region) throw new Error('Region not found in atlas: ' + path2 + ' (region attachment: ' + name + ')');
+      if (!region) throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name + ")");
       attachment.region = region;
     }
     return attachment;
@@ -5397,7 +5107,7 @@ var AtlasAttachmentLoader = class {
       this.loadSequence(name, path2, sequence);
     } else {
       let region = this.atlas.findRegion(path2);
-      if (!region) throw new Error('Region not found in atlas: ' + path2 + ' (mesh attachment: ' + name + ')');
+      if (!region) throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name + ")");
       attachment.region = region;
     }
     return attachment;
@@ -5418,128 +5128,128 @@ var AtlasAttachmentLoader = class {
 
 // spine-core/src/BoneData.ts
 var BoneData = class {
+  /** The index of the bone in {@link Skeleton#getBones()}. */
+  index = 0;
+  /** The name of the bone, which is unique across all bones in the skeleton. */
+  name;
+  /** @returns May be null. */
+  parent = null;
+  /** The bone's length. */
+  length = 0;
+  /** The local x translation. */
+  x = 0;
+  /** The local y translation. */
+  y = 0;
+  /** The local rotation in degrees, counter clockwise. */
+  rotation = 0;
+  /** The local scaleX. */
+  scaleX = 1;
+  /** The local scaleY. */
+  scaleY = 1;
+  /** The local shearX. */
+  shearX = 0;
+  /** The local shearX. */
+  shearY = 0;
+  /** The transform mode for how parent world transforms affect this bone. */
+  inherit = 0 /* Normal */;
+  /** When true, {@link Skeleton#updateWorldTransform()} only updates this bone if the {@link Skeleton#skin} contains this
+    * bone.
+    * @see Skin#bones */
+  skinRequired = false;
+  /** The color of the bone as it was in Spine. Available only when nonessential data was exported. Bones are not usually
+   * rendered at runtime. */
+  color = new Color();
+  /** The bone icon as it was in Spine, or null if nonessential data was not exported. */
+  icon;
+  /** False if the bone was hidden in Spine and nonessential data was exported. Does not affect runtime rendering. */
+  visible = false;
   constructor(index, name, parent) {
-    /** The index of the bone in {@link Skeleton#getBones()}. */
-    this.index = 0;
-    /** @returns May be null. */
-    this.parent = null;
-    /** The bone's length. */
-    this.length = 0;
-    /** The local x translation. */
-    this.x = 0;
-    /** The local y translation. */
-    this.y = 0;
-    /** The local rotation in degrees, counter clockwise. */
-    this.rotation = 0;
-    /** The local scaleX. */
-    this.scaleX = 1;
-    /** The local scaleY. */
-    this.scaleY = 1;
-    /** The local shearX. */
-    this.shearX = 0;
-    /** The local shearX. */
-    this.shearY = 0;
-    /** The transform mode for how parent world transforms affect this bone. */
-    this.inherit = Inherit.Normal;
-    /** When true, {@link Skeleton#updateWorldTransform()} only updates this bone if the {@link Skeleton#skin} contains this
-     * bone.
-     * @see Skin#bones */
-    this.skinRequired = false;
-    /** The color of the bone as it was in Spine. Available only when nonessential data was exported. Bones are not usually
-     * rendered at runtime. */
-    this.color = new Color();
-    /** False if the bone was hidden in Spine and nonessential data was exported. Does not affect runtime rendering. */
-    this.visible = false;
-    if (index < 0) throw new Error('index must be >= 0.');
-    if (!name) throw new Error('name cannot be null.');
+    if (index < 0) throw new Error("index must be >= 0.");
+    if (!name) throw new Error("name cannot be null.");
     this.index = index;
     this.name = name;
     this.parent = parent;
   }
 };
-var Inherit = /* @__PURE__ */ (Inherit2 => {
-  Inherit2[(Inherit2['Normal'] = 0)] = 'Normal';
-  Inherit2[(Inherit2['OnlyTranslation'] = 1)] = 'OnlyTranslation';
-  Inherit2[(Inherit2['NoRotationOrReflection'] = 2)] = 'NoRotationOrReflection';
-  Inherit2[(Inherit2['NoScale'] = 3)] = 'NoScale';
-  Inherit2[(Inherit2['NoScaleOrReflection'] = 4)] = 'NoScaleOrReflection';
+var Inherit = /* @__PURE__ */ ((Inherit2) => {
+  Inherit2[Inherit2["Normal"] = 0] = "Normal";
+  Inherit2[Inherit2["OnlyTranslation"] = 1] = "OnlyTranslation";
+  Inherit2[Inherit2["NoRotationOrReflection"] = 2] = "NoRotationOrReflection";
+  Inherit2[Inherit2["NoScale"] = 3] = "NoScale";
+  Inherit2[Inherit2["NoScaleOrReflection"] = 4] = "NoScaleOrReflection";
   return Inherit2;
 })(Inherit || {});
 
 // spine-core/src/Bone.ts
 var Bone = class {
+  /** The bone's setup pose data. */
+  data;
+  /** The skeleton this bone belongs to. */
+  skeleton;
+  /** The parent bone, or null if this is the root bone. */
+  parent = null;
+  /** The immediate children of this bone. */
+  children = new Array();
+  /** The local x translation. */
+  x = 0;
+  /** The local y translation. */
+  y = 0;
+  /** The local rotation in degrees, counter clockwise. */
+  rotation = 0;
+  /** The local scaleX. */
+  scaleX = 0;
+  /** The local scaleY. */
+  scaleY = 0;
+  /** The local shearX. */
+  shearX = 0;
+  /** The local shearY. */
+  shearY = 0;
+  /** The applied local x translation. */
+  ax = 0;
+  /** The applied local y translation. */
+  ay = 0;
+  /** The applied local rotation in degrees, counter clockwise. */
+  arotation = 0;
+  /** The applied local scaleX. */
+  ascaleX = 0;
+  /** The applied local scaleY. */
+  ascaleY = 0;
+  /** The applied local shearX. */
+  ashearX = 0;
+  /** The applied local shearY. */
+  ashearY = 0;
+  /** Part of the world transform matrix for the X axis. If changed, {@link #updateAppliedTransform()} should be called. */
+  a = 0;
+  /** Part of the world transform matrix for the Y axis. If changed, {@link #updateAppliedTransform()} should be called. */
+  b = 0;
+  /** Part of the world transform matrix for the X axis. If changed, {@link #updateAppliedTransform()} should be called. */
+  c = 0;
+  /** Part of the world transform matrix for the Y axis. If changed, {@link #updateAppliedTransform()} should be called. */
+  d = 0;
+  /** The world X position. If changed, {@link #updateAppliedTransform()} should be called. */
+  worldY = 0;
+  /** The world Y position. If changed, {@link #updateAppliedTransform()} should be called. */
+  worldX = 0;
+  inherit = 0 /* Normal */;
+  sorted = false;
+  active = false;
   /** @param parent May be null. */
   constructor(data, skeleton, parent) {
-    /** The parent bone, or null if this is the root bone. */
-    this.parent = null;
-    /** The immediate children of this bone. */
-    this.children = new Array();
-    /** The local x translation. */
-    this.x = 0;
-    /** The local y translation. */
-    this.y = 0;
-    /** The local rotation in degrees, counter clockwise. */
-    this.rotation = 0;
-    /** The local scaleX. */
-    this.scaleX = 0;
-    /** The local scaleY. */
-    this.scaleY = 0;
-    /** The local shearX. */
-    this.shearX = 0;
-    /** The local shearY. */
-    this.shearY = 0;
-    /** The applied local x translation. */
-    this.ax = 0;
-    /** The applied local y translation. */
-    this.ay = 0;
-    /** The applied local rotation in degrees, counter clockwise. */
-    this.arotation = 0;
-    /** The applied local scaleX. */
-    this.ascaleX = 0;
-    /** The applied local scaleY. */
-    this.ascaleY = 0;
-    /** The applied local shearX. */
-    this.ashearX = 0;
-    /** The applied local shearY. */
-    this.ashearY = 0;
-    /** Part of the world transform matrix for the X axis. If changed, {@link #updateAppliedTransform()} should be called. */
-    this.a = 0;
-    /** Part of the world transform matrix for the Y axis. If changed, {@link #updateAppliedTransform()} should be called. */
-    this.b = 0;
-    /** Part of the world transform matrix for the X axis. If changed, {@link #updateAppliedTransform()} should be called. */
-    this.c = 0;
-    /** Part of the world transform matrix for the Y axis. If changed, {@link #updateAppliedTransform()} should be called. */
-    this.d = 0;
-    /** The world X position. If changed, {@link #updateAppliedTransform()} should be called. */
-    this.worldY = 0;
-    /** The world Y position. If changed, {@link #updateAppliedTransform()} should be called. */
-    this.worldX = 0;
-    this.inherit = 0 /* Normal */;
-    this.sorted = false;
-    this.active = false;
-    if (!data) throw new Error('data cannot be null.');
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     this.data = data;
     this.skeleton = skeleton;
     this.parent = parent;
     this.setToSetupPose();
   }
   /** Returns false when the bone has not been computed because {@link BoneData#skinRequired} is true and the
-   * {@link Skeleton#skin active skin} does not {@link Skin#bones contain} this bone. */
+    * {@link Skeleton#skin active skin} does not {@link Skin#bones contain} this bone. */
   isActive() {
     return this.active;
   }
   /** Computes the world transform using the parent bone and this bone's local applied transform. */
   update(physics) {
-    this.updateWorldTransformWith(
-      this.ax,
-      this.ay,
-      this.arotation,
-      this.ascaleX,
-      this.ascaleY,
-      this.ashearX,
-      this.ashearY,
-    );
+    this.updateWorldTransformWith(this.ax, this.ay, this.arotation, this.ascaleX, this.ascaleY, this.ashearX, this.ashearY);
   }
   /** Computes the world transform using the parent bone and this bone's local transform.
    *
@@ -5563,8 +5273,7 @@ var Bone = class {
     let parent = this.parent;
     if (!parent) {
       let skeleton = this.skeleton;
-      const sx = skeleton.scaleX,
-        sy = skeleton.scaleY;
+      const sx = skeleton.scaleX, sy = skeleton.scaleY;
       const rx = (rotation + shearX) * MathUtils.degRad;
       const ry = (rotation + 90 + shearY) * MathUtils.degRad;
       this.a = Math.cos(rx) * scaleX * sx;
@@ -5575,10 +5284,7 @@ var Bone = class {
       this.worldY = y * sy + skeleton.y;
       return;
     }
-    let pa = parent.a,
-      pb = parent.b,
-      pc = parent.c,
-      pd = parent.d;
+    let pa = parent.a, pb = parent.b, pc = parent.c, pd = parent.d;
     this.worldX = pa * x + pb * y + parent.worldX;
     this.worldY = pc * x + pd * y + parent.worldY;
     switch (this.inherit) {
@@ -5605,8 +5311,7 @@ var Bone = class {
         break;
       }
       case 2 /* NoRotationOrReflection */: {
-        let sx = 1 / this.skeleton.scaleX,
-          sy = 1 / this.skeleton.scaleY;
+        let sx = 1 / this.skeleton.scaleX, sy = 1 / this.skeleton.scaleY;
         pa *= sx;
         pc *= sy;
         let s = pa * pa + pc * pc;
@@ -5636,8 +5341,7 @@ var Bone = class {
       case 3 /* NoScale */:
       case 4 /* NoScaleOrReflection */: {
         rotation *= MathUtils.degRad;
-        const cos = Math.cos(rotation),
-          sin = Math.sin(rotation);
+        const cos = Math.cos(rotation), sin = Math.sin(rotation);
         let za = (pa * cos + pb * sin) / this.skeleton.scaleX;
         let zc = (pc * cos + pd * sin) / this.skeleton.scaleY;
         let s = Math.sqrt(za * za + zc * zc);
@@ -5645,11 +5349,7 @@ var Bone = class {
         za *= s;
         zc *= s;
         s = Math.sqrt(za * za + zc * zc);
-        if (
-          this.inherit == 3 /* NoScale */ &&
-          pa * pd - pb * pc < 0 != (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)
-        )
-          s = -s;
+        if (this.inherit == 3 /* NoScale */ && pa * pd - pb * pc < 0 != (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)) s = -s;
         rotation = Math.PI / 2 + Math.atan2(zc, za);
         const zb = Math.cos(rotation) * s;
         const zd = Math.sin(rotation) * s;
@@ -5700,21 +5400,13 @@ var Bone = class {
       this.ascaleX = Math.sqrt(this.a * this.a + this.c * this.c);
       this.ascaleY = Math.sqrt(this.b * this.b + this.d * this.d);
       this.ashearX = 0;
-      this.ashearY =
-        Math.atan2(this.a * this.b + this.c * this.d, this.a * this.d - this.b * this.c) * MathUtils.radDeg;
+      this.ashearY = Math.atan2(this.a * this.b + this.c * this.d, this.a * this.d - this.b * this.c) * MathUtils.radDeg;
       return;
     }
-    let pa = parent.a,
-      pb = parent.b,
-      pc = parent.c,
-      pd = parent.d;
+    let pa = parent.a, pb = parent.b, pc = parent.c, pd = parent.d;
     let pid = 1 / (pa * pd - pb * pc);
-    let ia = pd * pid,
-      ib = pb * pid,
-      ic = pc * pid,
-      id = pa * pid;
-    let dx = this.worldX - parent.worldX,
-      dy = this.worldY - parent.worldY;
+    let ia = pd * pid, ib = pb * pid, ic = pc * pid, id = pa * pid;
+    let dx = this.worldX - parent.worldX, dy = this.worldY - parent.worldY;
     this.ax = dx * ia - dy * ib;
     this.ay = dy * id - dx * ic;
     let ra, rb, rc, rd;
@@ -5727,8 +5419,8 @@ var Bone = class {
       switch (this.inherit) {
         case 2 /* NoRotationOrReflection */: {
           let s2 = Math.abs(pa * pd - pb * pc) / (pa * pa + pc * pc);
-          pb = (-pc * this.skeleton.scaleX * s2) / this.skeleton.scaleY;
-          pd = (pa * this.skeleton.scaleY * s2) / this.skeleton.scaleX;
+          pb = -pc * this.skeleton.scaleX * s2 / this.skeleton.scaleY;
+          pd = pa * this.skeleton.scaleY * s2 / this.skeleton.scaleX;
           pid = 1 / (pa * pd - pb * pc);
           ia = pd * pid;
           ib = pb * pid;
@@ -5736,8 +5428,7 @@ var Bone = class {
         }
         case 3 /* NoScale */:
         case 4 /* NoScaleOrReflection */:
-          let cos = MathUtils.cosDeg(this.rotation),
-            sin = MathUtils.sinDeg(this.rotation);
+          let cos = MathUtils.cosDeg(this.rotation), sin = MathUtils.sinDeg(this.rotation);
           pa = (pa * cos + pb * sin) / this.skeleton.scaleX;
           pc = (pc * cos + pd * sin) / this.skeleton.scaleY;
           let s = Math.sqrt(pa * pa + pc * pc);
@@ -5745,8 +5436,7 @@ var Bone = class {
           pa *= s;
           pc *= s;
           s = Math.sqrt(pa * pa + pc * pc);
-          if (this.inherit == 3 /* NoScale */ && pid < 0 != (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0))
-            s = -s;
+          if (this.inherit == 3 /* NoScale */ && pid < 0 != (this.skeleton.scaleX < 0 != this.skeleton.scaleY < 0)) s = -s;
           let r = MathUtils.PI / 2 + Math.atan2(pc, pa);
           pb = Math.cos(r) * s;
           pd = Math.sin(r) * s;
@@ -5794,45 +5484,37 @@ var Bone = class {
   /** Transforms a point from world coordinates to the bone's local coordinates. */
   worldToLocal(world) {
     let invDet = 1 / (this.a * this.d - this.b * this.c);
-    let x = world.x - this.worldX,
-      y = world.y - this.worldY;
+    let x = world.x - this.worldX, y = world.y - this.worldY;
     world.x = x * this.d * invDet - y * this.b * invDet;
     world.y = y * this.a * invDet - x * this.c * invDet;
     return world;
   }
   /** Transforms a point from the bone's local coordinates to world coordinates. */
   localToWorld(local) {
-    let x = local.x,
-      y = local.y;
+    let x = local.x, y = local.y;
     local.x = x * this.a + y * this.b + this.worldX;
     local.y = x * this.c + y * this.d + this.worldY;
     return local;
   }
   /** Transforms a point from world coordinates to the parent bone's local coordinates. */
   worldToParent(world) {
-    if (world == null) throw new Error('world cannot be null.');
+    if (world == null) throw new Error("world cannot be null.");
     return this.parent == null ? world : this.parent.worldToLocal(world);
   }
   /** Transforms a point from the parent bone's coordinates to world coordinates. */
   parentToWorld(world) {
-    if (world == null) throw new Error('world cannot be null.');
+    if (world == null) throw new Error("world cannot be null.");
     return this.parent == null ? world : this.parent.localToWorld(world);
   }
   /** Transforms a world rotation to a local rotation. */
   worldToLocalRotation(worldRotation) {
-    let sin = MathUtils.sinDeg(worldRotation),
-      cos = MathUtils.cosDeg(worldRotation);
-    return (
-      Math.atan2(this.a * sin - this.c * cos, this.d * cos - this.b * sin) * MathUtils.radDeg +
-      this.rotation -
-      this.shearX
-    );
+    let sin = MathUtils.sinDeg(worldRotation), cos = MathUtils.cosDeg(worldRotation);
+    return Math.atan2(this.a * sin - this.c * cos, this.d * cos - this.b * sin) * MathUtils.radDeg + this.rotation - this.shearX;
   }
   /** Transforms a local rotation to a world rotation. */
   localToWorldRotation(localRotation) {
     localRotation -= this.rotation - this.shearX;
-    let sin = MathUtils.sinDeg(localRotation),
-      cos = MathUtils.cosDeg(localRotation);
+    let sin = MathUtils.sinDeg(localRotation), cos = MathUtils.cosDeg(localRotation);
     return Math.atan2(cos * this.c + sin * this.d, cos * this.a + sin * this.b) * MathUtils.radDeg;
   }
   /** Rotates the world transform the specified amount.
@@ -5841,10 +5523,8 @@ var Bone = class {
    * {@link #update(Physics)} will need to be called on any child bones, recursively. */
   rotateWorld(degrees) {
     degrees *= MathUtils.degRad;
-    const sin = Math.sin(degrees),
-      cos = Math.cos(degrees);
-    const ra = this.a,
-      rb = this.b;
+    const sin = Math.sin(degrees), cos = Math.cos(degrees);
+    const ra = this.a, rb = this.b;
     this.a = cos * ra - sin * this.c;
     this.b = cos * rb - sin * this.d;
     this.c = sin * ra + cos * this.c;
@@ -5863,12 +5543,14 @@ var ConstraintData = class {
 
 // spine-core/src/AssetManagerBase.ts
 var AssetManagerBase = class {
-  constructor(textureLoader, pathPrefix = '', downloader = new Downloader()) {
-    this.pathPrefix = '';
-    this.assets = {};
-    this.errors = {};
-    this.toLoad = 0;
-    this.loaded = 0;
+  pathPrefix = "";
+  textureLoader;
+  downloader;
+  assets = {};
+  errors = {};
+  toLoad = 0;
+  loaded = 0;
+  constructor(textureLoader, pathPrefix = "", downloader = new Downloader()) {
     this.textureLoader = textureLoader;
     this.pathPrefix = pathPrefix;
     this.downloader = downloader;
@@ -5906,67 +5588,55 @@ var AssetManagerBase = class {
   setRawDataURI(path2, data) {
     this.downloader.rawDataUris[this.pathPrefix + path2] = data;
   }
-  loadBinary(path2, success = () => {}, error = () => {}) {
+  loadBinary(path2, success = () => {
+  }, error = () => {
+  }) {
     path2 = this.start(path2);
-    this.downloader.downloadBinary(
-      path2,
-      data => {
-        this.success(success, path2, data);
-      },
-      (status, responseText) => {
-        this.error(error, path2, `Couldn't load binary ${path2}: status ${status}, ${responseText}`);
-      },
-    );
+    this.downloader.downloadBinary(path2, (data) => {
+      this.success(success, path2, data);
+    }, (status, responseText) => {
+      this.error(error, path2, `Couldn't load binary ${path2}: status ${status}, ${responseText}`);
+    });
   }
-  loadText(path2, success = () => {}, error = () => {}) {
+  loadText(path2, success = () => {
+  }, error = () => {
+  }) {
     path2 = this.start(path2);
-    this.downloader.downloadText(
-      path2,
-      data => {
-        this.success(success, path2, data);
-      },
-      (status, responseText) => {
-        this.error(error, path2, `Couldn't load text ${path2}: status ${status}, ${responseText}`);
-      },
-    );
+    this.downloader.downloadText(path2, (data) => {
+      this.success(success, path2, data);
+    }, (status, responseText) => {
+      this.error(error, path2, `Couldn't load text ${path2}: status ${status}, ${responseText}`);
+    });
   }
-  loadJson(path2, success = () => {}, error = () => {}) {
+  loadJson(path2, success = () => {
+  }, error = () => {
+  }) {
     path2 = this.start(path2);
-    this.downloader.downloadJson(
-      path2,
-      data => {
-        this.success(success, path2, data);
-      },
-      (status, responseText) => {
-        this.error(error, path2, `Couldn't load JSON ${path2}: status ${status}, ${responseText}`);
-      },
-    );
+    this.downloader.downloadJson(path2, (data) => {
+      this.success(success, path2, data);
+    }, (status, responseText) => {
+      this.error(error, path2, `Couldn't load JSON ${path2}: status ${status}, ${responseText}`);
+    });
   }
-  loadTexture(path2, success = () => {}, error = () => {}) {
+  loadTexture(path2, success = () => {
+  }, error = () => {
+  }) {
     path2 = this.start(path2);
-    let isBrowser = !!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && window.document);
+    let isBrowser = !!(typeof window !== "undefined" && typeof navigator !== "undefined" && window.document);
     let isWebWorker = !isBrowser;
     if (isWebWorker) {
-      fetch(path2, { mode: 'cors' })
-        .then(response => {
-          if (response.ok) return response.blob();
-          this.error(error, path2, `Couldn't load image: ${path2}`);
-          return null;
-        })
-        .then(blob => {
-          return blob
-            ? createImageBitmap(blob, {
-                premultiplyAlpha: 'none',
-                colorSpaceConversion: 'none',
-              })
-            : null;
-        })
-        .then(bitmap => {
-          if (bitmap) this.success(success, path2, this.textureLoader(bitmap));
-        });
+      fetch(path2, { mode: "cors" }).then((response) => {
+        if (response.ok) return response.blob();
+        this.error(error, path2, `Couldn't load image: ${path2}`);
+        return null;
+      }).then((blob) => {
+        return blob ? createImageBitmap(blob, { premultiplyAlpha: "none", colorSpaceConversion: "none" }) : null;
+      }).then((bitmap) => {
+        if (bitmap) this.success(success, path2, this.textureLoader(bitmap));
+      });
     } else {
       let image = new Image();
-      image.crossOrigin = 'anonymous';
+      image.crossOrigin = "anonymous";
       image.onload = () => {
         this.success(success, path2, this.textureLoader(image));
       };
@@ -5977,40 +5647,37 @@ var AssetManagerBase = class {
       image.src = path2;
     }
   }
-  loadTextureAtlas(path2, success = () => {}, error = () => {}, fileAlias) {
-    let index = path2.lastIndexOf('/');
-    let parent = index >= 0 ? path2.substring(0, index + 1) : '';
+  loadTextureAtlas(path2, success = () => {
+  }, error = () => {
+  }, fileAlias) {
+    let index = path2.lastIndexOf("/");
+    let parent = index >= 0 ? path2.substring(0, index + 1) : "";
     path2 = this.start(path2);
-    this.downloader.downloadText(
-      path2,
-      atlasText => {
-        try {
-          let atlas = new TextureAtlas(atlasText);
-          let toLoad = atlas.pages.length,
-            abort = false;
-          for (let page of atlas.pages) {
-            this.loadTexture(
-              !fileAlias ? parent + page.name : fileAlias[page.name],
-              (imagePath, texture) => {
-                if (!abort) {
-                  page.setTexture(texture);
-                  if (--toLoad == 0) this.success(success, path2, atlas);
-                }
-              },
-              (imagePath, message) => {
-                if (!abort) this.error(error, path2, `Couldn't load texture atlas ${path2} page image: ${imagePath}`);
-                abort = true;
-              },
-            );
-          }
-        } catch (e) {
-          this.error(error, path2, `Couldn't parse texture atlas ${path2}: ${e.message}`);
+    this.downloader.downloadText(path2, (atlasText) => {
+      try {
+        let atlas = new TextureAtlas(atlasText);
+        let toLoad = atlas.pages.length, abort = false;
+        for (let page of atlas.pages) {
+          this.loadTexture(
+            !fileAlias ? parent + page.name : fileAlias[page.name],
+            (imagePath, texture) => {
+              if (!abort) {
+                page.setTexture(texture);
+                if (--toLoad == 0) this.success(success, path2, atlas);
+              }
+            },
+            (imagePath, message) => {
+              if (!abort) this.error(error, path2, `Couldn't load texture atlas ${path2} page image: ${imagePath}`);
+              abort = true;
+            }
+          );
         }
-      },
-      (status, responseText) => {
-        this.error(error, path2, `Couldn't load texture atlas ${path2}: status ${status}, ${responseText}`);
-      },
-    );
+      } catch (e) {
+        this.error(error, path2, `Couldn't parse texture atlas ${path2}: ${e.message}`);
+      }
+    }, (status, responseText) => {
+      this.error(error, path2, `Couldn't load texture atlas ${path2}: status ${status}, ${responseText}`);
+    });
   }
   get(path2) {
     return this.assets[this.pathPrefix + path2];
@@ -6020,7 +5687,7 @@ var AssetManagerBase = class {
     let asset = this.assets[path2];
     if (asset) return asset;
     let error = this.errors[path2];
-    throw Error('Asset not found: ' + path2 + (error ? '\n' + error : ''));
+    throw Error("Asset not found: " + path2 + (error ? "\n" + error : ""));
   }
   remove(path2) {
     path2 = this.pathPrefix + path2;
@@ -6056,20 +5723,18 @@ var AssetManagerBase = class {
   }
 };
 var Downloader = class {
-  constructor() {
-    this.callbacks = {};
-    this.rawDataUris = {};
-  }
+  callbacks = {};
+  rawDataUris = {};
   dataUriToString(dataUri) {
-    if (!dataUri.startsWith('data:')) {
-      throw new Error('Not a data URI.');
+    if (!dataUri.startsWith("data:")) {
+      throw new Error("Not a data URI.");
     }
-    let base64Idx = dataUri.indexOf('base64,');
+    let base64Idx = dataUri.indexOf("base64,");
     if (base64Idx != -1) {
-      base64Idx += 'base64,'.length;
+      base64Idx += "base64,".length;
       return atob(dataUri.substr(base64Idx));
     } else {
-      return dataUri.substr(dataUri.indexOf(',') + 1);
+      return dataUri.substr(dataUri.indexOf(",") + 1);
     }
   }
   base64ToUint8Array(base64) {
@@ -6082,12 +5747,12 @@ var Downloader = class {
     return bytes;
   }
   dataUriToUint8Array(dataUri) {
-    if (!dataUri.startsWith('data:')) {
-      throw new Error('Not a data URI.');
+    if (!dataUri.startsWith("data:")) {
+      throw new Error("Not a data URI.");
     }
-    let base64Idx = dataUri.indexOf('base64,');
-    if (base64Idx == -1) throw new Error('Not a binary data URI.');
-    base64Idx += 'base64,'.length;
+    let base64Idx = dataUri.indexOf("base64,");
+    if (base64Idx == -1) throw new Error("Not a binary data URI.");
+    base64Idx += "base64,".length;
     return this.base64ToUint8Array(dataUri.substr(base64Idx));
   }
   downloadText(url, success, error) {
@@ -6102,8 +5767,8 @@ var Downloader = class {
       return;
     }
     let request = new XMLHttpRequest();
-    request.overrideMimeType('text/html');
-    request.open('GET', url, true);
+    request.overrideMimeType("text/html");
+    request.open("GET", url, true);
     let done = () => {
       this.finish(url, request.status, request.responseText);
     };
@@ -6112,13 +5777,9 @@ var Downloader = class {
     request.send();
   }
   downloadJson(url, success, error) {
-    this.downloadText(
-      url,
-      data => {
-        success(JSON.parse(data));
-      },
-      error,
-    );
+    this.downloadText(url, (data) => {
+      success(JSON.parse(data));
+    }, error);
   }
   downloadBinary(url, success, error) {
     if (this.start(url, success, error)) return;
@@ -6132,14 +5793,16 @@ var Downloader = class {
       return;
     }
     let request = new XMLHttpRequest();
-    request.open('GET', url, true);
-    request.responseType = 'arraybuffer';
+    request.open("GET", url, true);
+    request.responseType = "arraybuffer";
     let onerror = () => {
       this.finish(url, request.status, request.response);
     };
     request.onload = () => {
-      if (request.status == 200 || request.status == 0) this.finish(url, 200, new Uint8Array(request.response));
-      else onerror();
+      if (request.status == 200 || request.status == 0)
+        this.finish(url, 200, new Uint8Array(request.response));
+      else
+        onerror();
     };
     request.onerror = onerror;
     request.send();
@@ -6157,20 +5820,22 @@ var Downloader = class {
     let callbacks = this.callbacks[url];
     delete this.callbacks[url];
     let args = status == 200 || status == 0 ? [data] : [status, data];
-    for (let i = args.length - 1, n = callbacks.length; i < n; i += 2) callbacks[i].apply(null, args);
+    for (let i = args.length - 1, n = callbacks.length; i < n; i += 2)
+      callbacks[i].apply(null, args);
   }
 };
 
 // spine-core/src/Event.ts
 var Event = class {
+  data;
+  intValue = 0;
+  floatValue = 0;
+  stringValue = null;
+  time = 0;
+  volume = 0;
+  balance = 0;
   constructor(time, data) {
-    this.intValue = 0;
-    this.floatValue = 0;
-    this.stringValue = null;
-    this.time = 0;
-    this.volume = 0;
-    this.balance = 0;
-    if (!data) throw new Error('data cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
     this.time = time;
     this.data = data;
   }
@@ -6178,34 +5843,41 @@ var Event = class {
 
 // spine-core/src/EventData.ts
 var EventData = class {
+  name;
+  intValue = 0;
+  floatValue = 0;
+  stringValue = null;
+  audioPath = null;
+  volume = 0;
+  balance = 0;
   constructor(name) {
-    this.intValue = 0;
-    this.floatValue = 0;
-    this.stringValue = null;
-    this.audioPath = null;
-    this.volume = 0;
-    this.balance = 0;
     this.name = name;
   }
 };
 
 // spine-core/src/IkConstraint.ts
 var IkConstraint = class {
+  /** The IK constraint's setup pose data. */
+  data;
+  /** The bones that will be modified by this IK constraint. */
+  bones;
+  /** The bone that is the IK target. */
+  target;
+  /** Controls the bend direction of the IK bones, either 1 or -1. */
+  bendDirection = 0;
+  /** When true and only a single bone is being constrained, if the target is too close, the bone is scaled to reach it. */
+  compress = false;
+  /** When true, if the target is out of range, the parent bone is scaled to reach it. If more than one bone is being constrained
+   * and the parent bone has local nonuniform scale, stretch is not applied. */
+  stretch = false;
+  /** A percentage (0-1) that controls the mix between the constrained and unconstrained rotations. */
+  mix = 1;
+  /** For two bone IK, the distance from the maximum reach of the bones that rotation will slow. */
+  softness = 0;
+  active = false;
   constructor(data, skeleton) {
-    /** Controls the bend direction of the IK bones, either 1 or -1. */
-    this.bendDirection = 0;
-    /** When true and only a single bone is being constrained, if the target is too close, the bone is scaled to reach it. */
-    this.compress = false;
-    /** When true, if the target is out of range, the parent bone is scaled to reach it. If more than one bone is being constrained
-     * and the parent bone has local nonuniform scale, stretch is not applied. */
-    this.stretch = false;
-    /** A percentage (0-1) that controls the mix between the constrained and unconstrained rotations. */
-    this.mix = 1;
-    /** For two bone IK, the distance from the maximum reach of the bones that rotation will slow. */
-    this.softness = 0;
-    this.active = false;
-    if (!data) throw new Error('data cannot be null.');
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     this.data = data;
     this.bones = new Array();
     for (let i = 0; i < data.bones.length; i++) {
@@ -6242,31 +5914,16 @@ var IkConstraint = class {
         this.apply1(bones[0], target.worldX, target.worldY, this.compress, this.stretch, this.data.uniform, this.mix);
         break;
       case 2:
-        this.apply2(
-          bones[0],
-          bones[1],
-          target.worldX,
-          target.worldY,
-          this.bendDirection,
-          this.stretch,
-          this.data.uniform,
-          this.softness,
-          this.mix,
-        );
+        this.apply2(bones[0], bones[1], target.worldX, target.worldY, this.bendDirection, this.stretch, this.data.uniform, this.softness, this.mix);
         break;
     }
   }
   /** Applies 1 bone IK. The target is specified in the world coordinate system. */
   apply1(bone, targetX, targetY, compress, stretch, uniform, alpha) {
     let p = bone.parent;
-    if (!p) throw new Error('IK bone must have parent.');
-    let pa = p.a,
-      pb = p.b,
-      pc = p.c,
-      pd = p.d;
-    let rotationIK = -bone.ashearX - bone.arotation,
-      tx = 0,
-      ty = 0;
+    if (!p) throw new Error("IK bone must have parent.");
+    let pa = p.a, pb = p.b, pc = p.c, pd = p.d;
+    let rotationIK = -bone.ashearX - bone.arotation, tx = 0, ty = 0;
     switch (bone.inherit) {
       case 1 /* OnlyTranslation */:
         tx = (targetX - bone.worldX) * MathUtils.signum(bone.skeleton.scaleX);
@@ -6279,9 +5936,9 @@ var IkConstraint = class {
         pb = -sc * s * bone.skeleton.scaleX;
         pd = sa * s * bone.skeleton.scaleY;
         rotationIK += Math.atan2(sc, sa) * MathUtils.radDeg;
+      // Fall through
       default:
-        let x = targetX - p.worldX,
-          y = targetY - p.worldY;
+        let x = targetX - p.worldX, y = targetY - p.worldY;
         let d = pa * pd - pb * pc;
         if (Math.abs(d) <= 1e-4) {
           tx = 0;
@@ -6293,10 +5950,11 @@ var IkConstraint = class {
     }
     rotationIK += Math.atan2(ty, tx) * MathUtils.radDeg;
     if (bone.ascaleX < 0) rotationIK += 180;
-    if (rotationIK > 180) rotationIK -= 360;
-    else if (rotationIK < -180) rotationIK += 360;
-    let sx = bone.ascaleX,
-      sy = bone.ascaleY;
+    if (rotationIK > 180)
+      rotationIK -= 360;
+    else if (rotationIK < -180)
+      rotationIK += 360;
+    let sx = bone.ascaleX, sy = bone.ascaleY;
     if (compress || stretch) {
       switch (bone.inherit) {
         case 3 /* NoScale */:
@@ -6307,7 +5965,7 @@ var IkConstraint = class {
       const b = bone.data.length * sx;
       if (b > 1e-4) {
         const dd = tx * tx + ty * ty;
-        if ((compress && dd < b * b) || (stretch && dd > b * b)) {
+        if (compress && dd < b * b || stretch && dd > b * b) {
           const s = (Math.sqrt(dd) / b - 1) * alpha + 1;
           sx *= s;
           if (uniform) sy *= s;
@@ -6321,23 +5979,15 @@ var IkConstraint = class {
       sx,
       sy,
       bone.ashearX,
-      bone.ashearY,
+      bone.ashearY
     );
   }
   /** Applies 2 bone IK. The target is specified in the world coordinate system.
    * @param child A direct descendant of the parent bone. */
   apply2(parent, child, targetX, targetY, bendDir, stretch, uniform, softness, alpha) {
     if (parent.inherit != 0 /* Normal */ || child.inherit != 0 /* Normal */) return;
-    let px = parent.ax,
-      py = parent.ay,
-      psx = parent.ascaleX,
-      psy = parent.ascaleY,
-      sx = psx,
-      sy = psy,
-      csx = child.ascaleX;
-    let os1 = 0,
-      os2 = 0,
-      s2 = 0;
+    let px = parent.ax, py = parent.ay, psx = parent.ascaleX, psy = parent.ascaleY, sx = psx, sy = psy, csx = child.ascaleX;
+    let os1 = 0, os2 = 0, s2 = 0;
     if (psx < 0) {
       psx = -psx;
       os1 = 180;
@@ -6353,15 +6003,9 @@ var IkConstraint = class {
     if (csx < 0) {
       csx = -csx;
       os2 = 180;
-    } else os2 = 0;
-    let cx = child.ax,
-      cy = 0,
-      cwx = 0,
-      cwy = 0,
-      a = parent.a,
-      b = parent.b,
-      c = parent.c,
-      d = parent.d;
+    } else
+      os2 = 0;
+    let cx = child.ax, cy = 0, cwx = 0, cwy = 0, a = parent.a, b = parent.b, c = parent.c, d = parent.d;
     let u = Math.abs(psx - psy) <= 1e-4;
     if (!u || stretch) {
       cy = 0;
@@ -6373,21 +6017,15 @@ var IkConstraint = class {
       cwy = c * cx + d * cy + parent.worldY;
     }
     let pp = parent.parent;
-    if (!pp) throw new Error('IK parent must itself have a parent.');
+    if (!pp) throw new Error("IK parent must itself have a parent.");
     a = pp.a;
     b = pp.b;
     c = pp.c;
     d = pp.d;
-    let id = a * d - b * c,
-      x = cwx - pp.worldX,
-      y = cwy - pp.worldY;
+    let id = a * d - b * c, x = cwx - pp.worldX, y = cwy - pp.worldY;
     id = Math.abs(id) <= 1e-4 ? 0 : 1 / id;
-    let dx = (x * d - y * b) * id - px,
-      dy = (y * a - x * c) * id - py;
-    let l1 = Math.sqrt(dx * dx + dy * dy),
-      l2 = child.data.length * csx,
-      a1,
-      a2;
+    let dx = (x * d - y * b) * id - px, dy = (y * a - x * c) * id - py;
+    let l1 = Math.sqrt(dx * dx + dy * dy), l2 = child.data.length * csx, a1, a2;
     if (l1 < 1e-4) {
       this.apply1(parent, targetX, targetY, false, stretch, false, alpha);
       child.updateWorldTransformWith(cx, cy, 0, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
@@ -6395,13 +6033,11 @@ var IkConstraint = class {
     }
     x = targetX - pp.worldX;
     y = targetY - pp.worldY;
-    let tx = (x * d - y * b) * id - px,
-      ty = (y * a - x * c) * id - py;
+    let tx = (x * d - y * b) * id - px, ty = (y * a - x * c) * id - py;
     let dd = tx * tx + ty * ty;
     if (softness != 0) {
       softness *= psx * (csx + 1) * 0.5;
-      let td = Math.sqrt(dd),
-        sd = td - l1 - l2 * psx + softness;
+      let td = Math.sqrt(dd), sd = td - l1 - l2 * psx + softness;
       if (sd > 0) {
         let p = Math.min(1, sd / (softness * 2)) - 1;
         p = (sd - softness * (1 - p * p)) / td;
@@ -6410,208 +6046,206 @@ var IkConstraint = class {
         dd = tx * tx + ty * ty;
       }
     }
-    outer: if (u) {
-      l2 *= psx;
-      let cos = (dd - l1 * l1 - l2 * l2) / (2 * l1 * l2);
-      if (cos < -1) {
-        cos = -1;
-        a2 = Math.PI * bendDir;
-      } else if (cos > 1) {
-        cos = 1;
-        a2 = 0;
-        if (stretch) {
-          a = (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
-          sx *= a;
-          if (uniform) sy *= a;
-        }
-      } else a2 = Math.acos(cos) * bendDir;
-      a = l1 + l2 * cos;
-      b = l2 * Math.sin(a2);
-      a1 = Math.atan2(ty * a - tx * b, tx * a + ty * b);
-    } else {
-      a = psx * l2;
-      b = psy * l2;
-      let aa = a * a,
-        bb = b * b,
-        ta = Math.atan2(ty, tx);
-      c = bb * l1 * l1 + aa * dd - aa * bb;
-      let c1 = -2 * bb * l1,
-        c2 = bb - aa;
-      d = c1 * c1 - 4 * c2 * c;
-      if (d >= 0) {
-        let q = Math.sqrt(d);
-        if (c1 < 0) q = -q;
-        q = -(c1 + q) * 0.5;
-        let r0 = q / c2,
-          r1 = c / q;
-        let r = Math.abs(r0) < Math.abs(r1) ? r0 : r1;
-        r0 = dd - r * r;
-        if (r0 >= 0) {
-          y = Math.sqrt(r0) * bendDir;
-          a1 = ta - Math.atan2(y, r);
-          a2 = Math.atan2(y / psy, (r - l1) / psx);
-          break outer;
-        }
-      }
-      let minAngle = MathUtils.PI,
-        minX = l1 - a,
-        minDist = minX * minX,
-        minY = 0;
-      let maxAngle = 0,
-        maxX = l1 + a,
-        maxDist = maxX * maxX,
-        maxY = 0;
-      c = (-a * l1) / (aa - bb);
-      if (c >= -1 && c <= 1) {
-        c = Math.acos(c);
-        x = a * Math.cos(c) + l1;
-        y = b * Math.sin(c);
-        d = x * x + y * y;
-        if (d < minDist) {
-          minAngle = c;
-          minDist = d;
-          minX = x;
-          minY = y;
-        }
-        if (d > maxDist) {
-          maxAngle = c;
-          maxDist = d;
-          maxX = x;
-          maxY = y;
-        }
-      }
-      if (dd <= (minDist + maxDist) * 0.5) {
-        a1 = ta - Math.atan2(minY * bendDir, minX);
-        a2 = minAngle * bendDir;
+    outer:
+      if (u) {
+        l2 *= psx;
+        let cos = (dd - l1 * l1 - l2 * l2) / (2 * l1 * l2);
+        if (cos < -1) {
+          cos = -1;
+          a2 = Math.PI * bendDir;
+        } else if (cos > 1) {
+          cos = 1;
+          a2 = 0;
+          if (stretch) {
+            a = (Math.sqrt(dd) / (l1 + l2) - 1) * alpha + 1;
+            sx *= a;
+            if (uniform) sy *= a;
+          }
+        } else
+          a2 = Math.acos(cos) * bendDir;
+        a = l1 + l2 * cos;
+        b = l2 * Math.sin(a2);
+        a1 = Math.atan2(ty * a - tx * b, tx * a + ty * b);
       } else {
-        a1 = ta - Math.atan2(maxY * bendDir, maxX);
-        a2 = maxAngle * bendDir;
+        a = psx * l2;
+        b = psy * l2;
+        let aa = a * a, bb = b * b, ta = Math.atan2(ty, tx);
+        c = bb * l1 * l1 + aa * dd - aa * bb;
+        let c1 = -2 * bb * l1, c2 = bb - aa;
+        d = c1 * c1 - 4 * c2 * c;
+        if (d >= 0) {
+          let q = Math.sqrt(d);
+          if (c1 < 0) q = -q;
+          q = -(c1 + q) * 0.5;
+          let r0 = q / c2, r1 = c / q;
+          let r = Math.abs(r0) < Math.abs(r1) ? r0 : r1;
+          r0 = dd - r * r;
+          if (r0 >= 0) {
+            y = Math.sqrt(r0) * bendDir;
+            a1 = ta - Math.atan2(y, r);
+            a2 = Math.atan2(y / psy, (r - l1) / psx);
+            break outer;
+          }
+        }
+        let minAngle = MathUtils.PI, minX = l1 - a, minDist = minX * minX, minY = 0;
+        let maxAngle = 0, maxX = l1 + a, maxDist = maxX * maxX, maxY = 0;
+        c = -a * l1 / (aa - bb);
+        if (c >= -1 && c <= 1) {
+          c = Math.acos(c);
+          x = a * Math.cos(c) + l1;
+          y = b * Math.sin(c);
+          d = x * x + y * y;
+          if (d < minDist) {
+            minAngle = c;
+            minDist = d;
+            minX = x;
+            minY = y;
+          }
+          if (d > maxDist) {
+            maxAngle = c;
+            maxDist = d;
+            maxX = x;
+            maxY = y;
+          }
+        }
+        if (dd <= (minDist + maxDist) * 0.5) {
+          a1 = ta - Math.atan2(minY * bendDir, minX);
+          a2 = minAngle * bendDir;
+        } else {
+          a1 = ta - Math.atan2(maxY * bendDir, maxX);
+          a2 = maxAngle * bendDir;
+        }
       }
-    }
     let os = Math.atan2(cy, cx) * s2;
     let rotation = parent.arotation;
     a1 = (a1 - os) * MathUtils.radDeg + os1 - rotation;
-    if (a1 > 180) a1 -= 360;
-    else if (a1 < -180) a1 += 360;
+    if (a1 > 180)
+      a1 -= 360;
+    else if (a1 < -180)
+      a1 += 360;
     parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, sx, sy, 0, 0);
     rotation = child.arotation;
     a2 = ((a2 + os) * MathUtils.radDeg - child.ashearX) * s2 + os2 - rotation;
-    if (a2 > 180) a2 -= 360;
-    else if (a2 < -180) a2 += 360;
-    child.updateWorldTransformWith(
-      cx,
-      cy,
-      rotation + a2 * alpha,
-      child.ascaleX,
-      child.ascaleY,
-      child.ashearX,
-      child.ashearY,
-    );
+    if (a2 > 180)
+      a2 -= 360;
+    else if (a2 < -180)
+      a2 += 360;
+    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
   }
 };
 
 // spine-core/src/IkConstraintData.ts
 var IkConstraintData = class extends ConstraintData {
-  constructor(name) {
-    super(name, 0, false);
-    /** The bones that are constrained by this IK constraint. */
-    this.bones = new Array();
-    /** The bone that is the IK target. */
-    this._target = null;
-    /** Controls the bend direction of the IK bones, either 1 or -1. */
-    this.bendDirection = 0;
-    /** When true and only a single bone is being constrained, if the target is too close, the bone is scaled to reach it. */
-    this.compress = false;
-    /** When true, if the target is out of range, the parent bone is scaled to reach it. If more than one bone is being constrained
-     * and the parent bone has local nonuniform scale, stretch is not applied. */
-    this.stretch = false;
-    /** When true, only a single bone is being constrained, and {@link #getCompress()} or {@link #getStretch()} is used, the bone
-     * is scaled on both the X and Y axes. */
-    this.uniform = false;
-    /** A percentage (0-1) that controls the mix between the constrained and unconstrained rotations. */
-    this.mix = 0;
-    /** For two bone IK, the distance from the maximum reach of the bones that rotation will slow. */
-    this.softness = 0;
-  }
+  /** The bones that are constrained by this IK constraint. */
+  bones = new Array();
+  /** The bone that is the IK target. */
+  _target = null;
   set target(boneData) {
     this._target = boneData;
   }
   get target() {
-    if (!this._target) throw new Error('BoneData not set.');
+    if (!this._target) throw new Error("BoneData not set.");
     else return this._target;
+  }
+  /** Controls the bend direction of the IK bones, either 1 or -1. */
+  bendDirection = 0;
+  /** When true and only a single bone is being constrained, if the target is too close, the bone is scaled to reach it. */
+  compress = false;
+  /** When true, if the target is out of range, the parent bone is scaled to reach it. If more than one bone is being constrained
+   * and the parent bone has local nonuniform scale, stretch is not applied. */
+  stretch = false;
+  /** When true, only a single bone is being constrained, and {@link #getCompress()} or {@link #getStretch()} is used, the bone
+   * is scaled on both the X and Y axes. */
+  uniform = false;
+  /** A percentage (0-1) that controls the mix between the constrained and unconstrained rotations. */
+  mix = 0;
+  /** For two bone IK, the distance from the maximum reach of the bones that rotation will slow. */
+  softness = 0;
+  constructor(name) {
+    super(name, 0, false);
   }
 };
 
 // spine-core/src/PathConstraintData.ts
 var PathConstraintData = class extends ConstraintData {
-  constructor(name) {
-    super(name, 0, false);
-    /** The bones that will be modified by this path constraint. */
-    this.bones = new Array();
-    /** The slot whose path attachment will be used to constrained the bones. */
-    this._target = null;
-    /** The mode for positioning the first bone on the path. */
-    this.positionMode = PositionMode.Fixed;
-    /** The mode for positioning the bones after the first bone on the path. */
-    this.spacingMode = SpacingMode.Fixed;
-    /** The mode for adjusting the rotation of the bones. */
-    this.rotateMode = RotateMode.Chain;
-    /** An offset added to the constrained bone rotation. */
-    this.offsetRotation = 0;
-    /** The position along the path. */
-    this.position = 0;
-    /** The spacing between bones. */
-    this.spacing = 0;
-    this.mixRotate = 0;
-    this.mixX = 0;
-    this.mixY = 0;
-  }
+  /** The bones that will be modified by this path constraint. */
+  bones = new Array();
+  /** The slot whose path attachment will be used to constrained the bones. */
+  _target = null;
   set target(slotData) {
     this._target = slotData;
   }
   get target() {
-    if (!this._target) throw new Error('SlotData not set.');
+    if (!this._target) throw new Error("SlotData not set.");
     else return this._target;
   }
+  /** The mode for positioning the first bone on the path. */
+  positionMode = 0 /* Fixed */;
+  /** The mode for positioning the bones after the first bone on the path. */
+  spacingMode = 1 /* Fixed */;
+  /** The mode for adjusting the rotation of the bones. */
+  rotateMode = 1 /* Chain */;
+  /** An offset added to the constrained bone rotation. */
+  offsetRotation = 0;
+  /** The position along the path. */
+  position = 0;
+  /** The spacing between bones. */
+  spacing = 0;
+  mixRotate = 0;
+  mixX = 0;
+  mixY = 0;
+  constructor(name) {
+    super(name, 0, false);
+  }
 };
-var PositionMode = /* @__PURE__ */ (PositionMode2 => {
-  PositionMode2[(PositionMode2['Fixed'] = 0)] = 'Fixed';
-  PositionMode2[(PositionMode2['Percent'] = 1)] = 'Percent';
+var PositionMode = /* @__PURE__ */ ((PositionMode2) => {
+  PositionMode2[PositionMode2["Fixed"] = 0] = "Fixed";
+  PositionMode2[PositionMode2["Percent"] = 1] = "Percent";
   return PositionMode2;
 })(PositionMode || {});
-var SpacingMode = /* @__PURE__ */ (SpacingMode2 => {
-  SpacingMode2[(SpacingMode2['Length'] = 0)] = 'Length';
-  SpacingMode2[(SpacingMode2['Fixed'] = 1)] = 'Fixed';
-  SpacingMode2[(SpacingMode2['Percent'] = 2)] = 'Percent';
-  SpacingMode2[(SpacingMode2['Proportional'] = 3)] = 'Proportional';
+var SpacingMode = /* @__PURE__ */ ((SpacingMode2) => {
+  SpacingMode2[SpacingMode2["Length"] = 0] = "Length";
+  SpacingMode2[SpacingMode2["Fixed"] = 1] = "Fixed";
+  SpacingMode2[SpacingMode2["Percent"] = 2] = "Percent";
+  SpacingMode2[SpacingMode2["Proportional"] = 3] = "Proportional";
   return SpacingMode2;
 })(SpacingMode || {});
-var RotateMode = /* @__PURE__ */ (RotateMode2 => {
-  RotateMode2[(RotateMode2['Tangent'] = 0)] = 'Tangent';
-  RotateMode2[(RotateMode2['Chain'] = 1)] = 'Chain';
-  RotateMode2[(RotateMode2['ChainScale'] = 2)] = 'ChainScale';
+var RotateMode = /* @__PURE__ */ ((RotateMode2) => {
+  RotateMode2[RotateMode2["Tangent"] = 0] = "Tangent";
+  RotateMode2[RotateMode2["Chain"] = 1] = "Chain";
+  RotateMode2[RotateMode2["ChainScale"] = 2] = "ChainScale";
   return RotateMode2;
 })(RotateMode || {});
 
 // spine-core/src/PathConstraint.ts
-var _PathConstraint = class {
+var PathConstraint = class _PathConstraint {
+  static NONE = -1;
+  static BEFORE = -2;
+  static AFTER = -3;
+  static epsilon = 1e-5;
+  /** The path constraint's setup pose data. */
+  data;
+  /** The bones that will be modified by this path constraint. */
+  bones;
+  /** The slot whose path attachment will be used to constrained the bones. */
+  target;
+  /** The position along the path. */
+  position = 0;
+  /** The spacing between bones. */
+  spacing = 0;
+  mixRotate = 0;
+  mixX = 0;
+  mixY = 0;
+  spaces = new Array();
+  positions = new Array();
+  world = new Array();
+  curves = new Array();
+  lengths = new Array();
+  segments = new Array();
+  active = false;
   constructor(data, skeleton) {
-    /** The position along the path. */
-    this.position = 0;
-    /** The spacing between bones. */
-    this.spacing = 0;
-    this.mixRotate = 0;
-    this.mixX = 0;
-    this.mixY = 0;
-    this.spaces = new Array();
-    this.positions = new Array();
-    this.world = new Array();
-    this.curves = new Array();
-    this.lengths = new Array();
-    this.segments = new Array();
-    this.active = false;
-    if (!data) throw new Error('data cannot be null.');
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     this.data = data;
     this.bones = new Array();
     for (let i = 0, n = data.bones.length; i < n; i++) {
@@ -6642,18 +6276,13 @@ var _PathConstraint = class {
   update(physics) {
     let attachment = this.target.getAttachment();
     if (!(attachment instanceof PathAttachment)) return;
-    let mixRotate = this.mixRotate,
-      mixX = this.mixX,
-      mixY = this.mixY;
+    let mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY;
     if (mixRotate == 0 && mixX == 0 && mixY == 0) return;
     let data = this.data;
-    let tangents = data.rotateMode == 0 /* Tangent */,
-      scale = data.rotateMode == 2; /* ChainScale */
+    let tangents = data.rotateMode == 0 /* Tangent */, scale = data.rotateMode == 2 /* ChainScale */;
     let bones = this.bones;
-    let boneCount = bones.length,
-      spacesCount = tangents ? boneCount : boneCount + 1;
-    let spaces = Utils.setArraySize(this.spaces, spacesCount),
-      lengths = scale ? (this.lengths = Utils.setArraySize(this.lengths, boneCount)) : [];
+    let boneCount = bones.length, spacesCount = tangents ? boneCount : boneCount + 1;
+    let spaces = Utils.setArraySize(this.spaces, spacesCount), lengths = scale ? this.lengths = Utils.setArraySize(this.lengths, boneCount) : [];
     let spacing = this.spacing;
     switch (data.spacingMode) {
       case 2 /* Percent */:
@@ -6661,8 +6290,7 @@ var _PathConstraint = class {
           for (let i = 0, n = spacesCount - 1; i < n; i++) {
             let bone = bones[i];
             let setupLength = bone.data.length;
-            let x = setupLength * bone.a,
-              y = setupLength * bone.c;
+            let x = setupLength * bone.a, y = setupLength * bone.c;
             lengths[i] = Math.sqrt(x * x + y * y);
           }
         }
@@ -6677,8 +6305,7 @@ var _PathConstraint = class {
             if (scale) lengths[i] = 0;
             spaces[++i] = spacing;
           } else {
-            let x = setupLength * bone.a,
-              y = setupLength * bone.c;
+            let x = setupLength * bone.a, y = setupLength * bone.c;
             let length = Math.sqrt(x * x + y * y);
             if (scale) lengths[i] = length;
             spaces[++i] = length;
@@ -6686,12 +6313,13 @@ var _PathConstraint = class {
           }
         }
         if (sum > 0) {
-          sum = (spacesCount / sum) * spacing;
-          for (let i = 1; i < spacesCount; i++) spaces[i] *= sum;
+          sum = spacesCount / sum * spacing;
+          for (let i = 1; i < spacesCount; i++)
+            spaces[i] *= sum;
         }
         break;
       default:
-        let lengthSpacing = data.spacingMode == 0; /* Length */
+        let lengthSpacing = data.spacingMode == 0 /* Length */;
         for (let i = 0, n = spacesCount - 1; i < n; ) {
           let bone = bones[i];
           let setupLength = bone.data.length;
@@ -6699,20 +6327,18 @@ var _PathConstraint = class {
             if (scale) lengths[i] = 0;
             spaces[++i] = spacing;
           } else {
-            let x = setupLength * bone.a,
-              y = setupLength * bone.c;
+            let x = setupLength * bone.a, y = setupLength * bone.c;
             let length = Math.sqrt(x * x + y * y);
             if (scale) lengths[i] = length;
-            spaces[++i] = ((lengthSpacing ? setupLength + spacing : spacing) * length) / setupLength;
+            spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
           }
         }
     }
     let positions = this.computeWorldPositions(attachment, spacesCount, tangents);
-    let boneX = positions[0],
-      boneY = positions[1],
-      offsetRotation = data.offsetRotation;
+    let boneX = positions[0], boneY = positions[1], offsetRotation = data.offsetRotation;
     let tip = false;
-    if (offsetRotation == 0) tip = data.rotateMode == 1 /* Chain */;
+    if (offsetRotation == 0)
+      tip = data.rotateMode == 1 /* Chain */;
     else {
       tip = false;
       let p = this.target.bone;
@@ -6722,10 +6348,7 @@ var _PathConstraint = class {
       let bone = bones[i];
       bone.worldX += (boneX - bone.worldX) * mixX;
       bone.worldY += (boneY - bone.worldY) * mixY;
-      let x = positions[p],
-        y = positions[p + 1],
-        dx = x - boneX,
-        dy = y - boneY;
+      let x = positions[p], y = positions[p + 1], dx = x - boneX, dy = y - boneY;
       if (scale) {
         let length = lengths[i];
         if (length != 0) {
@@ -6737,16 +6360,13 @@ var _PathConstraint = class {
       boneX = x;
       boneY = y;
       if (mixRotate > 0) {
-        let a = bone.a,
-          b = bone.b,
-          c = bone.c,
-          d = bone.d,
-          r = 0,
-          cos = 0,
-          sin = 0;
-        if (tangents) r = positions[p - 1];
-        else if (spaces[i + 1] == 0) r = positions[p + 2];
-        else r = Math.atan2(dy, dx);
+        let a = bone.a, b = bone.b, c = bone.c, d = bone.d, r = 0, cos = 0, sin = 0;
+        if (tangents)
+          r = positions[p - 1];
+        else if (spaces[i + 1] == 0)
+          r = positions[p + 2];
+        else
+          r = Math.atan2(dy, dx);
         r -= Math.atan2(c, a);
         if (tip) {
           cos = Math.cos(r);
@@ -6757,8 +6377,10 @@ var _PathConstraint = class {
         } else {
           r += offsetRotation;
         }
-        if (r > MathUtils.PI) r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) r += MathUtils.PI2;
+        if (r > MathUtils.PI)
+          r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          r += MathUtils.PI2;
         r *= mixRotate;
         cos = Math.cos(r);
         sin = Math.sin(r);
@@ -6773,13 +6395,9 @@ var _PathConstraint = class {
   computeWorldPositions(path2, spacesCount, tangents) {
     let target = this.target;
     let position = this.position;
-    let spaces = this.spaces,
-      out = Utils.setArraySize(this.positions, spacesCount * 3 + 2),
-      world = this.world;
+    let spaces = this.spaces, out = Utils.setArraySize(this.positions, spacesCount * 3 + 2), world = this.world;
     let closed2 = path2.closed;
-    let verticesLength = path2.worldVerticesLength,
-      curveCount = verticesLength / 6,
-      prevCurve = _PathConstraint.NONE;
+    let verticesLength = path2.worldVerticesLength, curveCount = verticesLength / 6, prevCurve = _PathConstraint.NONE;
     if (!path2.constantSpeed) {
       let lengths = path2.lengths;
       curveCount -= closed2 ? 1 : 2;
@@ -6823,7 +6441,8 @@ var _PathConstraint = class {
         for (; ; curve++) {
           let length = lengths[curve];
           if (p > length) continue;
-          if (curve == 0) p /= length;
+          if (curve == 0)
+            p /= length;
           else {
             let prev = lengths[curve - 1];
             p = (p - prev) / (length - prev);
@@ -6835,7 +6454,8 @@ var _PathConstraint = class {
           if (closed2 && curve == curveCount) {
             path2.computeWorldVertices(target, verticesLength - 4, 4, world, 0, 2);
             path2.computeWorldVertices(target, 0, 4, world, 4, 2);
-          } else path2.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
+          } else
+            path2.computeWorldVertices(target, curve * 6 + 2, 8, world, 0, 2);
         }
         this.addCurvePosition(
           p,
@@ -6849,7 +6469,7 @@ var _PathConstraint = class {
           world[7],
           out,
           o,
-          tangents || (i > 0 && space == 0),
+          tangents || i > 0 && space == 0
         );
       }
       return out;
@@ -6869,22 +6489,8 @@ var _PathConstraint = class {
     }
     let curves = Utils.setArraySize(this.curves, curveCount);
     let pathLength = 0;
-    let x1 = world[0],
-      y1 = world[1],
-      cx1 = 0,
-      cy1 = 0,
-      cx2 = 0,
-      cy2 = 0,
-      x2 = 0,
-      y2 = 0;
-    let tmpx = 0,
-      tmpy = 0,
-      dddfx = 0,
-      dddfy = 0,
-      ddfx = 0,
-      ddfy = 0,
-      dfx = 0,
-      dfy = 0;
+    let x1 = world[0], y1 = world[1], cx1 = 0, cy1 = 0, cx2 = 0, cy2 = 0, x2 = 0, y2 = 0;
+    let tmpx = 0, tmpy = 0, dddfx = 0, dddfy = 0, ddfx = 0, ddfy = 0, dfx = 0, dfy = 0;
     for (let i = 0, w = 2; i < curveCount; i++, w += 6) {
       cx1 = world[w];
       cy1 = world[w + 1];
@@ -6948,7 +6554,8 @@ var _PathConstraint = class {
       for (; ; curve++) {
         let length = curves[curve];
         if (p > length) continue;
-        if (curve == 0) p /= length;
+        if (curve == 0)
+          p /= length;
         else {
           let prev = curves[curve - 1];
           p = (p - prev) / (length - prev);
@@ -6998,33 +6605,26 @@ var _PathConstraint = class {
       for (; ; segment++) {
         let length = segments[segment];
         if (p > length) continue;
-        if (segment == 0) p /= length;
+        if (segment == 0)
+          p /= length;
         else {
           let prev = segments[segment - 1];
           p = segment + (p - prev) / (length - prev);
         }
         break;
       }
-      this.addCurvePosition(p * 0.1, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents || (i > 0 && space == 0));
+      this.addCurvePosition(p * 0.1, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents || i > 0 && space == 0);
     }
     return out;
   }
   addBeforePosition(p, temp, i, out, o) {
-    let x1 = temp[i],
-      y1 = temp[i + 1],
-      dx = temp[i + 2] - x1,
-      dy = temp[i + 3] - y1,
-      r = Math.atan2(dy, dx);
+    let x1 = temp[i], y1 = temp[i + 1], dx = temp[i + 2] - x1, dy = temp[i + 3] - y1, r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
   }
   addAfterPosition(p, temp, i, out, o) {
-    let x1 = temp[i + 2],
-      y1 = temp[i + 3],
-      dx = x1 - temp[i],
-      dy = y1 - temp[i + 1],
-      r = Math.atan2(dy, dx);
+    let x1 = temp[i + 2], y1 = temp[i + 3], dx = x1 - temp[i], dy = y1 - temp[i + 1], r = Math.atan2(dy, dx);
     out[o] = x1 + p * Math.cos(r);
     out[o + 1] = y1 + p * Math.sin(r);
     out[o + 2] = r;
@@ -7036,60 +6636,59 @@ var _PathConstraint = class {
       out[o + 2] = Math.atan2(cy1 - y1, cx1 - x1);
       return;
     }
-    let tt = p * p,
-      ttt = tt * p,
-      u = 1 - p,
-      uu = u * u,
-      uuu = uu * u;
-    let ut = u * p,
-      ut3 = ut * 3,
-      uut3 = u * ut3,
-      utt3 = ut3 * p;
-    let x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt,
-      y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
+    let tt = p * p, ttt = tt * p, u = 1 - p, uu = u * u, uuu = uu * u;
+    let ut = u * p, ut3 = ut * 3, uut3 = u * ut3, utt3 = ut3 * p;
+    let x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt, y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
     out[o] = x;
     out[o + 1] = y;
     if (tangents) {
-      if (p < 1e-3) out[o + 2] = Math.atan2(cy1 - y1, cx1 - x1);
-      else out[o + 2] = Math.atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
+      if (p < 1e-3)
+        out[o + 2] = Math.atan2(cy1 - y1, cx1 - x1);
+      else
+        out[o + 2] = Math.atan2(y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
     }
   }
 };
-var PathConstraint = _PathConstraint;
-PathConstraint.NONE = -1;
-PathConstraint.BEFORE = -2;
-PathConstraint.AFTER = -3;
-PathConstraint.epsilon = 1e-5;
 
 // spine-core/src/PhysicsConstraint.ts
 var PhysicsConstraint = class {
+  data;
+  _bone = null;
+  /** The bone constrained by this physics constraint. */
+  set bone(bone) {
+    this._bone = bone;
+  }
+  get bone() {
+    if (!this._bone) throw new Error("Bone not set.");
+    else return this._bone;
+  }
+  inertia = 0;
+  strength = 0;
+  damping = 0;
+  massInverse = 0;
+  wind = 0;
+  gravity = 0;
+  mix = 0;
+  _reset = true;
+  ux = 0;
+  uy = 0;
+  cx = 0;
+  cy = 0;
+  tx = 0;
+  ty = 0;
+  xOffset = 0;
+  xVelocity = 0;
+  yOffset = 0;
+  yVelocity = 0;
+  rotateOffset = 0;
+  rotateVelocity = 0;
+  scaleOffset = 0;
+  scaleVelocity = 0;
+  active = false;
+  skeleton;
+  remaining = 0;
+  lastTime = 0;
   constructor(data, skeleton) {
-    this._bone = null;
-    this.inertia = 0;
-    this.strength = 0;
-    this.damping = 0;
-    this.massInverse = 0;
-    this.wind = 0;
-    this.gravity = 0;
-    this.mix = 0;
-    this._reset = true;
-    this.ux = 0;
-    this.uy = 0;
-    this.cx = 0;
-    this.cy = 0;
-    this.tx = 0;
-    this.ty = 0;
-    this.xOffset = 0;
-    this.xVelocity = 0;
-    this.yOffset = 0;
-    this.yVelocity = 0;
-    this.rotateOffset = 0;
-    this.rotateVelocity = 0;
-    this.scaleOffset = 0;
-    this.scaleVelocity = 0;
-    this.active = false;
-    this.remaining = 0;
-    this.lastTime = 0;
     this.data = data;
     this.skeleton = skeleton;
     this.bone = skeleton.bones[data.bone.index];
@@ -7100,14 +6699,6 @@ var PhysicsConstraint = class {
     this.wind = data.wind;
     this.gravity = data.gravity;
     this.mix = data.mix;
-  }
-  /** The bone constrained by this physics constraint. */
-  set bone(bone) {
-    this._bone = bone;
-  }
-  get bone() {
-    if (!this._bone) throw new Error('Bone not set.');
-    else return this._bone;
   }
   reset() {
     this.remaining = 0;
@@ -7139,10 +6730,7 @@ var PhysicsConstraint = class {
   update(physics) {
     const mix = this.mix;
     if (mix == 0) return;
-    const x = this.data.x > 0,
-      y = this.data.y > 0,
-      rotateOrShearX = this.data.rotate > 0 || this.data.shearX > 0,
-      scaleX = this.data.scaleX > 0;
+    const x = this.data.x > 0, y = this.data.y > 0, rotateOrShearX = this.data.rotate > 0 || this.data.shearX > 0, scaleX = this.data.scaleX > 0;
     const bone = this.bone;
     const l = bone.data.length;
     switch (physics) {
@@ -7150,25 +6738,20 @@ var PhysicsConstraint = class {
         return;
       case 1 /* reset */:
         this.reset();
+      // Fall through.
       case 2 /* update */:
         const skeleton = this.skeleton;
         const delta = Math.max(this.skeleton.time - this.lastTime, 0);
         this.remaining += delta;
         this.lastTime = skeleton.time;
-        const bx = bone.worldX,
-          by = bone.worldY;
+        const bx = bone.worldX, by = bone.worldY;
         if (this._reset) {
           this._reset = false;
           this.ux = bx;
           this.uy = by;
         } else {
-          let a = this.remaining,
-            i = this.inertia,
-            t = this.data.step,
-            f = this.skeleton.data.referenceScale,
-            d = -1;
-          let qx = this.data.limit * delta,
-            qy = qx * Math.abs(skeleton.scaleY);
+          let a = this.remaining, i = this.inertia, t = this.data.step, f = this.skeleton.data.referenceScale, d = -1;
+          let qx = this.data.limit * delta, qy = qx * Math.abs(skeleton.scaleY);
           qx *= Math.abs(skeleton.scaleX);
           if (x || y) {
             if (x) {
@@ -7183,10 +6766,7 @@ var PhysicsConstraint = class {
             }
             if (a >= t) {
               d = Math.pow(this.damping, 60 * t);
-              const m = this.massInverse * t,
-                e = this.strength,
-                w = this.wind * f,
-                g = (Skeleton.yDown ? -this.gravity : this.gravity) * f;
+              const m = this.massInverse * t, e = this.strength, w = this.wind * f * skeleton.scaleX, g = this.gravity * f * skeleton.scaleY;
               do {
                 if (x) {
                   this.xVelocity += (w - this.xOffset * e) * m;
@@ -7205,16 +6785,16 @@ var PhysicsConstraint = class {
             if (y) bone.worldY += this.yOffset * mix * this.data.y;
           }
           if (rotateOrShearX || scaleX) {
-            let ca = Math.atan2(bone.c, bone.a),
-              c = 0,
-              s = 0,
-              mr = 0;
-            let dx = this.cx - bone.worldX,
-              dy = this.cy - bone.worldY;
-            if (dx > qx) dx = qx;
-            else if (dx < -qx) dx = -qx;
-            if (dy > qy) dy = qy;
-            else if (dy < -qy) dy = -qy;
+            let ca = Math.atan2(bone.c, bone.a), c = 0, s = 0, mr = 0;
+            let dx = this.cx - bone.worldX, dy = this.cy - bone.worldY;
+            if (dx > qx)
+              dx = qx;
+            else if (dx < -qx)
+              dx = -qx;
+            if (dy > qy)
+              dy = qy;
+            else if (dy < -qy)
+              dy = -qy;
             if (rotateOrShearX) {
               mr = (this.data.rotate + this.data.shearX) * mix;
               let r = Math.atan2(dy + this.ty, dx + this.tx) - ca - this.rotateOffset * mr;
@@ -7224,22 +6804,18 @@ var PhysicsConstraint = class {
               s = Math.sin(r);
               if (scaleX) {
                 r = l * bone.getWorldScaleX();
-                if (r > 0) this.scaleOffset += ((dx * c + dy * s) * i) / r;
+                if (r > 0) this.scaleOffset += (dx * c + dy * s) * i / r;
               }
             } else {
               c = Math.cos(ca);
               s = Math.sin(ca);
               const r = l * bone.getWorldScaleX();
-              if (r > 0) this.scaleOffset += ((dx * c + dy * s) * i) / r;
+              if (r > 0) this.scaleOffset += (dx * c + dy * s) * i / r;
             }
             a = this.remaining;
             if (a >= t) {
               if (d == -1) d = Math.pow(this.damping, 60 * t);
-              const m = this.massInverse * t,
-                e = this.strength,
-                w = this.wind,
-                g = Skeleton.yDown ? -this.gravity : this.gravity,
-                h = l / f;
+              const m = this.massInverse * t, e = this.strength, w = this.wind, g = Skeleton.yDown ? -this.gravity : this.gravity, h = l / f;
               while (true) {
                 a -= t;
                 if (scaleX) {
@@ -7255,7 +6831,8 @@ var PhysicsConstraint = class {
                   const r = this.rotateOffset * mr + ca;
                   c = Math.cos(r);
                   s = Math.sin(r);
-                } else if (a < t) break;
+                } else if (a < t)
+                  break;
               }
             }
           }
@@ -7269,10 +6846,7 @@ var PhysicsConstraint = class {
         if (y) bone.worldY += this.yOffset * mix * this.data.y;
     }
     if (rotateOrShearX) {
-      let o = this.rotateOffset * mix,
-        s = 0,
-        c = 0,
-        a = 0;
+      let o = this.rotateOffset * mix, s = 0, c = 0, a = 0;
       if (this.data.shearX > 0) {
         let r = 0;
         if (this.data.rotate > 0) {
@@ -7323,33 +6897,37 @@ var PhysicsConstraint = class {
   /** Rotates the physics constraint so next {@link #update(Physics)} forces are applied as if the bone rotated around the
    * specified point in world space. */
   rotate(x, y, degrees) {
-    const r = degrees * MathUtils.degRad,
-      cos = Math.cos(r),
-      sin = Math.sin(r);
-    const dx = this.cx - x,
-      dy = this.cy - y;
+    const r = degrees * MathUtils.degRad, cos = Math.cos(r), sin = Math.sin(r);
+    const dx = this.cx - x, dy = this.cy - y;
     this.translate(dx * cos - dy * sin - dx, dx * sin + dy * cos - dy);
   }
 };
 
 // spine-core/src/Slot.ts
 var Slot = class {
+  /** The slot's setup pose data. */
+  data;
+  /** The bone this slot belongs to. */
+  bone;
+  /** The color used to tint the slot's attachment. If {@link #getDarkColor()} is set, this is used as the light color for two
+   * color tinting. */
+  color;
+  /** The dark color used to tint the slot's attachment for two color tinting, or null if two color tinting is not used. The dark
+   * color's alpha is not used. */
+  darkColor = null;
+  attachment = null;
+  attachmentState = 0;
+  /** The index of the texture region to display when the slot's attachment has a {@link Sequence}. -1 represents the
+   * {@link Sequence#getSetupIndex()}. */
+  sequenceIndex = -1;
+  /** Values to deform the slot's attachment. For an unweighted mesh, the entries are local positions for each vertex. For a
+   * weighted mesh, the entries are an offset for each vertex which will be added to the mesh's local vertex positions.
+   *
+   * See {@link VertexAttachment#computeWorldVertices()} and {@link DeformTimeline}. */
+  deform = new Array();
   constructor(data, bone) {
-    /** The dark color used to tint the slot's attachment for two color tinting, or null if two color tinting is not used. The dark
-     * color's alpha is not used. */
-    this.darkColor = null;
-    this.attachment = null;
-    this.attachmentState = 0;
-    /** The index of the texture region to display when the slot's attachment has a {@link Sequence}. -1 represents the
-     * {@link Sequence#getSetupIndex()}. */
-    this.sequenceIndex = -1;
-    /** Values to deform the slot's attachment. For an unweighted mesh, the entries are local positions for each vertex. For a
-     * weighted mesh, the entries are an offset for each vertex which will be added to the mesh's local vertex positions.
-     *
-     * See {@link VertexAttachment#computeWorldVertices()} and {@link DeformTimeline}. */
-    this.deform = new Array();
-    if (!data) throw new Error('data cannot be null.');
-    if (!bone) throw new Error('bone cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
+    if (!bone) throw new Error("bone cannot be null.");
     this.data = data;
     this.bone = bone;
     this.color = new Color();
@@ -7369,11 +6947,7 @@ var Slot = class {
    * specified attachment. */
   setAttachment(attachment) {
     if (this.attachment == attachment) return;
-    if (
-      !(attachment instanceof VertexAttachment) ||
-      !(this.attachment instanceof VertexAttachment) ||
-      attachment.timelineAttachment != this.attachment.timelineAttachment
-    ) {
+    if (!(attachment instanceof VertexAttachment) || !(this.attachment instanceof VertexAttachment) || attachment.timelineAttachment != this.attachment.timelineAttachment) {
       this.deform.length = 0;
     }
     this.attachment = attachment;
@@ -7383,7 +6957,8 @@ var Slot = class {
   setToSetupPose() {
     this.color.setFromColor(this.data.color);
     if (this.darkColor) this.darkColor.setFromColor(this.data.darkColor);
-    if (!this.data.attachmentName) this.attachment = null;
+    if (!this.data.attachmentName)
+      this.attachment = null;
     else {
       this.attachment = null;
       this.setAttachment(this.bone.skeleton.getAttachment(this.data.index, this.data.attachmentName));
@@ -7393,17 +6968,23 @@ var Slot = class {
 
 // spine-core/src/TransformConstraint.ts
 var TransformConstraint = class {
+  /** The transform constraint's setup pose data. */
+  data;
+  /** The bones that will be modified by this transform constraint. */
+  bones;
+  /** The target bone whose world transform will be copied to the constrained bones. */
+  target;
+  mixRotate = 0;
+  mixX = 0;
+  mixY = 0;
+  mixScaleX = 0;
+  mixScaleY = 0;
+  mixShearY = 0;
+  temp = new Vector2();
+  active = false;
   constructor(data, skeleton) {
-    this.mixRotate = 0;
-    this.mixX = 0;
-    this.mixY = 0;
-    this.mixScaleX = 0;
-    this.mixScaleY = 0;
-    this.mixShearY = 0;
-    this.temp = new Vector2();
-    this.active = false;
-    if (!data) throw new Error('data cannot be null.');
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     this.data = data;
     this.bones = new Array();
     for (let i = 0; i < data.bones.length; i++) {
@@ -7434,36 +7015,24 @@ var TransformConstraint = class {
     this.mixShearY = data.mixShearY;
   }
   update(physics) {
-    if (
-      this.mixRotate == 0 &&
-      this.mixX == 0 &&
-      this.mixY == 0 &&
-      this.mixScaleX == 0 &&
-      this.mixScaleY == 0 &&
-      this.mixShearY == 0
-    )
-      return;
+    if (this.mixRotate == 0 && this.mixX == 0 && this.mixY == 0 && this.mixScaleX == 0 && this.mixScaleY == 0 && this.mixShearY == 0) return;
     if (this.data.local) {
-      if (this.data.relative) this.applyRelativeLocal();
-      else this.applyAbsoluteLocal();
+      if (this.data.relative)
+        this.applyRelativeLocal();
+      else
+        this.applyAbsoluteLocal();
     } else {
-      if (this.data.relative) this.applyRelativeWorld();
-      else this.applyAbsoluteWorld();
+      if (this.data.relative)
+        this.applyRelativeWorld();
+      else
+        this.applyAbsoluteWorld();
     }
   }
   applyAbsoluteWorld() {
-    let mixRotate = this.mixRotate,
-      mixX = this.mixX,
-      mixY = this.mixY,
-      mixScaleX = this.mixScaleX,
-      mixScaleY = this.mixScaleY,
-      mixShearY = this.mixShearY;
+    let mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
     let translate = mixX != 0 || mixY != 0;
     let target = this.target;
-    let ta = target.a,
-      tb = target.b,
-      tc = target.c,
-      td = target.d;
+    let ta = target.a, tb = target.b, tc = target.c, td = target.d;
     let degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
     let offsetRotation = this.data.offsetRotation * degRadReflect;
     let offsetShearY = this.data.offsetShearY * degRadReflect;
@@ -7471,16 +7040,14 @@ var TransformConstraint = class {
     for (let i = 0, n = bones.length; i < n; i++) {
       let bone = bones[i];
       if (mixRotate != 0) {
-        let a = bone.a,
-          b = bone.b,
-          c = bone.c,
-          d = bone.d;
+        let a = bone.a, b = bone.b, c = bone.c, d = bone.d;
         let r = Math.atan2(tc, ta) - Math.atan2(c, a) + offsetRotation;
-        if (r > MathUtils.PI) r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) r += MathUtils.PI2;
+        if (r > MathUtils.PI)
+          r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          r += MathUtils.PI2;
         r *= mixRotate;
-        let cos = Math.cos(r),
-          sin = Math.sin(r);
+        let cos = Math.cos(r), sin = Math.sin(r);
         bone.a = cos * a - sin * c;
         bone.b = cos * b - sin * d;
         bone.c = sin * a + cos * c;
@@ -7505,12 +7072,13 @@ var TransformConstraint = class {
         bone.d *= s;
       }
       if (mixShearY > 0) {
-        let b = bone.b,
-          d = bone.d;
+        let b = bone.b, d = bone.d;
         let by = Math.atan2(d, b);
         let r = Math.atan2(td, tb) - Math.atan2(tc, ta) - (by - Math.atan2(bone.c, bone.a));
-        if (r > MathUtils.PI) r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) r += MathUtils.PI2;
+        if (r > MathUtils.PI)
+          r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          r += MathUtils.PI2;
         r = by + (r + offsetShearY) * mixShearY;
         let s = Math.sqrt(b * b + d * d);
         bone.b = Math.cos(r) * s;
@@ -7520,35 +7088,24 @@ var TransformConstraint = class {
     }
   }
   applyRelativeWorld() {
-    let mixRotate = this.mixRotate,
-      mixX = this.mixX,
-      mixY = this.mixY,
-      mixScaleX = this.mixScaleX,
-      mixScaleY = this.mixScaleY,
-      mixShearY = this.mixShearY;
+    let mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
     let translate = mixX != 0 || mixY != 0;
     let target = this.target;
-    let ta = target.a,
-      tb = target.b,
-      tc = target.c,
-      td = target.d;
+    let ta = target.a, tb = target.b, tc = target.c, td = target.d;
     let degRadReflect = ta * td - tb * tc > 0 ? MathUtils.degRad : -MathUtils.degRad;
-    let offsetRotation = this.data.offsetRotation * degRadReflect,
-      offsetShearY = this.data.offsetShearY * degRadReflect;
+    let offsetRotation = this.data.offsetRotation * degRadReflect, offsetShearY = this.data.offsetShearY * degRadReflect;
     let bones = this.bones;
     for (let i = 0, n = bones.length; i < n; i++) {
       let bone = bones[i];
       if (mixRotate != 0) {
-        let a = bone.a,
-          b = bone.b,
-          c = bone.c,
-          d = bone.d;
+        let a = bone.a, b = bone.b, c = bone.c, d = bone.d;
         let r = Math.atan2(tc, ta) + offsetRotation;
-        if (r > MathUtils.PI) r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) r += MathUtils.PI2;
+        if (r > MathUtils.PI)
+          r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          r += MathUtils.PI2;
         r *= mixRotate;
-        let cos = Math.cos(r),
-          sin = Math.sin(r);
+        let cos = Math.cos(r), sin = Math.sin(r);
         bone.a = cos * a - sin * c;
         bone.b = cos * b - sin * d;
         bone.c = sin * a + cos * c;
@@ -7572,10 +7129,11 @@ var TransformConstraint = class {
       }
       if (mixShearY > 0) {
         let r = Math.atan2(td, tb) - Math.atan2(tc, ta);
-        if (r > MathUtils.PI) r -= MathUtils.PI2;
-        else if (r < -MathUtils.PI) r += MathUtils.PI2;
-        let b = bone.b,
-          d = bone.d;
+        if (r > MathUtils.PI)
+          r -= MathUtils.PI2;
+        else if (r < -MathUtils.PI)
+          r += MathUtils.PI2;
+        let b = bone.b, d = bone.d;
         r = Math.atan2(d, b) + (r - MathUtils.PI / 2 + offsetShearY) * mixShearY;
         let s = Math.sqrt(b * b + d * d);
         bone.b = Math.cos(r) * s;
@@ -7585,24 +7143,17 @@ var TransformConstraint = class {
     }
   }
   applyAbsoluteLocal() {
-    let mixRotate = this.mixRotate,
-      mixX = this.mixX,
-      mixY = this.mixY,
-      mixScaleX = this.mixScaleX,
-      mixScaleY = this.mixScaleY,
-      mixShearY = this.mixShearY;
+    let mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
     let target = this.target;
     let bones = this.bones;
     for (let i = 0, n = bones.length; i < n; i++) {
       let bone = bones[i];
       let rotation = bone.arotation;
       if (mixRotate != 0) rotation += (target.arotation - rotation + this.data.offsetRotation) * mixRotate;
-      let x = bone.ax,
-        y = bone.ay;
+      let x = bone.ax, y = bone.ay;
       x += (target.ax - x + this.data.offsetX) * mixX;
       y += (target.ay - y + this.data.offsetY) * mixY;
-      let scaleX = bone.ascaleX,
-        scaleY = bone.ascaleY;
+      let scaleX = bone.ascaleX, scaleY = bone.ascaleY;
       if (mixScaleX != 0 && scaleX != 0)
         scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * mixScaleX) / scaleX;
       if (mixScaleY != 0 && scaleY != 0)
@@ -7613,12 +7164,7 @@ var TransformConstraint = class {
     }
   }
   applyRelativeLocal() {
-    let mixRotate = this.mixRotate,
-      mixX = this.mixX,
-      mixY = this.mixY,
-      mixScaleX = this.mixScaleX,
-      mixScaleY = this.mixScaleY,
-      mixShearY = this.mixShearY;
+    let mixRotate = this.mixRotate, mixX = this.mixX, mixY = this.mixY, mixScaleX = this.mixScaleX, mixScaleY = this.mixScaleY, mixShearY = this.mixShearY;
     let target = this.target;
     let bones = this.bones;
     for (let i = 0, n = bones.length; i < n; i++) {
@@ -7635,33 +7181,60 @@ var TransformConstraint = class {
 };
 
 // spine-core/src/Skeleton.ts
-var _Skeleton = class {
+var Skeleton = class _Skeleton {
+  static quadTriangles = [0, 1, 2, 2, 3, 0];
+  static yDown = false;
+  /** The skeleton's setup pose data. */
+  data;
+  /** The skeleton's bones, sorted parent first. The root bone is always the first bone. */
+  bones;
+  /** The skeleton's slots in the setup pose draw order. */
+  slots;
+  /** The skeleton's slots in the order they should be drawn. The returned array may be modified to change the draw order. */
+  drawOrder;
+  /** The skeleton's IK constraints. */
+  ikConstraints;
+  /** The skeleton's transform constraints. */
+  transformConstraints;
+  /** The skeleton's path constraints. */
+  pathConstraints;
+  /** The skeleton's physics constraints. */
+  physicsConstraints;
+  /** The list of bones and constraints, sorted in the order they should be updated, as computed by {@link #updateCache()}. */
+  _updateCache = new Array();
+  /** The skeleton's current skin. May be null. */
+  skin = null;
+  /** The color to tint all the skeleton's attachments. */
+  color;
+  /** Scales the entire skeleton on the X axis. This affects all bones, even if the bone's transform mode disallows scale
+    * inheritance. */
+  scaleX = 1;
+  /** Scales the entire skeleton on the Y axis. This affects all bones, even if the bone's transform mode disallows scale
+    * inheritance. */
+  _scaleY = 1;
+  get scaleY() {
+    return _Skeleton.yDown ? -this._scaleY : this._scaleY;
+  }
+  set scaleY(scaleY) {
+    this._scaleY = scaleY;
+  }
+  /** Sets the skeleton X position, which is added to the root bone worldX position. */
+  x = 0;
+  /** Sets the skeleton Y position, which is added to the root bone worldY position. */
+  y = 0;
+  /** Returns the skeleton's time. This is used for time-based manipulations, such as {@link PhysicsConstraint}.
+   * <p>
+   * See {@link #update(float)}. */
+  time = 0;
   constructor(data) {
-    /** The list of bones and constraints, sorted in the order they should be updated, as computed by {@link #updateCache()}. */
-    this._updateCache = new Array();
-    /** The skeleton's current skin. May be null. */
-    this.skin = null;
-    /** Scales the entire skeleton on the X axis. This affects all bones, even if the bone's transform mode disallows scale
-     * inheritance. */
-    this.scaleX = 1;
-    /** Scales the entire skeleton on the Y axis. This affects all bones, even if the bone's transform mode disallows scale
-     * inheritance. */
-    this._scaleY = 1;
-    /** Sets the skeleton X position, which is added to the root bone worldX position. */
-    this.x = 0;
-    /** Sets the skeleton Y position, which is added to the root bone worldY position. */
-    this.y = 0;
-    /** Returns the skeleton's time. This is used for time-based manipulations, such as {@link PhysicsConstraint}.
-     * <p>
-     * See {@link #update(float)}. */
-    this.time = 0;
-    if (!data) throw new Error('data cannot be null.');
+    if (!data) throw new Error("data cannot be null.");
     this.data = data;
     this.bones = new Array();
     for (let i = 0; i < data.bones.length; i++) {
       let boneData = data.bones[i];
       let bone;
-      if (!boneData.parent) bone = new Bone(boneData, this, null);
+      if (!boneData.parent)
+        bone = new Bone(boneData, this, null);
       else {
         let parent = this.bones[boneData.parent.index];
         bone = new Bone(boneData, this, parent);
@@ -7701,12 +7274,6 @@ var _Skeleton = class {
     this.color = new Color(1, 1, 1, 1);
     this.updateCache();
   }
-  get scaleY() {
-    return _Skeleton.yDown ? -this._scaleY : this._scaleY;
-  }
-  set scaleY(scaleY) {
-    this._scaleY = scaleY;
-  }
   /** Caches information about bones and constraints. Must be called if the {@link #getSkin()} is modified or if bones,
    * constraints, or weighted path attachments are added or removed. */
   updateCache() {
@@ -7733,47 +7300,44 @@ var _Skeleton = class {
     let transformConstraints = this.transformConstraints;
     let pathConstraints = this.pathConstraints;
     let physicsConstraints = this.physicsConstraints;
-    let ikCount = ikConstraints.length,
-      transformCount = transformConstraints.length,
-      pathCount = pathConstraints.length,
-      physicsCount = this.physicsConstraints.length;
+    let ikCount = ikConstraints.length, transformCount = transformConstraints.length, pathCount = pathConstraints.length, physicsCount = this.physicsConstraints.length;
     let constraintCount = ikCount + transformCount + pathCount + physicsCount;
-    outer: for (let i = 0; i < constraintCount; i++) {
-      for (let ii = 0; ii < ikCount; ii++) {
-        let constraint = ikConstraints[ii];
-        if (constraint.data.order == i) {
-          this.sortIkConstraint(constraint);
-          continue outer;
+    outer:
+      for (let i = 0; i < constraintCount; i++) {
+        for (let ii = 0; ii < ikCount; ii++) {
+          let constraint = ikConstraints[ii];
+          if (constraint.data.order == i) {
+            this.sortIkConstraint(constraint);
+            continue outer;
+          }
+        }
+        for (let ii = 0; ii < transformCount; ii++) {
+          let constraint = transformConstraints[ii];
+          if (constraint.data.order == i) {
+            this.sortTransformConstraint(constraint);
+            continue outer;
+          }
+        }
+        for (let ii = 0; ii < pathCount; ii++) {
+          let constraint = pathConstraints[ii];
+          if (constraint.data.order == i) {
+            this.sortPathConstraint(constraint);
+            continue outer;
+          }
+        }
+        for (let ii = 0; ii < physicsCount; ii++) {
+          const constraint = physicsConstraints[ii];
+          if (constraint.data.order == i) {
+            this.sortPhysicsConstraint(constraint);
+            continue outer;
+          }
         }
       }
-      for (let ii = 0; ii < transformCount; ii++) {
-        let constraint = transformConstraints[ii];
-        if (constraint.data.order == i) {
-          this.sortTransformConstraint(constraint);
-          continue outer;
-        }
-      }
-      for (let ii = 0; ii < pathCount; ii++) {
-        let constraint = pathConstraints[ii];
-        if (constraint.data.order == i) {
-          this.sortPathConstraint(constraint);
-          continue outer;
-        }
-      }
-      for (let ii = 0; ii < physicsCount; ii++) {
-        const constraint = physicsConstraints[ii];
-        if (constraint.data.order == i) {
-          this.sortPhysicsConstraint(constraint);
-          continue outer;
-        }
-      }
-    }
-    for (let i = 0, n = bones.length; i < n; i++) this.sortBone(bones[i]);
+    for (let i = 0, n = bones.length; i < n; i++)
+      this.sortBone(bones[i]);
   }
   sortIkConstraint(constraint) {
-    constraint.active =
-      constraint.target.isActive() &&
-      (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
+    constraint.active = constraint.target.isActive() && (!constraint.data.skinRequired || this.skin && Utils.contains(this.skin.constraints, constraint.data, true));
     if (!constraint.active) return;
     let target = constraint.target;
     this.sortBone(target);
@@ -7792,9 +7356,7 @@ var _Skeleton = class {
     }
   }
   sortPathConstraint(constraint) {
-    constraint.active =
-      constraint.target.bone.isActive() &&
-      (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
+    constraint.active = constraint.target.bone.isActive() && (!constraint.data.skinRequired || this.skin && Utils.contains(this.skin.constraints, constraint.data, true));
     if (!constraint.active) return;
     let slot = constraint.target;
     let slotIndex = slot.data.index;
@@ -7808,15 +7370,16 @@ var _Skeleton = class {
     if (attachment instanceof PathAttachment) this.sortPathConstraintAttachmentWith(attachment, slotBone);
     let constrained = constraint.bones;
     let boneCount = constrained.length;
-    for (let i = 0; i < boneCount; i++) this.sortBone(constrained[i]);
+    for (let i = 0; i < boneCount; i++)
+      this.sortBone(constrained[i]);
     this._updateCache.push(constraint);
-    for (let i = 0; i < boneCount; i++) this.sortReset(constrained[i].children);
-    for (let i = 0; i < boneCount; i++) constrained[i].sorted = true;
+    for (let i = 0; i < boneCount; i++)
+      this.sortReset(constrained[i].children);
+    for (let i = 0; i < boneCount; i++)
+      constrained[i].sorted = true;
   }
   sortTransformConstraint(constraint) {
-    constraint.active =
-      constraint.target.isActive() &&
-      (!constraint.data.skinRequired || (this.skin && Utils.contains(this.skin.constraints, constraint.data, true)));
+    constraint.active = constraint.target.isActive() && (!constraint.data.skinRequired || this.skin && Utils.contains(this.skin.constraints, constraint.data, true));
     if (!constraint.active) return;
     this.sortBone(constraint.target);
     let constrained = constraint.bones;
@@ -7833,8 +7396,10 @@ var _Skeleton = class {
       }
     }
     this._updateCache.push(constraint);
-    for (let i = 0; i < boneCount; i++) this.sortReset(constrained[i].children);
-    for (let i = 0; i < boneCount; i++) constrained[i].sorted = true;
+    for (let i = 0; i < boneCount; i++)
+      this.sortReset(constrained[i].children);
+    for (let i = 0; i < boneCount; i++)
+      constrained[i].sorted = true;
   }
   sortPathConstraintAttachment(skin, slotIndex, slotBone) {
     let attachments = skin.attachments[slotIndex];
@@ -7846,22 +7411,21 @@ var _Skeleton = class {
   sortPathConstraintAttachmentWith(attachment, slotBone) {
     if (!(attachment instanceof PathAttachment)) return;
     let pathBones = attachment.bones;
-    if (!pathBones) this.sortBone(slotBone);
+    if (!pathBones)
+      this.sortBone(slotBone);
     else {
       let bones = this.bones;
       for (let i = 0, n = pathBones.length; i < n; ) {
         let nn = pathBones[i++];
         nn += i;
-        while (i < nn) this.sortBone(bones[pathBones[i++]]);
+        while (i < nn)
+          this.sortBone(bones[pathBones[i++]]);
       }
     }
   }
   sortPhysicsConstraint(constraint) {
     const bone = constraint.bone;
-    constraint.active =
-      bone.active &&
-      (!constraint.data.skinRequired ||
-        (this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true)));
+    constraint.active = bone.active && (!constraint.data.skinRequired || this.skin != null && Utils.contains(this.skin.constraints, constraint.data, true));
     if (!constraint.active) return;
     this.sortBone(bone);
     this._updateCache.push(constraint);
@@ -7889,7 +7453,7 @@ var _Skeleton = class {
    * See [World transforms](http://esotericsoftware.com/spine-runtime-skeletons#World-transforms) in the Spine
    * Runtimes Guide. */
   updateWorldTransform(physics) {
-    if (physics === void 0 || physics === null) throw new Error('physics is undefined');
+    if (physics === void 0 || physics === null) throw new Error("physics is undefined");
     let bones = this.bones;
     for (let i = 0, n = bones.length; i < n; i++) {
       let bone = bones[i];
@@ -7902,10 +7466,11 @@ var _Skeleton = class {
       bone.ashearY = bone.shearY;
     }
     let updateCache = this._updateCache;
-    for (let i = 0, n = updateCache.length; i < n; i++) updateCache[i].update(physics);
+    for (let i = 0, n = updateCache.length; i < n; i++)
+      updateCache[i].update(physics);
   }
   updateWorldTransformWith(physics, parent) {
-    if (!parent) throw new Error('parent cannot be null.');
+    if (!parent) throw new Error("parent cannot be null.");
     let bones = this.bones;
     for (let i = 1, n = bones.length; i < n; i++) {
       let bone = bones[i];
@@ -7918,11 +7483,8 @@ var _Skeleton = class {
       bone.ashearY = bone.shearY;
     }
     let rootBone = this.getRootBone();
-    if (!rootBone) throw new Error('Root bone must not be null.');
-    let pa = parent.a,
-      pb = parent.b,
-      pc = parent.c,
-      pd = parent.d;
+    if (!rootBone) throw new Error("Root bone must not be null.");
+    let pa = parent.a, pb = parent.b, pc = parent.c, pd = parent.d;
     rootBone.worldX = pa * this.x + pb * this.y + parent.worldX;
     rootBone.worldY = pc * this.x + pd * this.y + parent.worldY;
     const rx = (rootBone.rotation + rootBone.shearX) * MathUtils.degRad;
@@ -7958,7 +7520,8 @@ var _Skeleton = class {
   setSlotsToSetupPose() {
     let slots = this.slots;
     Utils.arrayCopy(slots, 0, this.drawOrder, 0, slots.length);
-    for (let i = 0, n = slots.length; i < n; i++) slots[i].setToSetupPose();
+    for (let i = 0, n = slots.length; i < n; i++)
+      slots[i].setToSetupPose();
   }
   /** @returns May return null. */
   getRootBone() {
@@ -7967,7 +7530,7 @@ var _Skeleton = class {
   }
   /** @returns May be null. */
   findBone(boneName) {
-    if (!boneName) throw new Error('boneName cannot be null.');
+    if (!boneName) throw new Error("boneName cannot be null.");
     let bones = this.bones;
     for (let i = 0, n = bones.length; i < n; i++) {
       let bone = bones[i];
@@ -7979,7 +7542,7 @@ var _Skeleton = class {
    * repeatedly.
    * @returns May be null. */
   findSlot(slotName) {
-    if (!slotName) throw new Error('slotName cannot be null.');
+    if (!slotName) throw new Error("slotName cannot be null.");
     let slots = this.slots;
     for (let i = 0, n = slots.length; i < n; i++) {
       let slot = slots[i];
@@ -7992,7 +7555,7 @@ var _Skeleton = class {
    * See {@link #setSkin()}. */
   setSkinByName(skinName) {
     let skin = this.data.findSkin(skinName);
-    if (!skin) throw new Error('Skin not found: ' + skinName);
+    if (!skin) throw new Error("Skin not found: " + skinName);
     this.setSkin(skin);
   }
   /** Sets the skin used to look up attachments before looking in the {@link SkeletonData#defaultSkin default skin}. If the
@@ -8008,7 +7571,8 @@ var _Skeleton = class {
   setSkin(newSkin) {
     if (newSkin == this.skin) return;
     if (newSkin) {
-      if (this.skin) newSkin.attachAll(this, this.skin);
+      if (this.skin)
+        newSkin.attachAll(this, this.skin);
       else {
         let slots = this.slots;
         for (let i = 0, n = slots.length; i < n; i++) {
@@ -8040,7 +7604,7 @@ var _Skeleton = class {
    * See [Runtime skins](http://esotericsoftware.com/spine-runtime-skins) in the Spine Runtimes Guide.
    * @returns May be null. */
   getAttachment(slotIndex, attachmentName) {
-    if (!attachmentName) throw new Error('attachmentName cannot be null.');
+    if (!attachmentName) throw new Error("attachmentName cannot be null.");
     if (this.skin) {
       let attachment = this.skin.getAttachment(slotIndex, attachmentName);
       if (attachment) return attachment;
@@ -8052,7 +7616,7 @@ var _Skeleton = class {
    * {@link #getAttachment()}, then setting the slot's {@link Slot#attachment}.
    * @param attachmentName May be null to clear the slot's attachment. */
   setAttachment(slotName, attachmentName) {
-    if (!slotName) throw new Error('slotName cannot be null.');
+    if (!slotName) throw new Error("slotName cannot be null.");
     let slots = this.slots;
     for (let i = 0, n = slots.length; i < n; i++) {
       let slot = slots[i];
@@ -8060,55 +7624,47 @@ var _Skeleton = class {
         let attachment = null;
         if (attachmentName) {
           attachment = this.getAttachment(i, attachmentName);
-          if (!attachment) throw new Error('Attachment not found: ' + attachmentName + ', for slot: ' + slotName);
+          if (!attachment) throw new Error("Attachment not found: " + attachmentName + ", for slot: " + slotName);
         }
         slot.setAttachment(attachment);
         return;
       }
     }
-    throw new Error('Slot not found: ' + slotName);
+    throw new Error("Slot not found: " + slotName);
   }
   /** Finds an IK constraint by comparing each IK constraint's name. It is more efficient to cache the results of this method
    * than to call it repeatedly.
    * @return May be null. */
   findIkConstraint(constraintName) {
-    var _a;
-    if (!constraintName) throw new Error('constraintName cannot be null.');
-    return (_a = this.ikConstraints.find(constraint => constraint.data.name == constraintName)) != null ? _a : null;
+    if (!constraintName) throw new Error("constraintName cannot be null.");
+    return this.ikConstraints.find((constraint) => constraint.data.name == constraintName) ?? null;
   }
   /** Finds a transform constraint by comparing each transform constraint's name. It is more efficient to cache the results of
    * this method than to call it repeatedly.
    * @return May be null. */
   findTransformConstraint(constraintName) {
-    var _a;
-    if (!constraintName) throw new Error('constraintName cannot be null.');
-    return (_a = this.transformConstraints.find(constraint => constraint.data.name == constraintName)) != null
-      ? _a
-      : null;
+    if (!constraintName) throw new Error("constraintName cannot be null.");
+    return this.transformConstraints.find((constraint) => constraint.data.name == constraintName) ?? null;
   }
   /** Finds a path constraint by comparing each path constraint's name. It is more efficient to cache the results of this method
    * than to call it repeatedly.
    * @return May be null. */
   findPathConstraint(constraintName) {
-    var _a;
-    if (!constraintName) throw new Error('constraintName cannot be null.');
-    return (_a = this.pathConstraints.find(constraint => constraint.data.name == constraintName)) != null ? _a : null;
+    if (!constraintName) throw new Error("constraintName cannot be null.");
+    return this.pathConstraints.find((constraint) => constraint.data.name == constraintName) ?? null;
   }
   /** Finds a physics constraint by comparing each physics constraint's name. It is more efficient to cache the results of this
    * method than to call it repeatedly. */
   findPhysicsConstraint(constraintName) {
-    var _a;
-    if (constraintName == null) throw new Error('constraintName cannot be null.');
-    return (_a = this.physicsConstraints.find(constraint => constraint.data.name == constraintName)) != null
-      ? _a
-      : null;
+    if (constraintName == null) throw new Error("constraintName cannot be null.");
+    return this.physicsConstraints.find((constraint) => constraint.data.name == constraintName) ?? null;
   }
   /** Returns the axis aligned bounding box (AABB) of the region and mesh attachments for the current pose as `{ x: number, y: number, width: number, height: number }`.
    * Note that this method will create temporary objects which can add to garbage collection pressure. Use `getBounds()` if garbage collection is a concern. */
-  getBoundsRect() {
+  getBoundsRect(clipper2) {
     let offset = new Vector2();
     let size = new Vector2();
-    this.getBounds(offset, size);
+    this.getBounds(offset, size, void 0, clipper2);
     return { x: offset.x, y: offset.y, width: size.x, height: size.y };
   }
   /** Returns the axis aligned bounding box (AABB) of the region and mesh attachments for the current pose.
@@ -8117,13 +7673,10 @@ var _Skeleton = class {
    * @param temp Working memory to temporarily store attachments' computed world vertices.
    * @param clipper {@link SkeletonClipping} to use. If <code>null</code>, no clipping is applied. */
   getBounds(offset, size, temp = new Array(2), clipper2 = null) {
-    if (!offset) throw new Error('offset cannot be null.');
-    if (!size) throw new Error('size cannot be null.');
+    if (!offset) throw new Error("offset cannot be null.");
+    if (!size) throw new Error("size cannot be null.");
     let drawOrder = this.drawOrder;
-    let minX = Number.POSITIVE_INFINITY,
-      minY = Number.POSITIVE_INFINITY,
-      maxX = Number.NEGATIVE_INFINITY,
-      maxY = Number.NEGATIVE_INFINITY;
+    let minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
     for (let i = 0, n = drawOrder.length; i < n; i++) {
       let slot = drawOrder[i];
       if (!slot.bone.active) continue;
@@ -8153,8 +7706,7 @@ var _Skeleton = class {
           verticesLength = clipper2.clippedVertices.length;
         }
         for (let ii = 0, nn = vertices.length; ii < nn; ii += 2) {
-          let x = vertices[ii],
-            y = vertices[ii + 1];
+          let x = vertices[ii], y = vertices[ii + 1];
           minX = Math.min(minX, x);
           minY = Math.min(minY, y);
           maxX = Math.max(maxX, x);
@@ -8173,120 +7725,117 @@ var _Skeleton = class {
   }
   physicsTranslate(x, y) {
     const physicsConstraints = this.physicsConstraints;
-    for (let i = 0, n = physicsConstraints.length; i < n; i++) physicsConstraints[i].translate(x, y);
+    for (let i = 0, n = physicsConstraints.length; i < n; i++)
+      physicsConstraints[i].translate(x, y);
   }
   /** Calls {@link PhysicsConstraint#rotate(float, float, float)} for each physics constraint. */
   physicsRotate(x, y, degrees) {
     const physicsConstraints = this.physicsConstraints;
-    for (let i = 0, n = physicsConstraints.length; i < n; i++) physicsConstraints[i].rotate(x, y, degrees);
+    for (let i = 0, n = physicsConstraints.length; i < n; i++)
+      physicsConstraints[i].rotate(x, y, degrees);
   }
 };
-var Skeleton = _Skeleton;
-Skeleton.quadTriangles = [0, 1, 2, 2, 3, 0];
-Skeleton.yDown = false;
-var Physics = /* @__PURE__ */ (Physics2 => {
-  Physics2[(Physics2['none'] = 0)] = 'none';
-  Physics2[(Physics2['reset'] = 1)] = 'reset';
-  Physics2[(Physics2['update'] = 2)] = 'update';
-  Physics2[(Physics2['pose'] = 3)] = 'pose';
+var Physics = /* @__PURE__ */ ((Physics2) => {
+  Physics2[Physics2["none"] = 0] = "none";
+  Physics2[Physics2["reset"] = 1] = "reset";
+  Physics2[Physics2["update"] = 2] = "update";
+  Physics2[Physics2["pose"] = 3] = "pose";
   return Physics2;
 })(Physics || {});
 
 // spine-core/src/PhysicsConstraintData.ts
 var PhysicsConstraintData = class extends ConstraintData {
-  constructor(name) {
-    super(name, 0, false);
-    this._bone = null;
-    this.x = 0;
-    this.y = 0;
-    this.rotate = 0;
-    this.scaleX = 0;
-    this.shearX = 0;
-    this.limit = 0;
-    this.step = 0;
-    this.inertia = 0;
-    this.strength = 0;
-    this.damping = 0;
-    this.massInverse = 0;
-    this.wind = 0;
-    this.gravity = 0;
-    /** A percentage (0-1) that controls the mix between the constrained and unconstrained poses. */
-    this.mix = 0;
-    this.inertiaGlobal = false;
-    this.strengthGlobal = false;
-    this.dampingGlobal = false;
-    this.massGlobal = false;
-    this.windGlobal = false;
-    this.gravityGlobal = false;
-    this.mixGlobal = false;
-  }
+  _bone = null;
   /** The bone constrained by this physics constraint. */
   set bone(boneData) {
     this._bone = boneData;
   }
   get bone() {
-    if (!this._bone) throw new Error('BoneData not set.');
+    if (!this._bone) throw new Error("BoneData not set.");
     else return this._bone;
+  }
+  x = 0;
+  y = 0;
+  rotate = 0;
+  scaleX = 0;
+  shearX = 0;
+  limit = 0;
+  step = 0;
+  inertia = 0;
+  strength = 0;
+  damping = 0;
+  massInverse = 0;
+  wind = 0;
+  gravity = 0;
+  /** A percentage (0-1) that controls the mix between the constrained and unconstrained poses. */
+  mix = 0;
+  inertiaGlobal = false;
+  strengthGlobal = false;
+  dampingGlobal = false;
+  massGlobal = false;
+  windGlobal = false;
+  gravityGlobal = false;
+  mixGlobal = false;
+  constructor(name) {
+    super(name, 0, false);
   }
 };
 
 // spine-core/src/SkeletonData.ts
 var SkeletonData = class {
-  constructor() {
-    /** The skeleton's name, which by default is the name of the skeleton data file, if possible. May be null. */
-    this.name = null;
-    /** The skeleton's bones, sorted parent first. The root bone is always the first bone. */
-    this.bones = new Array();
-    // Ordered parents first.
-    /** The skeleton's slots in the setup pose draw order. */
-    this.slots = new Array();
-    // Setup pose draw order.
-    this.skins = new Array();
-    /** The skeleton's default skin. By default this skin contains all attachments that were not in a skin in Spine.
-     *
-     * See {@link Skeleton#getAttachmentByName()}.
-     * May be null. */
-    this.defaultSkin = null;
-    /** The skeleton's events. */
-    this.events = new Array();
-    /** The skeleton's animations. */
-    this.animations = new Array();
-    /** The skeleton's IK constraints. */
-    this.ikConstraints = new Array();
-    /** The skeleton's transform constraints. */
-    this.transformConstraints = new Array();
-    /** The skeleton's path constraints. */
-    this.pathConstraints = new Array();
-    /** The skeleton's physics constraints. */
-    this.physicsConstraints = new Array();
-    /** The X coordinate of the skeleton's axis aligned bounding box in the setup pose. */
-    this.x = 0;
-    /** The Y coordinate of the skeleton's axis aligned bounding box in the setup pose. */
-    this.y = 0;
-    /** The width of the skeleton's axis aligned bounding box in the setup pose. */
-    this.width = 0;
-    /** The height of the skeleton's axis aligned bounding box in the setup pose. */
-    this.height = 0;
-    /** Baseline scale factor for applying distance-dependent effects on non-scalable properties, such as angle or scale. Default
-     * is 100. */
-    this.referenceScale = 100;
-    /** The Spine version used to export the skeleton data, or null. */
-    this.version = null;
-    /** The skeleton data hash. This value will change if any of the skeleton data has changed. May be null. */
-    this.hash = null;
-    // Nonessential
-    /** The dopesheet FPS in Spine. Available only when nonessential data was exported. */
-    this.fps = 0;
-    /** The path to the images directory as defined in Spine. Available only when nonessential data was exported. May be null. */
-    this.imagesPath = null;
-    /** The path to the audio directory as defined in Spine. Available only when nonessential data was exported. May be null. */
-    this.audioPath = null;
-  }
+  /** The skeleton's name, which by default is the name of the skeleton data file, if possible. May be null. */
+  name = null;
+  /** The skeleton's bones, sorted parent first. The root bone is always the first bone. */
+  bones = new Array();
+  // Ordered parents first.
+  /** The skeleton's slots in the setup pose draw order. */
+  slots = new Array();
+  // Setup pose draw order.
+  skins = new Array();
+  /** The skeleton's default skin. By default this skin contains all attachments that were not in a skin in Spine.
+   *
+   * See {@link Skeleton#getAttachmentByName()}.
+   * May be null. */
+  defaultSkin = null;
+  /** The skeleton's events. */
+  events = new Array();
+  /** The skeleton's animations. */
+  animations = new Array();
+  /** The skeleton's IK constraints. */
+  ikConstraints = new Array();
+  /** The skeleton's transform constraints. */
+  transformConstraints = new Array();
+  /** The skeleton's path constraints. */
+  pathConstraints = new Array();
+  /** The skeleton's physics constraints. */
+  physicsConstraints = new Array();
+  /** The X coordinate of the skeleton's axis aligned bounding box in the setup pose. */
+  x = 0;
+  /** The Y coordinate of the skeleton's axis aligned bounding box in the setup pose. */
+  y = 0;
+  /** The width of the skeleton's axis aligned bounding box in the setup pose. */
+  width = 0;
+  /** The height of the skeleton's axis aligned bounding box in the setup pose. */
+  height = 0;
+  /** Baseline scale factor for applying distance-dependent effects on non-scalable properties, such as angle or scale. Default
+   * is 100. */
+  referenceScale = 100;
+  /** The Spine version used to export the skeleton data, or null. */
+  version = null;
+  /** The skeleton data hash. This value will change if any of the skeleton data has changed. May be null. */
+  hash = null;
+  // Nonessential
+  /** The dopesheet FPS in Spine. Available only when nonessential data was exported. */
+  fps = 0;
+  /** The path to the images directory as defined in Spine. Available only when nonessential data was exported. May be null. */
+  imagesPath = null;
+  /** The path to the audio directory as defined in Spine. Available only when nonessential data was exported. May be null. */
+  audioPath = null;
   /** Finds a bone by comparing each bone's name. It is more efficient to cache the results of this method than to call it
    * multiple times.
    * @returns May be null. */
   findBone(boneName) {
-    if (!boneName) throw new Error('boneName cannot be null.');
+    if (!boneName) throw new Error("boneName cannot be null.");
     let bones = this.bones;
     for (let i = 0, n = bones.length; i < n; i++) {
       let bone = bones[i];
@@ -8298,7 +7847,7 @@ var SkeletonData = class {
    * multiple times.
    * @returns May be null. */
   findSlot(slotName) {
-    if (!slotName) throw new Error('slotName cannot be null.');
+    if (!slotName) throw new Error("slotName cannot be null.");
     let slots = this.slots;
     for (let i = 0, n = slots.length; i < n; i++) {
       let slot = slots[i];
@@ -8310,7 +7859,7 @@ var SkeletonData = class {
    * multiple times.
    * @returns May be null. */
   findSkin(skinName) {
-    if (!skinName) throw new Error('skinName cannot be null.');
+    if (!skinName) throw new Error("skinName cannot be null.");
     let skins = this.skins;
     for (let i = 0, n = skins.length; i < n; i++) {
       let skin = skins[i];
@@ -8322,7 +7871,7 @@ var SkeletonData = class {
    * multiple times.
    * @returns May be null. */
   findEvent(eventDataName) {
-    if (!eventDataName) throw new Error('eventDataName cannot be null.');
+    if (!eventDataName) throw new Error("eventDataName cannot be null.");
     let events = this.events;
     for (let i = 0, n = events.length; i < n; i++) {
       let event = events[i];
@@ -8334,7 +7883,7 @@ var SkeletonData = class {
    * call it multiple times.
    * @returns May be null. */
   findAnimation(animationName) {
-    if (!animationName) throw new Error('animationName cannot be null.');
+    if (!animationName) throw new Error("animationName cannot be null.");
     let animations = this.animations;
     for (let i = 0, n = animations.length; i < n; i++) {
       let animation = animations[i];
@@ -8346,7 +7895,7 @@ var SkeletonData = class {
    * than to call it multiple times.
    * @return May be null. */
   findIkConstraint(constraintName) {
-    if (!constraintName) throw new Error('constraintName cannot be null.');
+    if (!constraintName) throw new Error("constraintName cannot be null.");
     const ikConstraints = this.ikConstraints;
     for (let i = 0, n = ikConstraints.length; i < n; i++) {
       const constraint = ikConstraints[i];
@@ -8358,7 +7907,7 @@ var SkeletonData = class {
    * this method than to call it multiple times.
    * @return May be null. */
   findTransformConstraint(constraintName) {
-    if (!constraintName) throw new Error('constraintName cannot be null.');
+    if (!constraintName) throw new Error("constraintName cannot be null.");
     const transformConstraints = this.transformConstraints;
     for (let i = 0, n = transformConstraints.length; i < n; i++) {
       const constraint = transformConstraints[i];
@@ -8370,7 +7919,7 @@ var SkeletonData = class {
    * than to call it multiple times.
    * @return May be null. */
   findPathConstraint(constraintName) {
-    if (!constraintName) throw new Error('constraintName cannot be null.');
+    if (!constraintName) throw new Error("constraintName cannot be null.");
     const pathConstraints = this.pathConstraints;
     for (let i = 0, n = pathConstraints.length; i < n; i++) {
       const constraint = pathConstraints[i];
@@ -8382,7 +7931,7 @@ var SkeletonData = class {
    * than to call it multiple times.
    * @return May be null. */
   findPhysicsConstraint(constraintName) {
-    if (!constraintName) throw new Error('constraintName cannot be null.');
+    if (!constraintName) throw new Error("constraintName cannot be null.");
     const physicsConstraints = this.physicsConstraints;
     for (let i = 0, n = physicsConstraints.length; i < n; i++) {
       const constraint = physicsConstraints[i];
@@ -8401,19 +7950,21 @@ var SkinEntry = class {
   }
 };
 var Skin = class {
+  /** The skin's name, which is unique across all skins in the skeleton. */
+  name;
+  attachments = new Array();
+  bones = Array();
+  constraints = new Array();
+  /** The color of the skin as it was in Spine, or a default color if nonessential data was not exported. */
+  color = new Color(0.99607843, 0.61960787, 0.30980393, 1);
   // fe9e4fff
   constructor(name) {
-    this.attachments = new Array();
-    this.bones = Array();
-    this.constraints = new Array();
-    /** The color of the skin as it was in Spine, or a default color if nonessential data was not exported. */
-    this.color = new Color(0.99607843, 0.61960787, 0.30980393, 1);
-    if (!name) throw new Error('name cannot be null.');
+    if (!name) throw new Error("name cannot be null.");
     this.name = name;
   }
   /** Adds an attachment to the skin for the specified slot index and name. */
   setAttachment(slotIndex, name, attachment) {
-    if (!attachment) throw new Error('attachment cannot be null.');
+    if (!attachment) throw new Error("attachment cannot be null.");
     let attachments = this.attachments;
     if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
     if (!attachments[slotIndex]) attachments[slotIndex] = {};
@@ -8551,91 +8102,95 @@ var Skin = class {
 
 // spine-core/src/SlotData.ts
 var SlotData = class {
+  /** The index of the slot in {@link Skeleton#getSlots()}. */
+  index = 0;
+  /** The name of the slot, which is unique across all slots in the skeleton. */
+  name;
+  /** The bone this slot belongs to. */
+  boneData;
+  /** The color used to tint the slot's attachment. If {@link #getDarkColor()} is set, this is used as the light color for two
+   * color tinting. */
+  color = new Color(1, 1, 1, 1);
+  /** The dark color used to tint the slot's attachment for two color tinting, or null if two color tinting is not used. The dark
+   * color's alpha is not used. */
+  darkColor = null;
+  /** The name of the attachment that is visible for this slot in the setup pose, or null if no attachment is visible. */
+  attachmentName = null;
+  /** The blend mode for drawing the slot's attachment. */
+  blendMode = 0 /* Normal */;
+  /** False if the slot was hidden in Spine and nonessential data was exported. Does not affect runtime rendering. */
+  visible = true;
   constructor(index, name, boneData) {
-    /** The index of the slot in {@link Skeleton#getSlots()}. */
-    this.index = 0;
-    /** The color used to tint the slot's attachment. If {@link #getDarkColor()} is set, this is used as the light color for two
-     * color tinting. */
-    this.color = new Color(1, 1, 1, 1);
-    /** The dark color used to tint the slot's attachment for two color tinting, or null if two color tinting is not used. The dark
-     * color's alpha is not used. */
-    this.darkColor = null;
-    /** The name of the attachment that is visible for this slot in the setup pose, or null if no attachment is visible. */
-    this.attachmentName = null;
-    /** The blend mode for drawing the slot's attachment. */
-    this.blendMode = BlendMode.Normal;
-    /** False if the slot was hidden in Spine and nonessential data was exported. Does not affect runtime rendering. */
-    this.visible = true;
-    if (index < 0) throw new Error('index must be >= 0.');
-    if (!name) throw new Error('name cannot be null.');
-    if (!boneData) throw new Error('boneData cannot be null.');
+    if (index < 0) throw new Error("index must be >= 0.");
+    if (!name) throw new Error("name cannot be null.");
+    if (!boneData) throw new Error("boneData cannot be null.");
     this.index = index;
     this.name = name;
     this.boneData = boneData;
   }
 };
-var BlendMode = /* @__PURE__ */ (BlendMode2 => {
-  BlendMode2[(BlendMode2['Normal'] = 0)] = 'Normal';
-  BlendMode2[(BlendMode2['Additive'] = 1)] = 'Additive';
-  BlendMode2[(BlendMode2['Multiply'] = 2)] = 'Multiply';
-  BlendMode2[(BlendMode2['Screen'] = 3)] = 'Screen';
+var BlendMode = /* @__PURE__ */ ((BlendMode2) => {
+  BlendMode2[BlendMode2["Normal"] = 0] = "Normal";
+  BlendMode2[BlendMode2["Additive"] = 1] = "Additive";
+  BlendMode2[BlendMode2["Multiply"] = 2] = "Multiply";
+  BlendMode2[BlendMode2["Screen"] = 3] = "Screen";
   return BlendMode2;
 })(BlendMode || {});
 
 // spine-core/src/TransformConstraintData.ts
 var TransformConstraintData = class extends ConstraintData {
-  constructor(name) {
-    super(name, 0, false);
-    /** The bones that will be modified by this transform constraint. */
-    this.bones = new Array();
-    /** The target bone whose world transform will be copied to the constrained bones. */
-    this._target = null;
-    this.mixRotate = 0;
-    this.mixX = 0;
-    this.mixY = 0;
-    this.mixScaleX = 0;
-    this.mixScaleY = 0;
-    this.mixShearY = 0;
-    /** An offset added to the constrained bone rotation. */
-    this.offsetRotation = 0;
-    /** An offset added to the constrained bone X translation. */
-    this.offsetX = 0;
-    /** An offset added to the constrained bone Y translation. */
-    this.offsetY = 0;
-    /** An offset added to the constrained bone scaleX. */
-    this.offsetScaleX = 0;
-    /** An offset added to the constrained bone scaleY. */
-    this.offsetScaleY = 0;
-    /** An offset added to the constrained bone shearY. */
-    this.offsetShearY = 0;
-    this.relative = false;
-    this.local = false;
-  }
+  /** The bones that will be modified by this transform constraint. */
+  bones = new Array();
+  /** The target bone whose world transform will be copied to the constrained bones. */
+  _target = null;
   set target(boneData) {
     this._target = boneData;
   }
   get target() {
-    if (!this._target) throw new Error('BoneData not set.');
+    if (!this._target) throw new Error("BoneData not set.");
     else return this._target;
+  }
+  mixRotate = 0;
+  mixX = 0;
+  mixY = 0;
+  mixScaleX = 0;
+  mixScaleY = 0;
+  mixShearY = 0;
+  /** An offset added to the constrained bone rotation. */
+  offsetRotation = 0;
+  /** An offset added to the constrained bone X translation. */
+  offsetX = 0;
+  /** An offset added to the constrained bone Y translation. */
+  offsetY = 0;
+  /** An offset added to the constrained bone scaleX. */
+  offsetScaleX = 0;
+  /** An offset added to the constrained bone scaleY. */
+  offsetScaleY = 0;
+  /** An offset added to the constrained bone shearY. */
+  offsetShearY = 0;
+  relative = false;
+  local = false;
+  constructor(name) {
+    super(name, 0, false);
   }
 };
 
 // spine-core/src/SkeletonBinary.ts
 var SkeletonBinary = class {
+  /** Scales bone positions, image sizes, and translations as they are loaded. This allows different size images to be used at
+   * runtime than were used in Spine.
+   *
+   * See [Scaling](http://esotericsoftware.com/spine-loading-skeleton-data#Scaling) in the Spine Runtimes Guide. */
+  scale = 1;
+  attachmentLoader;
+  linkedMeshes = new Array();
   constructor(attachmentLoader) {
-    /** Scales bone positions, image sizes, and translations as they are loaded. This allows different size images to be used at
-     * runtime than were used in Spine.
-     *
-     * See [Scaling](http://esotericsoftware.com/spine-loading-skeleton-data#Scaling) in the Spine Runtimes Guide. */
-    this.scale = 1;
-    this.linkedMeshes = new Array();
     this.attachmentLoader = attachmentLoader;
   }
   readSkeletonData(binary) {
-    var _a;
     let scale = this.scale;
     let skeletonData = new SkeletonData();
-    skeletonData.name = '';
+    skeletonData.name = "";
     let input = new BinaryInput(binary);
     let lowHash = input.readInt32();
     let highHash = input.readInt32();
@@ -8656,13 +8211,13 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0; i < n; i++) {
       let str = input.readString();
-      if (!str) throw new Error('String in string table must not be null.');
+      if (!str) throw new Error("String in string table must not be null.");
       input.strings.push(str);
     }
     n = input.readInt(true);
     for (let i = 0; i < n; i++) {
       let name = input.readString();
-      if (!name) throw new Error('Bone name must not be null.');
+      if (!name) throw new Error("Bone name must not be null.");
       let parent = i == 0 ? null : skeletonData.bones[input.readInt(true)];
       let data = new BoneData(i, name, parent);
       data.rotation = input.readFloat();
@@ -8677,7 +8232,7 @@ var SkeletonBinary = class {
       data.skinRequired = input.readBoolean();
       if (nonessential) {
         Color.rgba8888ToColor(data.color, input.readInt32());
-        data.icon = (_a = input.readString()) != null ? _a : void 0;
+        data.icon = input.readString() ?? void 0;
         data.visible = input.readBoolean();
       }
       skeletonData.bones.push(data);
@@ -8685,12 +8240,12 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0; i < n; i++) {
       let slotName = input.readString();
-      if (!slotName) throw new Error('Slot name must not be null.');
+      if (!slotName) throw new Error("Slot name must not be null.");
       let boneData = skeletonData.bones[input.readInt(true)];
       let data = new SlotData(i, slotName, boneData);
       Color.rgba8888ToColor(data.color, input.readInt32());
       let darkColor = input.readInt32();
-      if (darkColor != -1) Color.rgb888ToColor((data.darkColor = new Color()), darkColor);
+      if (darkColor != -1) Color.rgb888ToColor(data.darkColor = new Color(), darkColor);
       data.attachmentName = input.readStringRef();
       data.blendMode = input.readInt(true);
       if (nonessential) data.visible = input.readBoolean();
@@ -8699,11 +8254,12 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0, nn; i < n; i++) {
       let name = input.readString();
-      if (!name) throw new Error('IK constraint data name must not be null.');
+      if (!name) throw new Error("IK constraint data name must not be null.");
       let data = new IkConstraintData(name);
       data.order = input.readInt(true);
       nn = input.readInt(true);
-      for (let ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (let ii = 0; ii < nn; ii++)
+        data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.bones[input.readInt(true)];
       let flags = input.readByte();
       data.skinRequired = (flags & 1) != 0;
@@ -8718,11 +8274,12 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0, nn; i < n; i++) {
       let name = input.readString();
-      if (!name) throw new Error('Transform constraint data name must not be null.');
+      if (!name) throw new Error("Transform constraint data name must not be null.");
       let data = new TransformConstraintData(name);
       data.order = input.readInt(true);
       nn = input.readInt(true);
-      for (let ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (let ii = 0; ii < nn; ii++)
+        data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.bones[input.readInt(true)];
       let flags = input.readByte();
       data.skinRequired = (flags & 1) != 0;
@@ -8746,17 +8303,18 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0, nn; i < n; i++) {
       let name = input.readString();
-      if (!name) throw new Error('Path constraint data name must not be null.');
+      if (!name) throw new Error("Path constraint data name must not be null.");
       let data = new PathConstraintData(name);
       data.order = input.readInt(true);
       data.skinRequired = input.readBoolean();
       nn = input.readInt(true);
-      for (let ii = 0; ii < nn; ii++) data.bones.push(skeletonData.bones[input.readInt(true)]);
+      for (let ii = 0; ii < nn; ii++)
+        data.bones.push(skeletonData.bones[input.readInt(true)]);
       data.target = skeletonData.slots[input.readInt(true)];
       const flags = input.readByte();
       data.positionMode = flags & 1;
-      data.spacingMode = (flags >> 1) & 3;
-      data.rotateMode = (flags >> 3) & 3;
+      data.spacingMode = flags >> 1 & 3;
+      data.rotateMode = flags >> 3 & 3;
       if ((flags & 128) != 0) data.offsetRotation = input.readFloat();
       data.position = input.readFloat();
       if (data.positionMode == 0 /* Fixed */) data.position *= scale;
@@ -8770,7 +8328,7 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0, nn; i < n; i++) {
       const name = input.readString();
-      if (!name) throw new Error('Physics constraint data name must not be null.');
+      if (!name) throw new Error("Physics constraint data name must not be null.");
       const data = new PhysicsConstraintData(name);
       data.order = input.readInt(true);
       data.bone = skeletonData.bones[input.readInt(true)];
@@ -8807,10 +8365,10 @@ var SkeletonBinary = class {
     }
     {
       let i = skeletonData.skins.length;
-      Utils.setArraySize(skeletonData.skins, (n = i + input.readInt(true)));
+      Utils.setArraySize(skeletonData.skins, n = i + input.readInt(true));
       for (; i < n; i++) {
         let skin = this.readSkin(input, skeletonData, false, nonessential);
-        if (!skin) throw new Error('readSkin() should not have returned null.');
+        if (!skin) throw new Error("readSkin() should not have returned null.");
         skeletonData.skins[i] = skin;
       }
     }
@@ -8818,7 +8376,7 @@ var SkeletonBinary = class {
     for (let i = 0; i < n; i++) {
       let linkedMesh = this.linkedMeshes[i];
       const skin = skeletonData.skins[linkedMesh.skinIndex];
-      if (!linkedMesh.parent) throw new Error('Linked mesh parent must not be null');
+      if (!linkedMesh.parent) throw new Error("Linked mesh parent must not be null");
       let parent = skin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
       if (!parent) throw new Error(`Parent mesh not found: ${linkedMesh.parent}`);
       linkedMesh.mesh.timelineAttachment = linkedMesh.inheritTimeline ? parent : linkedMesh.mesh;
@@ -8829,7 +8387,7 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0; i < n; i++) {
       let eventName = input.readString();
-      if (!eventName) throw new Error('Event data name must not be null');
+      if (!eventName) throw new Error("Event data name must not be null");
       let data = new EventData(eventName);
       data.intValue = input.readInt(false);
       data.floatValue = input.readFloat();
@@ -8844,7 +8402,7 @@ var SkeletonBinary = class {
     n = input.readInt(true);
     for (let i = 0; i < n; i++) {
       let animationName = input.readString();
-      if (!animationName) throw new Error('Animatio name must not be null.');
+      if (!animationName) throw new Error("Animatio name must not be null.");
       skeletonData.animations.push(this.readAnimation(input, animationName, skeletonData));
     }
     return skeletonData;
@@ -8855,14 +8413,15 @@ var SkeletonBinary = class {
     if (defaultSkin) {
       slotCount = input.readInt(true);
       if (slotCount == 0) return null;
-      skin = new Skin('default');
+      skin = new Skin("default");
     } else {
       let skinName = input.readString();
-      if (!skinName) throw new Error('Skin name must not be null.');
+      if (!skinName) throw new Error("Skin name must not be null.");
       skin = new Skin(skinName);
       if (nonessential) Color.rgba8888ToColor(skin.color, input.readInt32());
       skin.bones.length = input.readInt(true);
-      for (let i = 0, n = skin.bones.length; i < n; i++) skin.bones[i] = skeletonData.bones[input.readInt(true)];
+      for (let i = 0, n = skin.bones.length; i < n; i++)
+        skin.bones[i] = skeletonData.bones[input.readInt(true)];
       for (let i = 0, n = input.readInt(true); i < n; i++)
         skin.constraints.push(skeletonData.ikConstraints[input.readInt(true)]);
       for (let i = 0, n = input.readInt(true); i < n; i++)
@@ -8877,7 +8436,8 @@ var SkeletonBinary = class {
       let slotIndex = input.readInt(true);
       for (let ii = 0, nn = input.readInt(true); ii < nn; ii++) {
         let name = input.readStringRef();
-        if (!name) throw new Error('Attachment name must not be null');
+        if (!name)
+          throw new Error("Attachment name must not be null");
         let attachment = this.readAttachment(input, skeletonData, skin, slotIndex, name, nonessential);
         if (attachment) skin.setAttachment(slotIndex, name, attachment);
       }
@@ -8888,9 +8448,10 @@ var SkeletonBinary = class {
     let scale = this.scale;
     let flags = input.readByte();
     const name = (flags & 8) != 0 ? input.readStringRef() : attachmentName;
-    if (!name) throw new Error('Attachment name must not be null');
+    if (!name) throw new Error("Attachment name must not be null");
     switch (flags & 7) {
-      case AttachmentType.Region: {
+      // BUG?
+      case 0 /* Region */: {
         let path2 = (flags & 16) != 0 ? input.readStringRef() : null;
         const color = (flags & 32) != 0 ? input.readInt32() : 4294967295;
         const sequence = (flags & 64) != 0 ? this.readSequence(input) : null;
@@ -8917,7 +8478,7 @@ var SkeletonBinary = class {
         if (sequence == null) region.updateRegion();
         return region;
       }
-      case AttachmentType.BoundingBox: {
+      case 1 /* BoundingBox */: {
         let vertices = this.readVertices(input, (flags & 16) != 0);
         let color = nonessential ? input.readInt32() : 0;
         let box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
@@ -8928,7 +8489,7 @@ var SkeletonBinary = class {
         if (nonessential) Color.rgba8888ToColor(box.color, color);
         return box;
       }
-      case AttachmentType.Mesh: {
+      case 2 /* Mesh */: {
         let path2 = (flags & 16) != 0 ? input.readStringRef() : name;
         const color = (flags & 32) != 0 ? input.readInt32() : 4294967295;
         const sequence = (flags & 64) != 0 ? this.readSequence(input) : null;
@@ -8937,8 +8498,7 @@ var SkeletonBinary = class {
         const uvs = this.readFloatArray(input, vertices.length, 1);
         const triangles = this.readShortArray(input, (vertices.length - hullLength - 2) * 3);
         let edges = [];
-        let width = 0,
-          height = 0;
+        let width = 0, height = 0;
         if (nonessential) {
           edges = this.readShortArray(input, input.readInt(true));
           width = input.readFloat();
@@ -8964,16 +8524,15 @@ var SkeletonBinary = class {
         }
         return mesh;
       }
-      case AttachmentType.LinkedMesh: {
+      case 3 /* LinkedMesh */: {
         const path2 = (flags & 16) != 0 ? input.readStringRef() : name;
-        if (path2 == null) throw new Error('Path of linked mesh must not be null');
+        if (path2 == null) throw new Error("Path of linked mesh must not be null");
         const color = (flags & 32) != 0 ? input.readInt32() : 4294967295;
         const sequence = (flags & 64) != 0 ? this.readSequence(input) : null;
         const inheritTimelines = (flags & 128) != 0;
         const skinIndex = input.readInt(true);
         const parent = input.readStringRef();
-        let width = 0,
-          height = 0;
+        let width = 0, height = 0;
         if (nonessential) {
           width = input.readFloat();
           height = input.readFloat();
@@ -8990,12 +8549,13 @@ var SkeletonBinary = class {
         this.linkedMeshes.push(new LinkedMesh(mesh, skinIndex, slotIndex, parent, inheritTimelines));
         return mesh;
       }
-      case AttachmentType.Path: {
+      case 4 /* Path */: {
         const closed2 = (flags & 16) != 0;
         const constantSpeed = (flags & 32) != 0;
         const vertices = this.readVertices(input, (flags & 64) != 0);
         const lengths = Utils.newArray(vertices.length / 6, 0);
-        for (let i = 0, n = lengths.length; i < n; i++) lengths[i] = input.readFloat() * scale;
+        for (let i = 0, n = lengths.length; i < n; i++)
+          lengths[i] = input.readFloat() * scale;
         const color = nonessential ? input.readInt32() : 0;
         const path2 = this.attachmentLoader.newPathAttachment(skin, name);
         if (!path2) return null;
@@ -9008,7 +8568,7 @@ var SkeletonBinary = class {
         if (nonessential) Color.rgba8888ToColor(path2.color, color);
         return path2;
       }
-      case AttachmentType.Point: {
+      case 5 /* Point */: {
         const rotation = input.readFloat();
         const x = input.readFloat();
         const y = input.readFloat();
@@ -9021,7 +8581,7 @@ var SkeletonBinary = class {
         if (nonessential) Color.rgba8888ToColor(point.color, color);
         return point;
       }
-      case AttachmentType.Clipping: {
+      case 6 /* Clipping */: {
         const endSlotIndex = input.readInt(true);
         const vertices = this.readVertices(input, (flags & 16) != 0);
         let color = nonessential ? input.readInt32() : 0;
@@ -9072,15 +8632,18 @@ var SkeletonBinary = class {
   readFloatArray(input, n, scale) {
     let array = new Array(n);
     if (scale == 1) {
-      for (let i = 0; i < n; i++) array[i] = input.readFloat();
+      for (let i = 0; i < n; i++)
+        array[i] = input.readFloat();
     } else {
-      for (let i = 0; i < n; i++) array[i] = input.readFloat() * scale;
+      for (let i = 0; i < n; i++)
+        array[i] = input.readFloat() * scale;
     }
     return array;
   }
   readShortArray(input, n) {
     let array = new Array(n);
-    for (let i = 0; i < n; i++) array[i] = input.readInt(true);
+    for (let i = 0; i < n; i++)
+      array[i] = input.readInt(true);
     return array;
   }
   readAnimation(input, name, skeletonData) {
@@ -9259,8 +8822,7 @@ var SkeletonBinary = class {
           }
           case SLOT_ALPHA: {
             let timeline = new AlphaTimeline(frameCount, input.readInt(true), slotIndex);
-            let time = input.readFloat(),
-              a = input.readUnsignedByte() / 255;
+            let time = input.readFloat(), a = input.readUnsignedByte() / 255;
             for (let frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, a);
               if (frame == frameLast) break;
@@ -9284,8 +8846,7 @@ var SkeletonBinary = class {
     for (let i = 0, n = input.readInt(true); i < n; i++) {
       let boneIndex = input.readInt(true);
       for (let ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-        let type = input.readByte(),
-          frameCount = input.readInt(true);
+        let type = input.readByte(), frameCount = input.readInt(true);
         if (type == BONE_INHERIT) {
           let timeline = new InheritTimeline(frameCount, boneIndex);
           for (let frame = 0; frame < frameCount; frame++) {
@@ -9329,20 +8890,16 @@ var SkeletonBinary = class {
       }
     }
     for (let i = 0, n = input.readInt(true); i < n; i++) {
-      let index = input.readInt(true),
-        frameCount = input.readInt(true),
-        frameLast = frameCount - 1;
+      let index = input.readInt(true), frameCount = input.readInt(true), frameLast = frameCount - 1;
       let timeline = new IkConstraintTimeline(frameCount, input.readInt(true), index);
       let flags = input.readByte();
-      let time = input.readFloat(),
-        mix = (flags & 1) != 0 ? ((flags & 2) != 0 ? input.readFloat() : 1) : 0;
+      let time = input.readFloat(), mix = (flags & 1) != 0 ? (flags & 2) != 0 ? input.readFloat() : 1 : 0;
       let softness = (flags & 4) != 0 ? input.readFloat() * scale : 0;
       for (let frame = 0, bezier = 0; ; frame++) {
         timeline.setFrame(frame, time, mix, softness, (flags & 8) != 0 ? 1 : -1, (flags & 16) != 0, (flags & 32) != 0);
         if (frame == frameLast) break;
         flags = input.readByte();
-        const time2 = input.readFloat(),
-          mix2 = (flags & 1) != 0 ? ((flags & 2) != 0 ? input.readFloat() : 1) : 0;
+        const time2 = input.readFloat(), mix2 = (flags & 1) != 0 ? (flags & 2) != 0 ? input.readFloat() : 1 : 0;
         const softness2 = (flags & 4) != 0 ? input.readFloat() * scale : 0;
         if ((flags & 64) != 0) {
           timeline.setStepped(frame);
@@ -9357,27 +8914,13 @@ var SkeletonBinary = class {
       timelines.push(timeline);
     }
     for (let i = 0, n = input.readInt(true); i < n; i++) {
-      let index = input.readInt(true),
-        frameCount = input.readInt(true),
-        frameLast = frameCount - 1;
+      let index = input.readInt(true), frameCount = input.readInt(true), frameLast = frameCount - 1;
       let timeline = new TransformConstraintTimeline(frameCount, input.readInt(true), index);
-      let time = input.readFloat(),
-        mixRotate = input.readFloat(),
-        mixX = input.readFloat(),
-        mixY = input.readFloat(),
-        mixScaleX = input.readFloat(),
-        mixScaleY = input.readFloat(),
-        mixShearY = input.readFloat();
+      let time = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat(), mixScaleX = input.readFloat(), mixScaleY = input.readFloat(), mixShearY = input.readFloat();
       for (let frame = 0, bezier = 0; ; frame++) {
         timeline.setFrame(frame, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
         if (frame == frameLast) break;
-        let time2 = input.readFloat(),
-          mixRotate2 = input.readFloat(),
-          mixX2 = input.readFloat(),
-          mixY2 = input.readFloat(),
-          mixScaleX2 = input.readFloat(),
-          mixScaleY2 = input.readFloat(),
-          mixShearY2 = input.readFloat();
+        let time2 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat(), mixScaleX2 = input.readFloat(), mixScaleY2 = input.readFloat(), mixShearY2 = input.readFloat();
         switch (input.readByte()) {
           case CURVE_STEPPED:
             timeline.setStepped(frame);
@@ -9404,41 +8947,29 @@ var SkeletonBinary = class {
       let index = input.readInt(true);
       let data = skeletonData.pathConstraints[index];
       for (let ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-        const type = input.readByte(),
-          frameCount = input.readInt(true),
-          bezierCount = input.readInt(true);
+        const type = input.readByte(), frameCount = input.readInt(true), bezierCount = input.readInt(true);
         switch (type) {
           case PATH_POSITION:
-            timelines.push(
-              readTimeline1(
-                input,
-                new PathConstraintPositionTimeline(frameCount, bezierCount, index),
-                data.positionMode == 0 /* Fixed */ ? scale : 1,
-              ),
-            );
+            timelines.push(readTimeline1(
+              input,
+              new PathConstraintPositionTimeline(frameCount, bezierCount, index),
+              data.positionMode == 0 /* Fixed */ ? scale : 1
+            ));
             break;
           case PATH_SPACING:
-            timelines.push(
-              readTimeline1(
-                input,
-                new PathConstraintSpacingTimeline(frameCount, bezierCount, index),
-                data.spacingMode == 0 /* Length */ || data.spacingMode == 1 /* Fixed */ ? scale : 1,
-              ),
-            );
+            timelines.push(readTimeline1(
+              input,
+              new PathConstraintSpacingTimeline(frameCount, bezierCount, index),
+              data.spacingMode == 0 /* Length */ || data.spacingMode == 1 /* Fixed */ ? scale : 1
+            ));
             break;
           case PATH_MIX:
             let timeline = new PathConstraintMixTimeline(frameCount, bezierCount, index);
-            let time = input.readFloat(),
-              mixRotate = input.readFloat(),
-              mixX = input.readFloat(),
-              mixY = input.readFloat();
+            let time = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat();
             for (let frame = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame++) {
               timeline.setFrame(frame, time, mixRotate, mixX, mixY);
               if (frame == frameLast) break;
-              let time2 = input.readFloat(),
-                mixRotate2 = input.readFloat(),
-                mixX2 = input.readFloat(),
-                mixY2 = input.readFloat();
+              let time2 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat();
               switch (input.readByte()) {
                 case CURVE_STEPPED:
                   timeline.setStepped(frame);
@@ -9460,30 +8991,24 @@ var SkeletonBinary = class {
     for (let i = 0, n = input.readInt(true); i < n; i++) {
       const index = input.readInt(true) - 1;
       for (let ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-        const type = input.readByte(),
-          frameCount = input.readInt(true);
+        const type = input.readByte(), frameCount = input.readInt(true);
         if (type == PHYSICS_RESET) {
           const timeline = new PhysicsConstraintResetTimeline(frameCount, index);
-          for (let frame = 0; frame < frameCount; frame++) timeline.setFrame(frame, input.readFloat());
+          for (let frame = 0; frame < frameCount; frame++)
+            timeline.setFrame(frame, input.readFloat());
           timelines.push(timeline);
           continue;
         }
         const bezierCount = input.readInt(true);
         switch (type) {
           case PHYSICS_INERTIA:
-            timelines.push(
-              readTimeline1(input, new PhysicsConstraintInertiaTimeline(frameCount, bezierCount, index), 1),
-            );
+            timelines.push(readTimeline1(input, new PhysicsConstraintInertiaTimeline(frameCount, bezierCount, index), 1));
             break;
           case PHYSICS_STRENGTH:
-            timelines.push(
-              readTimeline1(input, new PhysicsConstraintStrengthTimeline(frameCount, bezierCount, index), 1),
-            );
+            timelines.push(readTimeline1(input, new PhysicsConstraintStrengthTimeline(frameCount, bezierCount, index), 1));
             break;
           case PHYSICS_DAMPING:
-            timelines.push(
-              readTimeline1(input, new PhysicsConstraintDampingTimeline(frameCount, bezierCount, index), 1),
-            );
+            timelines.push(readTimeline1(input, new PhysicsConstraintDampingTimeline(frameCount, bezierCount, index), 1));
             break;
           case PHYSICS_MASS:
             timelines.push(readTimeline1(input, new PhysicsConstraintMassTimeline(frameCount, bezierCount, index), 1));
@@ -9492,9 +9017,7 @@ var SkeletonBinary = class {
             timelines.push(readTimeline1(input, new PhysicsConstraintWindTimeline(frameCount, bezierCount, index), 1));
             break;
           case PHYSICS_GRAVITY:
-            timelines.push(
-              readTimeline1(input, new PhysicsConstraintGravityTimeline(frameCount, bezierCount, index), 1),
-            );
+            timelines.push(readTimeline1(input, new PhysicsConstraintGravityTimeline(frameCount, bezierCount, index), 1));
             break;
           case PHYSICS_MIX:
             timelines.push(readTimeline1(input, new PhysicsConstraintMixTimeline(frameCount, bezierCount, index), 1));
@@ -9507,7 +9030,7 @@ var SkeletonBinary = class {
         let slotIndex = input.readInt(true);
         for (let iii = 0, nnn = input.readInt(true); iii < nnn; iii++) {
           let attachmentName = input.readStringRef();
-          if (!attachmentName) throw new Error('attachmentName must not be null.');
+          if (!attachmentName) throw new Error("attachmentName must not be null.");
           let attachment = skin.getAttachment(slotIndex, attachmentName);
           let timelineType = input.readByte();
           let frameCount = input.readInt(true);
@@ -9517,25 +9040,29 @@ var SkeletonBinary = class {
               let vertexAttachment = attachment;
               let weighted = vertexAttachment.bones;
               let vertices = vertexAttachment.vertices;
-              let deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
+              let deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
               let bezierCount = input.readInt(true);
               let timeline = new DeformTimeline(frameCount, bezierCount, slotIndex, vertexAttachment);
               let time = input.readFloat();
               for (let frame = 0, bezier = 0; ; frame++) {
                 let deform;
                 let end = input.readInt(true);
-                if (end == 0) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+                if (end == 0)
+                  deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
                 else {
                   deform = Utils.newFloatArray(deformLength);
                   let start = input.readInt(true);
                   end += start;
                   if (scale == 1) {
-                    for (let v = start; v < end; v++) deform[v] = input.readFloat();
+                    for (let v = start; v < end; v++)
+                      deform[v] = input.readFloat();
                   } else {
-                    for (let v = start; v < end; v++) deform[v] = input.readFloat() * scale;
+                    for (let v = start; v < end; v++)
+                      deform[v] = input.readFloat() * scale;
                   }
                   if (!weighted) {
-                    for (let v = 0, vn = deform.length; v < vn; v++) deform[v] += vertices[v];
+                    for (let v = 0, vn = deform.length; v < vn; v++)
+                      deform[v] += vertices[v];
                   }
                 }
                 timeline.setFrame(frame, time, deform);
@@ -9563,7 +9090,7 @@ var SkeletonBinary = class {
                   time,
                   SequenceModeValues[modeAndIndex & 15],
                   modeAndIndex >> 4,
-                  input.readFloat(),
+                  input.readFloat()
                 );
               }
               timelines.push(timeline);
@@ -9581,16 +9108,18 @@ var SkeletonBinary = class {
         let time = input.readFloat();
         let offsetCount = input.readInt(true);
         let drawOrder = Utils.newArray(slotCount, 0);
-        for (let ii = slotCount - 1; ii >= 0; ii--) drawOrder[ii] = -1;
+        for (let ii = slotCount - 1; ii >= 0; ii--)
+          drawOrder[ii] = -1;
         let unchanged = Utils.newArray(slotCount - offsetCount, 0);
-        let originalIndex = 0,
-          unchangedIndex = 0;
+        let originalIndex = 0, unchangedIndex = 0;
         for (let ii = 0; ii < offsetCount; ii++) {
           let slotIndex = input.readInt(true);
-          while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex != slotIndex)
+            unchanged[unchangedIndex++] = originalIndex++;
           drawOrder[originalIndex + input.readInt(true)] = originalIndex++;
         }
-        while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
+        while (originalIndex < slotCount)
+          unchanged[unchangedIndex++] = originalIndex++;
         for (let ii = slotCount - 1; ii >= 0; ii--)
           if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
         timeline.setFrame(i, time, drawOrder);
@@ -9617,17 +9146,13 @@ var SkeletonBinary = class {
       timelines.push(timeline);
     }
     let duration = 0;
-    for (let i = 0, n = timelines.length; i < n; i++) duration = Math.max(duration, timelines[i].getDuration());
+    for (let i = 0, n = timelines.length; i < n; i++)
+      duration = Math.max(duration, timelines[i].getDuration());
     return new Animation(name, timelines, duration);
   }
 };
 var BinaryInput = class {
-  constructor(
-    data,
-    strings = new Array(),
-    index = 0,
-    buffer = new DataView(data instanceof ArrayBuffer ? data : data.buffer),
-  ) {
+  constructor(data, strings = new Array(), index = 0, buffer = new DataView(data instanceof ArrayBuffer ? data : data.buffer)) {
     this.strings = strings;
     this.index = index;
     this.buffer = buffer;
@@ -9667,7 +9192,7 @@ var BinaryInput = class {
         }
       }
     }
-    return optimizePositive ? result : (result >>> 1) ^ -(result & 1);
+    return optimizePositive ? result : result >>> 1 ^ -(result & 1);
   }
   readStringRef() {
     let index = this.readInt(true);
@@ -9679,21 +9204,21 @@ var BinaryInput = class {
       case 0:
         return null;
       case 1:
-        return '';
+        return "";
     }
     byteCount--;
-    let chars = '';
+    let chars = "";
     let charCount = 0;
     for (let i = 0; i < byteCount; ) {
       let b = this.readUnsignedByte();
       switch (b >> 4) {
         case 12:
         case 13:
-          chars += String.fromCharCode(((b & 31) << 6) | (this.readByte() & 63));
+          chars += String.fromCharCode((b & 31) << 6 | this.readByte() & 63);
           i += 2;
           break;
         case 14:
-          chars += String.fromCharCode(((b & 15) << 12) | ((this.readByte() & 63) << 6) | (this.readByte() & 63));
+          chars += String.fromCharCode((b & 15) << 12 | (this.readByte() & 63) << 6 | this.readByte() & 63);
           i += 3;
           break;
         default:
@@ -9713,6 +9238,11 @@ var BinaryInput = class {
   }
 };
 var LinkedMesh = class {
+  parent;
+  skinIndex;
+  slotIndex;
+  mesh;
+  inheritTimeline;
   constructor(mesh, skinIndex, slotIndex, parent, inheritDeform) {
     this.mesh = mesh;
     this.skinIndex = skinIndex;
@@ -9728,24 +9258,12 @@ var Vertices = class {
     this.length = length;
   }
 };
-var AttachmentType = /* @__PURE__ */ (AttachmentType2 => {
-  AttachmentType2[(AttachmentType2['Region'] = 0)] = 'Region';
-  AttachmentType2[(AttachmentType2['BoundingBox'] = 1)] = 'BoundingBox';
-  AttachmentType2[(AttachmentType2['Mesh'] = 2)] = 'Mesh';
-  AttachmentType2[(AttachmentType2['LinkedMesh'] = 3)] = 'LinkedMesh';
-  AttachmentType2[(AttachmentType2['Path'] = 4)] = 'Path';
-  AttachmentType2[(AttachmentType2['Point'] = 5)] = 'Point';
-  AttachmentType2[(AttachmentType2['Clipping'] = 6)] = 'Clipping';
-  return AttachmentType2;
-})(AttachmentType || {});
 function readTimeline1(input, timeline, scale) {
-  let time = input.readFloat(),
-    value = input.readFloat() * scale;
+  let time = input.readFloat(), value = input.readFloat() * scale;
   for (let frame = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame++) {
     timeline.setFrame(frame, time, value);
     if (frame == frameLast) break;
-    let time2 = input.readFloat(),
-      value2 = input.readFloat() * scale;
+    let time2 = input.readFloat(), value2 = input.readFloat() * scale;
     switch (input.readByte()) {
       case CURVE_STEPPED:
         timeline.setStepped(frame);
@@ -9759,15 +9277,11 @@ function readTimeline1(input, timeline, scale) {
   return timeline;
 }
 function readTimeline2(input, timeline, scale) {
-  let time = input.readFloat(),
-    value1 = input.readFloat() * scale,
-    value2 = input.readFloat() * scale;
+  let time = input.readFloat(), value1 = input.readFloat() * scale, value2 = input.readFloat() * scale;
   for (let frame = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame++) {
     timeline.setFrame(frame, time, value1, value2);
     if (frame == frameLast) break;
-    let time2 = input.readFloat(),
-      nvalue1 = input.readFloat() * scale,
-      nvalue2 = input.readFloat() * scale;
+    let time2 = input.readFloat(), nvalue1 = input.readFloat() * scale, nvalue2 = input.readFloat() * scale;
     switch (input.readByte()) {
       case CURVE_STEPPED:
         timeline.setStepped(frame);
@@ -9783,19 +9297,7 @@ function readTimeline2(input, timeline, scale) {
   return timeline;
 }
 function setBezier(input, timeline, bezier, frame, value, time1, time2, value1, value2, scale) {
-  timeline.setBezier(
-    bezier,
-    frame,
-    value,
-    time1,
-    value1,
-    input.readFloat(),
-    input.readFloat() * scale,
-    input.readFloat(),
-    input.readFloat() * scale,
-    time2,
-    value2,
-  );
+  timeline.setBezier(bezier, frame, value, time1, value1, input.readFloat(), input.readFloat() * scale, input.readFloat(), input.readFloat() * scale, time2, value2);
 }
 var BONE_ROTATE = 0;
 var BONE_TRANSLATE = 1;
@@ -9832,29 +9334,27 @@ var CURVE_BEZIER = 2;
 
 // spine-core/src/SkeletonBounds.ts
 var SkeletonBounds = class {
-  constructor() {
-    /** The left edge of the axis aligned bounding box. */
-    this.minX = 0;
-    /** The bottom edge of the axis aligned bounding box. */
-    this.minY = 0;
-    /** The right edge of the axis aligned bounding box. */
-    this.maxX = 0;
-    /** The top edge of the axis aligned bounding box. */
-    this.maxY = 0;
-    /** The visible bounding boxes. */
-    this.boundingBoxes = new Array();
-    /** The world vertices for the bounding box polygons. */
-    this.polygons = new Array();
-    this.polygonPool = new Pool(() => {
-      return Utils.newFloatArray(16);
-    });
-  }
+  /** The left edge of the axis aligned bounding box. */
+  minX = 0;
+  /** The bottom edge of the axis aligned bounding box. */
+  minY = 0;
+  /** The right edge of the axis aligned bounding box. */
+  maxX = 0;
+  /** The top edge of the axis aligned bounding box. */
+  maxY = 0;
+  /** The visible bounding boxes. */
+  boundingBoxes = new Array();
+  /** The world vertices for the bounding box polygons. */
+  polygons = new Array();
+  polygonPool = new Pool(() => {
+    return Utils.newFloatArray(16);
+  });
   /** Clears any previous polygons, finds all visible bounding box attachments, and computes the world vertices for each bounding
    * box's polygon.
    * @param updateAabb If true, the axis aligned bounding box containing all the polygons is computed. If false, the
    *           SkeletonBounds AABB methods will always return true. */
   update(skeleton, updateAabb) {
-    if (!skeleton) throw new Error('skeleton cannot be null.');
+    if (!skeleton) throw new Error("skeleton cannot be null.");
     let boundingBoxes = this.boundingBoxes;
     let polygons = this.polygons;
     let polygonPool = this.polygonPool;
@@ -9888,10 +9388,7 @@ var SkeletonBounds = class {
     }
   }
   aabbCompute() {
-    let minX = Number.POSITIVE_INFINITY,
-      minY = Number.POSITIVE_INFINITY,
-      maxX = Number.NEGATIVE_INFINITY,
-      maxY = Number.NEGATIVE_INFINITY;
+    let minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
     let polygons = this.polygons;
     for (let i = 0, n = polygons.length; i < n; i++) {
       let polygon = polygons[i];
@@ -9920,12 +9417,7 @@ var SkeletonBounds = class {
     let minY = this.minY;
     let maxX = this.maxX;
     let maxY = this.maxY;
-    if (
-      (x1 <= minX && x2 <= minX) ||
-      (y1 <= minY && y2 <= minY) ||
-      (x1 >= maxX && x2 >= maxX) ||
-      (y1 >= maxY && y2 >= maxY)
-    )
+    if (x1 <= minX && x2 <= minX || y1 <= minY && y2 <= minY || x1 >= maxX && x2 >= maxX || y1 >= maxY && y2 >= maxY)
       return false;
     let m = (y2 - y1) / (x2 - x1);
     let y = m * (minX - x1) + y1;
@@ -9959,9 +9451,9 @@ var SkeletonBounds = class {
     for (let ii = 0; ii < nn; ii += 2) {
       let vertexY = vertices[ii + 1];
       let prevY = vertices[prevIndex + 1];
-      if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
+      if (vertexY < y && prevY >= y || prevY < y && vertexY >= y) {
         let vertexX = vertices[ii];
-        if (vertexX + ((y - vertexY) / (prevY - vertexY)) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
+        if (vertexX + (y - vertexY) / (prevY - vertexY) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
       }
       prevIndex = ii;
     }
@@ -9980,23 +9472,18 @@ var SkeletonBounds = class {
   intersectsSegmentPolygon(polygon, x1, y1, x2, y2) {
     let vertices = polygon;
     let nn = polygon.length;
-    let width12 = x1 - x2,
-      height12 = y1 - y2;
+    let width12 = x1 - x2, height12 = y1 - y2;
     let det1 = x1 * y2 - y1 * x2;
-    let x3 = vertices[nn - 2],
-      y3 = vertices[nn - 1];
+    let x3 = vertices[nn - 2], y3 = vertices[nn - 1];
     for (let ii = 0; ii < nn; ii += 2) {
-      let x4 = vertices[ii],
-        y4 = vertices[ii + 1];
+      let x4 = vertices[ii], y4 = vertices[ii + 1];
       let det2 = x3 * y4 - y3 * x4;
-      let width34 = x3 - x4,
-        height34 = y3 - y4;
+      let width34 = x3 - x4, height34 = y3 - y4;
       let det3 = width12 * height34 - height12 * width34;
       let x = (det1 * width34 - width12 * det2) / det3;
-      if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
+      if ((x >= x3 && x <= x4 || x >= x4 && x <= x3) && (x >= x1 && x <= x2 || x >= x2 && x <= x1)) {
         let y = (det1 * height34 - height12 * det2) / det3;
-        if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1)))
-          return true;
+        if ((y >= y3 && y <= y4 || y >= y4 && y <= y3) && (y >= y1 && y <= y2 || y >= y2 && y <= y1)) return true;
       }
       x3 = x4;
       y3 = y4;
@@ -10005,7 +9492,7 @@ var SkeletonBounds = class {
   }
   /** Returns the polygon for the specified bounding box, or null. */
   getPolygon(boundingBox) {
-    if (!boundingBox) throw new Error('boundingBox cannot be null.');
+    if (!boundingBox) throw new Error("boundingBox cannot be null.");
     let index = this.boundingBoxes.indexOf(boundingBox);
     return index == -1 ? null : this.polygons[index];
   }
@@ -10020,60 +9507,52 @@ var SkeletonBounds = class {
 };
 
 // spine-core/src/Triangulator.ts
-var Triangulator = class {
-  constructor() {
-    this.convexPolygons = new Array();
-    this.convexPolygonsIndices = new Array();
-    this.indicesArray = new Array();
-    this.isConcaveArray = new Array();
-    this.triangles = new Array();
-    this.polygonPool = new Pool(() => {
-      return new Array();
-    });
-    this.polygonIndicesPool = new Pool(() => {
-      return new Array();
-    });
-  }
+var Triangulator = class _Triangulator {
+  convexPolygons = new Array();
+  convexPolygonsIndices = new Array();
+  indicesArray = new Array();
+  isConcaveArray = new Array();
+  triangles = new Array();
+  polygonPool = new Pool(() => {
+    return new Array();
+  });
+  polygonIndicesPool = new Pool(() => {
+    return new Array();
+  });
   triangulate(verticesArray) {
     let vertices = verticesArray;
     let vertexCount = verticesArray.length >> 1;
     let indices = this.indicesArray;
     indices.length = 0;
-    for (let i = 0; i < vertexCount; i++) indices[i] = i;
+    for (let i = 0; i < vertexCount; i++)
+      indices[i] = i;
     let isConcave = this.isConcaveArray;
     isConcave.length = 0;
     for (let i = 0, n = vertexCount; i < n; ++i)
-      isConcave[i] = Triangulator.isConcave(i, vertexCount, vertices, indices);
+      isConcave[i] = _Triangulator.isConcave(i, vertexCount, vertices, indices);
     let triangles = this.triangles;
     triangles.length = 0;
     while (vertexCount > 3) {
-      let previous = vertexCount - 1,
-        i = 0,
-        next = 1;
+      let previous = vertexCount - 1, i = 0, next = 1;
       while (true) {
-        outer: if (!isConcave[i]) {
-          let p1 = indices[previous] << 1,
-            p2 = indices[i] << 1,
-            p3 = indices[next] << 1;
-          let p1x = vertices[p1],
-            p1y = vertices[p1 + 1];
-          let p2x = vertices[p2],
-            p2y = vertices[p2 + 1];
-          let p3x = vertices[p3],
-            p3y = vertices[p3 + 1];
-          for (let ii = (next + 1) % vertexCount; ii != previous; ii = (ii + 1) % vertexCount) {
-            if (!isConcave[ii]) continue;
-            let v = indices[ii] << 1;
-            let vx = vertices[v],
-              vy = vertices[v + 1];
-            if (Triangulator.positiveArea(p3x, p3y, p1x, p1y, vx, vy)) {
-              if (Triangulator.positiveArea(p1x, p1y, p2x, p2y, vx, vy)) {
-                if (Triangulator.positiveArea(p2x, p2y, p3x, p3y, vx, vy)) break outer;
+        outer:
+          if (!isConcave[i]) {
+            let p1 = indices[previous] << 1, p2 = indices[i] << 1, p3 = indices[next] << 1;
+            let p1x = vertices[p1], p1y = vertices[p1 + 1];
+            let p2x = vertices[p2], p2y = vertices[p2 + 1];
+            let p3x = vertices[p3], p3y = vertices[p3 + 1];
+            for (let ii = (next + 1) % vertexCount; ii != previous; ii = (ii + 1) % vertexCount) {
+              if (!isConcave[ii]) continue;
+              let v = indices[ii] << 1;
+              let vx = vertices[v], vy = vertices[v + 1];
+              if (_Triangulator.positiveArea(p3x, p3y, p1x, p1y, vx, vy)) {
+                if (_Triangulator.positiveArea(p1x, p1y, p2x, p2y, vx, vy)) {
+                  if (_Triangulator.positiveArea(p2x, p2y, p3x, p3y, vx, vy)) break outer;
+                }
               }
             }
+            break;
           }
-          break;
-        }
         if (next == 0) {
           do {
             if (!isConcave[i]) break;
@@ -10093,8 +9572,8 @@ var Triangulator = class {
       vertexCount--;
       let previousIndex = (vertexCount + i - 1) % vertexCount;
       let nextIndex = i == vertexCount ? 0 : i;
-      isConcave[previousIndex] = Triangulator.isConcave(previousIndex, vertexCount, vertices, indices);
-      isConcave[nextIndex] = Triangulator.isConcave(nextIndex, vertexCount, vertices, indices);
+      isConcave[previousIndex] = _Triangulator.isConcave(previousIndex, vertexCount, vertices, indices);
+      isConcave[nextIndex] = _Triangulator.isConcave(nextIndex, vertexCount, vertices, indices);
     }
     if (vertexCount == 3) {
       triangles.push(indices[2]);
@@ -10115,23 +9594,17 @@ var Triangulator = class {
     polygonIndices.length = 0;
     let polygon = this.polygonPool.obtain();
     polygon.length = 0;
-    let fanBaseIndex = -1,
-      lastWinding = 0;
+    let fanBaseIndex = -1, lastWinding = 0;
     for (let i = 0, n = triangles.length; i < n; i += 3) {
-      let t1 = triangles[i] << 1,
-        t2 = triangles[i + 1] << 1,
-        t3 = triangles[i + 2] << 1;
-      let x1 = vertices[t1],
-        y1 = vertices[t1 + 1];
-      let x2 = vertices[t2],
-        y2 = vertices[t2 + 1];
-      let x3 = vertices[t3],
-        y3 = vertices[t3 + 1];
+      let t1 = triangles[i] << 1, t2 = triangles[i + 1] << 1, t3 = triangles[i + 2] << 1;
+      let x1 = vertices[t1], y1 = vertices[t1 + 1];
+      let x2 = vertices[t2], y2 = vertices[t2 + 1];
+      let x3 = vertices[t3], y3 = vertices[t3 + 1];
       let merged = false;
       if (fanBaseIndex == t1) {
         let o = polygon.length - 4;
-        let winding1 = Triangulator.winding(polygon[o], polygon[o + 1], polygon[o + 2], polygon[o + 3], x3, y3);
-        let winding2 = Triangulator.winding(x3, y3, polygon[0], polygon[1], polygon[2], polygon[3]);
+        let winding1 = _Triangulator.winding(polygon[o], polygon[o + 1], polygon[o + 2], polygon[o + 3], x3, y3);
+        let winding2 = _Triangulator.winding(x3, y3, polygon[0], polygon[1], polygon[2], polygon[3]);
         if (winding1 == lastWinding && winding2 == lastWinding) {
           polygon.push(x3);
           polygon.push(y3);
@@ -10160,7 +9633,7 @@ var Triangulator = class {
         polygonIndices.push(t1);
         polygonIndices.push(t2);
         polygonIndices.push(t3);
-        lastWinding = Triangulator.winding(x1, y1, x2, y2, x3, y3);
+        lastWinding = _Triangulator.winding(x1, y1, x2, y2, x3, y3);
         fanBaseIndex = t1;
       }
     }
@@ -10175,15 +9648,11 @@ var Triangulator = class {
       let lastIndex = polygonIndices[polygonIndices.length - 1];
       polygon = convexPolygons[i];
       let o = polygon.length - 4;
-      let prevPrevX = polygon[o],
-        prevPrevY = polygon[o + 1];
-      let prevX = polygon[o + 2],
-        prevY = polygon[o + 3];
-      let firstX = polygon[0],
-        firstY = polygon[1];
-      let secondX = polygon[2],
-        secondY = polygon[3];
-      let winding = Triangulator.winding(prevPrevX, prevPrevY, prevX, prevY, firstX, firstY);
+      let prevPrevX = polygon[o], prevPrevY = polygon[o + 1];
+      let prevX = polygon[o + 2], prevY = polygon[o + 3];
+      let firstX = polygon[0], firstY = polygon[1];
+      let secondX = polygon[2], secondY = polygon[3];
+      let winding = _Triangulator.winding(prevPrevX, prevPrevY, prevX, prevY, firstX, firstY);
       for (let ii = 0; ii < n; ii++) {
         if (ii == i) continue;
         let otherIndices = convexPolygonsIndices[ii];
@@ -10192,11 +9661,10 @@ var Triangulator = class {
         let otherSecondIndex = otherIndices[1];
         let otherLastIndex = otherIndices[2];
         let otherPoly = convexPolygons[ii];
-        let x3 = otherPoly[otherPoly.length - 2],
-          y3 = otherPoly[otherPoly.length - 1];
+        let x3 = otherPoly[otherPoly.length - 2], y3 = otherPoly[otherPoly.length - 1];
         if (otherFirstIndex != firstIndex || otherSecondIndex != lastIndex) continue;
-        let winding1 = Triangulator.winding(prevPrevX, prevPrevY, prevX, prevY, x3, y3);
-        let winding2 = Triangulator.winding(x3, y3, firstX, firstY, secondX, secondY);
+        let winding1 = _Triangulator.winding(prevPrevX, prevPrevY, prevX, prevY, x3, y3);
+        let winding2 = _Triangulator.winding(x3, y3, firstX, firstY, secondX, secondY);
         if (winding1 == winding && winding2 == winding) {
           otherPoly.length = 0;
           otherIndices.length = 0;
@@ -10233,32 +9701,29 @@ var Triangulator = class {
       vertices[current],
       vertices[current + 1],
       vertices[next],
-      vertices[next + 1],
+      vertices[next + 1]
     );
   }
   static positiveArea(p1x, p1y, p2x, p2y, p3x, p3y) {
     return p1x * (p3y - p2y) + p2x * (p1y - p3y) + p3x * (p2y - p1y) >= 0;
   }
   static winding(p1x, p1y, p2x, p2y, p3x, p3y) {
-    let px = p2x - p1x,
-      py = p2y - p1y;
+    let px = p2x - p1x, py = p2y - p1y;
     return p3x * py - p3y * px + px * p1y - p1x * py >= 0 ? 1 : -1;
   }
 };
 
 // spine-core/src/SkeletonClipping.ts
-var SkeletonClipping = class {
-  constructor() {
-    this.triangulator = new Triangulator();
-    this.clippingPolygon = new Array();
-    this.clipOutput = new Array();
-    this.clippedVertices = new Array();
-    this.clippedUVs = new Array();
-    this.clippedTriangles = new Array();
-    this.scratch = new Array();
-    this.clipAttachment = null;
-    this.clippingPolygons = null;
-  }
+var SkeletonClipping = class _SkeletonClipping {
+  triangulator = new Triangulator();
+  clippingPolygon = new Array();
+  clipOutput = new Array();
+  clippedVertices = new Array();
+  clippedUVs = new Array();
+  clippedTriangles = new Array();
+  scratch = new Array();
+  clipAttachment = null;
+  clippingPolygons = null;
   clipStart(slot, clip) {
     if (this.clipAttachment) return 0;
     this.clipAttachment = clip;
@@ -10266,14 +9731,11 @@ var SkeletonClipping = class {
     let vertices = Utils.setArraySize(this.clippingPolygon, n);
     clip.computeWorldVertices(slot, 0, n, vertices, 0, 2);
     let clippingPolygon = this.clippingPolygon;
-    SkeletonClipping.makeClockwise(clippingPolygon);
-    let clippingPolygons = (this.clippingPolygons = this.triangulator.decompose(
-      clippingPolygon,
-      this.triangulator.triangulate(clippingPolygon),
-    ));
+    _SkeletonClipping.makeClockwise(clippingPolygon);
+    let clippingPolygons = this.clippingPolygons = this.triangulator.decompose(clippingPolygon, this.triangulator.triangulate(clippingPolygon));
     for (let i = 0, n2 = clippingPolygons.length; i < n2; i++) {
       let polygon = clippingPolygons[i];
-      SkeletonClipping.makeClockwise(polygon);
+      _SkeletonClipping.makeClockwise(polygon);
       polygon.push(polygon[0]);
       polygon.push(polygon[1]);
     }
@@ -10293,23 +9755,14 @@ var SkeletonClipping = class {
   isClipping() {
     return this.clipAttachment != null;
   }
-  clipTriangles(
-    vertices,
-    verticesLengthOrTriangles,
-    trianglesOrTrianglesLength,
-    trianglesLengthOrUvs,
-    uvsOrLight,
-    lightOrDark,
-    darkOrTwoColor,
-    twoColorParam,
-  ) {
+  clipTriangles(vertices, verticesLengthOrTriangles, trianglesOrTrianglesLength, trianglesLengthOrUvs, uvsOrLight, lightOrDark, darkOrTwoColor, twoColorParam) {
     let triangles;
     let trianglesLength;
     let uvs;
     let light;
     let dark;
     let twoColor;
-    if (typeof verticesLengthOrTriangles === 'number') {
+    if (typeof verticesLengthOrTriangles === "number") {
       triangles = trianglesOrTrianglesLength;
       trianglesLength = trianglesLengthOrUvs;
       uvs = uvsOrLight;
@@ -10324,13 +9777,13 @@ var SkeletonClipping = class {
       dark = lightOrDark;
       twoColor = darkOrTwoColor;
     }
-    if (uvs && light && dark && typeof twoColor === 'boolean')
+    if (uvs && light && dark && typeof twoColor === "boolean")
       this.clipTrianglesRender(vertices, triangles, trianglesLength, uvs, light, dark, twoColor);
-    else this.clipTrianglesNoRender(vertices, triangles, trianglesLength);
+    else
+      this.clipTrianglesNoRender(vertices, triangles, trianglesLength);
   }
   clipTrianglesNoRender(vertices, triangles, trianglesLength) {
-    let clipOutput = this.clipOutput,
-      clippedVertices = this.clippedVertices;
+    let clipOutput = this.clipOutput, clippedVertices = this.clippedVertices;
     let clippedTriangles = this.clippedTriangles;
     let polygons = this.clippingPolygons;
     let polygonsCount = polygons.length;
@@ -10339,14 +9792,11 @@ var SkeletonClipping = class {
     clippedTriangles.length = 0;
     for (let i = 0; i < trianglesLength; i += 3) {
       let vertexOffset = triangles[i] << 1;
-      let x1 = vertices[vertexOffset],
-        y1 = vertices[vertexOffset + 1];
+      let x1 = vertices[vertexOffset], y1 = vertices[vertexOffset + 1];
       vertexOffset = triangles[i + 1] << 1;
-      let x2 = vertices[vertexOffset],
-        y2 = vertices[vertexOffset + 1];
+      let x2 = vertices[vertexOffset], y2 = vertices[vertexOffset + 1];
       vertexOffset = triangles[i + 2] << 1;
-      let x3 = vertices[vertexOffset],
-        y3 = vertices[vertexOffset + 1];
+      let x3 = vertices[vertexOffset], y3 = vertices[vertexOffset + 1];
       for (let p = 0; p < polygonsCount; p++) {
         let s = clippedVertices.length;
         if (this.clip(x1, y1, x2, y2, x3, y3, polygons[p], clipOutput)) {
@@ -10356,8 +9806,7 @@ var SkeletonClipping = class {
           let clipOutputItems = this.clipOutput;
           let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + clipOutputCount * 2);
           for (let ii = 0; ii < clipOutputLength; ii += 2, s += 2) {
-            let x = clipOutputItems[ii],
-              y = clipOutputItems[ii + 1];
+            let x = clipOutputItems[ii], y = clipOutputItems[ii + 1];
             clippedVerticesItems[s] = x;
             clippedVerticesItems[s + 1] = y;
           }
@@ -10390,8 +9839,7 @@ var SkeletonClipping = class {
     }
   }
   clipTrianglesRender(vertices, triangles, trianglesLength, uvs, light, dark, twoColor) {
-    let clipOutput = this.clipOutput,
-      clippedVertices = this.clippedVertices;
+    let clipOutput = this.clipOutput, clippedVertices = this.clippedVertices;
     let clippedTriangles = this.clippedTriangles;
     let polygons = this.clippingPolygons;
     let polygonsCount = polygons.length;
@@ -10401,44 +9849,33 @@ var SkeletonClipping = class {
     clippedTriangles.length = 0;
     for (let i = 0; i < trianglesLength; i += 3) {
       let vertexOffset = triangles[i] << 1;
-      let x1 = vertices[vertexOffset],
-        y1 = vertices[vertexOffset + 1];
-      let u1 = uvs[vertexOffset],
-        v1 = uvs[vertexOffset + 1];
+      let x1 = vertices[vertexOffset], y1 = vertices[vertexOffset + 1];
+      let u1 = uvs[vertexOffset], v1 = uvs[vertexOffset + 1];
       vertexOffset = triangles[i + 1] << 1;
-      let x2 = vertices[vertexOffset],
-        y2 = vertices[vertexOffset + 1];
-      let u2 = uvs[vertexOffset],
-        v2 = uvs[vertexOffset + 1];
+      let x2 = vertices[vertexOffset], y2 = vertices[vertexOffset + 1];
+      let u2 = uvs[vertexOffset], v2 = uvs[vertexOffset + 1];
       vertexOffset = triangles[i + 2] << 1;
-      let x3 = vertices[vertexOffset],
-        y3 = vertices[vertexOffset + 1];
-      let u3 = uvs[vertexOffset],
-        v3 = uvs[vertexOffset + 1];
+      let x3 = vertices[vertexOffset], y3 = vertices[vertexOffset + 1];
+      let u3 = uvs[vertexOffset], v3 = uvs[vertexOffset + 1];
       for (let p = 0; p < polygonsCount; p++) {
         let s = clippedVertices.length;
         if (this.clip(x1, y1, x2, y2, x3, y3, polygons[p], clipOutput)) {
           let clipOutputLength = clipOutput.length;
           if (clipOutputLength == 0) continue;
-          let d0 = y2 - y3,
-            d1 = x3 - x2,
-            d2 = x1 - x3,
-            d4 = y3 - y1;
+          let d0 = y2 - y3, d1 = x3 - x2, d2 = x1 - x3, d4 = y3 - y1;
           let d = 1 / (d0 * d2 + d1 * (y1 - y3));
           let clipOutputCount = clipOutputLength >> 1;
           let clipOutputItems = this.clipOutput;
           let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + clipOutputCount * vertexSize);
           for (let ii = 0; ii < clipOutputLength; ii += 2, s += vertexSize) {
-            let x = clipOutputItems[ii],
-              y = clipOutputItems[ii + 1];
+            let x = clipOutputItems[ii], y = clipOutputItems[ii + 1];
             clippedVerticesItems[s] = x;
             clippedVerticesItems[s + 1] = y;
             clippedVerticesItems[s + 2] = light.r;
             clippedVerticesItems[s + 3] = light.g;
             clippedVerticesItems[s + 4] = light.b;
             clippedVerticesItems[s + 5] = light.a;
-            let c0 = x - x3,
-              c1 = y - y3;
+            let c0 = x - x3, c1 = y - y3;
             let a = (d0 * c0 + d1 * c1) * d;
             let b = (d4 * c0 + d2 * c1) * d;
             let c = 1 - a - b;
@@ -10531,9 +9968,7 @@ var SkeletonClipping = class {
     }
   }
   clipTrianglesUnpacked(vertices, triangles, trianglesLength, uvs) {
-    let clipOutput = this.clipOutput,
-      clippedVertices = this.clippedVertices,
-      clippedUVs = this.clippedUVs;
+    let clipOutput = this.clipOutput, clippedVertices = this.clippedVertices, clippedUVs = this.clippedUVs;
     let clippedTriangles = this.clippedTriangles;
     let polygons = this.clippingPolygons;
     let polygonsCount = polygons.length;
@@ -10543,41 +9978,30 @@ var SkeletonClipping = class {
     clippedTriangles.length = 0;
     for (let i = 0; i < trianglesLength; i += 3) {
       let vertexOffset = triangles[i] << 1;
-      let x1 = vertices[vertexOffset],
-        y1 = vertices[vertexOffset + 1];
-      let u1 = uvs[vertexOffset],
-        v1 = uvs[vertexOffset + 1];
+      let x1 = vertices[vertexOffset], y1 = vertices[vertexOffset + 1];
+      let u1 = uvs[vertexOffset], v1 = uvs[vertexOffset + 1];
       vertexOffset = triangles[i + 1] << 1;
-      let x2 = vertices[vertexOffset],
-        y2 = vertices[vertexOffset + 1];
-      let u2 = uvs[vertexOffset],
-        v2 = uvs[vertexOffset + 1];
+      let x2 = vertices[vertexOffset], y2 = vertices[vertexOffset + 1];
+      let u2 = uvs[vertexOffset], v2 = uvs[vertexOffset + 1];
       vertexOffset = triangles[i + 2] << 1;
-      let x3 = vertices[vertexOffset],
-        y3 = vertices[vertexOffset + 1];
-      let u3 = uvs[vertexOffset],
-        v3 = uvs[vertexOffset + 1];
+      let x3 = vertices[vertexOffset], y3 = vertices[vertexOffset + 1];
+      let u3 = uvs[vertexOffset], v3 = uvs[vertexOffset + 1];
       for (let p = 0; p < polygonsCount; p++) {
         let s = clippedVertices.length;
         if (this.clip(x1, y1, x2, y2, x3, y3, polygons[p], clipOutput)) {
           let clipOutputLength = clipOutput.length;
           if (clipOutputLength == 0) continue;
-          let d0 = y2 - y3,
-            d1 = x3 - x2,
-            d2 = x1 - x3,
-            d4 = y3 - y1;
+          let d0 = y2 - y3, d1 = x3 - x2, d2 = x1 - x3, d4 = y3 - y1;
           let d = 1 / (d0 * d2 + d1 * (y1 - y3));
           let clipOutputCount = clipOutputLength >> 1;
           let clipOutputItems = this.clipOutput;
           let clippedVerticesItems = Utils.setArraySize(clippedVertices, s + clipOutputCount * 2);
           let clippedUVsItems = Utils.setArraySize(clippedUVs, s + clipOutputCount * 2);
           for (let ii = 0; ii < clipOutputLength; ii += 2, s += 2) {
-            let x = clipOutputItems[ii],
-              y = clipOutputItems[ii + 1];
+            let x = clipOutputItems[ii], y = clipOutputItems[ii + 1];
             clippedVerticesItems[s] = x;
             clippedVerticesItems[s + 1] = y;
-            let c0 = x - x3,
-              c1 = y - y3;
+            let c0 = x - x3, c1 = y - y3;
             let a = (d0 * c0 + d1 * c1) * d;
             let b = (d4 * c0 + d2 * c1) * d;
             let c = 1 - a - b;
@@ -10628,7 +10052,8 @@ var SkeletonClipping = class {
     if (clippingArea.length % 4 >= 2) {
       input = output;
       output = this.scratch;
-    } else input = this.scratch;
+    } else
+      input = this.scratch;
     input.length = 0;
     input.push(x1);
     input.push(y1);
@@ -10642,18 +10067,14 @@ var SkeletonClipping = class {
     let clippingVerticesLast = clippingArea.length - 4;
     let clippingVertices = clippingArea;
     for (let i = 0; ; i += 2) {
-      let edgeX = clippingVertices[i],
-        edgeY = clippingVertices[i + 1];
-      let ex = edgeX - clippingVertices[i + 2],
-        ey = edgeY - clippingVertices[i + 3];
+      let edgeX = clippingVertices[i], edgeY = clippingVertices[i + 1];
+      let ex = edgeX - clippingVertices[i + 2], ey = edgeY - clippingVertices[i + 3];
       let outputStart = output.length;
       let inputVertices = input;
       for (let ii = 0, nn = input.length - 2; ii < nn; ) {
-        let inputX = inputVertices[ii],
-          inputY = inputVertices[ii + 1];
+        let inputX = inputVertices[ii], inputY = inputVertices[ii + 1];
         ii += 2;
-        let inputX2 = inputVertices[ii],
-          inputY2 = inputVertices[ii + 1];
+        let inputX2 = inputVertices[ii], inputY2 = inputVertices[ii + 1];
         let s2 = ey * (edgeX - inputX2) > ex * (edgeY - inputY2);
         let s1 = ey * (edgeX - inputX) - ex * (edgeY - inputY);
         if (s1 > 0) {
@@ -10662,9 +10083,7 @@ var SkeletonClipping = class {
             output.push(inputY2);
             continue;
           }
-          let ix = inputX2 - inputX,
-            iy = inputY2 - inputY,
-            t = s1 / (ix * ey - iy * ex);
+          let ix = inputX2 - inputX, iy = inputY2 - inputY, t = s1 / (ix * ey - iy * ex);
           if (t >= 0 && t <= 1) {
             output.push(inputX + ix * t);
             output.push(inputY + iy * t);
@@ -10674,9 +10093,7 @@ var SkeletonClipping = class {
             continue;
           }
         } else if (s2) {
-          let ix = inputX2 - inputX,
-            iy = inputY2 - inputY,
-            t = s1 / (ix * ey - iy * ex);
+          let ix = inputX2 - inputX, iy = inputY2 - inputY, t = s1 / (ix * ey - iy * ex);
           if (t >= 0 && t <= 1) {
             output.push(inputX + ix * t);
             output.push(inputY + iy * t);
@@ -10704,18 +10121,16 @@ var SkeletonClipping = class {
     }
     if (originalOutput != output) {
       originalOutput.length = 0;
-      for (let i = 0, n = output.length - 2; i < n; i++) originalOutput[i] = output[i];
-    } else originalOutput.length = originalOutput.length - 2;
+      for (let i = 0, n = output.length - 2; i < n; i++)
+        originalOutput[i] = output[i];
+    } else
+      originalOutput.length = originalOutput.length - 2;
     return clipped;
   }
   static makeClockwise(polygon) {
     let vertices = polygon;
     let verticeslength = polygon.length;
-    let area = vertices[verticeslength - 2] * vertices[1] - vertices[0] * vertices[verticeslength - 1],
-      p1x = 0,
-      p1y = 0,
-      p2x = 0,
-      p2y = 0;
+    let area = vertices[verticeslength - 2] * vertices[1] - vertices[0] * vertices[verticeslength - 1], p1x = 0, p1y = 0, p2x = 0, p2y = 0;
     for (let i = 0, n = verticeslength - 3; i < n; i += 2) {
       p1x = vertices[i];
       p1y = vertices[i + 1];
@@ -10725,8 +10140,7 @@ var SkeletonClipping = class {
     }
     if (area < 0) return;
     for (let i = 0, lastX = verticeslength - 2, n = verticeslength >> 1; i < n; i += 2) {
-      let x = vertices[i],
-        y = vertices[i + 1];
+      let x = vertices[i], y = vertices[i + 1];
       let other = lastX - i;
       vertices[i] = vertices[other];
       vertices[i + 1] = vertices[other + 1];
@@ -10738,20 +10152,20 @@ var SkeletonClipping = class {
 
 // spine-core/src/SkeletonJson.ts
 var SkeletonJson = class {
+  attachmentLoader;
+  /** Scales bone positions, image sizes, and translations as they are loaded. This allows different size images to be used at
+   * runtime than were used in Spine.
+   *
+   * See [Scaling](http://esotericsoftware.com/spine-loading-skeleton-data#Scaling) in the Spine Runtimes Guide. */
+  scale = 1;
+  linkedMeshes = new Array();
   constructor(attachmentLoader) {
-    /** Scales bone positions, image sizes, and translations as they are loaded. This allows different size images to be used at
-     * runtime than were used in Spine.
-     *
-     * See [Scaling](http://esotericsoftware.com/spine-loading-skeleton-data#Scaling) in the Spine Runtimes Guide. */
-    this.scale = 1;
-    this.linkedMeshes = new Array();
     this.attachmentLoader = attachmentLoader;
   }
   readSkeletonData(json) {
-    var _a, _b;
     let scale = this.scale;
     let skeletonData = new SkeletonData();
-    let root = typeof json === 'string' ? JSON.parse(json) : json;
+    let root = typeof json === "string" ? JSON.parse(json) : json;
     let skeletonMap = root.skeleton;
     if (skeletonMap) {
       skeletonData.hash = skeletonMap.hash;
@@ -10760,29 +10174,29 @@ var SkeletonJson = class {
       skeletonData.y = skeletonMap.y;
       skeletonData.width = skeletonMap.width;
       skeletonData.height = skeletonMap.height;
-      skeletonData.referenceScale = getValue(skeletonMap, 'referenceScale', 100) * scale;
+      skeletonData.referenceScale = getValue(skeletonMap, "referenceScale", 100) * scale;
       skeletonData.fps = skeletonMap.fps;
-      skeletonData.imagesPath = (_a = skeletonMap.images) != null ? _a : null;
-      skeletonData.audioPath = (_b = skeletonMap.audio) != null ? _b : null;
+      skeletonData.imagesPath = skeletonMap.images ?? null;
+      skeletonData.audioPath = skeletonMap.audio ?? null;
     }
     if (root.bones) {
       for (let i = 0; i < root.bones.length; i++) {
         let boneMap = root.bones[i];
         let parent = null;
-        let parentName = getValue(boneMap, 'parent', null);
+        let parentName = getValue(boneMap, "parent", null);
         if (parentName) parent = skeletonData.findBone(parentName);
         let data = new BoneData(skeletonData.bones.length, boneMap.name, parent);
-        data.length = getValue(boneMap, 'length', 0) * scale;
-        data.x = getValue(boneMap, 'x', 0) * scale;
-        data.y = getValue(boneMap, 'y', 0) * scale;
-        data.rotation = getValue(boneMap, 'rotation', 0);
-        data.scaleX = getValue(boneMap, 'scaleX', 1);
-        data.scaleY = getValue(boneMap, 'scaleY', 1);
-        data.shearX = getValue(boneMap, 'shearX', 0);
-        data.shearY = getValue(boneMap, 'shearY', 0);
-        data.inherit = Utils.enumValue(Inherit, getValue(boneMap, 'inherit', 'Normal'));
-        data.skinRequired = getValue(boneMap, 'skin', false);
-        let color = getValue(boneMap, 'color', null);
+        data.length = getValue(boneMap, "length", 0) * scale;
+        data.x = getValue(boneMap, "x", 0) * scale;
+        data.y = getValue(boneMap, "y", 0) * scale;
+        data.rotation = getValue(boneMap, "rotation", 0);
+        data.scaleX = getValue(boneMap, "scaleX", 1);
+        data.scaleY = getValue(boneMap, "scaleY", 1);
+        data.shearX = getValue(boneMap, "shearX", 0);
+        data.shearY = getValue(boneMap, "shearY", 0);
+        data.inherit = Utils.enumValue(Inherit, getValue(boneMap, "inherit", "Normal"));
+        data.skinRequired = getValue(boneMap, "skin", false);
+        let color = getValue(boneMap, "color", null);
         if (color) data.color.setFromString(color);
         skeletonData.bones.push(data);
       }
@@ -10794,13 +10208,13 @@ var SkeletonJson = class {
         let boneData = skeletonData.findBone(slotMap.bone);
         if (!boneData) throw new Error(`Couldn't find bone ${slotMap.bone} for slot ${slotName}`);
         let data = new SlotData(skeletonData.slots.length, slotName, boneData);
-        let color = getValue(slotMap, 'color', null);
+        let color = getValue(slotMap, "color", null);
         if (color) data.color.setFromString(color);
-        let dark = getValue(slotMap, 'dark', null);
+        let dark = getValue(slotMap, "dark", null);
         if (dark) data.darkColor = Color.fromString(dark);
-        data.attachmentName = getValue(slotMap, 'attachment', null);
-        data.blendMode = Utils.enumValue(BlendMode, getValue(slotMap, 'blend', 'normal'));
-        data.visible = getValue(slotMap, 'visible', true);
+        data.attachmentName = getValue(slotMap, "attachment", null);
+        data.blendMode = Utils.enumValue(BlendMode, getValue(slotMap, "blend", "normal"));
+        data.visible = getValue(slotMap, "visible", true);
         skeletonData.slots.push(data);
       }
     }
@@ -10808,24 +10222,23 @@ var SkeletonJson = class {
       for (let i = 0; i < root.ik.length; i++) {
         let constraintMap = root.ik[i];
         let data = new IkConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, 'order', 0);
-        data.skinRequired = getValue(constraintMap, 'skin', false);
+        data.order = getValue(constraintMap, "order", 0);
+        data.skinRequired = getValue(constraintMap, "skin", false);
         for (let ii = 0; ii < constraintMap.bones.length; ii++) {
           let bone = skeletonData.findBone(constraintMap.bones[ii]);
-          if (!bone)
-            throw new Error(`Couldn't find bone ${constraintMap.bones[ii]} for IK constraint ${constraintMap.name}.`);
+          if (!bone) throw new Error(`Couldn't find bone ${constraintMap.bones[ii]} for IK constraint ${constraintMap.name}.`);
           data.bones.push(bone);
         }
         let target = skeletonData.findBone(constraintMap.target);
-        if (!target)
-          throw new Error(`Couldn't find target bone ${constraintMap.target} for IK constraint ${constraintMap.name}.`);
+        ;
+        if (!target) throw new Error(`Couldn't find target bone ${constraintMap.target} for IK constraint ${constraintMap.name}.`);
         data.target = target;
-        data.mix = getValue(constraintMap, 'mix', 1);
-        data.softness = getValue(constraintMap, 'softness', 0) * scale;
-        data.bendDirection = getValue(constraintMap, 'bendPositive', true) ? 1 : -1;
-        data.compress = getValue(constraintMap, 'compress', false);
-        data.stretch = getValue(constraintMap, 'stretch', false);
-        data.uniform = getValue(constraintMap, 'uniform', false);
+        data.mix = getValue(constraintMap, "mix", 1);
+        data.softness = getValue(constraintMap, "softness", 0) * scale;
+        data.bendDirection = getValue(constraintMap, "bendPositive", true) ? 1 : -1;
+        data.compress = getValue(constraintMap, "compress", false);
+        data.stretch = getValue(constraintMap, "stretch", false);
+        data.uniform = getValue(constraintMap, "uniform", false);
         skeletonData.ikConstraints.push(data);
       }
     }
@@ -10833,8 +10246,8 @@ var SkeletonJson = class {
       for (let i = 0; i < root.transform.length; i++) {
         let constraintMap = root.transform[i];
         let data = new TransformConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, 'order', 0);
-        data.skinRequired = getValue(constraintMap, 'skin', false);
+        data.order = getValue(constraintMap, "order", 0);
+        data.skinRequired = getValue(constraintMap, "skin", false);
         for (let ii = 0; ii < constraintMap.bones.length; ii++) {
           let boneName = constraintMap.bones[ii];
           let bone = skeletonData.findBone(boneName);
@@ -10843,23 +10256,22 @@ var SkeletonJson = class {
         }
         let targetName = constraintMap.target;
         let target = skeletonData.findBone(targetName);
-        if (!target)
-          throw new Error(`Couldn't find target bone ${targetName} for transform constraint ${constraintMap.name}.`);
+        if (!target) throw new Error(`Couldn't find target bone ${targetName} for transform constraint ${constraintMap.name}.`);
         data.target = target;
-        data.local = getValue(constraintMap, 'local', false);
-        data.relative = getValue(constraintMap, 'relative', false);
-        data.offsetRotation = getValue(constraintMap, 'rotation', 0);
-        data.offsetX = getValue(constraintMap, 'x', 0) * scale;
-        data.offsetY = getValue(constraintMap, 'y', 0) * scale;
-        data.offsetScaleX = getValue(constraintMap, 'scaleX', 0);
-        data.offsetScaleY = getValue(constraintMap, 'scaleY', 0);
-        data.offsetShearY = getValue(constraintMap, 'shearY', 0);
-        data.mixRotate = getValue(constraintMap, 'mixRotate', 1);
-        data.mixX = getValue(constraintMap, 'mixX', 1);
-        data.mixY = getValue(constraintMap, 'mixY', data.mixX);
-        data.mixScaleX = getValue(constraintMap, 'mixScaleX', 1);
-        data.mixScaleY = getValue(constraintMap, 'mixScaleY', data.mixScaleX);
-        data.mixShearY = getValue(constraintMap, 'mixShearY', 1);
+        data.local = getValue(constraintMap, "local", false);
+        data.relative = getValue(constraintMap, "relative", false);
+        data.offsetRotation = getValue(constraintMap, "rotation", 0);
+        data.offsetX = getValue(constraintMap, "x", 0) * scale;
+        data.offsetY = getValue(constraintMap, "y", 0) * scale;
+        data.offsetScaleX = getValue(constraintMap, "scaleX", 0);
+        data.offsetScaleY = getValue(constraintMap, "scaleY", 0);
+        data.offsetShearY = getValue(constraintMap, "shearY", 0);
+        data.mixRotate = getValue(constraintMap, "mixRotate", 1);
+        data.mixX = getValue(constraintMap, "mixX", 1);
+        data.mixY = getValue(constraintMap, "mixY", data.mixX);
+        data.mixScaleX = getValue(constraintMap, "mixScaleX", 1);
+        data.mixScaleY = getValue(constraintMap, "mixScaleY", data.mixScaleX);
+        data.mixShearY = getValue(constraintMap, "mixShearY", 1);
         skeletonData.transformConstraints.push(data);
       }
     }
@@ -10867,8 +10279,8 @@ var SkeletonJson = class {
       for (let i = 0; i < root.path.length; i++) {
         let constraintMap = root.path[i];
         let data = new PathConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, 'order', 0);
-        data.skinRequired = getValue(constraintMap, 'skin', false);
+        data.order = getValue(constraintMap, "order", 0);
+        data.skinRequired = getValue(constraintMap, "skin", false);
         for (let ii = 0; ii < constraintMap.bones.length; ii++) {
           let boneName = constraintMap.bones[ii];
           let bone = skeletonData.findBone(boneName);
@@ -10877,20 +10289,19 @@ var SkeletonJson = class {
         }
         let targetName = constraintMap.target;
         let target = skeletonData.findSlot(targetName);
-        if (!target)
-          throw new Error(`Couldn't find target slot ${targetName} for path constraint ${constraintMap.name}.`);
+        if (!target) throw new Error(`Couldn't find target slot ${targetName} for path constraint ${constraintMap.name}.`);
         data.target = target;
-        data.positionMode = Utils.enumValue(PositionMode, getValue(constraintMap, 'positionMode', 'Percent'));
-        data.spacingMode = Utils.enumValue(SpacingMode, getValue(constraintMap, 'spacingMode', 'Length'));
-        data.rotateMode = Utils.enumValue(RotateMode, getValue(constraintMap, 'rotateMode', 'Tangent'));
-        data.offsetRotation = getValue(constraintMap, 'rotation', 0);
-        data.position = getValue(constraintMap, 'position', 0);
+        data.positionMode = Utils.enumValue(PositionMode, getValue(constraintMap, "positionMode", "Percent"));
+        data.spacingMode = Utils.enumValue(SpacingMode, getValue(constraintMap, "spacingMode", "Length"));
+        data.rotateMode = Utils.enumValue(RotateMode, getValue(constraintMap, "rotateMode", "Tangent"));
+        data.offsetRotation = getValue(constraintMap, "rotation", 0);
+        data.position = getValue(constraintMap, "position", 0);
         if (data.positionMode == 0 /* Fixed */) data.position *= scale;
-        data.spacing = getValue(constraintMap, 'spacing', 0);
+        data.spacing = getValue(constraintMap, "spacing", 0);
         if (data.spacingMode == 0 /* Length */ || data.spacingMode == 1 /* Fixed */) data.spacing *= scale;
-        data.mixRotate = getValue(constraintMap, 'mixRotate', 1);
-        data.mixX = getValue(constraintMap, 'mixX', 1);
-        data.mixY = getValue(constraintMap, 'mixY', data.mixX);
+        data.mixRotate = getValue(constraintMap, "mixRotate", 1);
+        data.mixX = getValue(constraintMap, "mixX", 1);
+        data.mixY = getValue(constraintMap, "mixY", data.mixX);
         skeletonData.pathConstraints.push(data);
       }
     }
@@ -10898,33 +10309,33 @@ var SkeletonJson = class {
       for (let i = 0; i < root.physics.length; i++) {
         const constraintMap = root.physics[i];
         const data = new PhysicsConstraintData(constraintMap.name);
-        data.order = getValue(constraintMap, 'order', 0);
-        data.skinRequired = getValue(constraintMap, 'skin', false);
+        data.order = getValue(constraintMap, "order", 0);
+        data.skinRequired = getValue(constraintMap, "skin", false);
         const boneName = constraintMap.bone;
         const bone = skeletonData.findBone(boneName);
-        if (bone == null) throw new Error('Physics bone not found: ' + boneName);
+        if (bone == null) throw new Error("Physics bone not found: " + boneName);
         data.bone = bone;
-        data.x = getValue(constraintMap, 'x', 0);
-        data.y = getValue(constraintMap, 'y', 0);
-        data.rotate = getValue(constraintMap, 'rotate', 0);
-        data.scaleX = getValue(constraintMap, 'scaleX', 0);
-        data.shearX = getValue(constraintMap, 'shearX', 0);
-        data.limit = getValue(constraintMap, 'limit', 5e3) * scale;
-        data.step = 1 / getValue(constraintMap, 'fps', 60);
-        data.inertia = getValue(constraintMap, 'inertia', 1);
-        data.strength = getValue(constraintMap, 'strength', 100);
-        data.damping = getValue(constraintMap, 'damping', 1);
-        data.massInverse = 1 / getValue(constraintMap, 'mass', 1);
-        data.wind = getValue(constraintMap, 'wind', 0);
-        data.gravity = getValue(constraintMap, 'gravity', 0);
-        data.mix = getValue(constraintMap, 'mix', 1);
-        data.inertiaGlobal = getValue(constraintMap, 'inertiaGlobal', false);
-        data.strengthGlobal = getValue(constraintMap, 'strengthGlobal', false);
-        data.dampingGlobal = getValue(constraintMap, 'dampingGlobal', false);
-        data.massGlobal = getValue(constraintMap, 'massGlobal', false);
-        data.windGlobal = getValue(constraintMap, 'windGlobal', false);
-        data.gravityGlobal = getValue(constraintMap, 'gravityGlobal', false);
-        data.mixGlobal = getValue(constraintMap, 'mixGlobal', false);
+        data.x = getValue(constraintMap, "x", 0);
+        data.y = getValue(constraintMap, "y", 0);
+        data.rotate = getValue(constraintMap, "rotate", 0);
+        data.scaleX = getValue(constraintMap, "scaleX", 0);
+        data.shearX = getValue(constraintMap, "shearX", 0);
+        data.limit = getValue(constraintMap, "limit", 5e3) * scale;
+        data.step = 1 / getValue(constraintMap, "fps", 60);
+        data.inertia = getValue(constraintMap, "inertia", 1);
+        data.strength = getValue(constraintMap, "strength", 100);
+        data.damping = getValue(constraintMap, "damping", 1);
+        data.massInverse = 1 / getValue(constraintMap, "mass", 1);
+        data.wind = getValue(constraintMap, "wind", 0);
+        data.gravity = getValue(constraintMap, "gravity", 0);
+        data.mix = getValue(constraintMap, "mix", 1);
+        data.inertiaGlobal = getValue(constraintMap, "inertiaGlobal", false);
+        data.strengthGlobal = getValue(constraintMap, "strengthGlobal", false);
+        data.dampingGlobal = getValue(constraintMap, "dampingGlobal", false);
+        data.massGlobal = getValue(constraintMap, "massGlobal", false);
+        data.windGlobal = getValue(constraintMap, "windGlobal", false);
+        data.gravityGlobal = getValue(constraintMap, "gravityGlobal", false);
+        data.mixGlobal = getValue(constraintMap, "mixGlobal", false);
         skeletonData.physicsConstraints.push(data);
       }
     }
@@ -10952,8 +10363,7 @@ var SkeletonJson = class {
           for (let ii = 0; ii < skinMap.transform.length; ii++) {
             let constraintName = skinMap.transform[ii];
             let constraint = skeletonData.findTransformConstraint(constraintName);
-            if (!constraint)
-              throw new Error(`Couldn't find transform constraint ${constraintName} for skin ${skinMap.name}.`);
+            if (!constraint) throw new Error(`Couldn't find transform constraint ${constraintName} for skin ${skinMap.name}.`);
             skin.constraints.push(constraint);
           }
         }
@@ -10961,8 +10371,7 @@ var SkeletonJson = class {
           for (let ii = 0; ii < skinMap.path.length; ii++) {
             let constraintName = skinMap.path[ii];
             let constraint = skeletonData.findPathConstraint(constraintName);
-            if (!constraint)
-              throw new Error(`Couldn't find path constraint ${constraintName} for skin ${skinMap.name}.`);
+            if (!constraint) throw new Error(`Couldn't find path constraint ${constraintName} for skin ${skinMap.name}.`);
             skin.constraints.push(constraint);
           }
         }
@@ -10970,8 +10379,7 @@ var SkeletonJson = class {
           for (let ii = 0; ii < skinMap.physics.length; ii++) {
             let constraintName = skinMap.physics[ii];
             let constraint = skeletonData.findPhysicsConstraint(constraintName);
-            if (!constraint)
-              throw new Error(`Couldn't find physics constraint ${constraintName} for skin ${skinMap.name}.`);
+            if (!constraint) throw new Error(`Couldn't find physics constraint ${constraintName} for skin ${skinMap.name}.`);
             skin.constraints.push(constraint);
           }
         }
@@ -10985,7 +10393,7 @@ var SkeletonJson = class {
           }
         }
         skeletonData.skins.push(skin);
-        if (skin.name == 'default') skeletonData.defaultSkin = skin;
+        if (skin.name == "default") skeletonData.defaultSkin = skin;
       }
     }
     for (let i = 0, n = this.linkedMeshes.length; i < n; i++) {
@@ -11003,13 +10411,13 @@ var SkeletonJson = class {
       for (let eventName in root.events) {
         let eventMap = root.events[eventName];
         let data = new EventData(eventName);
-        data.intValue = getValue(eventMap, 'int', 0);
-        data.floatValue = getValue(eventMap, 'float', 0);
-        data.stringValue = getValue(eventMap, 'string', '');
-        data.audioPath = getValue(eventMap, 'audio', null);
+        data.intValue = getValue(eventMap, "int", 0);
+        data.floatValue = getValue(eventMap, "float", 0);
+        data.stringValue = getValue(eventMap, "string", "");
+        data.audioPath = getValue(eventMap, "audio", null);
         if (data.audioPath) {
-          data.volume = getValue(eventMap, 'volume', 1);
-          data.balance = getValue(eventMap, 'balance', 0);
+          data.volume = getValue(eventMap, "volume", 1);
+          data.balance = getValue(eventMap, "balance", 0);
         }
         skeletonData.events.push(data);
       }
@@ -11024,52 +10432,50 @@ var SkeletonJson = class {
   }
   readAttachment(map, skin, slotIndex, name, skeletonData) {
     let scale = this.scale;
-    name = getValue(map, 'name', name);
-    switch (getValue(map, 'type', 'region')) {
-      case 'region': {
-        let path2 = getValue(map, 'path', name);
-        let sequence = this.readSequence(getValue(map, 'sequence', null));
+    name = getValue(map, "name", name);
+    switch (getValue(map, "type", "region")) {
+      case "region": {
+        let path2 = getValue(map, "path", name);
+        let sequence = this.readSequence(getValue(map, "sequence", null));
         let region = this.attachmentLoader.newRegionAttachment(skin, name, path2, sequence);
         if (!region) return null;
         region.path = path2;
-        region.x = getValue(map, 'x', 0) * scale;
-        region.y = getValue(map, 'y', 0) * scale;
-        region.scaleX = getValue(map, 'scaleX', 1);
-        region.scaleY = getValue(map, 'scaleY', 1);
-        region.rotation = getValue(map, 'rotation', 0);
+        region.x = getValue(map, "x", 0) * scale;
+        region.y = getValue(map, "y", 0) * scale;
+        region.scaleX = getValue(map, "scaleX", 1);
+        region.scaleY = getValue(map, "scaleY", 1);
+        region.rotation = getValue(map, "rotation", 0);
         region.width = map.width * scale;
         region.height = map.height * scale;
         region.sequence = sequence;
-        let color = getValue(map, 'color', null);
+        let color = getValue(map, "color", null);
         if (color) region.color.setFromString(color);
         if (region.region != null) region.updateRegion();
         return region;
       }
-      case 'boundingbox': {
+      case "boundingbox": {
         let box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
         if (!box) return null;
         this.readVertices(map, box, map.vertexCount << 1);
-        let color = getValue(map, 'color', null);
+        let color = getValue(map, "color", null);
         if (color) box.color.setFromString(color);
         return box;
       }
-      case 'mesh':
-      case 'linkedmesh': {
-        let path2 = getValue(map, 'path', name);
-        let sequence = this.readSequence(getValue(map, 'sequence', null));
+      case "mesh":
+      case "linkedmesh": {
+        let path2 = getValue(map, "path", name);
+        let sequence = this.readSequence(getValue(map, "sequence", null));
         let mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2, sequence);
         if (!mesh) return null;
         mesh.path = path2;
-        let color = getValue(map, 'color', null);
+        let color = getValue(map, "color", null);
         if (color) mesh.color.setFromString(color);
-        mesh.width = getValue(map, 'width', 0) * scale;
-        mesh.height = getValue(map, 'height', 0) * scale;
+        mesh.width = getValue(map, "width", 0) * scale;
+        mesh.height = getValue(map, "height", 0) * scale;
         mesh.sequence = sequence;
-        let parent = getValue(map, 'parent', null);
+        let parent = getValue(map, "parent", null);
         if (parent) {
-          this.linkedMeshes.push(
-            new LinkedMesh2(mesh, getValue(map, 'skin', null), slotIndex, parent, getValue(map, 'timelines', true)),
-          );
+          this.linkedMeshes.push(new LinkedMesh2(mesh, getValue(map, "skin", null), slotIndex, parent, getValue(map, "timelines", true)));
           return mesh;
         }
         let uvs = map.uvs;
@@ -11077,42 +10483,43 @@ var SkeletonJson = class {
         mesh.triangles = map.triangles;
         mesh.regionUVs = uvs;
         if (mesh.region != null) mesh.updateRegion();
-        mesh.edges = getValue(map, 'edges', null);
-        mesh.hullLength = getValue(map, 'hull', 0) * 2;
+        mesh.edges = getValue(map, "edges", null);
+        mesh.hullLength = getValue(map, "hull", 0) * 2;
         return mesh;
       }
-      case 'path': {
+      case "path": {
         let path2 = this.attachmentLoader.newPathAttachment(skin, name);
         if (!path2) return null;
-        path2.closed = getValue(map, 'closed', false);
-        path2.constantSpeed = getValue(map, 'constantSpeed', true);
+        path2.closed = getValue(map, "closed", false);
+        path2.constantSpeed = getValue(map, "constantSpeed", true);
         let vertexCount = map.vertexCount;
         this.readVertices(map, path2, vertexCount << 1);
         let lengths = Utils.newArray(vertexCount / 3, 0);
-        for (let i = 0; i < map.lengths.length; i++) lengths[i] = map.lengths[i] * scale;
+        for (let i = 0; i < map.lengths.length; i++)
+          lengths[i] = map.lengths[i] * scale;
         path2.lengths = lengths;
-        let color = getValue(map, 'color', null);
+        let color = getValue(map, "color", null);
         if (color) path2.color.setFromString(color);
         return path2;
       }
-      case 'point': {
+      case "point": {
         let point = this.attachmentLoader.newPointAttachment(skin, name);
         if (!point) return null;
-        point.x = getValue(map, 'x', 0) * scale;
-        point.y = getValue(map, 'y', 0) * scale;
-        point.rotation = getValue(map, 'rotation', 0);
-        let color = getValue(map, 'color', null);
+        point.x = getValue(map, "x", 0) * scale;
+        point.y = getValue(map, "y", 0) * scale;
+        point.rotation = getValue(map, "rotation", 0);
+        let color = getValue(map, "color", null);
         if (color) point.color.setFromString(color);
         return point;
       }
-      case 'clipping': {
+      case "clipping": {
         let clip = this.attachmentLoader.newClippingAttachment(skin, name);
         if (!clip) return null;
-        let end = getValue(map, 'end', null);
+        let end = getValue(map, "end", null);
         if (end) clip.endSlot = skeletonData.findSlot(end);
         let vertexCount = map.vertexCount;
         this.readVertices(map, clip, vertexCount << 1);
-        let color = getValue(map, 'color', null);
+        let color = getValue(map, "color", null);
         if (color) clip.color.setFromString(color);
         return clip;
       }
@@ -11121,10 +10528,10 @@ var SkeletonJson = class {
   }
   readSequence(map) {
     if (map == null) return null;
-    let sequence = new Sequence(getValue(map, 'count', 0));
-    sequence.start = getValue(map, 'start', 1);
-    sequence.digits = getValue(map, 'digits', 0);
-    sequence.setupIndex = getValue(map, 'setup', 0);
+    let sequence = new Sequence(getValue(map, "count", 0));
+    sequence.start = getValue(map, "start", 1);
+    sequence.digits = getValue(map, "digits", 0);
+    sequence.setupIndex = getValue(map, "setup", 0);
     return sequence;
   }
   readVertices(map, attachment, verticesLength) {
@@ -11134,7 +10541,8 @@ var SkeletonJson = class {
     if (verticesLength == vertices.length) {
       let scaledVertices = Utils.toFloatArray(vertices);
       if (scale != 1) {
-        for (let i = 0, n = vertices.length; i < n; i++) scaledVertices[i] *= scale;
+        for (let i = 0, n = vertices.length; i < n; i++)
+          scaledVertices[i] *= scale;
       }
       attachment.vertices = scaledVertices;
       return;
@@ -11161,23 +10569,23 @@ var SkeletonJson = class {
       for (let slotName in map.slots) {
         let slotMap = map.slots[slotName];
         let slot = skeletonData.findSlot(slotName);
-        if (!slot) throw new Error('Slot not found: ' + slotName);
+        if (!slot) throw new Error("Slot not found: " + slotName);
         let slotIndex = slot.index;
         for (let timelineName in slotMap) {
           let timelineMap = slotMap[timelineName];
           if (!timelineMap) continue;
           let frames = timelineMap.length;
-          if (timelineName == 'attachment') {
+          if (timelineName == "attachment") {
             let timeline = new AttachmentTimeline(frames, slotIndex);
             for (let frame = 0; frame < frames; frame++) {
               let keyMap = timelineMap[frame];
-              timeline.setFrame(frame, getValue(keyMap, 'time', 0), getValue(keyMap, 'name', null));
+              timeline.setFrame(frame, getValue(keyMap, "time", 0), getValue(keyMap, "name", null));
             }
             timelines.push(timeline);
-          } else if (timelineName == 'rgba') {
+          } else if (timelineName == "rgba") {
             let timeline = new RGBATimeline(frames, frames << 2, slotIndex);
             let keyMap = timelineMap[0];
-            let time = getValue(keyMap, 'time', 0);
+            let time = getValue(keyMap, "time", 0);
             let color = Color.fromString(keyMap.color);
             for (let frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, color.r, color.g, color.b, color.a);
@@ -11186,7 +10594,7 @@ var SkeletonJson = class {
                 timeline.shrink(bezier);
                 break;
               }
-              let time2 = getValue(nextMap, 'time', 0);
+              let time2 = getValue(nextMap, "time", 0);
               let newColor = Color.fromString(nextMap.color);
               let curve = keyMap.curve;
               if (curve) {
@@ -11200,10 +10608,10 @@ var SkeletonJson = class {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          } else if (timelineName == 'rgb') {
+          } else if (timelineName == "rgb") {
             let timeline = new RGBTimeline(frames, frames * 3, slotIndex);
             let keyMap = timelineMap[0];
-            let time = getValue(keyMap, 'time', 0);
+            let time = getValue(keyMap, "time", 0);
             let color = Color.fromString(keyMap.color);
             for (let frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, color.r, color.g, color.b);
@@ -11212,7 +10620,7 @@ var SkeletonJson = class {
                 timeline.shrink(bezier);
                 break;
               }
-              let time2 = getValue(nextMap, 'time', 0);
+              let time2 = getValue(nextMap, "time", 0);
               let newColor = Color.fromString(nextMap.color);
               let curve = keyMap.curve;
               if (curve) {
@@ -11225,12 +10633,12 @@ var SkeletonJson = class {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          } else if (timelineName == 'alpha') {
+          } else if (timelineName == "alpha") {
             timelines.push(readTimeline12(timelineMap, new AlphaTimeline(frames, frames, slotIndex), 0, 1));
-          } else if (timelineName == 'rgba2') {
+          } else if (timelineName == "rgba2") {
             let timeline = new RGBA2Timeline(frames, frames * 7, slotIndex);
             let keyMap = timelineMap[0];
-            let time = getValue(keyMap, 'time', 0);
+            let time = getValue(keyMap, "time", 0);
             let color = Color.fromString(keyMap.light);
             let color2 = Color.fromString(keyMap.dark);
             for (let frame = 0, bezier = 0; ; frame++) {
@@ -11240,7 +10648,7 @@ var SkeletonJson = class {
                 timeline.shrink(bezier);
                 break;
               }
-              let time2 = getValue(nextMap, 'time', 0);
+              let time2 = getValue(nextMap, "time", 0);
               let newColor = Color.fromString(nextMap.light);
               let newColor2 = Color.fromString(nextMap.dark);
               let curve = keyMap.curve;
@@ -11259,10 +10667,10 @@ var SkeletonJson = class {
               keyMap = nextMap;
             }
             timelines.push(timeline);
-          } else if (timelineName == 'rgb2') {
+          } else if (timelineName == "rgb2") {
             let timeline = new RGB2Timeline(frames, frames * 6, slotIndex);
             let keyMap = timelineMap[0];
-            let time = getValue(keyMap, 'time', 0);
+            let time = getValue(keyMap, "time", 0);
             let color = Color.fromString(keyMap.light);
             let color2 = Color.fromString(keyMap.dark);
             for (let frame = 0, bezier = 0; ; frame++) {
@@ -11272,7 +10680,7 @@ var SkeletonJson = class {
                 timeline.shrink(bezier);
                 break;
               }
-              let time2 = getValue(nextMap, 'time', 0);
+              let time2 = getValue(nextMap, "time", 0);
               let newColor = Color.fromString(nextMap.light);
               let newColor2 = Color.fromString(nextMap.dark);
               let curve = keyMap.curve;
@@ -11298,50 +10706,46 @@ var SkeletonJson = class {
       for (let boneName in map.bones) {
         let boneMap = map.bones[boneName];
         let bone = skeletonData.findBone(boneName);
-        if (!bone) throw new Error('Bone not found: ' + boneName);
+        if (!bone) throw new Error("Bone not found: " + boneName);
         let boneIndex = bone.index;
         for (let timelineName in boneMap) {
           let timelineMap = boneMap[timelineName];
           let frames = timelineMap.length;
           if (frames == 0) continue;
-          if (timelineName === 'rotate') {
+          if (timelineName === "rotate") {
             timelines.push(readTimeline12(timelineMap, new RotateTimeline(frames, frames, boneIndex), 0, 1));
-          } else if (timelineName === 'translate') {
+          } else if (timelineName === "translate") {
             let timeline = new TranslateTimeline(frames, frames << 1, boneIndex);
-            timelines.push(readTimeline22(timelineMap, timeline, 'x', 'y', 0, scale));
-          } else if (timelineName === 'translatex') {
+            timelines.push(readTimeline22(timelineMap, timeline, "x", "y", 0, scale));
+          } else if (timelineName === "translatex") {
             let timeline = new TranslateXTimeline(frames, frames, boneIndex);
             timelines.push(readTimeline12(timelineMap, timeline, 0, scale));
-          } else if (timelineName === 'translatey') {
+          } else if (timelineName === "translatey") {
             let timeline = new TranslateYTimeline(frames, frames, boneIndex);
             timelines.push(readTimeline12(timelineMap, timeline, 0, scale));
-          } else if (timelineName === 'scale') {
+          } else if (timelineName === "scale") {
             let timeline = new ScaleTimeline(frames, frames << 1, boneIndex);
-            timelines.push(readTimeline22(timelineMap, timeline, 'x', 'y', 1, 1));
-          } else if (timelineName === 'scalex') {
+            timelines.push(readTimeline22(timelineMap, timeline, "x", "y", 1, 1));
+          } else if (timelineName === "scalex") {
             let timeline = new ScaleXTimeline(frames, frames, boneIndex);
             timelines.push(readTimeline12(timelineMap, timeline, 1, 1));
-          } else if (timelineName === 'scaley') {
+          } else if (timelineName === "scaley") {
             let timeline = new ScaleYTimeline(frames, frames, boneIndex);
             timelines.push(readTimeline12(timelineMap, timeline, 1, 1));
-          } else if (timelineName === 'shear') {
+          } else if (timelineName === "shear") {
             let timeline = new ShearTimeline(frames, frames << 1, boneIndex);
-            timelines.push(readTimeline22(timelineMap, timeline, 'x', 'y', 0, 1));
-          } else if (timelineName === 'shearx') {
+            timelines.push(readTimeline22(timelineMap, timeline, "x", "y", 0, 1));
+          } else if (timelineName === "shearx") {
             let timeline = new ShearXTimeline(frames, frames, boneIndex);
             timelines.push(readTimeline12(timelineMap, timeline, 0, 1));
-          } else if (timelineName === 'sheary') {
+          } else if (timelineName === "sheary") {
             let timeline = new ShearYTimeline(frames, frames, boneIndex);
             timelines.push(readTimeline12(timelineMap, timeline, 0, 1));
-          } else if (timelineName === 'inherit') {
+          } else if (timelineName === "inherit") {
             let timeline = new InheritTimeline(frames, bone.index);
             for (let frame = 0; frame < timelineMap.length; frame++) {
               let aFrame = timelineMap[frame];
-              timeline.setFrame(
-                frame,
-                getValue(aFrame, 'time', 0),
-                Utils.enumValue(Inherit, getValue(aFrame, 'inherit', 'Normal')),
-              );
+              timeline.setFrame(frame, getValue(aFrame, "time", 0), Utils.enumValue(Inherit, getValue(aFrame, "inherit", "Normal")));
             }
             timelines.push(timeline);
           }
@@ -11354,30 +10758,22 @@ var SkeletonJson = class {
         let keyMap = constraintMap[0];
         if (!keyMap) continue;
         let constraint = skeletonData.findIkConstraint(constraintName);
-        if (!constraint) throw new Error('IK Constraint not found: ' + constraintName);
+        if (!constraint) throw new Error("IK Constraint not found: " + constraintName);
         let constraintIndex = skeletonData.ikConstraints.indexOf(constraint);
         let timeline = new IkConstraintTimeline(constraintMap.length, constraintMap.length << 1, constraintIndex);
-        let time = getValue(keyMap, 'time', 0);
-        let mix = getValue(keyMap, 'mix', 1);
-        let softness = getValue(keyMap, 'softness', 0) * scale;
+        let time = getValue(keyMap, "time", 0);
+        let mix = getValue(keyMap, "mix", 1);
+        let softness = getValue(keyMap, "softness", 0) * scale;
         for (let frame = 0, bezier = 0; ; frame++) {
-          timeline.setFrame(
-            frame,
-            time,
-            mix,
-            softness,
-            getValue(keyMap, 'bendPositive', true) ? 1 : -1,
-            getValue(keyMap, 'compress', false),
-            getValue(keyMap, 'stretch', false),
-          );
+          timeline.setFrame(frame, time, mix, softness, getValue(keyMap, "bendPositive", true) ? 1 : -1, getValue(keyMap, "compress", false), getValue(keyMap, "stretch", false));
           let nextMap = constraintMap[frame + 1];
           if (!nextMap) {
             timeline.shrink(bezier);
             break;
           }
-          let time2 = getValue(nextMap, 'time', 0);
-          let mix2 = getValue(nextMap, 'mix', 1);
-          let softness2 = getValue(nextMap, 'softness', 0) * scale;
+          let time2 = getValue(nextMap, "time", 0);
+          let mix2 = getValue(nextMap, "mix", 1);
+          let softness2 = getValue(nextMap, "softness", 0) * scale;
           let curve = keyMap.curve;
           if (curve) {
             bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, mix, mix2, 1);
@@ -11397,16 +10793,16 @@ var SkeletonJson = class {
         let keyMap = timelineMap[0];
         if (!keyMap) continue;
         let constraint = skeletonData.findTransformConstraint(constraintName);
-        if (!constraint) throw new Error('Transform constraint not found: ' + constraintName);
+        if (!constraint) throw new Error("Transform constraint not found: " + constraintName);
         let constraintIndex = skeletonData.transformConstraints.indexOf(constraint);
         let timeline = new TransformConstraintTimeline(timelineMap.length, timelineMap.length * 6, constraintIndex);
-        let time = getValue(keyMap, 'time', 0);
-        let mixRotate = getValue(keyMap, 'mixRotate', 1);
-        let mixX = getValue(keyMap, 'mixX', 1);
-        let mixY = getValue(keyMap, 'mixY', mixX);
-        let mixScaleX = getValue(keyMap, 'mixScaleX', 1);
-        let mixScaleY = getValue(keyMap, 'mixScaleY', mixScaleX);
-        let mixShearY = getValue(keyMap, 'mixShearY', 1);
+        let time = getValue(keyMap, "time", 0);
+        let mixRotate = getValue(keyMap, "mixRotate", 1);
+        let mixX = getValue(keyMap, "mixX", 1);
+        let mixY = getValue(keyMap, "mixY", mixX);
+        let mixScaleX = getValue(keyMap, "mixScaleX", 1);
+        let mixScaleY = getValue(keyMap, "mixScaleY", mixScaleX);
+        let mixShearY = getValue(keyMap, "mixShearY", 1);
         for (let frame = 0, bezier = 0; ; frame++) {
           timeline.setFrame(frame, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
           let nextMap = timelineMap[frame + 1];
@@ -11414,13 +10810,13 @@ var SkeletonJson = class {
             timeline.shrink(bezier);
             break;
           }
-          let time2 = getValue(nextMap, 'time', 0);
-          let mixRotate2 = getValue(nextMap, 'mixRotate', 1);
-          let mixX2 = getValue(nextMap, 'mixX', 1);
-          let mixY2 = getValue(nextMap, 'mixY', mixX2);
-          let mixScaleX2 = getValue(nextMap, 'mixScaleX', 1);
-          let mixScaleY2 = getValue(nextMap, 'mixScaleY', mixScaleX2);
-          let mixShearY2 = getValue(nextMap, 'mixShearY', 1);
+          let time2 = getValue(nextMap, "time", 0);
+          let mixRotate2 = getValue(nextMap, "mixRotate", 1);
+          let mixX2 = getValue(nextMap, "mixX", 1);
+          let mixY2 = getValue(nextMap, "mixY", mixX2);
+          let mixScaleX2 = getValue(nextMap, "mixScaleX", 1);
+          let mixScaleY2 = getValue(nextMap, "mixScaleY", mixScaleX2);
+          let mixShearY2 = getValue(nextMap, "mixShearY", 1);
           let curve = keyMap.curve;
           if (curve) {
             bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, mixRotate, mixRotate2, 1);
@@ -11446,34 +10842,25 @@ var SkeletonJson = class {
       for (let constraintName in map.path) {
         let constraintMap = map.path[constraintName];
         let constraint = skeletonData.findPathConstraint(constraintName);
-        if (!constraint) throw new Error('Path constraint not found: ' + constraintName);
+        if (!constraint) throw new Error("Path constraint not found: " + constraintName);
         let constraintIndex = skeletonData.pathConstraints.indexOf(constraint);
         for (let timelineName in constraintMap) {
           let timelineMap = constraintMap[timelineName];
           let keyMap = timelineMap[0];
           if (!keyMap) continue;
           let frames = timelineMap.length;
-          if (timelineName === 'position') {
+          if (timelineName === "position") {
             let timeline = new PathConstraintPositionTimeline(frames, frames, constraintIndex);
-            timelines.push(
-              readTimeline12(timelineMap, timeline, 0, constraint.positionMode == 0 /* Fixed */ ? scale : 1),
-            );
-          } else if (timelineName === 'spacing') {
+            timelines.push(readTimeline12(timelineMap, timeline, 0, constraint.positionMode == 0 /* Fixed */ ? scale : 1));
+          } else if (timelineName === "spacing") {
             let timeline = new PathConstraintSpacingTimeline(frames, frames, constraintIndex);
-            timelines.push(
-              readTimeline12(
-                timelineMap,
-                timeline,
-                0,
-                constraint.spacingMode == 0 /* Length */ || constraint.spacingMode == 1 /* Fixed */ ? scale : 1,
-              ),
-            );
-          } else if (timelineName === 'mix') {
+            timelines.push(readTimeline12(timelineMap, timeline, 0, constraint.spacingMode == 0 /* Length */ || constraint.spacingMode == 1 /* Fixed */ ? scale : 1));
+          } else if (timelineName === "mix") {
             let timeline = new PathConstraintMixTimeline(frames, frames * 3, constraintIndex);
-            let time = getValue(keyMap, 'time', 0);
-            let mixRotate = getValue(keyMap, 'mixRotate', 1);
-            let mixX = getValue(keyMap, 'mixX', 1);
-            let mixY = getValue(keyMap, 'mixY', mixX);
+            let time = getValue(keyMap, "time", 0);
+            let mixRotate = getValue(keyMap, "mixRotate", 1);
+            let mixX = getValue(keyMap, "mixX", 1);
+            let mixY = getValue(keyMap, "mixY", mixX);
             for (let frame = 0, bezier = 0; ; frame++) {
               timeline.setFrame(frame, time, mixRotate, mixX, mixY);
               let nextMap = timelineMap[frame + 1];
@@ -11481,10 +10868,10 @@ var SkeletonJson = class {
                 timeline.shrink(bezier);
                 break;
               }
-              let time2 = getValue(nextMap, 'time', 0);
-              let mixRotate2 = getValue(nextMap, 'mixRotate', 1);
-              let mixX2 = getValue(nextMap, 'mixX', 1);
-              let mixY2 = getValue(nextMap, 'mixY', mixX2);
+              let time2 = getValue(nextMap, "time", 0);
+              let mixRotate2 = getValue(nextMap, "mixRotate", 1);
+              let mixX2 = getValue(nextMap, "mixX", 1);
+              let mixY2 = getValue(nextMap, "mixY", mixX2);
               let curve = keyMap.curve;
               if (curve) {
                 bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, mixRotate, mixRotate2, 1);
@@ -11508,7 +10895,7 @@ var SkeletonJson = class {
         let constraintIndex = -1;
         if (constraintName.length > 0) {
           let constraint = skeletonData.findPhysicsConstraint(constraintName);
-          if (!constraint) throw new Error('Physics constraint not found: ' + constraintName);
+          if (!constraint) throw new Error("Physics constraint not found: " + constraintName);
           constraintIndex = skeletonData.physicsConstraints.indexOf(constraint);
         }
         for (let timelineName in constraintMap) {
@@ -11516,28 +10903,30 @@ var SkeletonJson = class {
           let keyMap = timelineMap[0];
           if (!keyMap) continue;
           let frames = timelineMap.length;
-          if (timelineName == 'reset') {
+          if (timelineName == "reset") {
             const timeline2 = new PhysicsConstraintResetTimeline(frames, constraintIndex);
             for (let frame = 0; keyMap != null; keyMap = timelineMap[frame + 1], frame++)
-              timeline2.setFrame(frame, getValue(keyMap, 'time', 0));
+              timeline2.setFrame(frame, getValue(keyMap, "time", 0));
             timelines.push(timeline2);
             continue;
           }
           let timeline;
-          if (timelineName == 'inertia')
+          if (timelineName == "inertia")
             timeline = new PhysicsConstraintInertiaTimeline(frames, frames, constraintIndex);
-          else if (timelineName == 'strength')
+          else if (timelineName == "strength")
             timeline = new PhysicsConstraintStrengthTimeline(frames, frames, constraintIndex);
-          else if (timelineName == 'damping')
+          else if (timelineName == "damping")
             timeline = new PhysicsConstraintDampingTimeline(frames, frames, constraintIndex);
-          else if (timelineName == 'mass')
+          else if (timelineName == "mass")
             timeline = new PhysicsConstraintMassTimeline(frames, frames, constraintIndex);
-          else if (timelineName == 'wind')
+          else if (timelineName == "wind")
             timeline = new PhysicsConstraintWindTimeline(frames, frames, constraintIndex);
-          else if (timelineName == 'gravity')
+          else if (timelineName == "gravity")
             timeline = new PhysicsConstraintGravityTimeline(frames, frames, constraintIndex);
-          else if (timelineName == 'mix') timeline = new PhysicsConstraintMixTimeline(frames, frames, constraintIndex);
-          else continue;
+          else if (timelineName == "mix")
+            timeline = new PhysicsConstraintMixTimeline(frames, frames, constraintIndex);
+          else
+            continue;
           timelines.push(readTimeline12(timelineMap, timeline, 0, 1));
         }
       }
@@ -11546,11 +10935,11 @@ var SkeletonJson = class {
       for (let attachmentsName in map.attachments) {
         let attachmentsMap = map.attachments[attachmentsName];
         let skin = skeletonData.findSkin(attachmentsName);
-        if (!skin) throw new Error('Skin not found: ' + attachmentsName);
+        if (!skin) throw new Error("Skin not found: " + attachmentsName);
         for (let slotMapName in attachmentsMap) {
           let slotMap = attachmentsMap[slotMapName];
           let slot = skeletonData.findSlot(slotMapName);
-          if (!slot) throw new Error('Slot not found: ' + slotMapName);
+          if (!slot) throw new Error("Slot not found: " + slotMapName);
           let slotIndex = slot.index;
           for (let attachmentMapName in slotMap) {
             let attachmentMap = slotMap[attachmentMapName];
@@ -11559,25 +10948,28 @@ var SkeletonJson = class {
               let timelineMap = attachmentMap[timelineMapName];
               let keyMap = timelineMap[0];
               if (!keyMap) continue;
-              if (timelineMapName == 'deform') {
+              if (timelineMapName == "deform") {
                 let weighted = attachment.bones;
                 let vertices = attachment.vertices;
-                let deformLength = weighted ? (vertices.length / 3) * 2 : vertices.length;
+                let deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
                 let timeline = new DeformTimeline(timelineMap.length, timelineMap.length, slotIndex, attachment);
-                let time = getValue(keyMap, 'time', 0);
+                let time = getValue(keyMap, "time", 0);
                 for (let frame = 0, bezier = 0; ; frame++) {
                   let deform;
-                  let verticesValue = getValue(keyMap, 'vertices', null);
-                  if (!verticesValue) deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
+                  let verticesValue = getValue(keyMap, "vertices", null);
+                  if (!verticesValue)
+                    deform = weighted ? Utils.newFloatArray(deformLength) : vertices;
                   else {
                     deform = Utils.newFloatArray(deformLength);
-                    let start = getValue(keyMap, 'offset', 0);
+                    let start = getValue(keyMap, "offset", 0);
                     Utils.arrayCopy(verticesValue, 0, deform, start, verticesValue.length);
                     if (scale != 1) {
-                      for (let i = start, n = i + verticesValue.length; i < n; i++) deform[i] *= scale;
+                      for (let i = start, n = i + verticesValue.length; i < n; i++)
+                        deform[i] *= scale;
                     }
                     if (!weighted) {
-                      for (let i = 0; i < deformLength; i++) deform[i] += vertices[i];
+                      for (let i = 0; i < deformLength; i++)
+                        deform[i] += vertices[i];
                     }
                   }
                   timeline.setFrame(frame, time, deform);
@@ -11586,21 +10978,21 @@ var SkeletonJson = class {
                     timeline.shrink(bezier);
                     break;
                   }
-                  let time2 = getValue(nextMap, 'time', 0);
+                  let time2 = getValue(nextMap, "time", 0);
                   let curve = keyMap.curve;
                   if (curve) bezier = readCurve(curve, timeline, bezier, frame, 0, time, time2, 0, 1, 1);
                   time = time2;
                   keyMap = nextMap;
                 }
                 timelines.push(timeline);
-              } else if (timelineMapName == 'sequence') {
+              } else if (timelineMapName == "sequence") {
                 let timeline = new SequenceTimeline(timelineMap.length, slotIndex, attachment);
                 let lastDelay = 0;
                 for (let frame = 0; frame < timelineMap.length; frame++) {
-                  let delay = getValue(keyMap, 'delay', lastDelay);
-                  let time = getValue(keyMap, 'time', 0);
-                  let mode = SequenceMode[getValue(keyMap, 'mode', 'hold')];
-                  let index = getValue(keyMap, 'index', 0);
+                  let delay = getValue(keyMap, "delay", lastDelay);
+                  let time = getValue(keyMap, "time", 0);
+                  let mode = SequenceMode[getValue(keyMap, "mode", "hold")];
+                  let index = getValue(keyMap, "index", 0);
                   timeline.setFrame(frame, time, mode, index, delay);
                   lastDelay = delay;
                   keyMap = timelineMap[frame + 1];
@@ -11619,25 +11011,26 @@ var SkeletonJson = class {
       for (let i = 0; i < map.drawOrder.length; i++, frame++) {
         let drawOrderMap = map.drawOrder[i];
         let drawOrder = null;
-        let offsets = getValue(drawOrderMap, 'offsets', null);
+        let offsets = getValue(drawOrderMap, "offsets", null);
         if (offsets) {
           drawOrder = Utils.newArray(slotCount, -1);
           let unchanged = Utils.newArray(slotCount - offsets.length, 0);
-          let originalIndex = 0,
-            unchangedIndex = 0;
+          let originalIndex = 0, unchangedIndex = 0;
           for (let ii = 0; ii < offsets.length; ii++) {
             let offsetMap = offsets[ii];
             let slot = skeletonData.findSlot(offsetMap.slot);
-            if (!slot) throw new Error('Slot not found: ' + slot);
+            if (!slot) throw new Error("Slot not found: " + slot);
             let slotIndex = slot.index;
-            while (originalIndex != slotIndex) unchanged[unchangedIndex++] = originalIndex++;
+            while (originalIndex != slotIndex)
+              unchanged[unchangedIndex++] = originalIndex++;
             drawOrder[originalIndex + offsetMap.offset] = originalIndex++;
           }
-          while (originalIndex < slotCount) unchanged[unchangedIndex++] = originalIndex++;
+          while (originalIndex < slotCount)
+            unchanged[unchangedIndex++] = originalIndex++;
           for (let ii = slotCount - 1; ii >= 0; ii--)
             if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
         }
-        timeline.setFrame(frame, getValue(drawOrderMap, 'time', 0), drawOrder);
+        timeline.setFrame(frame, getValue(drawOrderMap, "time", 0), drawOrder);
       }
       timelines.push(timeline);
     }
@@ -11647,25 +11040,31 @@ var SkeletonJson = class {
       for (let i = 0; i < map.events.length; i++, frame++) {
         let eventMap = map.events[i];
         let eventData = skeletonData.findEvent(eventMap.name);
-        if (!eventData) throw new Error('Event not found: ' + eventMap.name);
-        let event = new Event(Utils.toSinglePrecision(getValue(eventMap, 'time', 0)), eventData);
-        event.intValue = getValue(eventMap, 'int', eventData.intValue);
-        event.floatValue = getValue(eventMap, 'float', eventData.floatValue);
-        event.stringValue = getValue(eventMap, 'string', eventData.stringValue);
+        if (!eventData) throw new Error("Event not found: " + eventMap.name);
+        let event = new Event(Utils.toSinglePrecision(getValue(eventMap, "time", 0)), eventData);
+        event.intValue = getValue(eventMap, "int", eventData.intValue);
+        event.floatValue = getValue(eventMap, "float", eventData.floatValue);
+        event.stringValue = getValue(eventMap, "string", eventData.stringValue);
         if (event.data.audioPath) {
-          event.volume = getValue(eventMap, 'volume', 1);
-          event.balance = getValue(eventMap, 'balance', 0);
+          event.volume = getValue(eventMap, "volume", 1);
+          event.balance = getValue(eventMap, "balance", 0);
         }
         timeline.setFrame(frame, event);
       }
       timelines.push(timeline);
     }
     let duration = 0;
-    for (let i = 0, n = timelines.length; i < n; i++) duration = Math.max(duration, timelines[i].getDuration());
+    for (let i = 0, n = timelines.length; i < n; i++)
+      duration = Math.max(duration, timelines[i].getDuration());
     skeletonData.animations.push(new Animation(name, timelines, duration));
   }
 };
 var LinkedMesh2 = class {
+  parent;
+  skin;
+  slotIndex;
+  mesh;
+  inheritTimeline;
   constructor(mesh, skin, slotIndex, parent, inheritDeform) {
     this.mesh = mesh;
     this.skin = skin;
@@ -11676,8 +11075,8 @@ var LinkedMesh2 = class {
 };
 function readTimeline12(keys, timeline, defaultValue, scale) {
   let keyMap = keys[0];
-  let time = getValue(keyMap, 'time', 0);
-  let value = getValue(keyMap, 'value', defaultValue) * scale;
+  let time = getValue(keyMap, "time", 0);
+  let value = getValue(keyMap, "value", defaultValue) * scale;
   let bezier = 0;
   for (let frame = 0; ; frame++) {
     timeline.setFrame(frame, time, value);
@@ -11686,8 +11085,8 @@ function readTimeline12(keys, timeline, defaultValue, scale) {
       timeline.shrink(bezier);
       return timeline;
     }
-    let time2 = getValue(nextMap, 'time', 0);
-    let value2 = getValue(nextMap, 'value', defaultValue) * scale;
+    let time2 = getValue(nextMap, "time", 0);
+    let value2 = getValue(nextMap, "value", defaultValue) * scale;
     if (keyMap.curve) bezier = readCurve(keyMap.curve, timeline, bezier, frame, 0, time, time2, value, value2, scale);
     time = time2;
     value = value2;
@@ -11696,7 +11095,7 @@ function readTimeline12(keys, timeline, defaultValue, scale) {
 }
 function readTimeline22(keys, timeline, name1, name2, defaultValue, scale) {
   let keyMap = keys[0];
-  let time = getValue(keyMap, 'time', 0);
+  let time = getValue(keyMap, "time", 0);
   let value1 = getValue(keyMap, name1, defaultValue) * scale;
   let value2 = getValue(keyMap, name2, defaultValue) * scale;
   let bezier = 0;
@@ -11707,7 +11106,7 @@ function readTimeline22(keys, timeline, name1, name2, defaultValue, scale) {
       timeline.shrink(bezier);
       return timeline;
     }
-    let time2 = getValue(nextMap, 'time', 0);
+    let time2 = getValue(nextMap, "time", 0);
     let nvalue1 = getValue(nextMap, name1, defaultValue) * scale;
     let nvalue2 = getValue(nextMap, name2, defaultValue) * scale;
     let curve = keyMap.curve;
@@ -11722,7 +11121,7 @@ function readTimeline22(keys, timeline, name1, name2, defaultValue, scale) {
   }
 }
 function readCurve(curve, timeline, bezier, frame, value, time1, time2, value1, value2, scale) {
-  if (curve == 'stepped') {
+  if (curve == "stepped") {
     timeline.setStepped(frame);
     return bezier;
   }
@@ -11740,28 +11139,33 @@ function getValue(map, property, defaultValue) {
 
 // spine-core/src/polyfills.ts
 (() => {
-  if (typeof Math.fround === 'undefined') {
-    Math.fround = (function (array) {
-      return function (x) {
-        return (array[0] = x), array[0];
+  if (typeof Math.fround === "undefined") {
+    Math.fround = /* @__PURE__ */ (function(array) {
+      return function(x) {
+        return array[0] = x, array[0];
       };
     })(new Float32Array(1));
   }
 })();
 
 // spine-pixi-v8/src/SpineTexture.ts
-var _SpineTexture = class extends Texture {
-  constructor(image) {
-    super(image.resource);
-    this.texture = PixiTexture.from(image);
-  }
+var SpineTexture = class _SpineTexture extends Texture {
+  static textureMap = /* @__PURE__ */ new Map();
   static from(texture) {
     if (_SpineTexture.textureMap.has(texture)) {
       return _SpineTexture.textureMap.get(texture);
     }
     return new _SpineTexture(texture);
   }
+  texture;
+  constructor(image) {
+    super(image.resource);
+    this.texture = PixiTexture.from(image);
+  }
   setFilters(minFilter, magFilter) {
+    if (!this.texture || !this.texture.source || !this.texture.source.style) {
+      return;
+    }
     const style = this.texture.source.style;
     style.minFilter = _SpineTexture.toPixiTextureFilter(minFilter);
     style.magFilter = _SpineTexture.toPixiTextureFilter(magFilter);
@@ -11769,6 +11173,9 @@ var _SpineTexture = class extends Texture {
     this.texture.source.updateMipmaps();
   }
   setWraps(uWrap, vWrap) {
+    if (!this.texture || !this.texture.source || !this.texture.source.style) {
+      return;
+    }
     const style = this.texture.source.style;
     style.addressModeU = _SpineTexture.toPixiTextureWrap(uWrap);
     style.addressModeV = _SpineTexture.toPixiTextureWrap(vWrap);
@@ -11784,6 +11191,7 @@ var _SpineTexture = class extends Texture {
       case 9986 /* MipMapNearestLinear */:
       case 9984 /* MipMapNearestNearest */:
       case 9987 /* MipMapLinearLinear */:
+      // TextureFilter.MipMapLinearLinear == TextureFilter.MipMap
       case 9985 /* MipMapLinearNearest */:
         return true;
       default:
@@ -11795,11 +11203,12 @@ var _SpineTexture = class extends Texture {
       case 9728 /* Nearest */:
       case 9986 /* MipMapNearestLinear */:
       case 9984 /* MipMapNearestNearest */:
-        return 'nearest';
+        return "nearest";
       case 9729 /* Linear */:
       case 9987 /* MipMapLinearLinear */:
+      // TextureFilter.MipMapLinearLinear == TextureFilter.MipMap
       case 9985 /* MipMapLinearNearest */:
-        return 'linear';
+        return "linear";
       default:
         throw new Error(`Unknown texture filter: ${String(filter)}`);
     }
@@ -11807,11 +11216,11 @@ var _SpineTexture = class extends Texture {
   static toPixiTextureWrap(wrap) {
     switch (wrap) {
       case 33071 /* ClampToEdge */:
-        return 'clamp-to-edge';
+        return "clamp-to-edge";
       case 33648 /* MirroredRepeat */:
-        return 'mirror-repeat';
+        return "mirror-repeat";
       case 10497 /* Repeat */:
-        return 'repeat';
+        return "repeat";
       default:
         throw new Error(`Unknown texture wrap: ${String(wrap)}`);
     }
@@ -11819,112 +11228,99 @@ var _SpineTexture = class extends Texture {
   static toPixiBlending(blend) {
     switch (blend) {
       case 0 /* Normal */:
-        return 'normal';
+        return "normal";
       case 1 /* Additive */:
-        return 'add';
+        return "add";
       case 2 /* Multiply */:
-        return 'multiply';
+        return "multiply";
       case 3 /* Screen */:
-        return 'screen';
+        return "screen";
       default:
         throw new Error(`Unknown blendMode: ${String(blend)}`);
     }
   }
 };
-var SpineTexture = _SpineTexture;
-SpineTexture.textureMap = /* @__PURE__ */ new Map();
 
 // spine-pixi-v8/src/assets/atlasLoader.ts
 var spineTextureAtlasLoader = {
   extension: ExtensionType.Asset,
   resolver: {
-    test: value => checkExtension(value, '.atlas'),
-    parse: value => {
-      var _a, _b, _c;
-      const split = value.split('.');
+    test: (value) => checkExtension(value, ".atlas"),
+    parse: (value) => {
+      const split = value.split(".");
       return {
-        resolution: parseFloat(
-          (_c = (_b = (_a = Resolver.RETINA_PREFIX) == null ? void 0 : _a.exec(value)) == null ? void 0 : _b[1]) != null
-            ? _c
-            : '1',
-        ),
+        resolution: parseFloat(Resolver.RETINA_PREFIX?.exec(value)?.[1] ?? "1"),
         format: split[split.length - 2],
-        src: value,
+        src: value
       };
-    },
+    }
   },
   loader: {
     extension: {
       type: ExtensionType.LoadParser,
       priority: LoaderParserPriority.Normal,
-      name: 'spineTextureAtlasLoader',
+      name: "spineTextureAtlasLoader"
     },
     test(url) {
-      return checkExtension(url, '.atlas');
+      return checkExtension(url, ".atlas");
     },
-    load(url) {
-      return __async(this, null, function* () {
-        const response = yield DOMAdapter.get().fetch(url);
-        const txt = yield response.text();
-        return txt;
-      });
+    async load(url) {
+      const response = await DOMAdapter.get().fetch(url);
+      const txt = await response.text();
+      return txt;
     },
     testParse(asset, options) {
-      const isExtensionRight = checkExtension(options.src, '.atlas');
-      const isString = typeof asset === 'string';
+      const isExtensionRight = checkExtension(options.src, ".atlas");
+      const isString = typeof asset === "string";
       return Promise.resolve(isExtensionRight && isString);
     },
     unload(atlas) {
       atlas.dispose();
     },
-    parse(asset, options, loader) {
-      return __async(this, null, function* () {
-        const metadata = options.data || {};
-        let basePath = path.dirname(options.src);
-        if (basePath && basePath.lastIndexOf('/') !== basePath.length - 1) {
-          basePath += '/';
+    async parse(asset, options, loader) {
+      const metadata = options.data || {};
+      let basePath = path.dirname(options.src);
+      if (basePath && basePath.lastIndexOf("/") !== basePath.length - 1) {
+        basePath += "/";
+      }
+      const retval = new TextureAtlas(asset);
+      if (metadata.images instanceof TextureSource || typeof metadata.images === "string") {
+        const pixiTexture = metadata.images;
+        metadata.images = {};
+        metadata.images[retval.pages[0].name] = pixiTexture;
+      }
+      const textureLoadingPromises = [];
+      for (const page of retval.pages) {
+        if (metadata.resolve) {
+          const resolvePromise = metadata.resolve().then(texture => {
+            page.setTexture(SpineTexture.from(texture.source));
+          });
+          textureLoadingPromises.push(resolvePromise);
+          continue;
         }
-        const retval = new TextureAtlas(asset);
-        if (metadata.images instanceof TextureSource || typeof metadata.images === 'string') {
-          const pixiTexture = metadata.images;
-          metadata.images = {};
-          metadata.images[retval.pages[0].name] = pixiTexture;
+        const pageName = page.name;
+        const providedPage = metadata?.images ? metadata.images[pageName] : void 0;
+        if (providedPage instanceof TextureSource) {
+          page.setTexture(SpineTexture.from(providedPage));
+        } else {
+          const url = providedPage ?? path.normalize([...basePath.split(path.sep), pageName].join(path.sep));
+          const assetsToLoadIn = {
+            src: copySearchParams(url, options.src),
+            data: {
+              ...metadata.imageMetadata,
+              alphaMode: page.pma ? "premultiplied-alpha" : "premultiply-alpha-on-upload"
+            }
+          };
+          const pixiPromise = loader.load(assetsToLoadIn).then((texture) => {
+            page.setTexture(SpineTexture.from(texture.source));
+          });
+          textureLoadingPromises.push(pixiPromise);
         }
-        const textureLoadingPromises = [];
-        for (const page of retval.pages) {
-          if (metadata.resolve) {
-            const resolvePromise = metadata.resolve().then(texture => {
-              page.setTexture(SpineTexture.from(texture.source));
-            });
-            textureLoadingPromises.push(resolvePromise);
-            continue;
-          }
-          const pageName = page.name;
-          const providedPage = (metadata == null ? void 0 : metadata.images) ? metadata.images[pageName] : void 0;
-          if (providedPage instanceof TextureSource) {
-            page.setTexture(SpineTexture.from(providedPage));
-          } else {
-            const url =
-              providedPage != null
-                ? providedPage
-                : path.normalize([...basePath.split(path.sep), pageName].join(path.sep));
-            const assetsToLoadIn = {
-              src: url,
-              data: __spreadProps(__spreadValues({}, metadata.imageMetadata), {
-                alphaMode: page.pma ? 'premultiplied-alpha' : 'premultiply-alpha-on-upload',
-              }),
-            };
-            const pixiPromise = loader.load(assetsToLoadIn).then(texture => {
-              page.setTexture(SpineTexture.from(texture.source));
-            });
-            textureLoadingPromises.push(pixiPromise);
-          }
-        }
-        yield Promise.all(textureLoadingPromises);
-        return retval;
-      });
-    },
-  },
+      }
+      await Promise.all(textureLoadingPromises);
+      return retval;
+    }
+  }
 };
 extensions.add(spineTextureAtlasLoader);
 
@@ -11934,10 +11330,10 @@ import {
   DOMAdapter as DOMAdapter2,
   extensions as extensions2,
   ExtensionType as ExtensionType2,
-  LoaderParserPriority as LoaderParserPriority2,
-} from 'pixi.js';
+  LoaderParserPriority as LoaderParserPriority2
+} from "pixi.js";
 function isJson(resource) {
-  return Object.prototype.hasOwnProperty.call(resource, 'bones');
+  return Object.prototype.hasOwnProperty.call(resource, "bones");
 }
 function isBuffer(resource) {
   return resource instanceof Uint8Array;
@@ -11948,85 +11344,88 @@ var spineLoaderExtension = {
     extension: {
       type: ExtensionType2.LoadParser,
       priority: LoaderParserPriority2.Normal,
-      name: 'spineSkeletonLoader',
+      name: "spineSkeletonLoader"
     },
     test(url) {
-      return checkExtension2(url, '.skel');
+      return checkExtension2(url, ".skel");
     },
-    load(url) {
-      return __async(this, null, function* () {
-        const response = yield DOMAdapter2.get().fetch(url);
-        const buffer = new Uint8Array(yield response.arrayBuffer());
-        return buffer;
-      });
+    async load(url) {
+      const response = await DOMAdapter2.get().fetch(url);
+      const buffer = new Uint8Array(await response.arrayBuffer());
+      return buffer;
     },
     testParse(asset, options) {
-      const isJsonSpineModel = checkExtension2(options.src, '.json') && isJson(asset);
-      const isBinarySpineModel = checkExtension2(options.src, '.skel') && isBuffer(asset);
+      const isJsonSpineModel = checkExtension2(options.src, ".json") && isJson(asset);
+      const isBinarySpineModel = checkExtension2(options.src, ".skel") && isBuffer(asset);
       return Promise.resolve(isJsonSpineModel || isBinarySpineModel);
-    },
-  },
+    }
+  }
 };
 extensions2.add(spineLoaderExtension);
 
 // spine-pixi-v8/src/darktint/DarkTintBatcher.ts
-import { Batcher, Color as Color3, extensions as extensions3, ExtensionType as ExtensionType3 } from 'pixi.js';
+import {
+  Batcher,
+  Color as Color3,
+  extensions as extensions3,
+  ExtensionType as ExtensionType3
+} from "pixi.js";
 
 // spine-pixi-v8/src/darktint/DarkTintBatchGeometry.ts
-import { Buffer as Buffer2, BufferUsage, Geometry } from 'pixi.js';
+import { Buffer, BufferUsage, Geometry } from "pixi.js";
 var placeHolderBufferData = new Float32Array(1);
 var placeHolderIndexData = new Uint32Array(1);
 var DarkTintBatchGeometry = class extends Geometry {
   constructor() {
     const vertexSize = 7;
-    const attributeBuffer = new Buffer2({
+    const attributeBuffer = new Buffer({
       data: placeHolderBufferData,
-      label: 'attribute-batch-buffer',
+      label: "attribute-batch-buffer",
       usage: BufferUsage.VERTEX | BufferUsage.COPY_DST,
-      shrinkToFit: false,
+      shrinkToFit: false
     });
-    const indexBuffer = new Buffer2({
+    const indexBuffer = new Buffer({
       data: placeHolderIndexData,
-      label: 'index-batch-buffer',
+      label: "index-batch-buffer",
       usage: BufferUsage.INDEX | BufferUsage.COPY_DST,
       // | BufferUsage.STATIC,
-      shrinkToFit: false,
+      shrinkToFit: false
     });
     const stride = vertexSize * 4;
     super({
       attributes: {
         aPosition: {
           buffer: attributeBuffer,
-          format: 'float32x2',
+          format: "float32x2",
           stride,
-          offset: 0,
+          offset: 0
         },
         aUV: {
           buffer: attributeBuffer,
-          format: 'float32x2',
+          format: "float32x2",
           stride,
-          offset: 2 * 4,
+          offset: 2 * 4
         },
         aColor: {
           buffer: attributeBuffer,
-          format: 'unorm8x4',
+          format: "unorm8x4",
           stride,
-          offset: 4 * 4,
+          offset: 4 * 4
         },
         aDarkColor: {
           buffer: attributeBuffer,
-          format: 'unorm8x4',
+          format: "unorm8x4",
           stride,
-          offset: 5 * 4,
+          offset: 5 * 4
         },
         aTextureIdAndRound: {
           buffer: attributeBuffer,
-          format: 'uint16x2',
+          format: "uint16x2",
           stride,
-          offset: 6 * 4,
-        },
+          offset: 6 * 4
+        }
       },
-      indexBuffer,
+      indexBuffer
     });
   }
 };
@@ -12042,32 +11441,35 @@ import {
   getBatchSamplersUniformGroup,
   roundPixelsBit,
   roundPixelsBitGl,
-  Shader,
-} from 'pixi.js';
+  Shader
+} from "pixi.js";
 
 // spine-pixi-v8/src/darktint/darkTintBit.ts
 var darkTintBit = {
-  name: 'color-bit',
+  name: "color-bit",
   vertex: {
-    header:
+    header: (
       /* wgsl */
       `
             @in aDarkColor: vec4<f32>;
             @out vDarkColor: vec4<f32>;
-        `,
-    main:
+        `
+    ),
+    main: (
       /* wgsl */
       `
         vDarkColor = aDarkColor;
-        `,
+        `
+    )
   },
   fragment: {
-    header:
+    header: (
       /* wgsl */
       `
             @in vDarkColor: vec4<f32>;
-        `,
-    end:
+        `
+    ),
+    end: (
       /* wgsl */
       `
 
@@ -12076,74 +11478,93 @@ var darkTintBit = {
 
         finalColor = vec4<f32>(rgb, alpha);
 
-        `,
-  },
+        `
+    )
+  }
 };
 var darkTintBitGl = {
-  name: 'color-bit',
+  name: "color-bit",
   vertex: {
-    header:
+    header: (
       /* glsl */
       `
             in vec4 aDarkColor;
             out vec4 vDarkColor;
-        `,
-    main:
+        `
+    ),
+    main: (
       /* glsl */
       `
             vDarkColor = aDarkColor;
-        `,
+        `
+    )
   },
   fragment: {
-    header:
+    header: (
       /* glsl */
       `
             in vec4 vDarkColor;
-        `,
-    end:
+        `
+    ),
+    end: (
       /* glsl */
       `
 
         finalColor.a = outColor.a * vColor.a;
         finalColor.rgb = ((outColor.a - 1.0) * vDarkColor.a + 1.0 - outColor.rgb) * vDarkColor.rgb + outColor.rgb * vColor.rgb;
-        `,
-  },
+        `
+    )
+  }
 };
 
 // spine-pixi-v8/src/darktint/DarkTintShader.ts
 var DarkTintShader = class extends Shader {
   constructor(maxTextures) {
     const glProgram = compileHighShaderGlProgram({
-      name: 'dark-tint-batch',
-      bits: [colorBitGl, darkTintBitGl, generateTextureBatchBitGl(maxTextures), roundPixelsBitGl],
+      name: "dark-tint-batch",
+      bits: [
+        colorBitGl,
+        darkTintBitGl,
+        generateTextureBatchBitGl(maxTextures),
+        roundPixelsBitGl
+      ]
     });
     const gpuProgram = compileHighShaderGpuProgram({
-      name: 'dark-tint-batch',
-      bits: [colorBit, darkTintBit, generateTextureBatchBit(maxTextures), roundPixelsBit],
+      name: "dark-tint-batch",
+      bits: [
+        colorBit,
+        darkTintBit,
+        generateTextureBatchBit(maxTextures),
+        roundPixelsBit
+      ]
     });
     super({
       glProgram,
       gpuProgram,
       resources: {
-        batchSamplers: getBatchSamplersUniformGroup(maxTextures),
-      },
+        batchSamplers: getBatchSamplersUniformGroup(maxTextures)
+      }
     });
   }
 };
 
 // spine-pixi-v8/src/darktint/DarkTintBatcher.ts
 var defaultShader = null;
-var _DarkTintBatcher = class extends Batcher {
-  constructor() {
-    super(...arguments);
-    this.geometry = new DarkTintBatchGeometry();
-    this.shader = defaultShader || (defaultShader = new DarkTintShader(this.maxTextures));
-    this.name = _DarkTintBatcher.extension.name;
-    /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, darkColor, textureIdAndRound -> total = 7 */
-    this.vertexSize = 7;
-  }
+var DarkTintBatcher = class _DarkTintBatcher extends Batcher {
+  /** @ignore */
+  static extension = {
+    type: [
+      ExtensionType3.Batcher
+    ],
+    name: "darkTint"
+  };
+  geometry = new DarkTintBatchGeometry();
+  shader = defaultShader || (defaultShader = new DarkTintShader(this.maxTextures));
+  name = _DarkTintBatcher.extension.name;
+  /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, darkColor, textureIdAndRound -> total = 7 */
+  vertexSize = 7;
   packAttributes(element, float32View, uint32View, index, textureId) {
-    const textureIdAndRound = (textureId << 16) | (element.roundPixels & 65535);
+    const textureIdAndRound = textureId << 16 | element.roundPixels & 65535;
     const wt = element.transform;
     const a = wt.a;
     const b = wt.b;
@@ -12153,7 +11574,7 @@ var _DarkTintBatcher = class extends Batcher {
     const ty = wt.ty;
     const { positions, uvs } = element;
     const argb = element.color;
-    const worldAlpha = ((argb >> 24) & 255) / 255;
+    const worldAlpha = (argb >> 24 & 255) / 255;
     const darkColor = Color3.shared.setValue(element.darkColor).premultiply(worldAlpha, true).toPremultiplied(1, false);
     const offset = element.attributeOffset;
     const end = offset + element.attributeSize;
@@ -12187,7 +11608,7 @@ var _DarkTintBatcher = class extends Batcher {
     const uvs = texture.uvs;
     const argb = element.color;
     const darkColor = element.darkColor;
-    const textureIdAndRound = (textureId << 16) | (element.roundPixels & 65535);
+    const textureIdAndRound = textureId << 16 | element.roundPixels & 65535;
     float32View[index + 0] = a * w1 + c * h1 + tx;
     float32View[index + 1] = d * h1 + b * w1 + ty;
     float32View[index + 2] = uvs.x0;
@@ -12218,26 +11639,40 @@ var _DarkTintBatcher = class extends Batcher {
     uint32View[index + 27] = textureIdAndRound;
   }
 };
-var DarkTintBatcher = _DarkTintBatcher;
-/** @ignore */
-DarkTintBatcher.extension = {
-  type: [ExtensionType3.Batcher],
-  name: 'darkTint',
-};
 extensions3.add(DarkTintBatcher);
 
 // spine-pixi-v8/src/SpinePipe.ts
-import { collectAllRenderables, extensions as extensions4, ExtensionType as ExtensionType4 } from 'pixi.js';
+import {
+  collectAllRenderables,
+  extensions as extensions4,
+  ExtensionType as ExtensionType4
+} from "pixi.js";
 
 // spine-pixi-v8/src/BatchableSpineSlot.ts
 var BatchableSpineSlot = class {
-  constructor() {
-    this.indexOffset = 0;
-    this.attributeOffset = 0;
-    this.batcherName = 'darkTint';
-    this.topology = 'triangle-list';
-    this.packAsQuad = false;
-  }
+  indexOffset = 0;
+  attributeOffset = 0;
+  indexSize;
+  attributeSize;
+  batcherName = "darkTint";
+  topology = "triangle-list";
+  packAsQuad = false;
+  renderable;
+  positions;
+  indices;
+  uvs;
+  roundPixels;
+  data;
+  blendMode;
+  darkTint;
+  texture;
+  transform;
+  // used internally by batcher specific. Stored for efficient updating.
+  _textureId;
+  _attributeStart;
+  _indexStart;
+  _batcher;
+  _batch;
   get color() {
     const slotColor = this.data.color;
     const parentColor = this.renderable.groupColor;
@@ -12245,21 +11680,21 @@ var BatchableSpineSlot = class {
     let abgr;
     const mixedA = slotColor.a * parentAlpha * 255;
     if (parentColor !== 16777215) {
-      const parentB = (parentColor >> 16) & 255;
-      const parentG = (parentColor >> 8) & 255;
+      const parentB = parentColor >> 16 & 255;
+      const parentG = parentColor >> 8 & 255;
       const parentR = parentColor & 255;
       const mixedR = slotColor.r * parentR;
       const mixedG = slotColor.g * parentG;
       const mixedB = slotColor.b * parentB;
-      abgr = (mixedA << 24) | (mixedB << 16) | (mixedG << 8) | mixedR;
+      abgr = mixedA << 24 | mixedB << 16 | mixedG << 8 | mixedR;
     } else {
-      abgr = (mixedA << 24) | ((slotColor.b * 255) << 16) | ((slotColor.g * 255) << 8) | (slotColor.r * 255);
+      abgr = mixedA << 24 | slotColor.b * 255 << 16 | slotColor.g * 255 << 8 | slotColor.r * 255;
     }
     return abgr;
   }
   get darkColor() {
     const darkColor = this.data.darkColor;
-    return ((darkColor.b * 255) << 16) | ((darkColor.g * 255) << 8) | (darkColor.r * 255);
+    return darkColor.b * 255 << 16 | darkColor.g * 255 << 8 | darkColor.r * 255;
   }
   get groupTransform() {
     return this.renderable.groupTransform;
@@ -12285,21 +11720,31 @@ var BatchableSpineSlot = class {
     this.texture = data.texture;
     this.roundPixels = roundPixels;
     this.blendMode = blendMode;
-    this.batcherName = data.darkTint ? 'darkTint' : 'default';
+    this.batcherName = data.darkTint ? "darkTint" : "default";
   }
 };
 
 // spine-pixi-v8/src/SpinePipe.ts
 var spineBlendModeMap = {
-  0: 'normal',
-  1: 'add',
-  2: 'multiply',
-  3: 'screen',
+  0: "normal",
+  1: "add",
+  2: "multiply",
+  3: "screen"
 };
 var SpinePipe = class {
+  /** @ignore */
+  static extension = {
+    type: [
+      ExtensionType4.WebGLPipes,
+      ExtensionType4.WebGPUPipes,
+      ExtensionType4.CanvasPipes
+    ],
+    name: "spine"
+  };
+  renderer;
+  gpuSpineData = {};
+  _destroyRenderableBound = this.destroyRenderable.bind(this);
   constructor(renderer) {
-    this.gpuSpineData = {};
-    this._destroyRenderableBound = this.destroyRenderable.bind(this);
     this.renderer = renderer;
   }
   validateRenderable(spine) {
@@ -12327,21 +11772,26 @@ var SpinePipe = class {
     return false;
   }
   addRenderable(spine, instructionSet) {
-    var _a, _b;
     const gpuSpine = this._getSpineData(spine);
     const batcher = this.renderer.renderPipes.batch;
     const drawOrder = spine.skeleton.drawOrder;
     const roundPixels = this.renderer._roundPixels | spine._roundPixels;
     spine._validateAndTransformAttachments();
+    spine.spineAttachmentsDirty = false;
+    spine.spineTexturesDirty = false;
     for (let i = 0, n = drawOrder.length; i < n; i++) {
       const slot = drawOrder[i];
       const attachment = slot.getAttachment();
       const blendMode = spineBlendModeMap[slot.data.blendMode];
       if (attachment instanceof RegionAttachment || attachment instanceof MeshAttachment) {
         const cacheData = spine._getCachedData(slot, attachment);
-        const batchableSpineSlot =
-          (_a = gpuSpine.slotBatches)[(_b = cacheData.id)] || (_a[_b] = new BatchableSpineSlot());
-        batchableSpineSlot.setData(spine, cacheData, blendMode, roundPixels);
+        const batchableSpineSlot = gpuSpine.slotBatches[cacheData.id] ||= new BatchableSpineSlot();
+        batchableSpineSlot.setData(
+          spine,
+          cacheData,
+          blendMode,
+          roundPixels
+        );
         if (!cacheData.skipRender) {
           batcher.addToBatch(batchableSpineSlot, instructionSet);
         }
@@ -12356,9 +11806,10 @@ var SpinePipe = class {
     }
   }
   updateRenderable(spine) {
-    var _a;
     const gpuSpine = this.gpuSpineData[spine.uid];
     spine._validateAndTransformAttachments();
+    spine.spineAttachmentsDirty = false;
+    spine.spineTexturesDirty = false;
     const drawOrder = spine.skeleton.drawOrder;
     for (let i = 0, n = drawOrder.length; i < n; i++) {
       const slot = drawOrder[i];
@@ -12367,14 +11818,14 @@ var SpinePipe = class {
         const cacheData = spine._getCachedData(slot, attachment);
         if (!cacheData.skipRender) {
           const batchableSpineSlot = gpuSpine.slotBatches[spine._getCachedData(slot, attachment).id];
-          (_a = batchableSpineSlot._batcher) == null ? void 0 : _a.updateElement(batchableSpineSlot);
+          batchableSpineSlot._batcher?.updateElement(batchableSpineSlot);
         }
       }
     }
   }
   destroyRenderable(spine) {
     this.gpuSpineData[spine.uid] = null;
-    spine.off('destroyed', this._destroyRenderableBound);
+    spine.off("destroyed", this._destroyRenderableBound);
   }
   destroy() {
     this.gpuSpineData = null;
@@ -12385,14 +11836,9 @@ var SpinePipe = class {
   }
   _initMeshData(spine) {
     this.gpuSpineData[spine.uid] = { slotBatches: {} };
-    spine.on('destroyed', this._destroyRenderableBound);
+    spine.on("destroyed", this._destroyRenderableBound);
     return this.gpuSpineData[spine.uid];
   }
-};
-/** @ignore */
-SpinePipe.extension = {
-  type: [ExtensionType4.WebGLPipes, ExtensionType4.WebGPUPipes, ExtensionType4.CanvasPipes],
-  name: 'spine',
 };
 extensions4.add(SpinePipe);
 
@@ -12406,62 +11852,134 @@ import {
   Graphics,
   Texture as Texture3,
   Ticker,
-  ViewContainer,
-} from 'pixi.js';
+  ViewContainer
+} from "pixi.js";
 var vectorAux = new Vector2();
 Skeleton.yDown = true;
 var clipper = new SkeletonClipping();
-var maskPool = new Pool(() => new Graphics());
-var Spine = class extends ViewContainer {
-  constructor(options) {
-    var _a;
-    if (options instanceof SkeletonData) {
-      options = {
-        skeletonData: options,
-      };
+var AABBRectangleBoundsProvider = class {
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+  calculateBounds() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height };
+  }
+};
+var SetupPoseBoundsProvider = class {
+  /**
+   * @param clipping If true, clipping attachments are used to compute the bounds. False, by default.
+   */
+  constructor(clipping = false) {
+    this.clipping = clipping;
+  }
+  calculateBounds(gameObject) {
+    if (!gameObject.skeleton) return { x: 0, y: 0, width: 0, height: 0 };
+    const skeleton = new Skeleton(gameObject.skeleton.data);
+    skeleton.setToSetupPose();
+    skeleton.updateWorldTransform(2 /* update */);
+    const bounds = skeleton.getBoundsRect(this.clipping ? new SkeletonClipping() : void 0);
+    return bounds.width == Number.NEGATIVE_INFINITY ? { x: 0, y: 0, width: 0, height: 0 } : bounds;
+  }
+};
+var SkinsAndAnimationBoundsProvider = class {
+  /**
+   * @param animation The animation to use for calculating the bounds. If null, the setup pose is used.
+   * @param skins The skins to use for calculating the bounds. If empty, the default skin is used.
+   * @param timeStep The time step to use for calculating the bounds. A smaller time step means more precision, but slower calculation.
+   * @param clipping If true, clipping attachments are used to compute the bounds. False, by default.
+   */
+  constructor(animation, skins = [], timeStep = 0.05, clipping = false) {
+    this.animation = animation;
+    this.skins = skins;
+    this.timeStep = timeStep;
+    this.clipping = clipping;
+  }
+  calculateBounds(gameObject) {
+    if (!gameObject.skeleton || !gameObject.state)
+      return { x: 0, y: 0, width: 0, height: 0 };
+    const animationState = new AnimationState(gameObject.state.data);
+    const skeleton = new Skeleton(gameObject.skeleton.data);
+    const clipper2 = this.clipping ? new SkeletonClipping() : void 0;
+    const data = skeleton.data;
+    if (this.skins.length > 0) {
+      let customSkin = new Skin("custom-skin");
+      for (const skinName of this.skins) {
+        const skin = data.findSkin(skinName);
+        if (skin == null) continue;
+        customSkin.addSkin(skin);
+      }
+      skeleton.setSkin(customSkin);
     }
-    super();
-    // Pixi properties
-    this.batched = true;
-    this.buildId = 0;
-    this.renderPipeId = 'spine';
-    this._didSpineUpdate = false;
-    this.beforeUpdateWorldTransforms = () => {};
-    this.afterUpdateWorldTransforms = () => {};
-    this.darkTint = false;
-    this._debug = void 0;
-    this._slotsObject = /* @__PURE__ */ Object.create(null);
-    this.clippingSlotToPixiMasks = /* @__PURE__ */ Object.create(null);
-    this.spineAttachmentsDirty = true;
-    this.spineTexturesDirty = true;
-    this._lastAttachments = [];
-    this._stateChanged = true;
-    this.attachmentCacheData = [];
-    this._autoUpdate = true;
-    this.hasNeverUpdated = true;
-    const skeletonData = options instanceof SkeletonData ? options : options.skeletonData;
-    this.skeleton = new Skeleton(skeletonData);
-    this.state = new AnimationState(new AnimationStateData(skeletonData));
-    this.autoUpdate = (_a = options == null ? void 0 : options.autoUpdate) != null ? _a : true;
-    this.darkTint =
-      (options == null ? void 0 : options.darkTint) === void 0
-        ? this.skeleton.slots.some(slot => !!slot.data.darkColor)
-        : options == null
-        ? void 0
-        : options.darkTint;
-    const slots = this.skeleton.slots;
-    for (let i = 0; i < slots.length; i++) {
-      this.attachmentCacheData[i] = /* @__PURE__ */ Object.create(null);
+    skeleton.setToSetupPose();
+    const animation = this.animation != null ? data.findAnimation(this.animation) : null;
+    if (animation == null) {
+      skeleton.updateWorldTransform(2 /* update */);
+      const bounds = skeleton.getBoundsRect(clipper2);
+      return bounds.width == Number.NEGATIVE_INFINITY ? { x: 0, y: 0, width: 0, height: 0 } : bounds;
+    } else {
+      let minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY;
+      animationState.clearTracks();
+      animationState.setAnimationWith(0, animation, false);
+      const steps = Math.max(animation.duration / this.timeStep, 1);
+      for (let i = 0; i < steps; i++) {
+        const delta = i > 0 ? this.timeStep : 0;
+        animationState.update(delta);
+        animationState.apply(skeleton);
+        skeleton.update(delta);
+        skeleton.updateWorldTransform(2 /* update */);
+        const bounds2 = skeleton.getBoundsRect(clipper2);
+        minX = Math.min(minX, bounds2.x);
+        minY = Math.min(minY, bounds2.y);
+        maxX = Math.max(maxX, bounds2.x + bounds2.width);
+        maxY = Math.max(maxY, bounds2.y + bounds2.height);
+      }
+      const bounds = {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY
+      };
+      return bounds.width == Number.NEGATIVE_INFINITY ? { x: 0, y: 0, width: 0, height: 0 } : bounds;
     }
   }
+};
+var maskPool = new Pool(() => new Graphics());
+var Spine = class _Spine extends ViewContainer {
+  // Pixi properties
+  batched = true;
+  buildId = 0;
+  renderPipeId = "spine";
+  _didSpineUpdate = false;
+  beforeUpdateWorldTransforms = () => {
+  };
+  afterUpdateWorldTransforms = () => {
+  };
+  // Spine properties
+  /** The skeleton for this Spine game object. */
+  skeleton;
+  /** The animation state for this Spine game object. */
+  state;
+  skeletonBounds;
+  darkTint = false;
+  _debug = void 0;
+  _slotsObject = /* @__PURE__ */ Object.create(null);
+  clippingSlotToPixiMasks = /* @__PURE__ */ Object.create(null);
   getSlotFromRef(slotRef) {
     let slot;
-    if (typeof slotRef === 'number') slot = this.skeleton.slots[slotRef];
-    else if (typeof slotRef === 'string') slot = this.skeleton.findSlot(slotRef);
+    if (typeof slotRef === "number") slot = this.skeleton.slots[slotRef];
+    else if (typeof slotRef === "string") slot = this.skeleton.findSlot(slotRef);
     else slot = slotRef;
     if (!slot) throw new Error(`No slot found with the given slot reference: ${slotRef}`);
     return slot;
   }
+  spineAttachmentsDirty = true;
+  spineTexturesDirty = true;
+  _lastAttachments = [];
+  _stateChanged = true;
+  attachmentCacheData = [];
   get debug() {
     return this._debug;
   }
@@ -12477,6 +11995,7 @@ var Spine = class extends ViewContainer {
     }
     this._debug = value;
   }
+  _autoUpdate = true;
   get autoUpdate() {
     return this._autoUpdate;
   }
@@ -12489,12 +12008,43 @@ var Spine = class extends ViewContainer {
     }
     this._autoUpdate = value;
   }
+  _boundsProvider;
+  /** The bounds provider to use. If undefined the bounds will be dynamic, calculated when requested and based on the current frame. */
+  get boundsProvider() {
+    return this._boundsProvider;
+  }
+  set boundsProvider(value) {
+    this._boundsProvider = value;
+    if (value) {
+      this._boundsDirty = false;
+    }
+    this.updateBounds();
+  }
+  hasNeverUpdated = true;
+  constructor(options) {
+    if (options instanceof SkeletonData) {
+      options = {
+        skeletonData: options
+      };
+    }
+    super({});
+    const skeletonData = options instanceof SkeletonData ? options : options.skeletonData;
+    this.skeleton = new Skeleton(skeletonData);
+    this.state = new AnimationState(new AnimationStateData(skeletonData));
+    this.autoUpdate = options?.autoUpdate ?? true;
+    this.darkTint = options?.darkTint === void 0 ? this.skeleton.slots.some((slot) => !!slot.data.darkColor) : options?.darkTint;
+    const slots = this.skeleton.slots;
+    for (let i = 0; i < slots.length; i++) {
+      this.attachmentCacheData[i] = /* @__PURE__ */ Object.create(null);
+    }
+    this._boundsProvider = options.boundsProvider;
+  }
   /** If {@link Spine.autoUpdate} is `false`, this method allows to update the AnimationState and the Skeleton with the given delta. */
   update(dt) {
     this.internalUpdate(0, dt);
   }
   internalUpdate(_deltaFrame, deltaSeconds) {
-    this._updateAndApplyState(deltaSeconds != null ? deltaSeconds : Ticker.shared.deltaMS / 1e3);
+    this._updateAndApplyState(deltaSeconds ?? Ticker.shared.deltaMS / 1e3);
   }
   get bounds() {
     if (this._boundsDirty) {
@@ -12510,7 +12060,7 @@ var Spine = class extends ViewContainer {
    */
   setBonePosition(bone, position) {
     const boneAux = bone;
-    if (typeof bone === 'string') {
+    if (typeof bone === "string") {
       bone = this.skeleton.findBone(bone);
     }
     if (!bone) throw Error(`Cant set bone position, bone ${String(boneAux)} not found`);
@@ -12532,7 +12082,7 @@ var Spine = class extends ViewContainer {
    */
   getBonePosition(bone, outPos) {
     const boneAux = bone;
-    if (typeof bone === 'string') {
+    if (typeof bone === "string") {
       bone = this.skeleton.findBone(bone);
     }
     if (!bone) {
@@ -12563,7 +12113,6 @@ var Spine = class extends ViewContainer {
     this.afterUpdateWorldTransforms(this);
     this.updateSlotObjects();
     this._stateChanged = true;
-    this._boundsDirty = true;
     this.onViewUpdate();
   }
   /**
@@ -12597,18 +12146,12 @@ var Spine = class extends ViewContainer {
       spineAttachmentsDirty = true;
       lastAttachments.length = index;
     }
-    this.spineAttachmentsDirty = spineAttachmentsDirty;
+    this.spineAttachmentsDirty ||= spineAttachmentsDirty;
   }
   updateAndSetPixiMask(slot, last) {
-    var _a, _b;
     const attachment = slot.attachment;
     if (attachment && attachment instanceof ClippingAttachment) {
-      const clip =
-        (_a = this.clippingSlotToPixiMasks)[(_b = slot.data.name)] ||
-        (_a[_b] = {
-          slot,
-          vertices: new Array(),
-        });
+      const clip = this.clippingSlotToPixiMasks[slot.data.name] ||= { slot, vertices: new Array() };
       clip.maskComputed = false;
       this.currentClippingSlot = this.clippingSlotToPixiMasks[slot.data.name];
       return;
@@ -12632,7 +12175,7 @@ var Spine = class extends ViewContainer {
         mask.clear().poly(vertices).stroke({ width: 0 }).fill({ alpha: 0.25 });
       }
       slotObject.container.mask = mask;
-    } else if (slotObject == null ? void 0 : slotObject.container.mask) {
+    } else if (slotObject?.container.mask) {
       slotObject.container.mask = null;
     }
     if (currentClippingSlot && currentClippingSlot.slot.attachment.endSlot == slot.data) {
@@ -12641,11 +12184,7 @@ var Spine = class extends ViewContainer {
     if (last) {
       for (const key in this.clippingSlotToPixiMasks) {
         const clippingSlotToPixiMask = this.clippingSlotToPixiMasks[key];
-        if (
-          (!(clippingSlotToPixiMask.slot.attachment instanceof ClippingAttachment) ||
-            !clippingSlotToPixiMask.maskComputed) &&
-          clippingSlotToPixiMask.mask
-        ) {
+        if ((!(clippingSlotToPixiMask.slot.attachment instanceof ClippingAttachment) || !clippingSlotToPixiMask.maskComputed) && clippingSlotToPixiMask.mask) {
           this.removeChild(clippingSlotToPixiMask.mask);
           maskPool.free(clippingSlotToPixiMask.mask);
           clippingSlotToPixiMask.mask = void 0;
@@ -12653,8 +12192,8 @@ var Spine = class extends ViewContainer {
       }
     }
   }
+  currentClippingSlot;
   transformAttachments() {
-    var _a;
     const currentDrawOrder = this.skeleton.drawOrder;
     for (let i = 0; i < currentDrawOrder.length; i++) {
       const slot = currentDrawOrder[i];
@@ -12666,7 +12205,14 @@ var Spine = class extends ViewContainer {
           if (attachment instanceof RegionAttachment) {
             attachment.computeWorldVertices(slot, cacheData.vertices, 0, 2);
           } else {
-            attachment.computeWorldVertices(slot, 0, attachment.worldVerticesLength, cacheData.vertices, 0, 2);
+            attachment.computeWorldVertices(
+              slot,
+              0,
+              attachment.worldVerticesLength,
+              cacheData.vertices,
+              0,
+              2
+            );
           }
           if (cacheData.uvs.length < attachment.uvs.length) {
             cacheData.uvs = new Float32Array(attachment.uvs.length);
@@ -12680,13 +12226,13 @@ var Spine = class extends ViewContainer {
             skeletonColor.r * slotColor.r * attachmentColor.r,
             skeletonColor.g * slotColor.g * attachmentColor.g,
             skeletonColor.b * slotColor.b * attachmentColor.b,
-            skeletonColor.a * slotColor.a * attachmentColor.a,
+            skeletonColor.a * slotColor.a * attachmentColor.a
           );
           if (slot.darkColor) {
             cacheData.darkColor.setFromColor(slot.darkColor);
           }
           cacheData.skipRender = cacheData.clipped = false;
-          const texture = ((_a = attachment.region) == null ? void 0 : _a.texture.texture) || Texture3.EMPTY;
+          const texture = attachment.region?.texture.texture || Texture3.EMPTY;
           if (cacheData.texture !== texture) {
             cacheData.texture = texture;
             this.spineTexturesDirty = true;
@@ -12705,7 +12251,12 @@ var Spine = class extends ViewContainer {
   }
   updateClippingData(cacheData) {
     cacheData.clipped = true;
-    clipper.clipTrianglesUnpacked(cacheData.vertices, cacheData.indices, cacheData.indices.length, cacheData.uvs);
+    clipper.clipTrianglesUnpacked(
+      cacheData.vertices,
+      cacheData.indices,
+      cacheData.indices.length,
+      cacheData.uvs
+    );
     const { clippedVertices, clippedUVs, clippedTriangles } = clipper;
     const verticesCount = clippedVertices.length / 2;
     const indicesCount = clippedTriangles.length;
@@ -12715,7 +12266,7 @@ var Spine = class extends ViewContainer {
         uvs: new Float32Array(verticesCount * 2),
         vertexCount: verticesCount,
         indices: new Uint16Array(indicesCount),
-        indicesCount,
+        indicesCount
       };
       this.spineAttachmentsDirty = true;
     }
@@ -12761,7 +12312,8 @@ var Spine = class extends ViewContainer {
   }
   updateSlotObject(slotAttachment) {
     const { slot, container } = slotAttachment;
-    container.visible = this.skeleton.drawOrder.includes(slot);
+    const followAttachmentValue = slotAttachment.followAttachmentTimeline ? Boolean(slot.attachment) : true;
+    container.visible = this.skeleton.drawOrder.includes(slot) && followAttachmentValue;
     if (container.visible) {
       const bone = slot.bone;
       container.position.set(bone.worldX, bone.worldY);
@@ -12776,7 +12328,6 @@ var Spine = class extends ViewContainer {
     return this.attachmentCacheData[slot.data.index][attachment.name] || this.initCachedData(slot, attachment);
   }
   initCachedData(slot, attachment) {
-    var _a, _b;
     let vertices;
     if (attachment instanceof RegionAttachment) {
       vertices = new Float32Array(8);
@@ -12790,7 +12341,7 @@ var Spine = class extends ViewContainer {
         darkColor: new Color(0, 0, 0, 0),
         darkTint: this.darkTint,
         skipRender: false,
-        texture: (_a = attachment.region) == null ? void 0 : _a.texture.texture,
+        texture: attachment.region?.texture.texture
       };
     } else {
       vertices = new Float32Array(attachment.worldVerticesLength);
@@ -12804,22 +12355,23 @@ var Spine = class extends ViewContainer {
         darkColor: new Color(0, 0, 0, 0),
         darkTint: this.darkTint,
         skipRender: false,
-        texture: (_b = attachment.region) == null ? void 0 : _b.texture.texture,
+        texture: attachment.region?.texture.texture
       };
     }
     return this.attachmentCacheData[slot.data.index][attachment.name];
   }
   onViewUpdate() {
-    var _a;
     this._didViewChangeTick++;
-    this._boundsDirty = true;
+    if (!this._boundsProvider) {
+      this._boundsDirty = true;
+    }
     if (this.didViewUpdate) return;
     this.didViewUpdate = true;
     const renderGroup = this.renderGroup || this.parentRenderGroup;
     if (renderGroup) {
       renderGroup.onChildViewUpdate(this);
     }
-    (_a = this.debug) == null ? void 0 : _a.renderDebug(this);
+    this.debug?.renderDebug(this);
   }
   /**
    * Attaches a PixiJS container to a specified slot. This will map the world transform of the slots bone
@@ -12827,19 +12379,24 @@ var Spine = class extends ViewContainer {
    *
    * @param container - The container to attach to the slot
    * @param slotRef - The slot id or  slot to attach to
+   * @param options - Optional settings for the attachment.
+   * @param options.followAttachmentTimeline - If true, the attachment will follow the slot's attachment timeline.
    */
-  addSlotObject(slot, container) {
-    var _a;
+  addSlotObject(slot, container, options) {
     slot = this.getSlotFromRef(slot);
     for (const i in this._slotsObject) {
-      if (((_a = this._slotsObject[i]) == null ? void 0 : _a.container) === container) {
+      if (this._slotsObject[i]?.container === container) {
         this.removeSlotObject(this._slotsObject[i].slot);
       }
     }
     this.removeSlotObject(slot);
     container.includeInBuild = false;
     this.addChild(container);
-    const slotObject = { container, slot };
+    const slotObject = {
+      container,
+      slot,
+      followAttachmentTimeline: options?.followAttachmentTimeline || false
+    };
     this._slotsObject[slot.data.name] = slotObject;
     this.updateSlotObject(slotObject);
   }
@@ -12850,11 +12407,10 @@ var Spine = class extends ViewContainer {
    * @param slotOrContainer - The container, slot id or slot to detach from
    */
   removeSlotObject(slotOrContainer) {
-    var _a, _b;
     let containerToRemove;
     if (slotOrContainer instanceof Container) {
       for (const i in this._slotsObject) {
-        if (((_a = this._slotsObject[i]) == null ? void 0 : _a.container) === slotOrContainer) {
+        if (this._slotsObject[i]?.container === slotOrContainer) {
           this._slotsObject[i] = null;
           containerToRemove = slotOrContainer;
           break;
@@ -12862,7 +12418,7 @@ var Spine = class extends ViewContainer {
       }
     } else {
       const slot = this.getSlotFromRef(slotOrContainer);
-      containerToRemove = (_b = this._slotsObject[slot.data.name]) == null ? void 0 : _b.container;
+      containerToRemove = this._slotsObject[slot.data.name]?.container;
       this._slotsObject[slot.data.name] = null;
     }
     if (containerToRemove) {
@@ -12871,22 +12427,38 @@ var Spine = class extends ViewContainer {
     }
   }
   /**
+   * Removes all PixiJS containers attached to any slot.
+   */
+  removeSlotObjects() {
+    Object.entries(this._slotsObject).forEach(([slotName, slotObject]) => {
+      if (slotObject) slotObject.container.removeFromParent();
+      delete this._slotsObject[slotName];
+    });
+  }
+  /**
    * Returns a container attached to a slot, or undefined if no container is attached.
    *
    * @param slotRef - The slot id or slot to get the attachment from
    * @returns - The container attached to the slot
    */
   getSlotObject(slot) {
-    var _a;
     slot = this.getSlotFromRef(slot);
-    return (_a = this._slotsObject[slot.data.name]) == null ? void 0 : _a.container;
+    return this._slotsObject[slot.data.name]?.container;
   }
   updateBounds() {
     this._boundsDirty = false;
-    this.skeletonBounds || (this.skeletonBounds = new SkeletonBounds());
+    this.skeletonBounds ||= new SkeletonBounds();
     const skeletonBounds = this.skeletonBounds;
     skeletonBounds.update(this.skeleton, true);
-    if (skeletonBounds.minX === Infinity) {
+    if (this._boundsProvider) {
+      const boundsSpine = this._boundsProvider.calculateBounds(this);
+      const bounds = this._bounds;
+      bounds.clear();
+      bounds.x = boundsSpine.x;
+      bounds.y = boundsSpine.y;
+      bounds.width = boundsSpine.width;
+      bounds.height = boundsSpine.height;
+    } else if (skeletonBounds.minX === Infinity) {
       if (this.hasNeverUpdated) {
         this._updateAndApplyState(0);
         this._boundsDirty = false;
@@ -12963,63 +12535,65 @@ var Spine = class extends ViewContainer {
    * @param options - Options to configure the Spine game object. See {@link SpineFromOptions}
    * @returns {Spine} The Spine game object instantiated
    */
-  static from({ skeleton, atlas, scale = 1, darkTint, autoUpdate = true }) {
+  static from({ skeleton, atlas, scale = 1, darkTint, autoUpdate = true, boundsProvider }) {
     const cacheKey = `${skeleton}-${atlas}-${scale}`;
     if (Cache.has(cacheKey)) {
-      return new Spine(Cache.get(cacheKey));
+      return new _Spine({
+        skeletonData: Cache.get(cacheKey),
+        darkTint,
+        autoUpdate,
+        boundsProvider
+      });
     }
     const skeletonAsset = Assets.get(skeleton);
     const atlasAsset = Assets.get(atlas);
     const attachmentLoader = new AtlasAttachmentLoader(atlasAsset);
-    const parser =
-      skeletonAsset instanceof Uint8Array ? new SkeletonBinary(attachmentLoader) : new SkeletonJson(attachmentLoader);
+    const parser = skeletonAsset instanceof Uint8Array ? new SkeletonBinary(attachmentLoader) : new SkeletonJson(attachmentLoader);
     parser.scale = scale;
     const skeletonData = parser.readSkeletonData(skeletonAsset);
-    console.log('>>>skeletonData', skeletonData);
     Cache.set(cacheKey, skeletonData);
-    return new Spine({
+    return new _Spine({
       skeletonData,
       darkTint,
       autoUpdate,
+      boundsProvider
     });
   }
 };
 
 // spine-pixi-v8/src/SpineDebugRenderer.ts
-import { Container as Container2, Graphics as Graphics2, Text } from 'pixi.js';
+import { Container as Container2, Graphics as Graphics2, Text } from "pixi.js";
 var SpineDebugRenderer = class {
-  constructor() {
-    this.registeredSpines = /* @__PURE__ */ new Map();
-    this.drawMeshHull = true;
-    this.drawMeshTriangles = true;
-    this.drawBones = true;
-    this.drawPaths = true;
-    this.drawBoundingBoxes = true;
-    this.drawClipping = true;
-    this.drawRegionAttachments = true;
-    this.drawEvents = true;
-    this.lineWidth = 1;
-    this.regionAttachmentsColor = 30975;
-    this.meshHullColor = 30975;
-    this.meshTrianglesColor = 16763904;
-    this.clippingPolygonColor = 16711935;
-    this.boundingBoxesRectColor = 65280;
-    this.boundingBoxesPolygonColor = 65280;
-    this.boundingBoxesCircleColor = 65280;
-    this.pathsCurveColor = 16711680;
-    this.pathsLineColor = 16711935;
-    this.skeletonXYColor = 16711680;
-    this.bonesColor = 61132;
-    this.eventFontSize = 24;
-    this.eventFontColor = 0;
-  }
+  registeredSpines = /* @__PURE__ */ new Map();
+  drawMeshHull = true;
+  drawMeshTriangles = true;
+  drawBones = true;
+  drawPaths = true;
+  drawBoundingBoxes = true;
+  drawClipping = true;
+  drawRegionAttachments = true;
+  drawEvents = true;
+  lineWidth = 1;
+  regionAttachmentsColor = 30975;
+  meshHullColor = 30975;
+  meshTrianglesColor = 16763904;
+  clippingPolygonColor = 16711935;
+  boundingBoxesRectColor = 65280;
+  boundingBoxesPolygonColor = 65280;
+  boundingBoxesCircleColor = 65280;
+  pathsCurveColor = 16711680;
+  pathsLineColor = 16711935;
+  skeletonXYColor = 16711680;
+  bonesColor = 61132;
+  eventFontSize = 24;
+  eventFontColor = 0;
   /**
    * The debug is attached by force to each spine object.
    * So we need to create it inside the spine when we get the first update
    */
   registerSpine(spine) {
     if (this.registeredSpines.has(spine)) {
-      console.warn('SpineDebugRenderer.registerSpine() - this spine is already registered!', spine);
+      console.warn("SpineDebugRenderer.registerSpine() - this spine is already registered!", spine);
       return;
     }
     const debugDisplayObjects = {
@@ -13045,8 +12619,8 @@ var SpineDebugRenderer = class {
               style: {
                 fontSize: this.eventFontSize / scale,
                 fill: this.eventFontColor,
-                fontFamily: 'monospace',
-              },
+                fontFamily: "monospace"
+              }
             });
             text.scale.x = Math.sign(spine.scale.x);
             text.anchor.set(0.5);
@@ -13057,8 +12631,8 @@ var SpineDebugRenderer = class {
               }
             }, 250);
           }
-        },
-      },
+        }
+      }
     };
     debugDisplayObjects.parentDebugContainer.addChild(debugDisplayObjects.bones);
     debugDisplayObjects.parentDebugContainer.addChild(debugDisplayObjects.skeletonXY);
@@ -13074,7 +12648,7 @@ var SpineDebugRenderer = class {
     debugDisplayObjects.parentDebugContainer.addChild(debugDisplayObjects.eventText);
     debugDisplayObjects.parentDebugContainer.zIndex = 9999999;
     debugDisplayObjects.parentDebugContainer.accessibleChildren = false;
-    debugDisplayObjects.parentDebugContainer.eventMode = 'none';
+    debugDisplayObjects.parentDebugContainer.eventMode = "none";
     debugDisplayObjects.parentDebugContainer.interactiveChildren = false;
     spine.addChild(debugDisplayObjects.parentDebugContainer);
     spine.state.addListener(debugDisplayObjects.eventCallback);
@@ -13100,11 +12674,7 @@ var SpineDebugRenderer = class {
     debugDisplayObjects.pathsCurve.clear();
     debugDisplayObjects.pathsLine.clear();
     for (let len = debugDisplayObjects.bones.children.length; len > 0; len--) {
-      debugDisplayObjects.bones.children[len - 1].destroy({
-        children: true,
-        texture: true,
-        textureSource: true,
-      });
+      debugDisplayObjects.bones.children[len - 1].destroy({ children: true, texture: true, textureSource: true });
     }
     const scale = Math.abs(spine.scale.x || spine.scale.y || 1);
     const lineWidth = this.lineWidth / scale;
@@ -13138,10 +12708,7 @@ var SpineDebugRenderer = class {
     const skeletonX = skeleton.x;
     const skeletonY = skeleton.y;
     const bones = skeleton.bones;
-    debugDisplayObjects.skeletonXY.strokeStyle = {
-      width: lineWidth,
-      color: this.skeletonXYColor,
-    };
+    debugDisplayObjects.skeletonXY.strokeStyle = { width: lineWidth, color: this.skeletonXYColor };
     for (let i = 0, len = bones.length; i < len; i++) {
       const bone = bones[i];
       const boneLen = bone.data.length;
@@ -13149,7 +12716,7 @@ var SpineDebugRenderer = class {
       const starY = skeletonY + bone.worldY;
       const endX = skeletonX + boneLen * bone.a + bone.worldX;
       const endY = skeletonY + boneLen * bone.b + bone.worldY;
-      if (bone.data.name === 'root' || bone.data.parent === null) {
+      if (bone.data.name === "root" || bone.data.parent === null) {
         continue;
       }
       const w = Math.abs(starX - endX);
@@ -13167,9 +12734,7 @@ var SpineDebugRenderer = class {
       const gp = new Graphics2();
       debugDisplayObjects.bones.addChild(gp);
       const refRation = c / 50 / scale;
-      gp.context
-        .poly([0, 0, 0 - refRation, c - refRation * 3, 0, c - refRation, 0 + refRation, c - refRation * 3])
-        .fill(this.bonesColor);
+      gp.context.poly([0, 0, 0 - refRation, c - refRation * 3, 0, c - refRation, 0 + refRation, c - refRation * 3]).fill(this.bonesColor);
       gp.x = starX;
       gp.y = starY;
       gp.pivot.y = c;
@@ -13192,17 +12757,10 @@ var SpineDebugRenderer = class {
         rotation = 0;
       }
       gp.rotation = rotation;
-      gp.circle(0, c, refRation * 1.2)
-        .fill({ color: 0, alpha: 0.6 })
-        .stroke({ width: lineWidth + refRation / 2.4, color: this.bonesColor });
+      gp.circle(0, c, refRation * 1.2).fill({ color: 0, alpha: 0.6 }).stroke({ width: lineWidth + refRation / 2.4, color: this.bonesColor });
     }
     const startDotSize = lineWidth * 3;
-    debugDisplayObjects.skeletonXY.context
-      .moveTo(skeletonX - startDotSize, skeletonY - startDotSize)
-      .lineTo(skeletonX + startDotSize, skeletonY + startDotSize)
-      .moveTo(skeletonX + startDotSize, skeletonY - startDotSize)
-      .lineTo(skeletonX - startDotSize, skeletonY + startDotSize)
-      .stroke();
+    debugDisplayObjects.skeletonXY.context.moveTo(skeletonX - startDotSize, skeletonY - startDotSize).lineTo(skeletonX + startDotSize, skeletonY + startDotSize).moveTo(skeletonX + startDotSize, skeletonY - startDotSize).lineTo(skeletonX - startDotSize, skeletonY + startDotSize).stroke();
   }
   drawRegionAttachmentsFunc(spine, debugDisplayObjects, lineWidth) {
     const skeleton = spine.skeleton;
@@ -13220,7 +12778,7 @@ var SpineDebugRenderer = class {
     }
     debugDisplayObjects.regionAttachmentsShape.stroke({
       color: this.regionAttachmentsColor,
-      width: lineWidth,
+      width: lineWidth
     });
   }
   drawMeshHullAndMeshTriangles(spine, debugDisplayObjects, lineWidth) {
@@ -13245,10 +12803,7 @@ var SpineDebugRenderer = class {
           const v1 = triangles[i2] * 2;
           const v2 = triangles[i2 + 1] * 2;
           const v3 = triangles[i2 + 2] * 2;
-          debugDisplayObjects.meshTrianglesLine.context
-            .moveTo(vertices[v1], vertices[v1 + 1])
-            .lineTo(vertices[v2], vertices[v2 + 1])
-            .lineTo(vertices[v3], vertices[v3 + 1]);
+          debugDisplayObjects.meshTrianglesLine.context.moveTo(vertices[v1], vertices[v1 + 1]).lineTo(vertices[v2], vertices[v2 + 1]).lineTo(vertices[v3], vertices[v3 + 1]);
         }
       }
       if (this.drawMeshHull && hullLength > 0) {
@@ -13264,14 +12819,8 @@ var SpineDebugRenderer = class {
         }
       }
     }
-    debugDisplayObjects.meshHullLine.stroke({
-      width: lineWidth,
-      color: this.meshHullColor,
-    });
-    debugDisplayObjects.meshTrianglesLine.stroke({
-      width: lineWidth,
-      color: this.meshTrianglesColor,
-    });
+    debugDisplayObjects.meshHullLine.stroke({ width: lineWidth, color: this.meshHullColor });
+    debugDisplayObjects.meshTrianglesLine.stroke({ width: lineWidth, color: this.meshTrianglesColor });
   }
   drawClippingFunc(spine, debugDisplayObjects, lineWidth) {
     const skeleton = spine.skeleton;
@@ -13294,21 +12843,19 @@ var SpineDebugRenderer = class {
     debugDisplayObjects.clippingPolygon.stroke({
       width: lineWidth,
       color: this.clippingPolygonColor,
-      alpha: 1,
+      alpha: 1
     });
   }
   drawBoundingBoxesFunc(spine, debugDisplayObjects, lineWidth) {
     const bounds = new SkeletonBounds();
     bounds.update(spine.skeleton, true);
     if (bounds.minX !== Infinity) {
-      debugDisplayObjects.boundingBoxesRect
-        .rect(bounds.minX, bounds.minY, bounds.getWidth(), bounds.getHeight())
-        .stroke({ width: lineWidth, color: this.boundingBoxesRectColor });
+      debugDisplayObjects.boundingBoxesRect.rect(bounds.minX, bounds.minY, bounds.getWidth(), bounds.getHeight()).stroke({ width: lineWidth, color: this.boundingBoxesRectColor });
     }
     const polygons = bounds.polygons;
     const drawPolygon = (polygonVertices, _offset, count) => {
       if (count < 3) {
-        throw new Error('Polygon must contain at least 3 vertices');
+        throw new Error("Polygon must contain at least 3 vertices");
       }
       const paths = [];
       const dotSize = lineWidth * 2;
@@ -13321,16 +12868,13 @@ var SpineDebugRenderer = class {
         debugDisplayObjects.boundingBoxesCircle.circle(x1, y1, dotSize).fill({ color: this.boundingBoxesCircleColor });
         paths.push(x1, y1);
       }
-      debugDisplayObjects.boundingBoxesPolygon
-        .poly(paths)
-        .fill({
-          color: this.boundingBoxesPolygonColor,
-          alpha: 0.1,
-        })
-        .stroke({
-          width: lineWidth,
-          color: this.boundingBoxesPolygonColor,
-        });
+      debugDisplayObjects.boundingBoxesPolygon.poly(paths).fill({
+        color: this.boundingBoxesPolygonColor,
+        alpha: 0.1
+      }).stroke({
+        width: lineWidth,
+        color: this.boundingBoxesPolygonColor
+      });
     };
     for (let i = 0, len = polygons.length; i < len; i++) {
       const polygon = polygons[i];
@@ -13389,14 +12933,8 @@ var SpineDebugRenderer = class {
         y1 = y2;
       }
     }
-    debugDisplayObjects.pathsCurve.stroke({
-      width: lineWidth,
-      color: this.pathsCurveColor,
-    });
-    debugDisplayObjects.pathsLine.stroke({
-      width: lineWidth,
-      color: this.pathsLineColor,
-    });
+    debugDisplayObjects.pathsCurve.stroke({ width: lineWidth, color: this.pathsCurveColor });
+    debugDisplayObjects.pathsLine.stroke({ width: lineWidth, color: this.pathsLineColor });
   }
   unregisterSpine(spine) {
     if (!this.registeredSpines.has(spine)) {
@@ -13407,15 +12945,12 @@ var SpineDebugRenderer = class {
       return;
     }
     spine.state.removeListener(debugDisplayObjects.eventCallback);
-    debugDisplayObjects.parentDebugContainer.destroy({
-      textureSource: true,
-      children: true,
-      texture: true,
-    });
+    debugDisplayObjects.parentDebugContainer.destroy({ textureSource: true, children: true, texture: true });
     this.registeredSpines.delete(spine);
   }
 };
 export default {
+  AABBRectangleBoundsProvider,
   AlphaTimeline,
   Animation,
   AnimationState,
@@ -13496,6 +13031,7 @@ export default {
   ScaleXTimeline,
   ScaleYTimeline,
   SequenceTimeline,
+  SetupPoseBoundsProvider,
   ShearTimeline,
   ShearXTimeline,
   ShearYTimeline,
@@ -13507,6 +13043,7 @@ export default {
   SkeletonJson,
   Skin,
   SkinEntry,
+  SkinsAndAnimationBoundsProvider,
   Slot,
   SlotData,
   SpacingMode,
@@ -13535,6 +13072,6 @@ export default {
   Utils,
   Vector2,
   VertexAttachment,
-  WindowedMean,
+  WindowedMean
 };
 //# sourceMappingURL=spine-pixi-v8.mjs.map
