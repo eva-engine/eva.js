@@ -12,10 +12,10 @@ const params = {
 registerKtx2CompressedTexture(params);
 
 const spineResource = {
-  image: 'https://gw.alicdn.com/imgextra/i4/O1CN01AHYeJo24fxNQdlxOm_!!6000000007419-2-tps-553-551.png',
+  image: 'https://g.alicdn.com/eva/hd25-spring-assets/0.0.19/nianmonster/spine42/Monster.png',
   atlas:
-    'https://g.alicdn.com/eva-assets/6f5817dd5a392c6cfbbc03acc2ba8778/0.0.1/tmp/05afd25/8d703ab1-2023-40f4-be69-ec2ed621b1e6.atlas',
-  ske: 'https://g.alicdn.com/eva-assets/32e307f6f38e8223b40fac1e3ccebbd0/0.0.1/tmp/953d6ec/c4c3af1b-d4f4-4436-8735-3353a061839c.json',
+    'https://g.alicdn.com/eva/hd25-spring-assets/0.0.19/nianmonster/spine42/Monster.atlas',
+  ske: 'https://g.alicdn.com/eva/hd25-spring-assets/0.0.19/nianmonster/spine42/Monster.skel',
 };
 
 resource.addResource([
@@ -69,7 +69,7 @@ function createGb(game, x, y) {
       y: y * 30 + 100,
     },
   });
-  const spine = new Spine({ resource: 'anim', animationName: 'run', scale: 1 });
+  const spine = new Spine({ resource: 'anim', animationName: 'idle', scale: 1 });
   gameObject.addComponent(spine);
   spine.on('complete', e => {
     console.log('动画播放结束', e.name);
@@ -77,7 +77,7 @@ function createGb(game, x, y) {
   spine.on('loaded', () => {
     console.log('>>>loaded');
   });
-  spine.play('animation');
+  spine.play('idle');
   game.scene.addChild(gameObject);
 }
 
