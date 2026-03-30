@@ -36,6 +36,6 @@ export default defineConfig({
     alias
   },
   optimizeDeps: {
-    exclude: ['pixi-spine', 'pixi-spine36']
+    exclude: ['pixi-spine', 'pixi-spine36', 'poly-decomp']
   },
 });

@@ -1,0 +1,24 @@
+{
+  "name": "@eva/plugin-layout",
+  "version": "2.0.1-beta.33",
+  "description": "@eva/plugin-layout",
+  "main": "index.js",
+  "module": "dist/plugin-layout.esm.js",
+  "bundle": "EVA.plugin.layout",
+  "unpkg": "dist/EVA.plugin.layout.min.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-layout.d.ts",
+  "keywords": [
+    "eva.js",
+    "eva-plugin-layout"
+  ],
+  "author": "dingyike.dyk <dingyike.dyk@alibaba-inc.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/eva.js": "2.0.1-beta.33"
+  }
+}
