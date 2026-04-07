@@ -3,6 +3,7 @@ import Scene from './Scene';
 import type { SystemConstructor } from '../core/System';
 import System from '../core/System';
 import Component from '../core/Component';
+import GameObject from '../core/GameObject';
 import { setSystemObserver, initObserver } from '../core/observer';
 import EventEmitter from 'eventemitter3';
 
@@ -212,6 +213,41 @@ class Game extends EventEmitter {
 
   get gameObjects() {
     return getAllGameObjects(this);
+  }
+
+  /**
+   * 通过名字查找游戏对象（跨所有场景）
+   *
+   * 先查主场景，再依次查多场景，返回第一个匹配的未销毁对象。
+   *
+   * @param name - 游戏对象名称
+   * @returns 匹配的游戏对象，无则返回 null
+   */
+  findByName(name: string): GameObject | null {
+    const result = this._scene?.findByName(name);
+    if (result) return result;
+    for (const scene of this.multiScenes) {
+      const found = scene.findByName(name);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  /**
+   * 通过名字查找所有匹配的游戏对象（跨所有场景）
+   *
+   * @param name - 游戏对象名称
+   * @returns 所有匹配且未销毁的游戏对象数组
+   */
+  findAllByName(name: string): GameObject[] {
+    const result = this._scene?.findAllByName(name) || [];
+    for (const scene of this.multiScenes) {
+      const found = scene.findAllByName(name);
+      for (const go of found) {
+        result.push(go);
+      }
+    }
+    return result;
   }
 
   async addSystem<T extends System>(S: T): Promise<T>;

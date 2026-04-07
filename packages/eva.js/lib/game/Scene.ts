@@ -26,6 +26,9 @@ class Scene extends GameObject {
   /** 场景关联的画布元素 */
   canvas: HTMLCanvasElement;
 
+  /** 按名字索引游戏对象，用于 O(1) 查找 */
+  private _nameIndex: Map<string, Set<GameObject>> = new Map();
+
   /**
    * 构造一个新的场景
    * @param name - 场景名称
@@ -49,6 +52,14 @@ class Scene extends GameObject {
     if (gameObject.transform) {
       gameObject.transform.inScene = true;
     }
+    if (gameObject.name) {
+      let set = this._nameIndex.get(gameObject.name);
+      if (!set) {
+        set = new Set();
+        this._nameIndex.set(gameObject.name, set);
+      }
+      set.add(gameObject);
+    }
   }
 
   /**
@@ -66,19 +77,54 @@ class Scene extends GameObject {
       gameObject.transform.inScene = false;
     }
     this.gameObjects.splice(index, 1);
+    if (gameObject.name) {
+      const set = this._nameIndex.get(gameObject.name);
+      if (set) {
+        set.delete(gameObject);
+        if (set.size === 0) {
+          this._nameIndex.delete(gameObject.name);
+        }
+      }
+    }
   }
 
   /**
-   * 销毁场景
+   * 通过名字查找场景中的游戏对象
    *
-   * 清理场景的所有资源，包括所有游戏对象。
-   * 销毁后的场景不应再被使用。
+   * @param name - 游戏对象名称
+   * @returns 第一个匹配且未销毁的游戏对象，无则返回 null
    */
+  findByName(name: string): GameObject | null {
+    const set = this._nameIndex.get(name);
+    if (!set) return null;
+    for (const go of set) {
+      if (!go.destroyed) return go;
+    }
+    return null;
+  }
+
+  /**
+   * 通过名字查找场景中所有匹配的游戏对象
+   *
+   * @param name - 游戏对象名称
+   * @returns 所有匹配且未销毁的游戏对象数组
+   */
+  findAllByName(name: string): GameObject[] {
+    const set = this._nameIndex.get(name);
+    if (!set) return [];
+    const result: GameObject[] = [];
+    for (const go of set) {
+      if (!go.destroyed) result.push(go);
+    }
+    return result;
+  }
+
   destroy() {
     this.scene = null;
     super.destroy();
     this.gameObjects = null;
     this.canvas = null;
+    this._nameIndex = null;
   }
 }
 
