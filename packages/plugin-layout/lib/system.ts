@@ -44,8 +44,6 @@ export default class LayoutSystem extends System {
   /** 首帧需要布局的容器 */
   private pendingFirstLayout = new Set<number>();
 
-  private frameCount = 0;
-
   /**
    * RendererSystem 的 containerManager 引用（延迟获取）
    * 用于在 lateUpdate 中布局后立即同步 transform → pixi container，
@@ -97,7 +95,6 @@ export default class LayoutSystem extends System {
       this._reordered = true;
       this.reorderBeforeRenderer();
     }
-    this.frameCount++;
     this.consumeObserverChanges();
     this.detectSizeChanges();
 
