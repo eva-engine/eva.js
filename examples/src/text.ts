@@ -1,6 +1,6 @@
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Game, GameObject, resource, RESOURCE_TYPE } from '@eva/eva.js';
-import { Text, TextSystem } from '@eva/plugin-renderer-text';
+import { Text, BitmapText, TextSystem } from '@eva/plugin-renderer-text';
 import { Render, RenderSystem } from '@eva/plugin-renderer-render';
 export const name = 'text';
 
@@ -116,10 +116,50 @@ export async function init(canvas) {
 
   // 不添加 Render 组件或 resolution 为 1 时使用默认渲染清晰度
 
+  // BitmapText 示例 —— 使用动态生成的 bitmap font，适合频繁更新的文本
+  const bitmapTextObj = new GameObject('bitmapText', {
+    position: {
+      x: 0,
+      y: 0,
+    },
+    origin: {
+      x: 0.5,
+      y: 0.5,
+    },
+    anchor: {
+      x: 0.5,
+      y: 0.1,
+    },
+    scale: {
+      x: 3,
+      y: 3,
+    },
+  });
+
+  const bitmapTxt = bitmapTextObj.addComponent(
+    new BitmapText({
+      text: 'Score: 0',
+      style: {
+        fontSize: 48,
+        fill: '#ffcc00',
+        fontFamily: 'Arial',
+        fontWeight: 'bold',
+      },
+    }),
+  );
+
+  // 模拟计分板更新，展示 BitmapText 频繁更新的优势
+  let score = 0;
+  setInterval(() => {
+    score += 10;
+    bitmapTxt.text = `Score: ${score}`;
+  }, 500);
+
   setTimeout(() => {
     txt.text = '¥0.03';
   }, 2000);
 
   game.scene.addChild(text);
   game.scene.addChild(text2);
+  game.scene.addChild(bitmapTextObj);
 }

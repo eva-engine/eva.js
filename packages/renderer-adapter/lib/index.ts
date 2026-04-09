@@ -1,4 +1,5 @@
 export { default as Application } from './Application';
+export { default as BitmapText } from './BitmapText';
 export { default as Container } from './Container';
 export { default as Graphics } from './Graphics';
 export { default as HTMLText } from './HTMLText';

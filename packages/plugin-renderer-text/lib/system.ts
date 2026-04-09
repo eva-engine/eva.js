@@ -1,20 +1,22 @@
 import { decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.js';
 
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
-import { Text as TextEngine, HTMLText as HTMLTextEngine } from '@eva/renderer-adapter';
+import { Text as TextEngine, HTMLText as HTMLTextEngine, BitmapText as BitmapTextEngine } from '@eva/renderer-adapter';
 
+import BitmapTextComponent from './bitmapText.component';
 import TextComponent from './component';
 import HTMLTextComponent from './htmlText.component';
 
 @decorators.componentObserver({
   Text: ['text', { prop: ['style'], deep: true }],
   HTMLText: ['text', { prop: ['style'], deep: true }, { prop: ['textureStyle'], deep: true }],
+  BitmapText: ['text', { prop: ['style'], deep: true }],
 })
 export default class Text extends Renderer {
   static systemName = 'Text';
   name: string = 'Text';
   texts: {
-    [propName: number]: { text: TextEngine | HTMLTextEngine; component: TextComponent | HTMLTextComponent };
+    [propName: number]: { text: TextEngine | HTMLTextEngine | BitmapTextEngine; component: TextComponent | HTMLTextComponent | BitmapTextComponent };
   } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
@@ -27,14 +29,17 @@ export default class Text extends Renderer {
   async componentChanged(changed: ComponentChanged) {
     const isText = changed.componentName === 'Text';
     const isHTMLText = changed.componentName === 'HTMLText';
+    const isBitmapText = changed.componentName === 'BitmapText';
 
-    if (!isText && !isHTMLText) return;
+    if (!isText && !isHTMLText && !isBitmapText) return;
 
     if (changed.type === OBSERVER_TYPE.ADD) {
       if (isText) {
         await this.addTextComponent(changed);
-      } else {
+      } else if (isHTMLText) {
         await this.addHTMLTextComponent(changed);
+      } else {
+        await this.addBitmapTextComponent(changed);
       }
       this.setSize(changed);
     } else if (changed.type === OBSERVER_TYPE.REMOVE) {
@@ -45,7 +50,7 @@ export default class Text extends Renderer {
       this.change(changed);
 
       // 如果样式改变且涉及字体，也需要等待字体资源加载
-      const component = changed.component as TextComponent | HTMLTextComponent;
+      const component = changed.component as TextComponent | HTMLTextComponent | BitmapTextComponent;
       if (changed.prop.prop[0] === 'style' && component.style && component.style.fontFamily) {
         const { text } = this.texts[changed.gameObject.id];
         await this.waitForFontResource(text, changed, component.style.fontFamily);
@@ -103,11 +108,34 @@ export default class Text extends Renderer {
     }
   }
 
+  private async addBitmapTextComponent(changed: ComponentChanged) {
+    const component = changed.component as BitmapTextComponent;
+
+    // 创建样式副本，先不设置 fontFamily
+    const styleWithoutFont = { ...component.style };
+    const fontFamily = styleWithoutFont.fontFamily;
+    delete styleWithoutFont.fontFamily;
+    const initialText = fontFamily ? '' : component.text;
+
+    const bitmapText = new BitmapTextEngine(initialText, styleWithoutFont);
+
+    this.containerManager.getContainer(changed.gameObject.id).addChildAt(bitmapText, 0);
+    this.texts[changed.gameObject.id] = {
+      text: bitmapText,
+      component,
+    };
+
+    // 如果指定了字体资源，等待资源加载完成后设置 fontFamily
+    if (fontFamily) {
+      await this.waitForFontResource(bitmapText, changed, fontFamily);
+    }
+  }
+
   /**
    * 等待字体资源加载完成并更新文本
    */
   private async waitForFontResource(
-    text: TextEngine | HTMLTextEngine,
+    text: TextEngine | HTMLTextEngine | BitmapTextEngine,
     changed: ComponentChanged,
     fontFamily: string | string[]
   ) {
