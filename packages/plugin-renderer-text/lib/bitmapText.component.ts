@@ -1,4 +1,4 @@
-import type { TextStyleFontStyle } from 'pixi.js';
+import type { TextStyleFontStyle, TextStyleFontWeight } from 'pixi.js';
 import { Component } from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
 
@@ -11,7 +11,7 @@ export interface BitmapTextStyleOptions {
   padding?: number;
   stroke?: string | number;
   strokeThickness?: number;
-  fontWeight?: string;
+  fontWeight?: TextStyleFontWeight;
   fontStyle?: TextStyleFontStyle;
 }
 
