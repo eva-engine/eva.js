@@ -20,6 +20,6 @@
   "dependencies": {
     "@eva/eva.js": "2.0.1-beta.34",
     "eventemitter3": "^3.1.2",
-    "pixi.js": "^8.8.1"
+    "pixi.js": "^8.17.0"
   }
 }
