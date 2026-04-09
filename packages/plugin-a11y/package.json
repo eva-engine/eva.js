@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-a11y",
-  "version": "2.0.1-beta.35",
+  "version": "2.0.1-beta.34",
   "description": "@eva/plugin-a11y",
   "main": "index.js",
   "module": "dist/plugin-a11y.esm.js",
@@ -18,9 +18,9 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "2.0.1-beta.35",
+    "@eva/eva.js": "2.0.1-beta.34",
     "@eva/inspector-decorator": "^0.0.5",
-    "@eva/plugin-renderer": "2.0.1-beta.35",
+    "@eva/plugin-renderer": "2.0.1-beta.34",
     "eventemitter3": "^3.1.2"
   }
 }
