@@ -99,26 +99,23 @@ class Ticker {
   /**
    * 主循环更新方法
    *
-   * 计算帧时间差，当达到目标帧间隔时调用所有注册的回调函数。
-   * 改进的算法：保持帧率限制的同时，使用固定的deltaTime避免突变。
+   * 使用补帧循环：当实际时间跨越多个帧间隔时，循环执行多次固定步长更新，
+   * 确保在 RAF 被节流（如低电量模式）时游戏时间仍与真实时间同步。
+   * 设置最大补帧数上限，避免长时间挂起后一次性执行过多更新。
    */
   update() {
     const currentTime = this.timeline.currentTime;
-    const realDeltaTime = currentTime - this._lastFrameTime;
 
-    // 只在达到目标帧时间时才更新，实现帧率限制
-    if (realDeltaTime >= this._frameDuration) {
-      // 更新lastFrameTime，使用目标帧时间作为增量，保持稳定的步进
+    // 限制单次 RAF 回调最多补帧数，避免长时间挂起后卡顿
+    const maxCatchUpFrames = 5;
+    let frames = 0;
+
+    while (currentTime - this._lastFrameTime >= this._frameDuration && frames < maxCatchUpFrames) {
       this._lastFrameTime += this._frameDuration;
-
-      // 如果落后太多（超过2帧），重新同步到当前时间避免连续跳帧
-      const drift = currentTime - this._lastFrameTime;
-      if (drift >= this._frameDuration * 2) {
-        this._lastFrameTime = currentTime - this._frameDuration;
-      }
+      frames++;
 
       const options: UpdateParams = {
-        deltaTime: this._frameDuration, // 使用固定的目标帧时间
+        deltaTime: this._frameDuration,
         time: this._lastFrameTime,
         currentTime: this._lastFrameTime,
         frameCount: ++this._frameCount,
@@ -130,6 +127,11 @@ class Ticker {
           func(options);
         }
       }
+    }
+
+    // 如果补帧达到上限仍有剩余时间差，重新同步避免持续追帧
+    if (currentTime - this._lastFrameTime >= this._frameDuration) {
+      this._lastFrameTime = currentTime;
     }
   }
 
