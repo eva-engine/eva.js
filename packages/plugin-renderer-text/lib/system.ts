@@ -162,6 +162,22 @@ export default class Text extends Renderer {
       console.warn(`字体资源 ${fontFamily} 加载失败:`, error);
     }
   }
+  /**
+   * 将 Eva.js 的 stroke/strokeThickness 格式转换为 PixiJS v8 格式
+   */
+  private processStrokeStyle(style: Record<string, any>): Record<string, any> {
+    const processed = { ...style };
+    if (processed.strokeThickness) {
+      const color = processed.stroke;
+      processed.stroke = {
+        color,
+        width: processed.strokeThickness,
+      };
+      delete processed.strokeThickness;
+    }
+    return processed;
+  }
+
   change(changed: ComponentChanged) {
     const { text, component } = this.texts[changed.gameObject.id];
     const isHTMLText = changed.componentName === 'HTMLText';
@@ -169,7 +185,8 @@ export default class Text extends Renderer {
     if (changed.prop.prop[0] === 'text') {
       text.text = component.text;
     } else if (changed.prop.prop[0] === 'style') {
-      Object.assign(text.style, component.style);
+      const processedStyle = this.processStrokeStyle(component.style as any);
+      Object.assign(text.style, processedStyle);
     } else if (changed.prop.prop[0] === 'textureStyle' && isHTMLText) {
       // HTMLText 纹理样式变化需要重新创建
       const htmlComponent = component as HTMLTextComponent;
