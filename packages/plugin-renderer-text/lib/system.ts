@@ -2,6 +2,7 @@ import { decorators, ComponentChanged, OBSERVER_TYPE, resource } from '@eva/eva.
 
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
 import { Text as TextEngine, HTMLText as HTMLTextEngine, BitmapText as BitmapTextEngine } from '@eva/renderer-adapter';
+import { FillGradient, Color, TextStyle } from 'pixi.js';
 
 import BitmapTextComponent from './bitmapText.component';
 import TextComponent from './component';
@@ -163,10 +164,12 @@ export default class Text extends Renderer {
     }
   }
   /**
-   * 将 Eva.js 的 stroke/strokeThickness 格式转换为 PixiJS v8 格式
+   * 将 Eva.js 的样式格式转换为 PixiJS v8 格式
    */
-  private processStrokeStyle(style: Record<string, any>): Record<string, any> {
+  private processStyle(style: Record<string, any>): Record<string, any> {
     const processed = { ...style };
+
+    // stroke + strokeThickness -> stroke: { color, width }
     if (processed.strokeThickness) {
       const color = processed.stroke;
       processed.stroke = {
@@ -175,6 +178,32 @@ export default class Text extends Renderer {
       };
       delete processed.strokeThickness;
     }
+
+    // fill 数组 -> 取第一个值 (deprecated)
+    if (Array.isArray(processed.fill)) {
+      processed.fill = processed.fill[0];
+    }
+
+    // fillGradientStops -> FillGradient 对象
+    if (Array.isArray(processed.fillGradientStops)) {
+      let fontSize: number;
+      if (processed.fontSize == null) {
+        fontSize = TextStyle.defaultTextStyle.fontSize as number;
+      } else if (typeof processed.fontSize === 'string') {
+        fontSize = parseInt(processed.fontSize, 10);
+      } else {
+        fontSize = processed.fontSize;
+      }
+      const gradientFill = new FillGradient(0, 0, 0, fontSize * 1.7);
+      const fills = processed.fillGradientStops.map((color: any) => Color.shared.setValue(color).toNumber());
+      fills.forEach((number: number, index: number) => {
+        const ratio = index / (fills.length - 1);
+        gradientFill.addColorStop(ratio, number);
+      });
+      processed.fill = { fill: gradientFill };
+      delete processed.fillGradientStops;
+    }
+
     return processed;
   }
 
@@ -185,7 +214,7 @@ export default class Text extends Renderer {
     if (changed.prop.prop[0] === 'text') {
       text.text = component.text;
     } else if (changed.prop.prop[0] === 'style') {
-      const processedStyle = this.processStrokeStyle(component.style as any);
+      const processedStyle = this.processStyle(component.style as any);
       Object.assign(text.style, processedStyle);
     } else if (changed.prop.prop[0] === 'textureStyle' && isHTMLText) {
       // HTMLText 纹理样式变化需要重新创建
