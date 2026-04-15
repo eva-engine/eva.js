@@ -179,6 +179,32 @@ export default class Text extends Renderer {
       delete processed.strokeThickness;
     }
 
+    // dropShadow* -> dropShadow: { color, distance, angle, alpha, blur }
+    if (processed.dropShadow) {
+      const dropShadowConfig: Record<string, any> = {};
+      if (processed.dropShadowColor != null) {
+        dropShadowConfig.color = processed.dropShadowColor;
+      }
+      if (processed.dropShadowDistance != null) {
+        dropShadowConfig.distance = processed.dropShadowDistance;
+      }
+      if (processed.dropShadowAngle != null) {
+        dropShadowConfig.angle = processed.dropShadowAngle;
+      }
+      if (processed.dropShadowAlpha != null) {
+        dropShadowConfig.alpha = processed.dropShadowAlpha;
+      }
+      if (processed.dropShadowBlur != null) {
+        dropShadowConfig.blur = processed.dropShadowBlur;
+      }
+      processed.dropShadow = dropShadowConfig;
+      delete processed.dropShadowColor;
+      delete processed.dropShadowDistance;
+      delete processed.dropShadowAngle;
+      delete processed.dropShadowAlpha;
+      delete processed.dropShadowBlur;
+    }
+
     // fill 数组 -> 取第一个值 (deprecated)
     if (Array.isArray(processed.fill)) {
       processed.fill = processed.fill[0];

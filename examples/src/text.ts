@@ -29,6 +29,8 @@ export async function init(canvas) {
         canvas,
         width: 750,
         height: 1000,
+        backgroundAlpha: 1,
+        backgroundColor: '#ffffff'
       }),
       //@ts-ignore
       new RenderSystem(),
@@ -66,11 +68,17 @@ export async function init(canvas) {
     new Text({
       text: '¥0.02',
       style: {
-        fontFamily: 'test',
-        fontSize: 108,
-        fontStyle: 'italic',
-        fontWeight: 'bold',
-        fill: ['#ffffff'],
+        "fontSize": 88,
+        "fontFamily": "MontserratExtraBold, PingFang SC, Microsoft YaHei, sans-serif",
+        "fontWeight": "900",
+        "fill": "#FFFFFF",
+        "align": "right",
+        "stroke": "#00C0E7",
+        "strokeThickness": 8,
+        "dropShadow": true,
+        "dropShadowColor": "#A26505",
+        "dropShadowDistance": 2,
+        "dropShadowAngle": 0.785
       },
     }),
   );
@@ -140,12 +148,17 @@ export async function init(canvas) {
     new BitmapText({
       text: 'Score: 0',
       style: {
-        fontSize: 48,
-        fill: '#ffcc00',
-        fontFamily: 'Arial',
-        fontWeight: 'bold',
-        stroke: "red",
-        strokeThickness: 8,
+        "fontSize": 88,
+        "fontFamily": "MontserratExtraBold, PingFang SC, Microsoft YaHei, sans-serif",
+        "fontWeight": "900",
+        "fill": "#FFFFFF",
+        "align": "right",
+        "stroke": "#00C0E7",
+        "strokeThickness": 8,
+        // "dropShadow": true,
+        // "dropShadowColor": "#008CBB",
+        // "dropShadowDistance": 2,
+        // "dropShadowAngle": 0.785
       },
     }),
   );
@@ -156,9 +169,10 @@ export async function init(canvas) {
     bitmapTxt.style.stroke = "#DE9524";
   }, 500);
 
-  setTimeout(() => {
-    txt.text = '¥0.03';
-  }, 2000);
+  setInterval(() => {
+    txt.style.stroke = "#DE9524";
+    txt.style.dropShadowColor = "#A26505";
+  }, 500);
 
   game.scene.addChild(text);
   game.scene.addChild(text2);

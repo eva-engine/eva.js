@@ -15,6 +15,29 @@ export default class Text extends PIXIText {
       delete style['strokeThickness'];
     }
 
+    // dropShadow* -> dropShadow: { color, distance, angle, alpha, blur }
+    // @ts-ignore
+    if (style.dropShadow) {
+      const dropShadowConfig: Record<string, any> = {};
+      // @ts-ignore
+      if (style.dropShadowColor != null) dropShadowConfig.color = style.dropShadowColor;
+      // @ts-ignore
+      if (style.dropShadowDistance != null) dropShadowConfig.distance = style.dropShadowDistance;
+      // @ts-ignore
+      if (style.dropShadowAngle != null) dropShadowConfig.angle = style.dropShadowAngle;
+      // @ts-ignore
+      if (style.dropShadowAlpha != null) dropShadowConfig.alpha = style.dropShadowAlpha;
+      // @ts-ignore
+      if (style.dropShadowBlur != null) dropShadowConfig.blur = style.dropShadowBlur;
+      // @ts-ignore
+      style.dropShadow = dropShadowConfig;
+      delete style['dropShadowColor'];
+      delete style['dropShadowDistance'];
+      delete style['dropShadowAngle'];
+      delete style['dropShadowAlpha'];
+      delete style['dropShadowBlur'];
+    }
+
     if (Array.isArray(style.fill)) {
       console.warn('Eva.js Deprecation Warning:  fill array is not supported in Eva.js v2.');
       style.fill = style.fill[0];
