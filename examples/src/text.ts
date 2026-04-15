@@ -144,15 +144,16 @@ export async function init(canvas) {
         fill: '#ffcc00',
         fontFamily: 'Arial',
         fontWeight: 'bold',
+        stroke: "red",
+        strokeThickness: 8,
       },
     }),
   );
-
   // 模拟计分板更新，展示 BitmapText 频繁更新的优势
   let score = 0;
   setInterval(() => {
     score += 10;
-    bitmapTxt.text = `Score: ${score}`;
+    bitmapTxt.style.stroke = "#DE9524";
   }, 500);
 
   setTimeout(() => {
