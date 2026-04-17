@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-graphics",
-  "version": "2.0.1-beta.39",
+  "version": "2.0.1-beta.40",
   "description": "@eva/plugin-renderer-graphics",
   "main": "index.js",
   "module": "dist/plugin-renderer-graphics.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/plugin-renderer": "2.0.1-beta.39",
-    "@eva/eva.js": "2.0.1-beta.39"
+    "@eva/plugin-renderer": "2.0.1-beta.40",
+    "@eva/eva.js": "2.0.1-beta.40"
   }
 }
