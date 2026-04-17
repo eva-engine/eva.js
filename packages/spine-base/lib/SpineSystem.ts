@@ -29,6 +29,9 @@ export default class SpineSystem extends Renderer {
   /** 骨架实例映射表（游戏对象 ID -> 骨架容器） */
   armatures: Record<number, Container> = {};
 
+  /** Spine 组件实例映射（游戏对象 ID -> Spine 组件） */
+  private _spineComponents: Record<number, Spine> = {};
+
   /** 渲染系统引用 */
   renderSystem: RendererSystem;
 
@@ -102,6 +105,10 @@ export default class SpineSystem extends Renderer {
       // @ts-ignore
       this.armatures[key].update(e.deltaTime * 0.001);
     }
+    // 处理等待容器就绪的 slot 挂载请求
+    for (let key in this._spineComponents) {
+      this._spineComponents[key]._flushPendingSlotObjects();
+    }
     super.update();
   }
   async componentChanged(changed: ComponentChanged) {
@@ -159,6 +166,7 @@ export default class SpineSystem extends Renderer {
     });
 
     this.armatures[changed.gameObject.id] = armature;
+    this._spineComponents[changed.gameObject.id] = component;
     if (changed.gameObject && changed.gameObject.transform) {
       const tran = changed.gameObject.transform;
       armature.x = tran.size.width * tran.origin.x;
@@ -227,6 +235,7 @@ export default class SpineSystem extends Renderer {
 
     component.armature = null;
     delete this.armatures[changed.gameObject.id];
+    delete this._spineComponents[changed.gameObject.id];
     if (changed.type === OBSERVER_TYPE.CHANGE) {
       // // @ts-ignore
       // component.removeAllListeners();

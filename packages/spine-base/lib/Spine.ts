@@ -1,4 +1,5 @@
 import { Component, GameObject } from '@eva/eva.js';
+import { Container } from 'pixi.js';
 import { type } from '@eva/inspector-decorator';
 
 export interface SpineParams {
@@ -92,8 +93,11 @@ export default class Spine extends Component<SpineParams> {
   /** 容器管理器引用（由 SpineSystem 设置） */
   _containerManager: any;
 
-  /** 挂载到插槽的 GameObject 映射（GameObject -> slot 标识） */
-  private _slotGameObjects: Map<GameObject, string | number> = new Map();
+  /** 挂载到插槽的 GameObject 映射（GameObject -> { slot, wrapper }） */
+  private _slotGameObjects: Map<GameObject, { slot: string | number; wrapper: Container }> = new Map();
+
+  /** 等待容器就绪的 slot 挂载请求 */
+  _pendingSlotObjects: { slot: number | string; gameObject: GameObject; options?: { followAttachmentTimeline?: boolean } }[] = [];
 
   /** 等待执行的动画操作队列 */
   private waitExecuteInfos: { playType: boolean; track?: number; name?: string; loop?: boolean }[] = [];
@@ -333,11 +337,59 @@ export default class Spine extends Component<SpineParams> {
     }
     const container = this._containerManager.getContainer(gameObject.id);
     if (!container) {
-      console.warn('GameObject does not have a render container');
+      // 容器尚未就绪，加入 pending 队列，等待下一帧自动处理
+      this._pendingSlotObjects.push({ slot, gameObject, options });
       return;
     }
-    this.armature.addSlotObject(slot, container, options);
-    this._slotGameObjects.set(gameObject, slot);
+    this._doAddSlotObject(slot, gameObject, container, options);
+  }
+
+  private _doAddSlotObject(slot: number | string, gameObject: GameObject, container: Container, options?: { followAttachmentTimeline?: boolean }) {
+    // 创建 wrapper 容器：Spine 骨骼矩阵作用在 wrapper 上，
+    // gameObject 的 container 作为子节点，其 transform 作为相对 slot 的局部偏移
+    const wrapper = new Container();
+    wrapper.addChild(container);
+    this.armature.addSlotObject(slot, wrapper, options);
+    this._slotGameObjects.set(gameObject, { slot, wrapper });
+    // slot object 可能不在 game.gameObjects 中，RendererSystem 不会自动同步 transform
+    // 手动同步 gameObject 及其子树的 transform 到 container
+    this._syncTransformTree(gameObject);
+  }
+
+  /**
+   * 递归同步 gameObject 及其子树的 transform 到对应的渲染容器
+   */
+  private _syncTransformTree(gameObject: GameObject) {
+    if (!this._containerManager) return;
+    this._containerManager.updateTransform({
+      name: gameObject.id,
+      transform: gameObject.transform,
+    });
+    if (gameObject.transform?.children) {
+      for (const childTransform of gameObject.transform.children) {
+        if (childTransform.gameObject) {
+          this._syncTransformTree(childTransform.gameObject);
+        }
+      }
+    }
+  }
+
+  /**
+   * 处理等待容器就绪的 slot 挂载请求（由 SpineSystem 每帧调用）
+   */
+  _flushPendingSlotObjects() {
+    if (this._pendingSlotObjects.length === 0) return;
+    if (!this.armature || !this._containerManager) return;
+    const still: typeof this._pendingSlotObjects = [];
+    for (const pending of this._pendingSlotObjects) {
+      const container = this._containerManager.getContainer(pending.gameObject.id);
+      if (container) {
+        this._doAddSlotObject(pending.slot, pending.gameObject, container, pending.options);
+      } else {
+        still.push(pending);
+      }
+    }
+    this._pendingSlotObjects = still;
   }
 
   /**
@@ -346,11 +398,12 @@ export default class Spine extends Component<SpineParams> {
    * @param gameObject - 要移除的 GameObject
    */
   removeSlotObject(gameObject: GameObject) {
-    if (!this.armature) return;
-    if (!this._containerManager) return;
-    const container = this._containerManager.getContainer(gameObject.id);
-    if (container) {
-      this.armature.removeSlotObject(container);
+    // 从 pending 队列中移除
+    this._pendingSlotObjects = this._pendingSlotObjects.filter(p => p.gameObject !== gameObject);
+    const entry = this._slotGameObjects.get(gameObject);
+    if (entry && this.armature) {
+      this.armature.removeSlotObject(entry.wrapper);
+      entry.wrapper.destroy({ children: false });
     }
     this._slotGameObjects.delete(gameObject);
   }
@@ -359,16 +412,17 @@ export default class Spine extends Component<SpineParams> {
    * 销毁所有挂载到插槽的 GameObject（内部使用）
    */
   _destroySlotGameObjects() {
-    for (const [gameObject] of this._slotGameObjects) {
+    for (const [gameObject, entry] of this._slotGameObjects) {
       if (!gameObject.destroyed) {
-        // 先从 spine 插槽移除，避免 destroy 时重复操作
-        const container = this._containerManager?.getContainer(gameObject.id);
-        if (container && this.armature) {
-          this.armature.removeSlotObject(container);
+        // 先从 spine 插槽移除 wrapper，避免 destroy 时重复操作
+        if (this.armature) {
+          this.armature.removeSlotObject(entry.wrapper);
         }
+        entry.wrapper.destroy({ children: false });
         gameObject.destroy();
       }
     }
     this._slotGameObjects.clear();
+    this._pendingSlotObjects = [];
   }
 }
