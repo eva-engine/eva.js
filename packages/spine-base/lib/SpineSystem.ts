@@ -168,6 +168,7 @@ export default class SpineSystem extends Renderer {
     container.addChildAt(armature, 0);
     /** 保证第一帧显示正常 */
     armature.update();
+    component._containerManager = this.renderSystem?.containerManager;
     component.armature = armature;
     // @ts-ignore
     component.emit('loaded', { resource: component.resource });
@@ -214,6 +215,8 @@ export default class SpineSystem extends Renderer {
     }
 
     if (component.armature) {
+      // 销毁所有挂载到插槽的 GameObject
+      component._destroySlotGameObjects();
       component.armature.destroy({ children: true });
       if (!component.keepResource) {
         const res = await resource.getResource(component.lastResource);

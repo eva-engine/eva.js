@@ -1,4 +1,4 @@
-import { Component } from '@eva/eva.js';
+import { Component, GameObject } from '@eva/eva.js';
 import { type } from '@eva/inspector-decorator';
 
 export interface SpineParams {
@@ -88,6 +88,12 @@ export default class Spine extends Component<SpineParams> {
 
   /** Spine 骨架实例（内部使用） */
   private _armature: any;
+
+  /** 容器管理器引用（由 SpineSystem 设置） */
+  _containerManager: any;
+
+  /** 挂载到插槽的 GameObject 映射（GameObject -> slot 标识） */
+  private _slotGameObjects: Map<GameObject, string | number> = new Map();
 
   /** 等待执行的动画操作队列 */
   private waitExecuteInfos: { playType: boolean; track?: number; name?: string; loop?: boolean }[] = [];
@@ -303,5 +309,66 @@ export default class Spine extends Component<SpineParams> {
       return;
     }
     return this.armature.skeleton.findBone(boneName);
+  }
+
+  /**
+   * 将一个 GameObject 挂载到 Spine 的指定插槽上
+   *
+   * 挂载后 GameObject 会跟随骨骼运动。当 Spine 组件销毁时，
+   * 挂载的 GameObject 也会被自动销毁。
+   *
+   * @param slot - 插槽名称或索引
+   * @param gameObject - 要挂载的 GameObject
+   * @param options - 可选配置
+   * @param options.followAttachmentTimeline - 是否跟随插槽的附件时间线
+   */
+  addSlotObject(slot: number | string, gameObject: GameObject, options?: { followAttachmentTimeline?: boolean }) {
+    if (!this.armature) {
+      console.warn('Spine armature is not ready, cannot addSlotObject');
+      return;
+    }
+    if (!this._containerManager) {
+      console.warn('ContainerManager is not available');
+      return;
+    }
+    const container = this._containerManager.getContainer(gameObject.id);
+    if (!container) {
+      console.warn('GameObject does not have a render container');
+      return;
+    }
+    this.armature.addSlotObject(slot, container, options);
+    this._slotGameObjects.set(gameObject, slot);
+  }
+
+  /**
+   * 从插槽上移除挂载的 GameObject
+   *
+   * @param gameObject - 要移除的 GameObject
+   */
+  removeSlotObject(gameObject: GameObject) {
+    if (!this.armature) return;
+    if (!this._containerManager) return;
+    const container = this._containerManager.getContainer(gameObject.id);
+    if (container) {
+      this.armature.removeSlotObject(container);
+    }
+    this._slotGameObjects.delete(gameObject);
+  }
+
+  /**
+   * 销毁所有挂载到插槽的 GameObject（内部使用）
+   */
+  _destroySlotGameObjects() {
+    for (const [gameObject] of this._slotGameObjects) {
+      if (!gameObject.destroyed) {
+        // 先从 spine 插槽移除，避免 destroy 时重复操作
+        const container = this._containerManager?.getContainer(gameObject.id);
+        if (container && this.armature) {
+          this.armature.removeSlotObject(container);
+        }
+        gameObject.destroy();
+      }
+    }
+    this._slotGameObjects.clear();
   }
 }
