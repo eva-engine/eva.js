@@ -380,7 +380,7 @@ export default class Spine extends Component<SpineParams> {
   _flushPendingSlotObjects() {
     if (this._pendingSlotObjects.length === 0) return;
     if (!this.armature || !this._containerManager) return;
-    const still: typeof this._pendingSlotObjects = [];
+    const still: Spine['_pendingSlotObjects'] = [];
     for (const pending of this._pendingSlotObjects) {
       const container = this._containerManager.getContainer(pending.gameObject.id);
       if (container) {
