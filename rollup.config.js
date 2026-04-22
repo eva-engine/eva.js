@@ -3,6 +3,7 @@ import path from 'path';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
+import ts from 'typescript';
 import { terser } from 'rollup-plugin-terser';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 
@@ -116,6 +117,7 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
   const shouldEmitDeclaration = process.env.TYPES != null && !hasTypesChecked;
 
   const tsPlugin = typescript({
+    typescript: ts,
     check: process.env.NODE_ENV === 'production' && !hasTypesChecked,
     tsconfig: path.resolve(__dirname, 'tsconfig.json'),
     cacheRoot: path.resolve(__dirname, 'node_modules/.rts2_cache'),

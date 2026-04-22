@@ -20,7 +20,7 @@
   "dependencies": {
     "@eva/eva.js": "2.0.1",
     "@eva/renderer-adapter": "2.0.1",
-    "eventemitter3": "^3.1.2",
+    "eventemitter3": "^5.0.4",
     "lodash-es": "^4.17.21",
     "pixi.js": "^8.17.0"
   },

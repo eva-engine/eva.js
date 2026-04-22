@@ -21,6 +21,6 @@
     "@eva/eva.js": "2.0.1",
     "@eva/inspector-decorator": "^0.0.5",
     "@eva/plugin-renderer": "2.0.1",
-    "eventemitter3": "^3.1.2"
+    "eventemitter3": "^5.0.4"
   }
 }
