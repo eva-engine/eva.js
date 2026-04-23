@@ -21,6 +21,7 @@ $tnpm run build 构建全部package
 开发环境构建所有plugin，$tnpm run build plugin -- -ad
 */
 
+const os = require('os');
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
@@ -57,9 +58,22 @@ async function run() {
 }
 
 async function buildAll(targets) {
+  const maxConcurrency = os.cpus().length;
+  const ret = [];
+  const executing = new Set();
   for (const target of targets) {
-    await build(target);
+    const p = build(target).catch(e => {
+      console.error(chalk.red(`\nFailed to build ${target}:`));
+      console.error(e.message || e);
+    });
+    ret.push(p);
+    executing.add(p);
+    p.then(() => executing.delete(p));
+    if (executing.size >= maxConcurrency) {
+      await Promise.race(executing);
+    }
   }
+  await Promise.all(ret);
 }
 
 async function build(target) {
