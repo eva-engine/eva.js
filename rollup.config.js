@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import alias from '@rollup/plugin-alias';
 import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from 'rollup-plugin-typescript2';
@@ -134,19 +135,31 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
   });
   hasTypesChecked = true;
 
+  const internalModules = ['pixi-spine', 'pixi-spine36'];
+  const aliasPlugin = alias({
+    entries: [
+      { find: 'pixi-spine', replacement: path.resolve(packagesDir, 'plugin-renderer-spine/lib/pixi-spine.js') },
+      { find: 'pixi-spine36', replacement: path.resolve(packagesDir, 'plugin-renderer-spine36/lib/pixi-spine.js') },
+    ],
+  });
+
   let nodePlugins = [];
   if (format === 'iife') {
     nodePlugins = [
+      aliasPlugin,
       require('@rollup/plugin-node-resolve').nodeResolve(),
       require('rollup-plugin-polyfill-node')(),
       require('@rollup/plugin-commonjs')({ sourceMap: false, ignore: ['lodash-es'] }),
     ];
+  } else {
+    nodePlugins = [aliasPlugin];
   }
 
   let external = [];
   let internal = ['@eva/spine-base'];
   if (format === 'esm' || format === 'cjs') {
-    external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
+    external = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})]
+      .filter(dep => !internalModules.includes(dep));
   } else {
     const evaDependencies = Array.from(Object.keys(pkg.dependencies || {})).filter(dep => {
       return dep.startsWith('@eva') && packages.indexOf(dep.substring(5)) > -1 && internal.indexOf(dep) === -1;
