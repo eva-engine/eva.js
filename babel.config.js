@@ -5,7 +5,6 @@ module.exports = {
       '@babel/preset-env',
       {
         loose: true,
-        targets: '>0.3%, not dead',
         bugfixes: true,
       },
     ],
