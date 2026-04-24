@@ -495,7 +495,8 @@ class Resource extends EE {
     const {
       metadata: { name, resolves },
     } = resource;
-    this._destroy(name, true);
+    delete this.promiseMap[name];
+    delete this.resourceUrlsMap[name];
     resolves[name]({});
     if (preload) {
       const param = {
