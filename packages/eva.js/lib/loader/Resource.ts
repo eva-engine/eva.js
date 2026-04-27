@@ -338,8 +338,8 @@ class Resource extends EE {
             url = `https:${res.src[key].url}`;
           }
 
-          // Track this URL for later cleanup
-          if (url && !this.resourceUrlsMap[name].includes(url)) {
+          // Track this URL for later cleanup (may be deleted by destroy/onError during await)
+          if (url && this.resourceUrlsMap[name] && !this.resourceUrlsMap[name].includes(url)) {
             this.resourceUrlsMap[name].push(url);
           }
 
