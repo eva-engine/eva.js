@@ -209,7 +209,7 @@ export default class SpineSystem extends Renderer {
     this.remove(changed);
     this.add(changed);
   }
-  async remove(changed: ComponentChanged) {
+  remove(changed: ComponentChanged) {
     this.increaseAsyncId(changed.gameObject.id);
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
@@ -227,9 +227,7 @@ export default class SpineSystem extends Renderer {
       component._destroySlotGameObjects();
       component.armature.destroy({ children: true });
       if (!component.keepResource) {
-        const res = await resource.getResource(component.lastResource);
-        const imageSrc = res.data?.image?.src || (res.data?.image as any)?.label;
-        releaseSpineData(res, imageSrc);
+        releaseSpineData(component.lastResource);
       }
     }
 
