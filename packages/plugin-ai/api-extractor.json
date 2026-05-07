@@ -1,0 +1,7 @@
+{
+  "extends": "../../api-extractor.json",
+  "mainEntryPointFilePath": "./dist/packages/plugin-ai/lib/index.d.ts",
+  "dtsRollup": {
+    "publicTrimmedFilePath": "./dist/plugin-ai.d.ts"
+  }
+}
