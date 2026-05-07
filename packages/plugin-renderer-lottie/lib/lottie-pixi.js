@@ -3405,4 +3405,3 @@ export {
   loadTexture,
   useTicker,
 };
-//# sourceMappingURL=index.module.js.map

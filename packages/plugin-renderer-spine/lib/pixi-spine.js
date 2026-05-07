@@ -13884,4 +13884,3 @@ export default {
   VertexAttachment,
   WindowedMean
 };
-//# sourceMappingURL=spine-pixi-v8.mjs.map

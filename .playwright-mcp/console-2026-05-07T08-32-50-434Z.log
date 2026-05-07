@@ -1,0 +1,26 @@
+[     733ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:8084/favicon.ico:0
+[    9153ms] [LOG] Eva.js version: __VERSION__ @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/packages/eva.js/lib/index.ts:16
+[    9207ms] [LOG] %c  %c  %c  %c  %c PixiJS %c v8.18.1 (webgl 2) http://www.pixijs.com/
+
+ background: #E72264; padding:5px 0; background: #6CA2EA; padding:5px 0; background: #B5D33D; padding:5px 0; background: #FED23F; padding:5px 0; color: #FFFFFF; background: #E72264; padding:5px 0; color: #E72264; background: #FFFFFF; padding:5px 0; @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/RenderTargetSystem-CMwBcq_2.js?v=a291448a:2607
+[    9209ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-hierarchy.ts:207:28) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[    9209ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-hierarchy.ts:208:28) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[    9209ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-hierarchy.ts:209:28) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[    9210ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-hierarchy.ts:720:25) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[    9211ms] [WARNING] PixiJS Warning:  [Resolver] already has key: https://g.alicdn.com/eva/hd25-spring-assets/0.0.19/nianmonster/spine42/Monster.png overwriting @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:5350
+[   13850ms] [LOG] Eva.js version: __VERSION__ @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/packages/eva.js/lib/index.ts:16
+[   13882ms] [LOG] %c  %c  %c  %c  %c PixiJS %c v8.18.1 (webgl 2) http://www.pixijs.com/
+
+ background: #E72264; padding:5px 0; background: #6CA2EA; padding:5px 0; background: #B5D33D; padding:5px 0; background: #FED23F; padding:5px 0; color: #FFFFFF; background: #E72264; padding:5px 0; color: #E72264; background: #FFFFFF; padding:5px 0; @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/RenderTargetSystem-CMwBcq_2.js?v=a291448a:2607
+[   13882ms] [WARNING]     at Module.init (http://localhost:8084/src/ai.ts:276:20) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[   13883ms] [WARNING]     at Module.init (http://localhost:8084/src/ai.ts:277:20) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[   13883ms] [WARNING]     at Module.init (http://localhost:8084/src/ai.ts:278:20) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[   13883ms] [WARNING]     at Module.init (http://localhost:8084/src/ai.ts:301:26) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[   13905ms] [WARNING] PixiJS Warning:  [Resolver] already has key: https://g.alicdn.com/eva/hd25-spring-assets/0.0.19/nianmonster/spine42/Monster.png overwriting @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:5350
+[   16772ms] [LOG] Eva.js version: __VERSION__ @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/packages/eva.js/lib/index.ts:16
+[   16789ms] [LOG] %c  %c  %c  %c  %c PixiJS %c v8.18.1 (webgl 2) http://www.pixijs.com/
+
+ background: #E72264; padding:5px 0; background: #6CA2EA; padding:5px 0; background: #B5D33D; padding:5px 0; background: #FED23F; padding:5px 0; color: #FFFFFF; background: #E72264; padding:5px 0; color: #E72264; background: #FFFFFF; padding:5px 0; @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/RenderTargetSystem-CMwBcq_2.js?v=a291448a:2607
+[   16790ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-click-test.ts:144:24) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[   16790ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-click-test.ts:145:24) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
+[   16790ms] [WARNING]     at Module.init (http://localhost:8084/src/ai-click-test.ts:146:24) @ http://localhost:8084/@fs/Users/dyk/lib/eva.js/node_modules/.vite/deps/Geometry-UEaZt-xO.js?v=a291448a:2481
