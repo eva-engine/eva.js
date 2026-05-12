@@ -17,11 +17,11 @@ export default class AISystem extends System<AISystemParams> {
   private debug: boolean = false;
   private enabled: boolean = true;
   private zIndex: number = 10001;
-  private div: HTMLDivElement;
+  private div: HTMLDivElement | null = null;
   private cache: Map<number, HTMLElement> = new Map();
-  private rendererSystem: RendererSystem;
-  private _ratioX: number;
-  private _ratioY: number;
+  private rendererSystem: RendererSystem | null = null;
+  private _ratioX: number = 1;
+  private _ratioY: number = 1;
 
   init(params: AISystemParams = {}) {
     this.debug = params.debug || false;
@@ -30,7 +30,7 @@ export default class AISystem extends System<AISystemParams> {
   }
 
   start() {
-    this.rendererSystem = this.game.getSystem(RendererSystem) as RendererSystem;
+    this.rendererSystem = this.game.getSystem(RendererSystem);
     if (this.enabled) {
       this.createOverlay();
     }
@@ -38,30 +38,31 @@ export default class AISystem extends System<AISystemParams> {
 
   private createOverlay() {
     const canvas = this.game.canvas;
-    if (!canvas) return;
+    if (!canvas || !this.rendererSystem) return;
 
-    this.div = document.createElement('div');
-    this.div.setAttribute('data-ai-overlay', 'true');
-    this.div.style.position = 'absolute';
-    this.div.style.pointerEvents = 'none';
-    this.div.style.zIndex = `${this.zIndex}`;
-    this.div.style.overflow = 'hidden';
+    const div = document.createElement('div');
+    div.setAttribute('data-ai-overlay', 'true');
+    div.style.position = 'absolute';
+    div.style.pointerEvents = 'none';
+    div.style.zIndex = `${this.zIndex}`;
+    div.style.overflow = 'hidden';
 
     // Set canvas global meta info
     const params = this.rendererSystem.params;
-    this.div.setAttribute('data-canvas-width', String(params.width || 750));
-    this.div.setAttribute('data-canvas-height', String(params.height || 750));
+    div.setAttribute('data-canvas-width', String(params.width || 750));
+    div.setAttribute('data-canvas-height', String(params.height || 750));
     if (params.backgroundColor != null) {
-      this.div.setAttribute('data-background-color', String(params.backgroundColor));
+      div.setAttribute('data-background-color', String(params.backgroundColor));
     }
     if (params.backgroundAlpha != null && params.backgroundAlpha !== 1) {
-      this.div.setAttribute('data-background-alpha', String(params.backgroundAlpha));
+      div.setAttribute('data-background-alpha', String(params.backgroundAlpha));
     }
 
+    this.div = div;
     this.syncOverlayPosition();
 
     if (canvas.parentNode) {
-      canvas.parentNode.insertBefore(this.div, canvas.nextSibling);
+      canvas.parentNode.insertBefore(div, canvas.nextSibling);
     }
   }
 
@@ -80,7 +81,7 @@ export default class AISystem extends System<AISystemParams> {
 
   private updateRatio() {
     const canvas = this.game.canvas;
-    if (!canvas) return;
+    if (!canvas || !this.rendererSystem) return;
 
     const { width, height } = canvas.getBoundingClientRect();
     const params = this.rendererSystem.params;
@@ -114,6 +115,18 @@ export default class AISystem extends System<AISystemParams> {
   }
 
   private syncElement(gameObject: GameObject) {
+    if (!this.div || !this.rendererSystem) return;
+
+    const render = gameObject.getComponent('Render') as any;
+    if (render && render.visible === false) {
+      const existing = this.cache.get(gameObject.id);
+      if (existing) {
+        existing.parentNode?.removeChild(existing);
+        this.cache.delete(gameObject.id);
+      }
+      return;
+    }
+
     const container = this.rendererSystem.containerManager?.getContainer(gameObject.id);
     if (!container) return;
 
@@ -209,7 +222,6 @@ export default class AISystem extends System<AISystemParams> {
       this.div.parentNode.removeChild(this.div);
     }
     this.cache.clear();
-    this.cache = null;
     this.div = null;
     this.rendererSystem = null;
   }
