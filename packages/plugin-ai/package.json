@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-ai",
-  "version": "2.0.2-beta.2",
+  "version": "2.0.2-beta.3",
   "description": "@eva/plugin-ai",
   "main": "index.js",
   "module": "dist/plugin-ai.esm.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "2.0.2-beta.2",
-    "@eva/plugin-renderer": "2.0.2-beta.2"
+    "@eva/eva.js": "2.0.2-beta.3",
+    "@eva/plugin-renderer": "2.0.2-beta.3"
   }
 }
