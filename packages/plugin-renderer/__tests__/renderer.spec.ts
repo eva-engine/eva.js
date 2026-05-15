@@ -25,6 +25,7 @@ jest.mock('pixi.js', () => ({
     addChild: jest.fn(),
     removeChild: jest.fn(),
     destroy: jest.fn(),
+    getBounds: jest.fn(() => ({ x: 10, y: 20, width: 30, height: 40 })),
     children: [],
     position: { x: 0, y: 0 },
     scale: { x: 1, y: 1 },
@@ -206,5 +207,66 @@ describe('ContainerManager', () => {
       const mockGameObject = { name: 'test', id: 1 };
       manager.addContainer({ name: 1, container: container as any, gameObject: mockGameObject as any });
     }).not.toThrow();
+  });
+
+  it('应该优先返回 Pixi getBounds 的真实渲染尺寸', () => {
+    const container = new Container() as any;
+    const mockGameObject = {
+      name: 'actual-size',
+      id: 2,
+      destroyed: false,
+      transform: {
+        position: { x: 0, y: 0 },
+        size: { width: 100, height: 100 },
+        scale: { x: 1, y: 1 },
+      },
+    };
+    manager.addContainer({ name: 2, container, gameObject: mockGameObject as any });
+
+    const bounds = manager.getBounds(mockGameObject as any);
+
+    expect(bounds).toEqual({
+      x: 10,
+      y: 20,
+      width: 30,
+      height: 40,
+      right: 40,
+      bottom: 60,
+      coordinateSpace: 'world',
+      source: 'pixi',
+    });
+  });
+
+  it('渲染对象未就绪时应该 fallback 到 Transform.size', () => {
+    const container = {
+      gName: '',
+      getBounds: jest.fn(() => ({ x: 0, y: 0, width: 0, height: 0 })),
+      destroy: jest.fn(),
+      worldTransform: { tx: 12, ty: 34 },
+    };
+    const mockGameObject = {
+      name: 'fallback-size',
+      id: 3,
+      destroyed: false,
+      transform: {
+        position: { x: 12, y: 34 },
+        size: { width: 56, height: 78 },
+        scale: { x: 1, y: 1 },
+      },
+    };
+    manager.addContainer({ name: 3, container: container as any, gameObject: mockGameObject as any });
+
+    const bounds = manager.getBounds(mockGameObject as any, { coordinateSpace: 'design' });
+
+    expect(bounds).toEqual({
+      x: 12,
+      y: 34,
+      width: 56,
+      height: 78,
+      right: 68,
+      bottom: 112,
+      coordinateSpace: 'design',
+      source: 'transform',
+    });
   });
 });

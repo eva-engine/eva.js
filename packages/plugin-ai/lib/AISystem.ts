@@ -130,7 +130,7 @@ export default class AISystem extends System<AISystemParams> {
     const container = this.rendererSystem.containerManager?.getContainer(gameObject.id);
     if (!container) return;
 
-    const bounds = container.getBounds();
+    const bounds = this.rendererSystem.getBounds(gameObject, { coordinateSpace: 'design' });
     if (!bounds || bounds.width === 0 || bounds.height === 0) return;
 
     const params = this.rendererSystem.params;

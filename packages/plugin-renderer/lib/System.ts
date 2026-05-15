@@ -1,8 +1,9 @@
-import { System, decorators, Game, LOAD_SCENE_MODE } from '@eva/eva.js';
+import { System, decorators, Game, LOAD_SCENE_MODE, GameObject } from '@eva/eva.js';
 import { Application } from '@eva/renderer-adapter';
 import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
 import Transform from './Transform';
+import type { GetBoundsOptions, RenderBounds } from './manager/ContainerManager';
 // import { ticker } from 'pixi.js';
 import type { ApplicationOptions } from 'pixi.js';
 import { Ticker } from 'pixi.js';
@@ -13,6 +14,23 @@ export interface RendererSystemParams extends Partial<ApplicationOptions> {
   renderType?: number;
   enableScroll?: boolean;
   debugMode?: boolean;
+}
+
+export interface ResizeRendererOptions {
+  /** Eva design/canvas logical width. This does not include resolution scaling. */
+  width?: number;
+  /** Eva design/canvas logical height. This does not include resolution scaling. */
+  height?: number;
+  /** Pixi backing-store resolution. Does not change Eva design coordinates. */
+  resolution?: number;
+  /** Upper bound for resolution to avoid oversized backing stores. Defaults to 3. */
+  maxResolution?: number;
+}
+
+export interface RendererResolutionState {
+  width: number;
+  height: number;
+  resolution: number;
 }
 
 export enum RENDERER_TYPE {
@@ -160,11 +178,57 @@ export default class Renderer extends System<RendererSystemParams> {
     this.game = null;
     this.multiApps = null;
   }
-  resize(width, height) {
+  resize(width: number, height: number, resolution?: number) {
     this.params.width = width;
     this.params.height = height;
+    if (resolution != null) {
+      this.params.resolution = this.clampResolution(resolution);
+    }
     // @ts-ignore
-    this.application.renderer.resize(width, height);
+    this.application.renderer.resize(width, height, this.params.resolution);
+  }
+
+  /**
+   * 更新 Pixi renderer backing-store resolution，不改变 Eva 设计坐标系。
+   *
+   * 预览画布可用该入口在 zoom/devicePixelRatio 变化时提高清晰度；
+   * getBounds/Transform/worldTransform 仍返回设计逻辑坐标，不乘 resolution。
+   */
+  resizeRenderer(options: ResizeRendererOptions): RendererResolutionState {
+    const width = options.width ?? this.params.width ?? this.application.renderer.width;
+    const height = options.height ?? this.params.height ?? this.application.renderer.height;
+    const resolution = options.resolution == null
+      ? this.params.resolution ?? this.application.renderer.resolution ?? 1
+      : this.clampResolution(options.resolution, options.maxResolution);
+
+    this.params.width = width;
+    this.params.height = height;
+    this.params.resolution = resolution;
+    // @ts-ignore Pixi v8 accepts resolution as the third resize argument.
+    this.application.renderer.resize(width, height, resolution);
+    return { width, height, resolution };
+  }
+
+  setResolution(resolution: number, options: Omit<ResizeRendererOptions, 'resolution'> = {}): RendererResolutionState {
+    return this.resizeRenderer({ ...options, resolution });
+  }
+
+  private clampResolution(resolution: number, maxResolution: number = 3): number {
+    const normalized = Number.isFinite(resolution) && resolution > 0 ? resolution : 1;
+    return Math.min(normalized, maxResolution);
+  }
+
+  /**
+   * 获取 GameObject 的真实渲染 bounds。
+   *
+   * 默认返回 PixiJS display object 的 world bounds。Eva 的 Pixi world 坐标
+   * 与 canvas/design 逻辑坐标一致；如果画布被 CSS 缩放，调用方再按
+   * canvas.getBoundingClientRect() / renderer width 做屏幕坐标换算。
+   *
+   * 当渲染对象尚未挂载或资源未加载完成时，会回退到 Transform.size。
+   */
+  getBounds(gameObject: GameObject, options?: GetBoundsOptions): RenderBounds | null {
+    return this.containerManager?.getBounds(gameObject, options) || null;
   }
 
   private getApplicationByScene(scene) {
@@ -191,11 +255,11 @@ export default class Renderer extends System<RendererSystemParams> {
     }
   }
 
-  resizeByScene(scene, width: number, height: number) {
+  resizeByScene(scene, width: number, height: number, resolution?: number) {
     const app = this.getApplicationByScene(scene);
     if (app) {
       // @ts-ignore
-      app.renderer.resize(width, height);
+      app.renderer.resize(width, height, resolution);
     }
   }
 }

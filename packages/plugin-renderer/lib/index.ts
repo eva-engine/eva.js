@@ -6,5 +6,6 @@ import Renderer from './Renderer';
 import { mixinPIXI } from './mixin';
 
 mixinPIXI();
-export type { RendererSystemParams } from './System';
+export type { RendererSystemParams, ResizeRendererOptions, RendererResolutionState } from './System';
+export type { BoundsCoordinateSpace, GetBoundsOptions, RenderBounds } from './manager/ContainerManager';
 export { RendererManager, ContainerManager, RendererSystem, RENDERER_TYPE, Renderer, registerKtx2CompressedTexture };
