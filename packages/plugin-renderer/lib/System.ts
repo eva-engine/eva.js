@@ -31,6 +31,8 @@ export interface RendererResolutionState {
   width: number;
   height: number;
   resolution: number;
+  /** Number of display objects whose own resolution was synchronized. */
+  displayResolutionSyncCount?: number;
 }
 
 export enum RENDERER_TYPE {
@@ -186,6 +188,9 @@ export default class Renderer extends System<RendererSystemParams> {
     }
     // @ts-ignore
     this.application.renderer.resize(width, height, this.params.resolution);
+    if (resolution != null) {
+      this.syncDisplayObjectResolution(this.params.resolution);
+    }
   }
 
   /**
@@ -206,7 +211,8 @@ export default class Renderer extends System<RendererSystemParams> {
     this.params.resolution = resolution;
     // @ts-ignore Pixi v8 accepts resolution as the third resize argument.
     this.application.renderer.resize(width, height, resolution);
-    return { width, height, resolution };
+    const displayResolutionSyncCount = this.syncDisplayObjectResolution(resolution);
+    return { width, height, resolution, displayResolutionSyncCount };
   }
 
   setResolution(resolution: number, options: Omit<ResizeRendererOptions, 'resolution'> = {}): RendererResolutionState {
@@ -216,6 +222,50 @@ export default class Renderer extends System<RendererSystemParams> {
   private clampResolution(resolution: number, maxResolution: number = 3): number {
     const normalized = Number.isFinite(resolution) && resolution > 0 ? resolution : 1;
     return Math.min(normalized, maxResolution);
+  }
+
+  /**
+   * Keep renderer-owned display objects that expose a resolution property in
+   * sync with the backing-store resolution. This is intentionally display-tree
+   * based rather than component-type based, so Text/HTMLText and future Pixi
+   * objects with resolution support all follow the same renderer contract.
+   */
+  private syncDisplayObjectResolution(resolution: number): number {
+    const roots = this.containerManager?.containerMap ? Object.values(this.containerManager.containerMap) : [];
+    const visited = typeof WeakSet !== 'undefined' ? new WeakSet<object>() : undefined;
+    let syncedCount = 0;
+
+    const visit = (displayObject: any) => {
+      if (!displayObject || typeof displayObject !== 'object') return;
+      if (visited?.has(displayObject)) return;
+      visited?.add(displayObject);
+
+      if ('resolution' in displayObject) {
+        const currentResolution = displayObject.resolution;
+        if ((typeof currentResolution === 'number' || currentResolution === null) && Math.abs((currentResolution ?? 1) - resolution) > 0.001) {
+          try {
+            displayObject.resolution = resolution;
+            if (typeof displayObject.resolution === 'number' && Math.abs(displayObject.resolution - resolution) <= 0.001) {
+              syncedCount += 1;
+            }
+          } catch (_) {
+            // Some Pixi objects expose a readonly or unsupported resolution setter.
+          }
+        }
+      }
+
+      if (Array.isArray(displayObject.children)) {
+        for (const child of displayObject.children) {
+          visit(child);
+        }
+      }
+    };
+
+    for (const root of roots) {
+      visit(root);
+    }
+
+    return syncedCount;
   }
 
   /**
