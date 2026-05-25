@@ -100,16 +100,28 @@ export default class SpineSystem extends Renderer {
    * @param e - 更新参数，包含帧间隔时间
    */
   update(e: UpdateParams) {
+    super.update();
     for (let key in this.armatures) {
+      const armature: any = this.armatures[key];
+      const component = this._spineComponents[key];
+      if (!armature || armature.destroyed || component?.destroied) {
+        delete this.armatures[key];
+        delete this._spineComponents[key];
+        continue;
+      }
       // TODO: 类型
       // @ts-ignore
-      this.armatures[key].update(e.deltaTime * 0.001);
+      armature.update(e.deltaTime * 0.001);
     }
     // 处理等待容器就绪的 slot 挂载请求
     for (let key in this._spineComponents) {
-      this._spineComponents[key]._flushPendingSlotObjects();
+      const component = this._spineComponents[key];
+      if (!component || component.destroied) {
+        delete this._spineComponents[key];
+        continue;
+      }
+      component._flushPendingSlotObjects();
     }
-    super.update();
   }
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Spine') {
@@ -132,12 +144,12 @@ export default class SpineSystem extends Renderer {
     const gameObjectId = changed.gameObject.id;
     const asyncId = this.increaseAsyncId(gameObjectId);
     const res = await resource.getResource(component.resource);
-    if (!this.validateAsyncId(gameObjectId, asyncId)) return;
+    if (!this.validateAsyncId(gameObjectId, asyncId) || component.destroied || changed.gameObject.destroyed) return;
     const spineData = await getSpineData(res, component.scale, this.pixiSpine);
-    if (!this.validateAsyncId(gameObjectId, asyncId)) return;
+    if (!this.validateAsyncId(gameObjectId, asyncId) || component.destroied || changed.gameObject.destroyed) return;
     if (!spineData) {
       component.addHandler = setTimeout(() => {
-        if (!component.destroied) {
+        if (!component.destroied && !changed.gameObject.destroyed) {
           if (count === undefined) {
             // 最大重试次数
             count = MaxRetryCount;
@@ -154,7 +166,7 @@ export default class SpineSystem extends Renderer {
     }
     this.remove(changed);
     const container = this.renderSystem?.containerManager?.getContainer(changed.gameObject.id);
-    if (!container) {
+    if (!container || component.destroied || changed.gameObject.destroyed) {
       // console.warn('添加spine的container不存在');
       return;
     }
@@ -210,32 +222,40 @@ export default class SpineSystem extends Renderer {
     this.add(changed);
   }
   async remove(changed: ComponentChanged) {
-    this.increaseAsyncId(changed.gameObject.id);
+    const gameObjectId = changed.gameObject.id;
+    this.increaseAsyncId(gameObjectId);
     const component = changed.component as Spine;
     clearTimeout(component.addHandler);
-    const armature = this.armatures[changed.gameObject.id];
+    const armature = this.armatures[gameObjectId];
 
-    const container = this.renderSystem?.containerManager?.getContainer(changed.gameObject.id);
+    const container = this.renderSystem?.containerManager?.getContainer(gameObjectId);
     if (container && armature) {
       container.removeChild(armature);
     } else {
       // console.warn('remove时container不存在');
     }
 
-    if (component.armature) {
+    const componentArmature = component.armature;
+    component.armature = null;
+    delete this.armatures[gameObjectId];
+    delete this._spineComponents[gameObjectId];
+
+    if (componentArmature) {
       // 销毁所有挂载到插槽的 GameObject
       component._destroySlotGameObjects();
-      component.armature.destroy({ children: true });
-      if (!component.keepResource) {
-        const res = await resource.getResource(component.lastResource);
-        const imageSrc = res.data?.image?.src || (res.data?.image as any)?.label;
-        releaseSpineData(res, imageSrc);
+      if (!componentArmature.destroyed) {
+        componentArmature.destroy({ children: true });
+      }
+      if (!component.keepResource && component.lastResource) {
+        try {
+          const res = await resource.getResource(component.lastResource);
+          const imageSrc = res.data?.image?.src || (res.data?.image as any)?.label;
+          releaseSpineData(res, imageSrc);
+        } catch (error) {
+          console.warn('Failed to release Spine resource', component.lastResource, error);
+        }
       }
     }
-
-    component.armature = null;
-    delete this.armatures[changed.gameObject.id];
-    delete this._spineComponents[changed.gameObject.id];
     if (changed.type === OBSERVER_TYPE.CHANGE) {
       // // @ts-ignore
       // component.removeAllListeners();
