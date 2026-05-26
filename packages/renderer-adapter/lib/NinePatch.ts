@@ -1,7 +1,7 @@
 import { Texture, NineSliceSprite } from 'pixi.js';
 
 export default class NinePatch extends NineSliceSprite {
-  constructor(img, leftWidth, topHeight, rightWidth, bottomHeight) {
+  constructor(img, leftWidth, topHeight, rightWidth, bottomHeight, width?, height?) {
     let texture;
     if (img instanceof Texture) {
       texture = img;
@@ -14,6 +14,8 @@ export default class NinePatch extends NineSliceSprite {
       topHeight,
       rightWidth,
       bottomHeight,
+      width,
+      height,
     });
   }
 }
