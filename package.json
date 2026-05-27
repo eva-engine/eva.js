@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.0.2",
+  "version": "2.1.0-beta.0",
   "workspace": "packages",
   "name": "eva.js",
   "scripts": {
@@ -106,5 +106,15 @@
     "iOS >= 4",
     "Firefox >= 20",
     "Android > 4.0"
-  ]
+  ],
+  "nx": {
+    "targets": {
+      "typecheck": {
+        "options": {
+          "cwd": "libs/eva.js",
+          "command": "node -e \"console.log('eva.js embedded upstream package: workspace typecheck target intentionally delegated to its package build/test scripts')\""
+        }
+      }
+    }
+  }
 }

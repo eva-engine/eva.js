@@ -18,7 +18,10 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['html', 'json', 'lcov'],
   collectCoverageFrom: ['packages/eva.js/lib/**/*.ts', '!packages/eva.js/lib/loader/resource-loader'],
-  moduleNameMapper,
+  moduleNameMapper: {
+    ...moduleNameMapper,
+    '^@eva/inspector-decorator$': '<rootDir>/../inspector-decorators/src',
+  },
   transform: {
     '^.+\\.(ts|js)?$': 'ts-jest',
   },

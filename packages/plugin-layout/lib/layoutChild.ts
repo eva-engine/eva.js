@@ -1,4 +1,4 @@
-import { Component } from '@eva/eva.js';
+import { Component, Field, step, type } from '@eva/eva.js';
 import { Padding, normalizePadding } from './types';
 
 /**
@@ -15,6 +15,18 @@ export interface LayoutChildParams {
   margin?: number | [number, number] | [number, number, number, number];
   /** 固定尺寸（不参与弹性计算） */
   fixedSize?: { width?: number; height?: number };
+}
+
+class LayoutChildMarginMetadata {
+  @type('number') @step(1) top?: number;
+  @type('number') @step(1) right?: number;
+  @type('number') @step(1) bottom?: number;
+  @type('number') @step(1) left?: number;
+}
+
+class LayoutChildFixedSizeMetadata {
+  @type('number') @step(1) width?: number;
+  @type('number') @step(1) height?: number;
 }
 
 /**
@@ -37,10 +49,19 @@ export interface LayoutChildParams {
 export default class LayoutChild extends Component {
   static componentName = 'LayoutChild';
 
+  @type('number') @step(1)
   flexGrow: number = 0;
+
+  @type('number') @step(1)
   flexShrink: number = 0;
+
+  @type('string')
   alignSelf: 'start' | 'center' | 'end' | 'stretch' | undefined = undefined;
+
+  @Field(() => LayoutChildMarginMetadata)
   margin: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
+
+  @Field(() => LayoutChildFixedSizeMetadata)
   fixedSize: { width?: number; height?: number } | undefined = undefined;
 
   init(params?: LayoutChildParams) {

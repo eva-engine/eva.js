@@ -1,4 +1,4 @@
-import { Component } from '@eva/eva.js';
+import { Component, Field, step, type } from '@eva/eva.js';
 import type { GameObject } from '@eva/eva.js';
 
 export enum HIT_AREA_TYPE {
@@ -21,8 +21,25 @@ interface HitArea {
   };
 }
 
+class HitAreaStyleMetadata {
+    @type('number') @step(1) x?: number;
+    @type('number') @step(1) y?: number;
+    @type('number') @step(1) radius?: number;
+    @type('number') @step(1) width?: number;
+    @type('number') @step(1) height?: number;
+    @type('number') paths?: number[];
+}
+
+class HitAreaMetadata {
+  @type('string') type: HIT_AREA_TYPE;
+  @Field(() => HitAreaStyleMetadata) style?: HitArea['style'];
+}
+
 export interface EventParams {
-  hitArea: HitArea;
+  interactive?: boolean;
+  cursor?: string;
+  stopPropagation?: boolean;
+  hitArea?: HitArea;
 }
 
 type TouchEventName = 'touchstart' | 'touchmove' | 'touchend' | 'tap' | 'touchendoutside' | 'touchcancel';
@@ -107,6 +124,7 @@ export default class Event extends Component<EventParams> {
   static componentName = 'Event';
 
   /** 交互热区配置 */
+  @Field(() => HitAreaMetadata)
   hitArea: HitArea = undefined;
 
   /**

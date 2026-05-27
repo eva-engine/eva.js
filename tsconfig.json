@@ -9,6 +9,7 @@
     "allowJs": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "removeComments": true,

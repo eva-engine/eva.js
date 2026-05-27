@@ -1,13 +1,23 @@
-import { Texture, Sprite, Graphics, mesh, ticker, BLEND_MODES, Rectangle } from 'pixi.js';
+import * as PIXIImport from 'pixi.js';
 
 const PIXI = {
-  Texture,
-  Rectangle,
-  Sprite,
-  Graphics,
-  BLEND_MODES,
-  mesh,
-  ticker,
+  Texture: PIXIImport.Texture,
+  Rectangle: PIXIImport.Rectangle,
+  Sprite: PIXIImport.Sprite,
+  Graphics: PIXIImport.Graphics,
+  BLEND_MODES: PIXIImport.BLEND_MODES || {
+    NORMAL: 'normal',
+    ADD: 'add',
+    DARKEN: 'darken',
+    DIFFERENCE: 'difference',
+    HARD_LIGHT: 'hard-light',
+    LIGHTEN: 'lighten',
+    MULTIPLY: 'multiply',
+    OVERLAY: 'overlay',
+    SCREEN: 'screen',
+  },
+  mesh: PIXIImport.mesh || {},
+  ticker: PIXIImport.ticker || {},
 };
 var dragonBones;
 

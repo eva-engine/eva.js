@@ -7,12 +7,28 @@ import Game, { LOAD_SCENE_MODE } from './game/Game';
 import Scene from './game/Scene';
 import { IDEProp } from './decorators/ide';
 import { componentObserver } from './decorators/system';
+import {
+  ExecuteInEditMode,
+  Field,
+  getPropertiesOf,
+  inspectorField,
+  shouldExecuteInEditMode,
+  step,
+  type,
+} from './decorators/inspector';
 import { resource, LOAD_EVENT, RESOURCE_TYPE } from './loader/Resource';
 
 /** Decorators util */
 const decorators = {
   IDEProp,
   componentObserver,
+  ExecuteInEditMode,
+  Field,
+  getPropertiesOf,
+  inspectorField,
+  shouldExecuteInEditMode,
+  step,
+  type,
 };
 
 // for typescript
@@ -22,6 +38,7 @@ export type { ObserverEvent as ComponentChanged } from './core/ComponentObserver
 export type { PureObserverInfo } from './core/observer';
 export type { UpdateParams, ComponentParams } from './core/Component';
 export type { ObserverInfo } from './decorators/system';
+export type { FieldMetadata, FieldOptions, ClassType } from './decorators/inspector';
 export type { ResourceBase } from './loader/Resource';
 export type { SystemConstructor } from './core/System';
 
@@ -46,5 +63,12 @@ export {
   LOAD_SCENE_MODE,
   IDEProp,
   componentObserver,
+  ExecuteInEditMode,
+  Field,
+  getPropertiesOf,
+  inspectorField,
+  shouldExecuteInEditMode,
+  step,
+  type,
   RESOURCE_TYPE_STRATEGY,
 };

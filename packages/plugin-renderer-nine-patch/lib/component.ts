@@ -1,5 +1,4 @@
-import { Component } from '@eva/eva.js';
-import { type, step } from '@eva/inspector-decorator';
+import { Component, type, step } from '@eva/eva.js';
 import { NinePatch as NinePatchSprite } from '@eva/renderer-adapter';
 
 export interface NinePatchParams {
@@ -94,6 +93,7 @@ export default class NinePatch extends Component<NinePatchParams> {
    * @param obj.bottomHeight - 底部固定高度
    */
   init(obj?: NinePatchParams) {
+    if(!obj) return
     this.resource = obj.resource;
     this.spriteName = obj.spriteName;
     this.leftWidth = obj.leftWidth;

@@ -64,7 +64,9 @@ export default class Renderer extends System<RendererSystemParams> {
   transform: Transform;
   multiApps: Application[] = [];
   suportedCompressedTextureFormats: SuportedCompressedTexture;
+  private destroyed = false;
   async init(params: Partial<RendererSystemParams>) {
+    this.destroyed = false;
     this.params = params;
     this.application = await this.createApplication(params);
 
@@ -149,6 +151,8 @@ export default class Renderer extends System<RendererSystemParams> {
   }
 
   update() {
+    if (this.destroyed || !this.game || !this.containerManager || !this.rendererManager) return;
+
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
       this.transform.componentChanged(changed);
@@ -163,15 +167,22 @@ export default class Renderer extends System<RendererSystemParams> {
     }
   }
   lateUpdate(e) {
+    if (this.destroyed || !this.transform || !this.application) return;
+
     this.transform.update();
     this.application.ticker.update(e.time);
   }
   onDestroy() {
-    this.application.destroy();
+    if (this.destroyed) return;
+
+    this.destroyed = true;
+    this.application?.ticker?.stop?.();
+    this.application?.destroy(false, { children: true, context: true });
     for (const app of this.multiApps) {
-      app && app.destroy();
+      app?.ticker?.stop?.();
+      app && app.destroy(false, { children: true, context: true });
     }
-    this.transform.destroy();
+    this.transform?.destroy();
     this.transform = null;
     this.params = null;
     this.rendererManager = null;

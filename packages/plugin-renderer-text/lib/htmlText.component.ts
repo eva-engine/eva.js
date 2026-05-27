@@ -1,5 +1,4 @@
-import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Component, Field, type } from '@eva/eva.js';
 
 export interface HTMLTextStyleOptions {
   fontFamily?: string | string[];
@@ -38,6 +37,40 @@ export interface HTMLTextParams {
     scaleMode?: 'linear' | 'nearest';
     resolution?: number;
   };
+}
+
+class HTMLTextTextureStyleMetadata {
+  @type('string') scaleMode?: 'linear' | 'nearest';
+  @type('number') resolution?: number;
+}
+
+class HTMLTextStyleMetadata {
+  @type('string') fontFamily?: string | string[];
+  @type('number') fontSize?: number | string;
+  @type('string') fontWeight?: string;
+  @type('string') fontStyle?: string;
+  @type('string') fontVariant?: string;
+  @type('string') align?: 'left' | 'center' | 'right' | 'justify';
+  @type('string') textBaseline?: string;
+  @Field({ type: 'color' }) fill?: string | number;
+  @Field({ type: 'color' }) stroke?: string | number;
+  @type('number') strokeThickness?: number;
+  @type('number') lineHeight?: number;
+  @type('number') letterSpacing?: number;
+  @type('number') padding?: number;
+  @type('boolean') wordWrap?: boolean;
+  @type('number') wordWrapWidth?: number;
+  @type('boolean') breakWords?: boolean;
+  @type('string') whiteSpace?: string;
+  @type('boolean') dropShadow?: boolean;
+  @Field({ type: 'color' }) dropShadowColor?: string | number;
+  @type('number') dropShadowAlpha?: number;
+  @type('number') dropShadowAngle?: number;
+  @type('number') dropShadowBlur?: number;
+  @type('number') dropShadowDistance?: number;
+  @type('object') cssOverrides?: string[];
+  @type('object') tagStyles?: Record<string, HTMLTextStyleOptions>;
+  @type('boolean') trim?: boolean;
 }
 
 /**
@@ -109,9 +142,11 @@ export default class HTMLText extends Component<HTMLTextParams> {
   @type('string') text: string = '';
 
   /** 文本样式配置 */
+  @Field(() => HTMLTextStyleMetadata)
   style: HTMLTextParams['style'] = {};
 
   /** 纹理渲染配置 */
+  @Field(() => HTMLTextTextureStyleMetadata)
   textureStyle: HTMLTextParams['textureStyle'] = {};
 
   /**

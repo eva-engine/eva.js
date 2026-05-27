@@ -1,5 +1,4 @@
-import { Component } from '@eva/eva.js';
-import { type, step } from '@eva/inspector-decorator';
+import { Component, type, step } from '@eva/eva.js';
 import { uuid } from './utils';
 
 export interface A11yParams {

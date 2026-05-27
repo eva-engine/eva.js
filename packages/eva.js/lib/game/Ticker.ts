@@ -47,7 +47,7 @@ class Ticker {
   private _tickers: Set<unknown>;
 
   /** requestAnimationFrame 的句柄 ID */
-  _requestId: number;
+  _requestId: number | null;
 
   /** 上一帧的渲染时间 */
   private _lastFrameTime: number;
@@ -170,6 +170,10 @@ class Ticker {
    */
   pause() {
     this._started = false;
+    if (this._requestId !== null) {
+      cancelAnimationFrame(this._requestId);
+      this._requestId = null;
+    }
     this.timeline.playbackRate = 0;
   }
 

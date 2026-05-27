@@ -7,8 +7,7 @@ import {
   TextStyleTextBaseline,
   TextStyleWhiteSpace,
 } from 'pixi.js';
-import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Component, Field, type } from '@eva/eva.js';
 
 export interface TextParams {
   text: string;
@@ -43,6 +42,55 @@ export interface TextParams {
     wordWrapWidth?: number;
     leading?: number;
   };
+}
+
+class TextStyleStrokeMetadata {
+  @type('number') alpha: number;
+  @Field({ type: 'color' }) color: string | number;
+  @type('string') join: string;
+  @type('number') miterLimit: number;
+  @type('number') width: number;
+}
+
+class TextStyleDropShadowMetadata {
+  @type('number') alpha: number;
+  @type('number') angle: number;
+  @type('number') blur: number;
+  @Field({ type: 'color' }) color: string | number;
+  @type('number') distance: number;
+  @type('boolean') enabled: boolean;
+}
+
+class TextStyleMetadata {
+  @type('string') align: TextStyleAlign;
+  @type('boolean') breakWords: boolean;
+  @Field(() => TextStyleDropShadowMetadata) dropShadow: boolean | TextStyleDropShadowMetadata;
+  @type('number') dropShadowAlpha: number;
+  @type('number') dropShadowAngle: number;
+  @type('number') dropShadowBlur: number;
+  @Field({ type: 'color' }) dropShadowColor: string | number;
+  @type('number') dropShadowDistance: number;
+  @Field({ type: 'color' }) fill: any;
+  @type('number') fillGradientType: number;
+  @type('number') fillGradientStops: number[];
+  @type('string') fontFamily: string | string[];
+  @type('number') fontSize: number | string;
+  @type('string') fontStyle: TextStyleFontStyle;
+  @type('string') fontVariant: TextStyleFontVariant;
+  @type('string') fontWeight: TextStyleFontWeight;
+  @type('number') leading: number;
+  @type('number') letterSpacing: number;
+  @type('number') lineHeight: number;
+  @type('string') lineJoin: string;
+  @type('number') miterLimit: number;
+  @type('number') padding: number;
+  @Field(() => TextStyleStrokeMetadata) stroke: string | number | TextStyleStrokeMetadata;
+  @type('number') strokeThickness: number;
+  @type('string') textBaseline: TextStyleTextBaseline;
+  @type('boolean') trim: boolean;
+  @type('string') whiteSpace: TextStyleWhiteSpace;
+  @type('boolean') wordWrap: boolean;
+  @type('number') wordWrapWidth: number;
 }
 
 /**
@@ -95,7 +143,7 @@ export default class Text extends Component<TextParams> {
   @type('string') text: string = '';
 
   /** 文本样式配置 */
-  // @decorators.IDEProp 复杂编辑后续添加
+  @Field(() => TextStyleMetadata)
   style: TextParams['style'] = {};
 
   /**

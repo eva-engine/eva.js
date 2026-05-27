@@ -1,5 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import GameObject from './GameObject';
+import { getPropertiesOf } from '../decorators/inspector';
+import type { FieldMetadata } from '../decorators/inspector';
 
 /** 传递给 `Component.update` 方法的帧信息 */
 export interface UpdateParams {
@@ -83,6 +85,16 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
   /** 组件类的静态名称标识 */
   static componentName: string;
 
+  /**
+   * 获取当前组件类的 Inspector 元数据。
+   *
+   * 该方法读取 `@eva/inspector-decorator` 生成的 metadata，
+   * 同时兼容没有字段装饰器、但定义了 componentName 的组件。
+   */
+  static getInspectorMetadata(): FieldMetadata {
+    return getPropertiesOf(this as ComponentConstructor<Component<ComponentParams>>);
+  }
+
   /** 组件实例的名称 */
   public readonly name: string;
 
@@ -112,6 +124,13 @@ class Component<T extends ComponentParams = {}> extends EventEmitter {
     // @ts-ignore
     this.name = this.constructor.componentName;
     this.__componentDefaultParams = params;
+  }
+
+  /**
+   * 获取当前组件实例所属组件类的 Inspector 元数据。
+   */
+  getInspectorMetadata(): FieldMetadata {
+    return (this.constructor as typeof Component).getInspectorMetadata();
   }
 
   /**

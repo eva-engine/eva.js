@@ -12578,6 +12578,10 @@ var SpinePipe = class {
     }
   }
   destroyRenderable(spine) {
+    if (!this.gpuSpineData) {
+      spine.off("destroyed", this._destroyRenderableBound);
+      return;
+    }
     this.gpuSpineData[spine.uid] = null;
     spine.off("destroyed", this._destroyRenderableBound);
   }

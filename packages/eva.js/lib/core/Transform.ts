@@ -1,4 +1,4 @@
-import { type, step } from '@eva/inspector-decorator';
+import { type, step } from '../decorators/inspector';
 import Component from './Component';
 import type { ComponentParams } from './Component';
 

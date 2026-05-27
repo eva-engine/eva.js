@@ -1,4 +1,4 @@
-import { Component } from '@eva/eva.js';
+import { Component, Field, step, type } from '@eva/eva.js';
 import { Padding, normalizePadding } from './types';
 
 /**
@@ -17,6 +17,13 @@ export interface LayoutParams {
   alignItems?: 'start' | 'center' | 'end' | 'stretch';
   /** 容器尺寸是否跟随内容自动调整，默认 true */
   autoSize?: boolean | 'width' | 'height';
+}
+
+class LayoutPaddingMetadata {
+  @type('number') @step(1) top?: number;
+  @type('number') @step(1) right?: number;
+  @type('number') @step(1) bottom?: number;
+  @type('number') @step(1) left?: number;
 }
 
 /**
@@ -43,11 +50,22 @@ export interface LayoutParams {
 export default class Layout extends Component {
   static componentName = 'Layout';
 
+  @type('string')
   direction: 'row' | 'column' = 'row';
+
+  @Field(() => LayoutPaddingMetadata)
   padding: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
+
+  @type('number') @step(1)
   gap: number = 0;
+
+  @type('string')
   justifyContent: 'start' | 'center' | 'end' | 'space-between' | 'space-around' = 'start';
+
+  @type('string')
   alignItems: 'start' | 'center' | 'end' | 'stretch' = 'start';
+
+  @Field({ type: 'object' })
   autoSize: boolean | 'width' | 'height' = true;
 
   init(params?: LayoutParams) {

@@ -138,6 +138,7 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
   const internalModules = ['pixi-spine', 'pixi-spine36'];
   const aliasPlugin = alias({
     entries: [
+      { find: '@eva/inspector-decorator', replacement: path.resolve(__dirname, '../inspector-decorators/src/index.ts') },
       { find: 'pixi-spine', replacement: path.resolve(packagesDir, 'plugin-renderer-spine/lib/pixi-spine.js') },
       { find: 'pixi-spine36', replacement: path.resolve(packagesDir, 'plugin-renderer-spine36/lib/pixi-spine.js') },
     ],

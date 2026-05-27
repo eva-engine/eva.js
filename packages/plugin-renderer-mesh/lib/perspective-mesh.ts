@@ -1,9 +1,10 @@
-import { Component } from '@eva/eva.js';
+import { Component, Field, step, type } from '@eva/eva.js';
 
 export interface PerspectiveMeshParams {
   resource: string;
   verticesX?: number;
   verticesY?: number;
+  corners?: Corners;
 }
 
 interface Corners {
@@ -15,6 +16,17 @@ interface Corners {
   y2: number;
   x3: number;
   y3: number;
+}
+
+class CornersMetadata {
+  @type('number') @step(1) x0: number;
+  @type('number') @step(1) y0: number;
+  @type('number') @step(1) x1: number;
+  @type('number') @step(1) y1: number;
+  @type('number') @step(1) x2: number;
+  @type('number') @step(1) y2: number;
+  @type('number') @step(1) x3: number;
+  @type('number') @step(1) y3: number;
 }
 
 /**
@@ -68,15 +80,19 @@ export default class PerspectiveMesh extends Component<PerspectiveMeshParams> {
   static componentName: string = 'PerspectiveMesh';
 
   /** 纹理资源名称 */
+  @type('string')
   resource: string;
 
   /** 横向顶点数量（网格密度） */
+  @type('number') @step(1)
   verticesX = 10;
 
   /** 纵向顶点数量（网格密度） */
+  @type('number') @step(1)
   verticesY = 10;
 
   /** 四个角的坐标位置 */
+  @Field(() => CornersMetadata)
   corners: Corners;
 
   /** 强制更新标志 */
@@ -98,6 +114,9 @@ export default class PerspectiveMesh extends Component<PerspectiveMeshParams> {
     }
     if (obj && obj.verticesY) {
       this.verticesY = obj.verticesY;
+    }
+    if (obj && obj.corners) {
+      this.corners = obj.corners;
     }
   }
 

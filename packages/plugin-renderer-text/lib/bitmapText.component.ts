@@ -1,6 +1,5 @@
 import type { TextStyleFontStyle, TextStyleFontWeight } from 'pixi.js';
-import { Component } from '@eva/eva.js';
-import { type } from '@eva/inspector-decorator';
+import { Component, Field, type } from '@eva/eva.js';
 
 export interface BitmapTextStyleOptions {
   fontFamily?: string | string[];
@@ -18,6 +17,19 @@ export interface BitmapTextStyleOptions {
 export interface BitmapTextParams {
   text: string;
   style?: BitmapTextStyleOptions;
+}
+
+class BitmapTextStyleMetadata {
+  @type('string') fontFamily?: string | string[];
+  @type('number') fontSize?: number | string;
+  @Field({ type: 'color' }) fill?: string | number;
+  @type('string') align?: 'left' | 'center' | 'right' | 'justify';
+  @type('number') letterSpacing?: number;
+  @type('number') padding?: number;
+  @Field({ type: 'color' }) stroke?: string | number;
+  @type('number') strokeThickness?: number;
+  @type('string') fontWeight?: TextStyleFontWeight;
+  @type('string') fontStyle?: TextStyleFontStyle;
 }
 
 /**
@@ -48,6 +60,7 @@ export default class BitmapText extends Component<BitmapTextParams> {
 
   @type('string') text: string = '';
 
+  @Field(() => BitmapTextStyleMetadata)
   style: BitmapTextStyleOptions = {};
 
   init(obj?: BitmapTextParams) {
