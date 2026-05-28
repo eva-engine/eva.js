@@ -1,0 +1,27 @@
+{
+  "name": "@eva/plugin-renderer-video",
+  "version": "2.1.0-beta.0",
+  "description": "@eva/plugin-renderer-video",
+  "main": "index.js",
+  "module": "dist/plugin-renderer-video.esm.js",
+  "bundle": "EVA.plugin.renderer.video",
+  "unpkg": "dist/EVA.plugin.renderer.video.min.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-renderer-video.d.ts",
+  "keywords": [
+    "eva.js",
+    "eva-plugin-renderer-video"
+  ],
+  "author": "dingyike.dyk <dingyike.dyk@alibaba-inc.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/inspector-decorator": "^0.0.5",
+    "@eva/eva.js": "2.1.0-beta.0",
+    "@eva/plugin-renderer": "2.1.0-beta.0",
+    "pixi.js": "^8.6.3"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@eva/plugin-renderer-particle",
+  "version": "2.1.0-beta.0",
+  "description": "@eva/plugin-renderer-particle",
+  "main": "index.js",
+  "module": "dist/plugin-renderer-particle.esm.js",
+  "bundle": "EVA.plugin.renderer.particle",
+  "unpkg": "dist/EVA.plugin.renderer.particle.min.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "types": "dist/plugin-renderer-particle.d.ts",
+  "keywords": [
+    "eva.js",
+    "eva-plugin-renderer-particle"
+  ],
+  "author": "dingyike.dyk <dingyike.dyk@alibaba-inc.com>",
+  "license": "MIT",
+  "homepage": "https://eva.js.org",
+  "dependencies": {
+    "@eva/inspector-decorator": "^0.0.5",
+    "@eva/eva.js": "2.1.0-beta.0",
+    "@eva/plugin-renderer": "2.1.0-beta.0",
+    "pixi.js": "^8.6.3"
+  }
+}
