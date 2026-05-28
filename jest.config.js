@@ -11,6 +11,11 @@ module.exports = {
     DEV: true,
     __DEV__: true,
     __TEST__: true,
+    'ts-jest': {
+      diagnostics: {
+        ignoreCodes: [5055],
+      },
+    },
   },
   testURL: 'http://local.pages.tmall.com',
   verbose: true,
@@ -21,11 +26,13 @@ module.exports = {
   moduleNameMapper: {
     ...moduleNameMapper,
     '^@eva/inspector-decorator$': '<rootDir>/../inspector-decorators/src',
+    '^lodash-es$': 'lodash',
+    '^lodash-es/(.*)$': 'lodash/$1',
   },
   transform: {
-    '^.+\\.(ts|js)?$': 'ts-jest',
+    '^.+\\.ts$': 'ts-jest',
   },
-  transformIgnorePatterns: [],
+  transformIgnorePatterns: ['/node_modules/'],
   watchPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',

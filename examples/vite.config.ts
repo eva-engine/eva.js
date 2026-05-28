@@ -1,6 +1,6 @@
 import { resolve } from "path";
 import { defineConfig } from 'vite';
-import { readdirSync, statSync } from 'fs';
+import { readdirSync, statSync, existsSync } from 'fs';
 
 var alias = [];
 var paths = readdirSync('./packages');
@@ -22,6 +22,17 @@ alias.push({
   find: 'pixi-spine36',
   replacement: resolve(__dirname, '../packages/plugin-renderer-spine36/lib/pixi-spine.js')
 });
+
+// 在 teva monorepo 下 @eva/inspector-decorator 会被 workspace 解析到
+// libs/inspector-decorators(其 dist 通常未构建),强制指向源码以保证
+// examples 在 monorepo 与独立运行下都可用。
+const tevaInspectorSrc = resolve(__dirname, '../../inspector-decorators/src/index.ts');
+if (existsSync(tevaInspectorSrc)) {
+  alias.push({
+    find: /^@eva\/inspector-decorator$/,
+    replacement: tevaInspectorSrc,
+  });
+}
 
 export default defineConfig({
   server: {
