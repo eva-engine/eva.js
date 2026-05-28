@@ -118,6 +118,9 @@ export default class FilterSystem extends Renderer {
 	}
 
 	update(time?: { deltaTime: number }) {
+		// Drain componentObserver so componentChanged fires for ADD/CHANGE/REMOVE.
+		super.update(time as any);
+
 		// Animate noise seed for filters with noiseAnimSpeed
 		const dt = (time?.deltaTime ?? 16) / 1000;
 		this.elapsed += dt;
