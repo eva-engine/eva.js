@@ -46,6 +46,7 @@ export default class DOMElementSystem extends Renderer {
   /** Canvas 父容器内的 DOM 层(absolute 覆盖)。 */
   private domLayer: HTMLDivElement | null = null;
   private domLayerInitialized: boolean = false;
+  private syncRafId: number = 0;
 
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
@@ -58,7 +59,11 @@ export default class DOMElementSystem extends Renderer {
    * 直接在 system.init 里读 application.canvas 可能拿不到。
    */
   private ensureDomLayer(): HTMLDivElement | null {
-    if (this.domLayer) return this.domLayer;
+    if (this.domLayer) {
+      // layer 已存在但 sync 循环未启动(例如热更新或之前已经创建)— 兜底再启
+      this.startLayerSyncLoop();
+      return this.domLayer;
+    }
     const canvas: HTMLCanvasElement | undefined = this.renderSystem?.application?.canvas as any;
     if (!canvas) return null;
     const parent = canvas.parentElement;
@@ -74,8 +79,10 @@ export default class DOMElementSystem extends Renderer {
       layer.className = 'eva-dom-layer';
       const style = layer.style;
       style.position = 'absolute';
-      style.left = '0';
-      style.top = '0';
+      // canvas 在 flex/center 之类的父容器里 offsetLeft/Top 不为 0,
+      // 用它对齐而不是 (0, 0),否则 dom-layer 会跑到父容器左上角。
+      style.left = `${canvas.offsetLeft}px`;
+      style.top = `${canvas.offsetTop}px`;
       style.width = canvas.style.width || `${canvas.width}px`;
       style.height = canvas.style.height || `${canvas.height}px`;
       style.pointerEvents = 'none';
@@ -86,12 +93,45 @@ export default class DOMElementSystem extends Renderer {
     }
     this.domLayer = layer;
     this.domLayerInitialized = true;
+    // canvas mount 后才会拿到 offsetLeft/Top,layer 创建时机往往早于布局完成。
+    // 用 rAF 自循环每帧矫正 layer 位置,直到 system 销毁。
+    this.startLayerSyncLoop();
     return layer;
+  }
+
+  private startLayerSyncLoop() {
+    if (this.syncRafId || typeof requestAnimationFrame === 'undefined') return;
+    const loop = () => {
+      if (!this.domLayer) { this.syncRafId = 0; return; }
+      this.syncLayerToCanvas();
+      this.syncRafId = requestAnimationFrame(loop);
+    };
+    this.syncRafId = requestAnimationFrame(loop);
+  }
+
+  /**
+   * 每帧同步 layer 与 canvas 的位置(canvas 在 flex/center 父容器中
+   * mount 后才会拿到 offsetLeft/Top,layer 创建时机早于布局完成,
+   * 所以必须每帧重对齐,否则 DOM 元素会偏到父容器左上角)。
+   */
+  private syncLayerToCanvas() {
+    if (!this.domLayer) return;
+    const canvas: HTMLCanvasElement | undefined = this.renderSystem?.application?.canvas as any;
+    if (!canvas) return;
+    const left = `${canvas.offsetLeft}px`;
+    const top = `${canvas.offsetTop}px`;
+    if (this.domLayer.style.left !== left) this.domLayer.style.left = left;
+    if (this.domLayer.style.top !== top) this.domLayer.style.top = top;
+    const w = canvas.style.width || `${canvas.width}px`;
+    const h = canvas.style.height || `${canvas.height}px`;
+    if (this.domLayer.style.width !== w) this.domLayer.style.width = w;
+    if (this.domLayer.style.height !== h) this.domLayer.style.height = h;
   }
 
   rendererUpdate(gameObject: GameObject) {
     const record = this.records[gameObject.id];
     if (!record) return;
+    this.syncLayerToCanvas();
     const transform: any = gameObject.transform;
     const pos = transform?.position || { x: 0, y: 0 };
     const scale = transform?.scale || { x: 1, y: 1 };
@@ -215,6 +255,10 @@ export default class DOMElementSystem extends Renderer {
   }
 
   destroy(): void {
+    if (this.syncRafId && typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(this.syncRafId);
+      this.syncRafId = 0;
+    }
     for (const key in this.records) {
       const id = parseInt(key);
       const record = this.records[id];
