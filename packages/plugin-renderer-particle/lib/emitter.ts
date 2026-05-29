@@ -134,6 +134,7 @@ export class Emitter {
   private params: ParticleEmitterParams;
   private container: ParticleContainer;
   private texture: Texture;
+  private frameTextures: Texture[] | null = null;
   private particles: LiveParticle[] = [];
   private elapsed = 0;
   private emittedTotal = 0;
@@ -148,6 +149,11 @@ export class Emitter {
 
   setTexture(texture: Texture) {
     this.texture = texture;
+  }
+
+  /** Provide a texture pool when component.frame is set; emitOne samples from it. */
+  setFrameTextures(textures: Texture[] | null) {
+    this.frameTextures = textures && textures.length > 0 ? textures : null;
   }
 
   setParams(params: ParticleEmitterParams) {
@@ -274,8 +280,11 @@ export class Emitter {
       ? p.tint[Math.floor(Math.random() * p.tint.length)]
       : (p.tint ?? 0xffffff);
 
+    const tex = this.frameTextures
+      ? this.frameTextures[Math.floor(Math.random() * this.frameTextures.length)]
+      : this.texture;
     const particle = new Particle({
-      texture: this.texture,
+      texture: tex,
       x: pos.x,
       y: pos.y,
       scaleX,

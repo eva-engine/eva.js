@@ -11,7 +11,16 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE_ANIMATION, ({ name, data }) => {
   return new Promise(r => {
     const textureObj = data.json.data;
     const texture = data.image instanceof Texture ? data.image : Texture.from(data.image);
-    const frames = textureObj.frames || {};
+    // Normalize Phaser JSONArray (`frames: [...]`) to PixiJS-compatible hash (`frames: {name: {...}}`).
+    let frames = textureObj.frames || {};
+    if (Array.isArray(frames)) {
+      const hashFrames: Record<string, any> = {};
+      for (const f of frames) {
+        const key = f.filename ?? f.name;
+        if (key) hashFrames[key] = f;
+      }
+      frames = hashFrames;
+    }
     const animations = textureObj.animations || {};
     const newAnimations = {};
 

@@ -28,7 +28,7 @@ export interface DeathZoneSpec {
 
 export interface ParticleEmitterParams {
   resource: string;
-  /** atlas frame 名;Phase 2 支持。 */
+  /** Atlas frame name(s). Single string locks one frame; array randomly samples per emit. */
   frame?: string | string[];
   /** 是否自动开始发射,默认 true。 */
   auto?: boolean;

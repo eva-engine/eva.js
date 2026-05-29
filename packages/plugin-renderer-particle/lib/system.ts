@@ -17,6 +17,54 @@ interface EmitterRecord {
   component: ParticleEmitterComponent;
 }
 
+const SPRITE_KEY_SEP = '_s|r|c_'; // Sync with plugin-renderer-sprite resourceKeySplit.
+
+/**
+ * Resolve resource instance to a primary texture + optional frame texture pool.
+ * - IMAGE resource → instance is a Texture, return single.
+ * - SPRITE resource → instance is `{[fullKey]: Texture}`. Pick frames listed in `frame`
+ *   (string or array); fall back to first frame as the primary texture.
+ */
+/**
+ * Check if a value is a PixiJS Texture. Uses duck typing because separate copies of pixi.js
+ * may be loaded across plugins (ESM module duplication breaks `instanceof`).
+ */
+function isTexture(v: any): v is Texture {
+  return !!v && v.isTexture === true && !!v.orig && !!v.uvs;
+}
+
+function pickFrameTextures(
+  instance: any,
+  resourceName: string,
+  frame: string | string[] | undefined,
+): { texture: Texture | null; frameTextures: Texture[] | null } {
+  if (isTexture(instance)) {
+    return { texture: instance as Texture, frameTextures: null };
+  }
+  if (instance && typeof instance === 'object') {
+    const lookup = (name: string): Texture | null => {
+      const fullKey = resourceName + SPRITE_KEY_SEP + name;
+      const v = instance[fullKey] ?? instance[name];
+      return isTexture(v) ? (v as Texture) : null;
+    };
+    const frameNames = Array.isArray(frame) ? frame : frame ? [frame] : [];
+    const frameTextures: Texture[] = [];
+    for (const f of frameNames) {
+      const t = lookup(f);
+      if (t) frameTextures.push(t);
+    }
+    if (frameTextures.length > 0) {
+      return { texture: frameTextures[0], frameTextures };
+    }
+    // No frame requested → fall back to first texture in the map.
+    for (const k in instance) {
+      const v = instance[k];
+      if (isTexture(v)) return { texture: v as Texture, frameTextures: null };
+    }
+  }
+  return { texture: null, frameTextures: null };
+}
+
 @decorators.componentObserver({
   ParticleEmitter: [{ prop: ['resource'], deep: false }],
 })
@@ -54,6 +102,7 @@ export default class ParticleEmitterSystem extends Renderer {
     if (changed.type === OBSERVER_TYPE.ADD) {
       const asyncId = this.increaseAsyncId(gameObjectId);
       let texture: Texture | null = null;
+      let frameTextures: Texture[] | null = null;
       if (component.resource) {
         const { instance } = await resource.getResource(component.resource);
         if (!this.validateAsyncId(gameObjectId, asyncId)) return;
@@ -61,16 +110,19 @@ export default class ParticleEmitterSystem extends Renderer {
           console.error(`GameObject:${changed.gameObject.name}'s ParticleEmitter resource load error`);
           return;
         }
-        texture = instance as Texture;
+        const picked = pickFrameTextures(instance, component.resource, component.frame);
+        texture = picked.texture;
+        frameTextures = picked.frameTextures;
       }
       if (!texture) return;
 
       const pc = new ParticleContainer({
-        dynamicProperties: { position: true, rotation: true, scale: true, color: true, uvs: false },
+        dynamicProperties: { position: true, rotation: true, scale: true, color: true, uvs: true },
       });
       pc.texture = texture;
       this.containerManager.getContainer(gameObjectId).addChildAt(pc, 0);
       const emitter = new Emitter(component, pc, texture);
+      emitter.setFrameTextures(frameTextures);
       this.records[gameObjectId] = { container: pc, emitter, component };
     } else if (changed.type === OBSERVER_TYPE.CHANGE) {
       const record = this.records[gameObjectId];
@@ -80,8 +132,12 @@ export default class ParticleEmitterSystem extends Renderer {
         const { instance } = await resource.getResource(component.resource);
         if (!this.validateAsyncId(gameObjectId, asyncId)) return;
         if (instance) {
-          record.container.texture = instance as Texture;
-          record.emitter.setTexture(instance as Texture);
+          const picked = pickFrameTextures(instance, component.resource, component.frame);
+          if (picked.texture) {
+            record.container.texture = picked.texture;
+            record.emitter.setTexture(picked.texture);
+          }
+          record.emitter.setFrameTextures(picked.frameTextures);
         }
       }
       record.component = component;
