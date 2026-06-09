@@ -28,6 +28,9 @@ module.exports = {
     '^@eva/inspector-decorator$': '<rootDir>/../inspector-decorators/src',
     '^lodash-es$': 'lodash',
     '^lodash-es/(.*)$': 'lodash/$1',
+    // 根 monorepo 的 pixi.js v8 是 ESM-only(require earcut 时爆 SyntaxError),
+    // 单元测试不需要真实渲染,这里 stub 掉。
+    '^pixi.js$': '<rootDir>/packages/eva.js/__tests__/__mocks__/pixi.js.ts',
   },
   transform: {
     '^.+\\.ts$': 'ts-jest',

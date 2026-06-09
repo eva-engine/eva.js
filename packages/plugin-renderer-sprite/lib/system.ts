@@ -13,7 +13,8 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
     const texture = data.image instanceof Texture ? data.image : Texture.from(data.image);
     // Phaser-style atlas JSON often ships frames as an array (`frames: [{ filename, frame, ... }]`)
     // while PixiJS Spritesheet expects a hash (`frames: { name: { frame, ... } }`).
-    // Normalize array form to hash so both Phaser TexturePacker JSON and PixiJS atlas JSON work.
+    // TexturePacker "Hash" exports use numeric keys but carry the real name in `filename`.
+    // Normalize all three so DSL spawn `texture: "atlas#name"` resolves correctly.
     let frames = textureObj.frames || {};
     if (Array.isArray(frames)) {
       const hashFrames: Record<string, any> = {};
@@ -22,6 +23,16 @@ resource.registerInstance(RESOURCE_TYPE.SPRITE, ({ name, data }) => {
         if (key) hashFrames[key] = f;
       }
       frames = hashFrames;
+    } else {
+      const sample = Object.values(frames)[0] as any;
+      if (sample && typeof sample.filename === 'string') {
+        const remapped: Record<string, any> = {};
+        for (const k in frames) {
+          const f = frames[k];
+          remapped[f.filename || k] = f;
+        }
+        frames = remapped;
+      }
     }
     const animations = textureObj.animations || {};
     const newAnimations = {};

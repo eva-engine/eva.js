@@ -2,6 +2,22 @@ import { resource } from '@eva/eva.js';
 
 let dataMap: any = {};
 
+function resolveImageSrc(image: any): string {
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  // PixiJS v8 Texture / TextureSource shapes vary depending on loader; try every
+  // common label/url accessor before bailing out.
+  return (
+    image.label ||
+    image.source?.label ||
+    image.source?.resource?.src ||
+    image.source?._sourceOrigin ||
+    image.src ||
+    image.baseTexture?.cacheId ||
+    ''
+  );
+}
+
 function createSpineData(name, data, scale, pixiSpine) {
   const skeletonAsset = data.ske;
   const atlasAsset = data.atlas;
@@ -14,7 +30,7 @@ function createSpineData(name, data, scale, pixiSpine) {
   parser.scale = scale || 1;
   const skeletonData = parser.readSkeletonData(skeletonAsset);
 
-  const obj = { spineData: skeletonData, ref: 0, imageSrc: data.image.label };
+  const obj = { spineData: skeletonData, ref: 0, imageSrc: resolveImageSrc(data.image) };
   dataMap[name] = obj;
   return obj;
 }
