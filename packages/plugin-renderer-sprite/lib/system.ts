@@ -69,8 +69,8 @@ resource.registerDestroy(RESOURCE_TYPE.SPRITE, ({ instance }) => {
   Sprite: ['spriteName'],
 })
 export default class Sprite extends Renderer {
-  static systemName = 'Sprite';
-  name: string = 'Sprite';
+  static systemName = 'SpriteSystem';
+  name: string = 'SpriteSystem';
   sprites: { [propName: number]: SpriteEngine } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;

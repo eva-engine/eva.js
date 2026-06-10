@@ -61,8 +61,8 @@ resource.registerDestroy(RESOURCE_TYPE.SPRITE_ANIMATION, ({ instance }) => {
   SpriteAnimation: ['speed', 'resource'],
 })
 export default class SpriteAnimation extends Renderer {
-  static systemName = 'SpriteAnimation';
-  name: string = 'SpriteAnimation';
+  static systemName = 'SpriteAnimationSystem';
+  name: string = 'SpriteAnimationSystem';
   animates: { [propName: number]: SpriteAnimationEngine } = {};
   autoPlay: { [propName: number]: boolean } = {};
   renderSystem: RendererSystem;

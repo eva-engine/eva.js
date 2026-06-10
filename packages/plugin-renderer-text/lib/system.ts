@@ -17,7 +17,10 @@ export default class Text extends Renderer {
   static systemName = 'Text';
   name: string = 'Text';
   texts: {
-    [propName: number]: { text: TextEngine | HTMLTextEngine | BitmapTextEngine; component: TextComponent | HTMLTextComponent | BitmapTextComponent };
+    [propName: number]: {
+      text: TextEngine | HTMLTextEngine | BitmapTextEngine;
+      component: TextComponent | HTMLTextComponent | BitmapTextComponent;
+    };
   } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
@@ -95,7 +98,7 @@ export default class Text extends Renderer {
     const htmlText = new HTMLTextEngine({
       text: initialText,
       style: styleWithoutFont,
-      ...(component.textureStyle && { textureStyle: component.textureStyle })
+      ...(component.textureStyle && { textureStyle: component.textureStyle }),
     } as any);
 
     this.containerManager.getContainer(changed.gameObject.id).addChildAt(htmlText, 0);
@@ -138,7 +141,7 @@ export default class Text extends Renderer {
   private async waitForFontResource(
     text: TextEngine | HTMLTextEngine | BitmapTextEngine,
     changed: ComponentChanged,
-    fontFamily: string | string[]
+    fontFamily: string | string[],
   ) {
     if (!fontFamily) {
       return;
@@ -253,7 +256,7 @@ export default class Text extends Renderer {
       const newText = new HTMLTextEngine({
         text: htmlComponent.text,
         style: htmlComponent.style,
-        textureStyle: htmlComponent.textureStyle
+        textureStyle: htmlComponent.textureStyle,
       } as any);
       container.addChildAt(newText, index);
       this.texts[changed.gameObject.id].text = newText;
@@ -264,7 +267,7 @@ export default class Text extends Renderer {
     const { transform } = changed.gameObject;
     if (!transform) return;
     const { text } = this.texts[changed.gameObject.id];
-    const size = text.getSize()
+    const size = text.getSize();
     transform.size.width = size.width;
     transform.size.height = size.height;
   }

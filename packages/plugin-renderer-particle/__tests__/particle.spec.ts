@@ -1,6 +1,7 @@
 import { ParticleEmitter, ParticleEmitterSystem, Emitter } from '../lib';
 
 jest.mock('pixi.js', () => {
+  const pixi = jest.requireActual('../../eva.js/__tests__/__mocks__/pixi.js');
   const Particle = jest.fn().mockImplementation((opts: any) => ({
     x: opts?.x ?? 0,
     y: opts?.y ?? 0,
@@ -19,9 +20,10 @@ jest.mock('pixi.js', () => {
     texture: null,
   }));
   return {
+    ...pixi,
     Particle,
     ParticleContainer,
-    Texture: { WHITE: { id: 'white' } },
+    Texture: pixi.Texture,
   };
 });
 

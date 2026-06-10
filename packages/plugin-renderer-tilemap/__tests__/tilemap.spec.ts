@@ -1,14 +1,23 @@
 import { Tilemap, TilemapSystem } from '../lib';
 
 jest.mock('pixi.js', () => {
+  const pixi = jest.requireActual('../../eva.js/__tests__/__mocks__/pixi.js');
   class Container {
     children: any[] = [];
     label: string = '';
     alpha: number = 1;
     visible: boolean = true;
-    addChild(c: any) { this.children.push(c); return c; }
-    addChildAt(c: any, _i: number) { this.children.unshift(c); return c; }
-    removeChild(c: any) { this.children = this.children.filter((x: any) => x !== c); }
+    addChild(c: any) {
+      this.children.push(c);
+      return c;
+    }
+    addChildAt(c: any, _i: number) {
+      this.children.unshift(c);
+      return c;
+    }
+    removeChild(c: any) {
+      this.children = this.children.filter((x: any) => x !== c);
+    }
     destroy(_opts?: any) {}
   }
   class Sprite {
@@ -30,8 +39,12 @@ jest.mock('pixi.js', () => {
     frame = { width: 64, height: 64 };
     destroy(_opts?: any) {}
     static WHITE = { id: 'white' };
+    static EMPTY = new Texture();
+    static from() {
+      return new Texture();
+    }
   }
-  return { Container, Sprite, Rectangle, Texture };
+  return { ...pixi, Container, Sprite, Rectangle, Texture };
 });
 
 describe('Tilemap Plugin', () => {
@@ -52,7 +65,13 @@ describe('Tilemap Plugin', () => {
         tileHeight: 16,
         tilesetColumns: 4,
         layers: [
-          { name: 'ground', data: [[1, 2], [3, 0]] },
+          {
+            name: 'ground',
+            data: [
+              [1, 2],
+              [3, 0],
+            ],
+          },
         ],
       });
       expect(c.tileset).toBe('mytiles');

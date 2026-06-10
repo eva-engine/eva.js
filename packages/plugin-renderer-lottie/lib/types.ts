@@ -17,4 +17,10 @@ export interface IOptions {
   width?: number;
   height?: number;
   replaceData?: boolean;
+  autoStart?: boolean;
+  autoplay?: boolean;
+  loop?: boolean;
+  speed?: number;
+  onComplete?: () => void;
+  onLoopComplete?: () => void;
 }

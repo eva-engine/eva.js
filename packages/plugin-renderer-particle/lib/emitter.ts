@@ -1,10 +1,5 @@
 import { Particle, ParticleContainer, Texture } from 'pixi.js';
-import type {
-  EmitZoneSpec,
-  ParticleEmitterParams,
-  RangeValue,
-  ZoneShape,
-} from './component';
+import type { EmitZoneSpec, ParticleEmitterParams, RangeValue, ZoneShape } from './component';
 
 interface LiveParticle {
   particle: Particle;
@@ -26,16 +21,16 @@ interface LiveParticle {
 const TAU = Math.PI * 2;
 
 const easings: Record<string, (t: number) => number> = {
-  linear: (t) => t,
-  'sine.in': (t) => 1 - Math.cos((t * Math.PI) / 2),
-  'sine.out': (t) => Math.sin((t * Math.PI) / 2),
-  'sine.inout': (t) => -(Math.cos(Math.PI * t) - 1) / 2,
-  'quad.in': (t) => t * t,
-  'quad.out': (t) => 1 - (1 - t) * (1 - t),
-  'quad.inout': (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
-  'cubic.in': (t) => t * t * t,
-  'cubic.out': (t) => 1 - Math.pow(1 - t, 3),
-  'expo.out': (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+  linear: t => t,
+  'sine.in': t => 1 - Math.cos((t * Math.PI) / 2),
+  'sine.out': t => Math.sin((t * Math.PI) / 2),
+  'sine.inout': t => -(Math.cos(Math.PI * t) - 1) / 2,
+  'quad.in': t => t * t,
+  'quad.out': t => 1 - (1 - t) * (1 - t),
+  'quad.inout': t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
+  'cubic.in': t => t * t * t,
+  'cubic.out': t => 1 - Math.pow(1 - t, 3),
+  'expo.out': t => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
 };
 
 function resolveEase(name?: string): (t: number) => number {
@@ -81,7 +76,8 @@ function sampleShape(shape: ZoneShape, edgeOnly: boolean): { x: number; y: numbe
         const t = Math.random() * perim;
         if (t < shape.width) return { x: x0 + t, y: y0 };
         if (t < shape.width + shape.height) return { x: x0 + shape.width, y: y0 + (t - shape.width) };
-        if (t < 2 * shape.width + shape.height) return { x: x0 + shape.width - (t - shape.width - shape.height), y: y0 + shape.height };
+        if (t < 2 * shape.width + shape.height)
+          return { x: x0 + shape.width - (t - shape.width - shape.height), y: y0 + shape.height };
         return { x: x0, y: y0 + shape.height - (t - 2 * shape.width - shape.height) };
       }
       return { x: rand(x0, x0 + shape.width), y: rand(y0, y0 + shape.height) };
@@ -178,7 +174,7 @@ export class Emitter {
     const out: LiveParticle[] = [];
     for (const lp of this.particles) {
       lp.age += dt;
-      if (lp.age >= lp.lifespan) {
+      if (lp.age > lp.lifespan) {
         continue;
       }
       lp.vx += lp.ax * dtSec + (this.params.gravityX ?? 0) * dtSec;
@@ -276,9 +272,7 @@ export class Emitter {
     const scaleY = p.scaleY != null ? sampleRange(p.scaleY, 1) : sampleRange(p.scale, 1);
     const alpha = sampleRange(p.alpha, 1);
     const rotation = sampleRange(p.rotate, 0);
-    const tintNum = Array.isArray(p.tint)
-      ? p.tint[Math.floor(Math.random() * p.tint.length)]
-      : (p.tint ?? 0xffffff);
+    const tintNum = Array.isArray(p.tint) ? p.tint[Math.floor(Math.random() * p.tint.length)] : p.tint ?? 0xffffff;
 
     const tex = this.frameTextures
       ? this.frameTextures[Math.floor(Math.random() * this.frameTextures.length)]
@@ -331,6 +325,7 @@ export class Emitter {
     }
 
     this.particles.push(lp);
+    this.container.particleChildren.push(particle);
     this.emittedTotal++;
   }
 }

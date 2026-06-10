@@ -1,6 +1,7 @@
 import { Video, VideoSystem } from '../lib';
 
 jest.mock('pixi.js', () => {
+  const pixi = jest.requireActual('../../eva.js/__tests__/__mocks__/pixi.js');
   const Sprite = jest.fn().mockImplementation((tex: any) => ({
     texture: tex,
     width: 0,
@@ -12,7 +13,7 @@ jest.mock('pixi.js', () => {
     from: jest.fn().mockImplementation(() => ({ destroy: jest.fn(), source: { update: jest.fn() } })),
     EMPTY: { id: 'empty' },
   };
-  return { Sprite, Texture };
+  return { ...pixi, Sprite, Texture };
 });
 
 describe('Video Plugin', () => {

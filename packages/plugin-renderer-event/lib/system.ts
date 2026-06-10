@@ -27,14 +27,22 @@ export interface EventSystemParams {
   Event: [{ prop: ['hitArea'], deep: true }],
 })
 export default class Event extends Renderer<EventSystemParams> {
-  static systemName = 'Event';
-  name: string = 'Event';
+  static systemName = 'EventSystem';
+  name: string = 'EventSystem';
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
-  init() {
-    this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
+  init(params?: EventSystemParams | { getSystem?: (...args: any[]) => unknown }) {
+    const compatibleParams = params as { getSystem?: (...args: any[]) => unknown } | undefined;
+    const game = this.game || (typeof compatibleParams?.getSystem === 'function' ? compatibleParams : undefined);
+    const renderSystem = game?.getSystem?.(RendererSystem) as RendererSystem | undefined;
+    if (!renderSystem?.rendererManager) return;
+
+    this.renderSystem = renderSystem;
     this.renderSystem.rendererManager.register(this);
+  }
+  update(frame?: unknown) {
+    super.update(frame as any);
   }
   componentChanged(changed: ComponentChanged) {
     switch (changed.type) {
@@ -50,7 +58,8 @@ export default class Event extends Renderer<EventSystemParams> {
     }
   }
   add(changed: ComponentChanged) {
-    const container = this.containerManager.getContainer(changed.gameObject.id);
+    const container = this.containerManager?.getContainer(changed.gameObject.id);
+    if (!container) return;
     container.interactive = true;
     container.interactiveChildren = true;
     const component = changed.component as EventComponent;
@@ -60,101 +69,53 @@ export default class Event extends Renderer<EventSystemParams> {
     }
 
     container.on('pointertap', e => {
-      component.emit('tap', {
-        stopPropagation: () => e.stopPropagation(),
-        data: {
-          // @ts-ignore
-          pointerId: e.data.pointerId,
-          position: {
-            x: e.data.global.x,
-            y: e.data.global.y,
-          },
-          localPosition: container.worldTransform.applyInverse(e.data.global),
-        },
-        gameObject: component.gameObject,
-      });
+      const eventParam = this.createEventParam(container, component, e);
+      component.emit('tap', eventParam);
+      component.emit('click', eventParam);
     });
     container.on('pointerdown', e => {
-      component.emit('touchstart', {
-        stopPropagation: () => e.stopPropagation(),
-        data: {
-          // @ts-ignore
-          pointerId: e.data.pointerId,
-          position: {
-            x: e.data.global.x,
-            y: e.data.global.y,
-          },
-          localPosition: container.worldTransform.applyInverse(e.data.global),
-        },
-        gameObject: component.gameObject,
-      });
+      const eventParam = this.createEventParam(container, component, e);
+      component.emit('touchstart', eventParam);
+      component.emit('mousedown', eventParam);
     });
     container.on('pointermove', e => {
-      component.emit('touchmove', {
-        stopPropagation: () => e.stopPropagation(),
-        data: {
-          // @ts-ignore
-          pointerId: e.data.pointerId,
-          position: {
-            x: e.data.global.x,
-            y: e.data.global.y,
-          },
-          localPosition: container.worldTransform.applyInverse(e.data.global),
-        },
-        gameObject: component.gameObject,
-      });
+      const eventParam = this.createEventParam(container, component, e);
+      component.emit('touchmove', eventParam);
+      component.emit('mousemove', eventParam);
     });
 
     container.on('pointerup', e => {
-      component.emit('touchend', {
-        stopPropagation: () => e.stopPropagation(),
-        data: {
-          // @ts-ignore
-          pointerId: e.data.pointerId,
-          position: {
-            x: e.data.global.x,
-            y: e.data.global.y,
-          },
-          localPosition: container.worldTransform.applyInverse(e.data.global),
-        },
-        gameObject: component.gameObject,
-      });
+      const eventParam = this.createEventParam(container, component, e);
+      component.emit('touchend', eventParam);
+      component.emit('mouseup', eventParam);
     });
     container.on('pointerupoutside', e => {
-      component.emit('touchendoutside', {
-        stopPropagation: () => e.stopPropagation(),
-        data: {
-          // @ts-ignore
-          pointerId: e.data.pointerId,
-          position: {
-            x: e.data.global.x,
-            y: e.data.global.y,
-          },
-          localPosition: container.worldTransform.applyInverse(e.data.global),
-        },
-        gameObject: component.gameObject,
-      });
+      component.emit('touchendoutside', this.createEventParam(container, component, e));
     });
     container.on('pointercancel', e => {
-      component.emit('touchcancel', {
-        stopPropagation: () => e.stopPropagation(),
-        data: {
-          // @ts-ignore
-          pointerId: e.data.pointerId,
-          position: {
-            x: e.data.global.x,
-            y: e.data.global.y,
-          },
-          localPosition: container.worldTransform.applyInverse(e.data.global),
-        },
-        gameObject: component.gameObject,
-      });
+      component.emit('touchcancel', this.createEventParam(container, component, e));
     });
   }
+  private createEventParam(container, component: EventComponent, e) {
+    return {
+      stopPropagation: () => e.stopPropagation(),
+      data: {
+        // @ts-ignore
+        pointerId: e.data.pointerId,
+        position: {
+          x: e.data.global.x,
+          y: e.data.global.y,
+        },
+        localPosition: container.worldTransform.applyInverse(e.data.global),
+      },
+      gameObject: component.gameObject,
+    };
+  }
   remove(changed: ComponentChanged) {
-    const container = this.containerManager.getContainer(changed.gameObject.id);
+    const container = this.containerManager?.getContainer(changed.gameObject.id);
+    if (!container) return;
     container.interactive = false;
-    container.off('tap');
+    container.off('pointertap');
     container.off('pointerdown');
     container.off('pointermove');
     container.off('pointerup');
@@ -163,7 +124,8 @@ export default class Event extends Renderer<EventSystemParams> {
     changed.component.removeAllListeners();
   }
   change(changed: ComponentChanged) {
-    const container = this.containerManager.getContainer(changed.gameObject.id);
+    const container = this.containerManager?.getContainer(changed.gameObject.id);
+    if (!container) return;
     container.interactive = true;
     const component = changed.component as EventComponent;
 

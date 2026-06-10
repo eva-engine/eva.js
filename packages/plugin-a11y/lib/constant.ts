@@ -5,6 +5,8 @@ export enum A11yActivate {
   ENABLE = 0,
   DISABLE = 1,
   CHECK = 2,
+  touchstart = 3,
+  touchend = 4,
 }
 
 /**

@@ -77,6 +77,20 @@ export default class Lottie extends Component {
   /** Lottie 配置选项 */
   public options: ExtendOptions;
 
+  /** 是否资源就绪后自动播放 */
+  public autoplay: boolean = false;
+
+  /** 是否循环播放 */
+  public loop: boolean = false;
+
+  /** 完成事件回调 */
+  public onComplete?: () => void;
+
+  /** 循环完成事件回调 */
+  public onLoopComplete?: () => void;
+
+  private _speed: number = 1;
+
   /** 资源加载状态 */
   public loadStatus: boolean = false;
 
@@ -97,19 +111,39 @@ export default class Lottie extends Component {
    */
   constructor(options: IOptions) {
     super();
+    const autoStart = options.autoStart ?? options.autoplay ?? false;
     this.options = {
-      autoStart: false,
       ...options,
+      autoStart,
     };
+    this.autoplay = autoStart;
+    this.loop = options.loop ?? false;
+    this._speed = options.speed ?? 1;
+    this.onComplete = options.onComplete;
+    this.onLoopComplete = options.onLoopComplete;
+    if (this.onComplete) this.on('complete', this.onComplete);
+    if (this.onLoopComplete) this.on('loopComplete', this.onLoopComplete);
     this.on('success', () => {
       this.loadStatus = true;
+      this.applySpeed();
       const { ip, op } = this.anim.keyframes;
       for (let i = ip; i <= op; i++) {
         const event = `@${i}`;
         this.anim.on(event, e => this.emit(event, e));
       }
+      if (this.options.autoStart) this.play();
       this.firstPlay && this.firstPlay();
     });
+  }
+
+  get speed() {
+    return this._speed;
+  }
+
+  set speed(value: number) {
+    this._speed = value;
+    this.options.speed = value;
+    this.applySpeed();
   }
 
   play(
@@ -125,7 +159,11 @@ export default class Lottie extends Component {
       return;
     }
 
-    const { slot = [] } = expandOpts;
+    const playOptions = {
+      ...expandOpts,
+      repeats: expandOpts.repeats ?? (this.loop ? -1 : 0),
+    };
+    const { slot = [] } = playOptions;
     slot.forEach(({ name, type, value, style = {} }) => {
       const { x, y, anchor = { x: 0, y: 0 }, pivot = { x: 0, y: 0 }, width, height } = style;
       if (type === 'IMAGE') {
@@ -150,7 +188,25 @@ export default class Lottie extends Component {
       this.prevSlot[name] = this.currentSlot[name];
     });
 
-    this.anim.playSegment(this.playParamsHandle(params), expandOpts);
+    this.anim.playSegment(this.playParamsHandle(params), playOptions);
+  }
+
+  pause() {
+    if (this.anim?.pause) this.anim.pause();
+  }
+
+  stop() {
+    if (this.anim?.stop) this.anim.stop();
+    else if (this.anim?.goToAndStop) this.anim.goToAndStop(0, true);
+  }
+
+  goToFrame(frame: number) {
+    if (this.anim?.goToAndStop) this.anim.goToAndStop(frame, true);
+  }
+
+  load() {
+    if (this.loadStatus || this.anim) return;
+    this.firstPlay = this.firstPlay ?? (() => {});
   }
 
   replaceData(data: Record<string, string>) {
@@ -184,5 +240,23 @@ export default class Lottie extends Component {
         callback();
       });
     });
+  }
+
+  destroy() {
+    Object.keys(this.prevSlot).forEach(name => {
+      const slot = this.prevSlot[name];
+      if (this.anim?.unbindSlot && slot) this.anim.unbindSlot(name, slot);
+      if (slot?.destroy) slot.destroy();
+    });
+    this.prevSlot = {};
+    this.currentSlot = {};
+    if (this.anim?.destroy) this.anim.destroy();
+    this.anim = null;
+    this.loadStatus = false;
+  }
+
+  private applySpeed() {
+    if (this.anim?.setSpeed) this.anim.setSpeed(this._speed);
+    else if (this.anim) this.anim.timeScale = this._speed;
   }
 }

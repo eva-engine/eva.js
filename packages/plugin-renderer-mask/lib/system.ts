@@ -2,7 +2,7 @@ import { decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.
 import { Renderer, RendererManager, ContainerManager, RendererSystem } from '@eva/plugin-renderer';
 import { Sprite as SpriteEngine, Graphics } from '@eva/renderer-adapter';
 import type { Sprite as PIXISprite } from 'pixi.js';
-import MaskComponent from './component';
+import MaskComponent, { MASK_TYPE, MaskTypeValue } from './component';
 
 const resourceKeySplit = '_s|r|c_'; // Notice: This key be created by sprite system.
 
@@ -21,22 +21,42 @@ const functionForGraphics = {
   Polygon: 'poly',
 };
 
-enum MASK_TYPE {
-  Circle = 'Circle',
-  Ellipse = 'Ellipse',
-  Rect = 'Rect',
-  RoundedRect = 'RoundedRect',
-  Polygon = 'Polygon',
-  Img = 'Img',
-  Sprite = 'Sprite',
+const maskTypeAliases: Record<string, MASK_TYPE> = {
+  circle: MASK_TYPE.Circle,
+  ellipse: MASK_TYPE.Ellipse,
+  rect: MASK_TYPE.Rect,
+  roundedrect: MASK_TYPE.RoundedRect,
+  roundedRect: MASK_TYPE.RoundedRect,
+  polygon: MASK_TYPE.Polygon,
+  img: MASK_TYPE.Img,
+  image: MASK_TYPE.Img,
+  sprite: MASK_TYPE.Sprite,
+};
+
+function normalizeMaskType(type: MaskTypeValue): MASK_TYPE | undefined {
+  if (!type) return undefined;
+  if (Object.values(MASK_TYPE).includes(type as MASK_TYPE)) return type as MASK_TYPE;
+  return maskTypeAliases[String(type)] || maskTypeAliases[String(type).toLowerCase()];
 }
 
 @decorators.componentObserver({
-  Mask: ['type', { prop: ['style'], deep: true }, 'resource', 'spriteName'],
+  Mask: [
+    'type',
+    { prop: ['style'], deep: true },
+    'x',
+    'y',
+    'radius',
+    'width',
+    'height',
+    'paths',
+    'resource',
+    'spriteName',
+    'enabled',
+  ],
 })
 export default class Mask extends Renderer {
-  static systemName = 'Mask';
-  name: string = 'Mask';
+  static systemName = 'MaskSystem';
+  name: string = 'MaskSystem';
   changedCache: { [propName: number]: boolean } = {};
   maskSpriteCache: { [propName: number]: SpriteEngine } = {};
   renderSystem: RendererSystem;
@@ -65,7 +85,9 @@ export default class Mask extends Renderer {
   }
   add(changed: ComponentChanged) {
     const component = changed.component as MaskComponent;
-    if (!(component.type in MASK_TYPE)) {
+    if (component.enabled === false) return;
+    const maskType = normalizeMaskType(component.type);
+    if (!maskType) {
       throw new Error('no have Mask type: ' + component.type);
     }
 
@@ -74,7 +96,7 @@ export default class Mask extends Renderer {
     }
 
     let mask;
-    switch (component.type) {
+    switch (maskType) {
       case MASK_TYPE.Circle:
         mask = this.createGraphics(component);
         break;
@@ -106,6 +128,7 @@ export default class Mask extends Renderer {
   }
   remove(changed: ComponentChanged) {
     const container = this.containerManager.getContainer(changed.gameObject.id);
+    if (!container?.mask) return;
     container.removeChild(container.mask as any);
     (container.mask as any).destroy({ children: true });
     container.mask = null;
@@ -114,17 +137,30 @@ export default class Mask extends Renderer {
   change(changed: ComponentChanged) {
     if (this.changedCache[changed.gameObject.id]) return;
     const component = changed.component as MaskComponent;
+    if (changed.prop.prop[0] === 'enabled') {
+      this.changedCache[changed.gameObject.id] = true;
+      if (component.enabled === false) {
+        this.remove(changed);
+      } else {
+        this.add(changed);
+      }
+      return;
+    }
     if (changed.prop.prop[0] === 'type') {
       this.changedCache[changed.gameObject.id] = true;
-      if ([MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(component.type) > -1 || component._lastType !== component.type) {
+      const maskType = normalizeMaskType(component.type);
+      const lastType = normalizeMaskType(component._lastType);
+      if ([MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(maskType) > -1 || lastType !== maskType) {
         this.remove(changed);
         this.add(changed);
         component._lastType = component.type;
       } else {
         this.redrawGraphics(changed);
       }
-    } else if (changed.prop.prop[0] === 'style') {
-      if ([MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(component.type) > -1) {
+    } else if (['style', 'x', 'y', 'radius', 'width', 'height', 'paths'].indexOf(changed.prop.prop[0]) > -1) {
+      this.syncComponentStyle(component);
+      const maskType = normalizeMaskType(component.type);
+      if ([MASK_TYPE.Sprite, MASK_TYPE.Img].indexOf(maskType) > -1) {
         this.changeSpriteStyle(component);
       } else {
         this.redrawGraphics(changed);
@@ -149,12 +185,14 @@ export default class Mask extends Renderer {
     this.draw(graphics, changed.component);
   }
   draw(graphics, component) {
+    const maskType = normalizeMaskType(component.type);
+    const style = this.syncComponentStyle(component);
     const params = [];
-    for (const key of propertyForGraphics[component.type]) {
-      params.push(component.style[key]);
+    for (const key of propertyForGraphics[maskType]) {
+      params.push(style[key]);
     }
     // @ts-ignore
-    graphics[functionForGraphics[component.type]](...params);
+    graphics[functionForGraphics[maskType]](...params);
     graphics.fill(0x000000);
   }
   createSprite(component: MaskComponent): PIXISprite {
@@ -175,6 +213,7 @@ export default class Mask extends Renderer {
     this.setSprite(component, sprite);
   }
   async setSprite(component: MaskComponent, sprite) {
+    const maskType = normalizeMaskType(component.type);
     let res;
     try {
       const asyncId = this.increaseAsyncId(component.gameObject.id);
@@ -183,14 +222,14 @@ export default class Mask extends Renderer {
     } catch (e) {
       throw new Error('mask resource load error');
     }
-    if (component.type === MASK_TYPE.Sprite) {
+    if (maskType === MASK_TYPE.Sprite) {
       const img = component.resource + resourceKeySplit + component.spriteName;
       const texture = res?.instance?.[img];
-      if(texture) {
+      if (texture) {
         sprite.image = texture;
       }
     } else {
-      if(res?.data?.image) {
+      if (res?.data?.image) {
         sprite.image = res.data.image;
       }
     }
@@ -198,5 +237,17 @@ export default class Mask extends Renderer {
     sprite.sprite.height = component.style.height;
     sprite.sprite.position.x = component.style.x;
     sprite.sprite.position.y = component.style.y;
+  }
+  private syncComponentStyle(component: MaskComponent) {
+    component.style = {
+      ...component.style,
+      x: component.x ?? component.style?.x ?? 0,
+      y: component.y ?? component.style?.y ?? 0,
+      radius: component.radius ?? component.style?.radius,
+      width: component.width ?? component.style?.width,
+      height: component.height ?? component.style?.height,
+      paths: component.paths ?? component.style?.paths,
+    };
+    return component.style;
   }
 }

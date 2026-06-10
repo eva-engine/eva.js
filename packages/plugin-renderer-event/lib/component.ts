@@ -22,12 +22,12 @@ interface HitArea {
 }
 
 class HitAreaStyleMetadata {
-    @type('number') @step(1) x?: number;
-    @type('number') @step(1) y?: number;
-    @type('number') @step(1) radius?: number;
-    @type('number') @step(1) width?: number;
-    @type('number') @step(1) height?: number;
-    @type('number') paths?: number[];
+  @type('number') @step(1) x?: number;
+  @type('number') @step(1) y?: number;
+  @type('number') @step(1) radius?: number;
+  @type('number') @step(1) width?: number;
+  @type('number') @step(1) height?: number;
+  @type('number') paths?: number[];
 }
 
 class HitAreaMetadata {
@@ -40,6 +40,7 @@ export interface EventParams {
   cursor?: string;
   stopPropagation?: boolean;
   hitArea?: HitArea;
+  on?: Record<string, (...args: any[]) => void>;
 }
 
 type TouchEventName = 'touchstart' | 'touchmove' | 'touchend' | 'tap' | 'touchendoutside' | 'touchcancel';
@@ -61,6 +62,11 @@ type EventParam = {
   };
   gameObject: GameObject;
 };
+
+interface ConfiguredEventHandler {
+  eventName: string;
+  handler: (...args: any[]) => void;
+}
 
 /**
  * 事件组件
@@ -127,13 +133,34 @@ export default class Event extends Component<EventParams> {
   @Field(() => HitAreaMetadata)
   hitArea: HitArea = undefined;
 
+  interactive?: boolean;
+  cursor?: string;
+  stopPropagation?: boolean;
+  private configuredEventHandlers: ConfiguredEventHandler[] = [];
+
+  constructor(params?: EventParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 初始化组件
    * @param params - 初始化参数
-   * @param params.hitArea - 交互热区配置
    */
   init(params?: EventParams) {
-    params && Object.assign(this, params);
+    this.removeConfiguredEventHandlers();
+    if (!params) return;
+
+    const { on, ...options } = params;
+    Object.assign(this, options);
+    if (on) {
+      for (const eventName of Object.keys(on)) {
+        const handler = on[eventName];
+        if (typeof handler !== 'function') continue;
+        super.on(eventName, handler);
+        this.configuredEventHandlers.push({ eventName, handler });
+      }
+    }
   }
 
   emit(eventName: TouchEventName, ...args: [EventParam]): boolean;
@@ -152,5 +179,22 @@ export default class Event extends Component<EventParams> {
   on<T extends string>(eventName: Exclude<T, TouchEventName>, fn: (...args: any[]) => void, context?: any): this;
   on(en: string, fn: (...args: any[]) => void, context?: any) {
     return super.on(en, fn, context);
+  }
+
+  destroy() {
+    this.removeAllListeners();
+    this.configuredEventHandlers = [];
+    return this;
+  }
+
+  onDestroy() {
+    this.destroy();
+  }
+
+  private removeConfiguredEventHandlers() {
+    for (const { eventName, handler } of this.configuredEventHandlers) {
+      super.off(eventName, handler);
+    }
+    this.configuredEventHandlers = [];
   }
 }

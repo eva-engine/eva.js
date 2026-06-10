@@ -152,22 +152,19 @@ export default class HTMLText extends Component<HTMLTextParams> {
   /**
    * 初始化组件
    * @param obj - 初始化参数
-   * @param obj.text - 富文本内容
-   * @param obj.style - 文本样式
-   * @param obj.textureStyle - 纹理配置
    */
   init(obj?: HTMLTextParams) {
     this.style = {
       fontSize: 24,
       fill: '#000000',
       fontFamily: 'Arial',
-      ...obj?.style
+      ...obj?.style,
     };
 
     this.textureStyle = {
       scaleMode: 'linear',
       resolution: window.devicePixelRatio || 1,
-      ...obj?.textureStyle
+      ...obj?.textureStyle,
     };
 
     if (obj) {

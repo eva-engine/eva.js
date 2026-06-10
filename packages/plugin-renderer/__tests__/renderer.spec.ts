@@ -2,41 +2,64 @@ import { RendererSystem, RendererManager, ContainerManager, RENDERER_TYPE } from
 import { Application, Container } from 'pixi.js';
 
 // Mock PixiJS
-jest.mock('pixi.js', () => ({
-  Application: jest.fn().mockImplementation(() => ({
+jest.mock('pixi.js', () => {
+  const pixi = jest.requireActual('../../eva.js/__tests__/__mocks__/pixi.js');
+  const Application = jest.fn().mockImplementation(() => ({
     stage: {
       addChild: jest.fn(),
       removeChild: jest.fn(),
       destroy: jest.fn(),
     },
     view: document.createElement('canvas'),
+    canvas: document.createElement('canvas'),
     renderer: {
       resize: jest.fn(),
       render: jest.fn(),
       destroy: jest.fn(),
+      width: 0,
+      height: 0,
+      resolution: 1,
+      events: {},
+      canvas: { style: {} },
     },
     ticker: {
       add: jest.fn(),
       remove: jest.fn(),
+      stop: jest.fn(),
+      update: jest.fn(),
     },
+    init: jest.fn().mockResolvedValue(undefined),
     destroy: jest.fn(),
-  })),
-  Container: jest.fn().mockImplementation(() => ({
+  }));
+  const Container = jest.fn().mockImplementation(() => ({
     addChild: jest.fn(),
+    addChildAt: jest.fn(),
     removeChild: jest.fn(),
     destroy: jest.fn(),
     getBounds: jest.fn(() => ({ x: 10, y: 20, width: 30, height: 40 })),
+    updateTransform: jest.fn(),
     children: [],
-    position: { x: 0, y: 0 },
-    scale: { x: 1, y: 1 },
-  })),
-  Ticker: {
-    shared: {
-      add: jest.fn(),
-      remove: jest.fn(),
+    parent: null,
+    position: { x: 0, y: 0, set: jest.fn() },
+    scale: { x: 1, y: 1, set: jest.fn() },
+    pivot: { x: 0, y: 0, set: jest.fn() },
+    worldTransform: { tx: 0, ty: 0 },
+  }));
+  return {
+    ...pixi,
+    Application,
+    Container,
+    Ticker: {
+      shared: {
+        add: jest.fn(),
+        remove: jest.fn(),
+        stop: jest.fn(),
+        update: jest.fn(),
+        autoStart: false,
+      },
     },
-  },
-}));
+  };
+});
 
 describe('RendererSystem', () => {
   let rendererSystem: RendererSystem;
@@ -75,7 +98,7 @@ describe('RendererSystem', () => {
       expect(rendererSystem).toBeDefined();
     });
 
-    it('应该正确设置画布尺寸', () => {
+    it('应该正确设置画布尺寸', async () => {
       const width = 1024;
       const height = 768;
 
@@ -85,11 +108,21 @@ describe('RendererSystem', () => {
         height,
       });
 
-      expect(Application).toHaveBeenCalledWith(
+      await rendererSystem.init({
+        scene: {
+          gameObjects: [],
+        },
+      } as any);
+
+      const app = (Application as unknown as jest.Mock).mock.results[0].value;
+      expect(app.init).toHaveBeenCalledWith(
         expect.objectContaining({
+          canvas: mockCanvas,
           width,
           height,
-        })
+          sharedTicker: true,
+          hello: true,
+        }),
       );
     });
   });
@@ -168,7 +201,7 @@ describe('RendererManager', () => {
       game: null,
       rendererManager: null,
       containerManager: null,
-      observerInfo: {}
+      observerInfo: {},
     };
     expect(() => {
       manager.register(mockRenderer as any);
@@ -181,7 +214,7 @@ describe('RendererManager', () => {
       rendererManager: null,
       containerManager: null,
       observerInfo: {},
-      name: 'custom'
+      name: 'custom',
     };
     manager.register(mockRenderer as any);
 

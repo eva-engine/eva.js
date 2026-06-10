@@ -36,6 +36,7 @@ export interface TextParams {
     stroke?: string | number;
     strokeThickness?: number;
     textBaseline?: TextStyleTextBaseline;
+    verticalAlign?: 'top' | 'middle' | 'bottom' | string;
     trim?: boolean;
     whiteSpace?: TextStyleWhiteSpace;
     wordWrap?: boolean;
@@ -87,6 +88,7 @@ class TextStyleMetadata {
   @Field(() => TextStyleStrokeMetadata) stroke: string | number | TextStyleStrokeMetadata;
   @type('number') strokeThickness: number;
   @type('string') textBaseline: TextStyleTextBaseline;
+  @type('string') verticalAlign: string;
   @type('boolean') trim: boolean;
   @type('string') whiteSpace: TextStyleWhiteSpace;
   @type('boolean') wordWrap: boolean;
@@ -146,11 +148,14 @@ export default class Text extends Component<TextParams> {
   @Field(() => TextStyleMetadata)
   style: TextParams['style'] = {};
 
+  constructor(params?: TextParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 初始化组件
    * @param obj - 初始化参数
-   * @param obj.text - 文本内容
-   * @param obj.style - 文本样式
    */
   init(obj?: TextParams) {
     const style = new TextStyle({

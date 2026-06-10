@@ -63,7 +63,8 @@ export default class Animation {
   }
 
   getObjectCache(component, name): CacheItem {
-    const key = `${component.gameObject.id}${component.name}`;
+    const ownerId = component.gameObject?.id ?? 'standalone';
+    const key = `${ownerId}${component.name}`;
     if (!this.objectCache[key]) {
       this.objectCache[key] = {};
     }
@@ -88,8 +89,8 @@ export default class Animation {
   init() {
     this.checkFinishFunc = this.checkFinish.bind(this);
 
-    let lastTween;
     this.timelines.forEach((timeline, i) => {
+      let lastTween;
       for (let j = 0; j < timeline.values.length - 1; j++) {
         const frame = timeline.values[j];
         const nextFrame = timeline.values[j + 1];
@@ -97,7 +98,7 @@ export default class Animation {
         const tween = new Tween({ value: frame.value }, this.tweenGroup)
           .to({ value: nextFrame.value })
           .duration(nextFrame.time - frame.time)
-          .easing(easingMap[frame.tween])
+          .easing(easingMap[frame.tween] || easingMap.linear)
           .onUpdate(props => {
             this.doAnim({
               component: timeline.component,

@@ -35,6 +35,12 @@ export interface RendererResolutionState {
   displayResolutionSyncCount?: number;
 }
 
+type RendererGameLike = Partial<Game> & {
+  scene?: unknown;
+  gameObjects?: unknown;
+  on?: (name: string, handler: (...args: any[]) => void) => void;
+};
+
 export enum RENDERER_TYPE {
   UNKNOWN = 0,
   WEBGL = 1,
@@ -51,6 +57,12 @@ const enableScroll = renderer => {
   renderer.canvas.style.touchAction = 'auto';
 };
 
+function isRendererGameLike(value: unknown): value is RendererGameLike {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as RendererGameLike;
+  return Boolean(candidate.scene || candidate.gameObjects || typeof candidate.on === 'function');
+}
+
 @decorators.componentObserver({
   Transform: ['_parent'],
 })
@@ -65,23 +77,30 @@ export default class Renderer extends System<RendererSystemParams> {
   multiApps: Application[] = [];
   suportedCompressedTextureFormats: SuportedCompressedTexture;
   private destroyed = false;
-  async init(params: Partial<RendererSystemParams>) {
+  async init(params: Partial<RendererSystemParams> | RendererGameLike = {}) {
     this.destroyed = false;
-    this.params = params;
-    this.application = await this.createApplication(params);
+    const gameLike = !this.game && isRendererGameLike(params) ? params : undefined;
+    if (gameLike) {
+      this.game = gameLike as Game;
+    }
+    const rendererParams = gameLike ? this.__systemDefaultParams || {} : (params as Partial<RendererSystemParams>);
+    this.params = rendererParams;
+    this.application = await this.createApplication(rendererParams);
 
     this.containerManager = new ContainerManager();
     this.rendererManager = new RendererManager({
       game: this.game,
       rendererSystem: this,
     });
-    this.game.canvas = this.application.canvas as any;
+    if (this.game) {
+      this.game.canvas = this.application.canvas as any;
+    }
     this.transform = new Transform({
       system: this,
       containerManager: this.containerManager,
     });
 
-    this.game.on('sceneChanged', async ({ scene, mode, params }) => {
+    this.game?.on?.('sceneChanged', async ({ scene, mode, params }) => {
       let application;
       switch (mode) {
         case LOAD_SCENE_MODE.SINGLE:
@@ -99,15 +118,15 @@ export default class Renderer extends System<RendererSystemParams> {
       });
     });
 
-    this.game.on('pauseScene', ({ scene }) => {
+    this.game?.on?.('pauseScene', ({ scene }) => {
       this.onPauseScene(scene);
     });
 
-    this.game.on('startScene', ({ scene }) => {
+    this.game?.on?.('startScene', ({ scene }) => {
       this.onStartScene(scene);
     });
 
-    this.game.on('sceneDestroyed', async ({ scene }) => {
+    this.game?.on?.('sceneDestroyed', async ({ scene }) => {
       const index = this.multiApps.findIndex(app => app.canvas === scene.canvas);
       if (index > -1) {
         const app = this.multiApps.splice(index, 1)[0];
@@ -213,9 +232,10 @@ export default class Renderer extends System<RendererSystemParams> {
   resizeRenderer(options: ResizeRendererOptions): RendererResolutionState {
     const width = options.width ?? this.params.width ?? this.application.renderer.width;
     const height = options.height ?? this.params.height ?? this.application.renderer.height;
-    const resolution = options.resolution == null
-      ? this.params.resolution ?? this.application.renderer.resolution ?? 1
-      : this.clampResolution(options.resolution, options.maxResolution);
+    const resolution =
+      options.resolution == null
+        ? this.params.resolution ?? this.application.renderer.resolution ?? 1
+        : this.clampResolution(options.resolution, options.maxResolution);
 
     this.params.width = width;
     this.params.height = height;
@@ -253,10 +273,16 @@ export default class Renderer extends System<RendererSystemParams> {
 
       if ('resolution' in displayObject) {
         const currentResolution = displayObject.resolution;
-        if ((typeof currentResolution === 'number' || currentResolution === null) && Math.abs((currentResolution ?? 1) - resolution) > 0.001) {
+        if (
+          (typeof currentResolution === 'number' || currentResolution === null) &&
+          Math.abs((currentResolution ?? 1) - resolution) > 0.001
+        ) {
           try {
             displayObject.resolution = resolution;
-            if (typeof displayObject.resolution === 'number' && Math.abs(displayObject.resolution - resolution) <= 0.001) {
+            if (
+              typeof displayObject.resolution === 'number' &&
+              Math.abs(displayObject.resolution - resolution) <= 0.001
+            ) {
               syncedCount += 1;
             }
           } catch (_) {

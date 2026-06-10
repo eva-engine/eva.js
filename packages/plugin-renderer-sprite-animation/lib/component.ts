@@ -8,6 +8,15 @@ export interface SpriteAnimationParams {
   speed?: number;
   /** Stop at last frame */
   forwards?: boolean;
+  animations?: Record<string, SpriteAnimationClip>;
+  onComplete?: () => void;
+  onFrameChange?: (frame?: number) => void;
+}
+
+export interface SpriteAnimationClip {
+  start: number;
+  end: number;
+  speed?: number;
 }
 
 /**
@@ -64,11 +73,27 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   /** 是否在最后一帧停止（forwards 模式） */
   @type('boolean') forwards: boolean = false;
 
+  /** 命名动画片段，供编辑器和脚本按动作名播放 */
+  animations: Record<string, SpriteAnimationClip> = {};
+
+  /** 当前正在播放或等待播放的动画名 */
+  currentAnimation?: string;
+
+  /** 动画完成事件回调 */
+  onComplete?: () => void;
+
+  /** 帧变化事件回调 */
+  onFrameChange?: (frame?: number) => void;
+
   /** 动画引擎实例 */
   _animate: SpriteAnimationEngine;
 
   /** 等待播放标志（资源加载前调用 play） */
   private waitPlay: boolean = false;
+
+  private waitAnimation?: string;
+
+  private waitLoop: boolean = false;
 
   /** 等待停止标志 */
   private waitStop: boolean = false;
@@ -82,6 +107,13 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
   /** 是否播放完成 */
   private complete: boolean = false;
 
+  private listenerBound: boolean = false;
+
+  constructor(params?: SpriteAnimationParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 初始化组件
    * @param obj - 初始化参数
@@ -92,30 +124,55 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
    */
   init(obj?: SpriteAnimationParams) {
     obj && Object.assign(this, obj);
-    this.on('loop', () => {
-      if (++this.count >= this.times) {
-        if (this.forwards) {
-          this.gotoAndStop(this.totalFrames - 1);
-        } else {
-          this.animate.stop();
+    if (!this.listenerBound) {
+      this.listenerBound = true;
+      this.on('loop', () => {
+        if (++this.count >= this.times) {
+          if (this.forwards) {
+            this.gotoAndStop(this.totalFrames - 1);
+          } else {
+            this.animate?.stop();
+          }
+          this.complete = true;
+          this.emit('complete');
         }
-        this.complete = true;
-        this.emit('complete');
-      }
-    });
+      });
+      this.on('complete', () => {
+        this.onComplete?.();
+      });
+      this.on('frameChange', () => {
+        this.onFrameChange?.(this.currentFrame);
+      });
+    }
   }
-  play(times = Infinity) {
+  play(nameOrTimes: string | number = Infinity, loop: boolean = false) {
+    let times = typeof nameOrTimes === 'number' ? nameOrTimes : loop ? Infinity : 1;
+    let startFrame: number | undefined;
+    if (typeof nameOrTimes === 'string') {
+      this.currentAnimation = nameOrTimes;
+      const clip = this.animations[nameOrTimes];
+      if (clip) {
+        startFrame = clip.start;
+        if (clip.speed !== undefined) this.speed = clip.speed;
+      }
+    }
     if (times === 0) {
       return;
     }
     this.times = times;
     if (!this.animate) {
       this.waitPlay = true;
+      this.waitAnimation = typeof nameOrTimes === 'string' ? nameOrTimes : undefined;
+      this.waitLoop = loop;
     } else {
       if (this.complete) {
         this.gotoAndStop(0);
       }
-      this.animate.play();
+      if (startFrame !== undefined) {
+        this.animate.gotoAndPlay(startFrame);
+      } else {
+        this.animate.play();
+      }
       this.count = 0;
       this.complete = false;
     }
@@ -131,7 +188,9 @@ export default class SpriteAnimation extends Component<SpriteAnimationParams> {
     this._animate = val;
     if (this.waitPlay) {
       this.waitPlay = false;
-      this.play(this.times);
+      const waitAnimation = this.waitAnimation;
+      this.waitAnimation = undefined;
+      this.play(waitAnimation ?? this.times, this.waitLoop);
     }
     if (this.waitStop) {
       this.waitStop = false;

@@ -114,4 +114,11 @@ export async function init() {
   game.scene.addChild(gameObj3);
   game.scene.addChild(gameObj4);
   game.scene.addChild(gameObj5);
+
+  const frames = ['symbol_1', 'symbol_2', 'symbol_3', 'symbol_4', 'symbol_5'];
+  let frameIndex = 0;
+  window.setInterval(() => {
+    frameIndex = (frameIndex + 1) % frames.length;
+    spriteCom1.setSprite(frames[frameIndex]);
+  }, 800);
 }

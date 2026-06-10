@@ -7,6 +7,11 @@ export interface SpineParams {
   animationName?: string;
   scale?: number;
   autoPlay?: boolean;
+  timeScale?: number;
+  skin?: string;
+  onStart?: (event?: unknown) => void;
+  onComplete?: (event?: unknown) => void;
+  onEvent?: (track?: unknown, event?: unknown) => void;
 }
 
 /**
@@ -87,6 +92,23 @@ export default class Spine extends Component<SpineParams> {
   @type('boolean')
   keepResource: boolean = false;
 
+  /** 动画播放时间缩放 */
+  @type('number')
+  timeScale: number = 1;
+
+  /** 当前皮肤名称 */
+  @type('string')
+  skin: string = '';
+
+  /** 动画开始事件回调 */
+  onStart?: (event?: unknown) => void;
+
+  /** 动画完成事件回调 */
+  onComplete?: (event?: unknown) => void;
+
+  /** Spine 自定义事件回调 */
+  onEvent?: (track?: unknown, event?: unknown) => void;
+
   /** Spine 骨架实例（内部使用） */
   private _armature: any;
 
@@ -102,6 +124,15 @@ export default class Spine extends Component<SpineParams> {
   /** 等待执行的动画操作队列 */
   private waitExecuteInfos: { playType: boolean; track?: number; name?: string; loop?: boolean }[] = [];
 
+  private listenerBound: boolean = false;
+
+  private paused: boolean = false;
+
+  constructor(params?: SpineParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 设置骨架实例
    * 当骨架加载完成后自动执行等待队列中的动画操作
@@ -109,6 +140,8 @@ export default class Spine extends Component<SpineParams> {
   set armature(val) {
     this._armature = val;
     if (!val) return;
+    this.applyTimeScale();
+    if (this.skin) this.setSkin(this.skin);
     if (this.autoPlay) {
       this.play(this.animationName);
     }
@@ -146,14 +179,59 @@ export default class Spine extends Component<SpineParams> {
    * @param obj.autoPlay - 是否自动播放
    */
   init(obj?: SpineParams) {
-    if (!obj) return;
-
-    Object.assign(this, obj);
+    if (obj) Object.assign(this, obj);
+    if (!this.listenerBound) {
+      this.listenerBound = true;
+      this.on('start', event => {
+        this.onStart?.(event);
+      });
+      this.on('complete', event => {
+        this.onComplete?.(event);
+      });
+      this.on('event', (track, event) => {
+        this.onEvent?.(track, event);
+      });
+    }
   }
 
   /** 组件销毁时调用 */
   onDestroy() {
     this.destroied = true;
+  }
+
+  load() {
+    return this.armature;
+  }
+
+  destroy() {
+    this.onDestroy();
+    if (this.armature && !this.armature.destroyed) {
+      this._destroySlotGameObjects();
+      this.armature.destroy({ children: true });
+    }
+    this.armature = null;
+  }
+
+  pause() {
+    this.paused = true;
+    this.applyTimeScale();
+  }
+
+  resume() {
+    this.paused = false;
+    this.applyTimeScale();
+  }
+
+  setSkin(name: string) {
+    this.skin = name;
+    if (!this.armature?.skeleton) return;
+    if (this.armature.skeleton.setSkinByName) {
+      this.armature.skeleton.setSkinByName(name);
+    } else if (this.armature.skeleton.setSkin) {
+      const skin = this.armature.skeleton.data?.findSkin?.(name) || name;
+      this.armature.skeleton.setSkin(skin);
+    }
+    this.armature.skeleton.setSlotsToSetupPose?.();
   }
 
   /**
@@ -186,6 +264,7 @@ export default class Spine extends Component<SpineParams> {
         if (track === undefined) {
           track = 0;
         }
+        this.applyTimeScale();
         this.armature.state.setAnimation(track, this.animationName, loop);
       }
     } catch (e) {
@@ -212,6 +291,11 @@ export default class Spine extends Component<SpineParams> {
       track = 0;
     }
     this.armature.state.setEmptyAnimation(track, 0);
+  }
+
+  private applyTimeScale() {
+    if (!this.armature?.state) return;
+    this.armature.state.timeScale = this.paused ? 0 : this.timeScale;
   }
 
   /**

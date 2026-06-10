@@ -22,56 +22,86 @@ resource.registerDestroy(RESOURCE_TYPE.IMAGE, ({ instance }) => {
 });
 
 @decorators.componentObserver({
-  Img: [{ prop: ['resource'], deep: false }],
+  Img: ['resource', { prop: 'anchor', deep: true }, 'width', 'height'],
 })
 export default class Img extends Renderer {
-  static systemName = 'Img';
-  name: string = 'Img';
+  static systemName = 'ImgSystem';
+  name: string = 'ImgSystem';
   imgs: { [propName: number]: Sprite } = {};
   renderSystem: RendererSystem;
   rendererManager: RendererManager;
   containerManager: ContainerManager;
-  init() {
-    this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
+  init(_params?: unknown) {
+    const renderSystem = this.game?.getSystem?.(RendererSystem) as RendererSystem | undefined;
+    if (!renderSystem?.rendererManager) return;
+
+    this.renderSystem = renderSystem;
     this.renderSystem.rendererManager.register(this);
   }
+  update(_frame?: unknown) {
+    super.update(_frame as any);
+  }
   rendererUpdate(gameObject: GameObject) {
-    const { width, height } = gameObject.transform.size;
-    if (this.imgs[gameObject.id]) {
-      this.imgs[gameObject.id].sprite.width = width;
-      this.imgs[gameObject.id].sprite.height = height;
-    }
+    const component = gameObject.getComponent('Img') as ImgComponent;
+    this.applySpriteLayout(gameObject, component);
   }
   async componentChanged(changed: ComponentChanged) {
     if (changed.componentName === 'Img') {
+      const gameObjectId = changed.gameObject.id;
       const component: ImgComponent = changed.component as ImgComponent;
       if (changed.type === OBSERVER_TYPE.ADD) {
         const sprite = new Sprite(null);
-        this.imgs[changed.gameObject.id] = sprite;
-        this.containerManager.getContainer(changed.gameObject.id).addChildAt(sprite.sprite, 0);
-        const asyncId = this.increaseAsyncId(changed.gameObject.id);
+        this.imgs[gameObjectId] = sprite;
+        this.containerManager?.getContainer(gameObjectId)?.addChildAt(sprite.sprite, 0);
+        this.applySpriteLayout(changed.gameObject, component);
+        const asyncId = this.increaseAsyncId(gameObjectId);
         const { instance } = await resource.getResource(component.resource);
-        if (!this.validateAsyncId(changed.gameObject.id, asyncId)) return;
+        if (!this.validateAsyncId(gameObjectId, asyncId)) return;
         if (!instance) {
           console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
+          return;
         }
-        this.imgs[changed.gameObject.id].image = instance;
+        sprite.image = instance;
+        this.applySpriteLayout(changed.gameObject, component);
       } else if (changed.type === OBSERVER_TYPE.CHANGE) {
-        const asyncId = this.increaseAsyncId(changed.gameObject.id);
-        const { instance } = await resource.getResource(component.resource);
-        if (!this.validateAsyncId(changed.gameObject.id, asyncId)) return;
-        if (!instance) {
-          console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
+        this.applySpriteLayout(changed.gameObject, component);
+        if (changed.prop?.prop?.includes('resource')) {
+          const asyncId = this.increaseAsyncId(gameObjectId);
+          const { instance } = await resource.getResource(component.resource);
+          if (!this.validateAsyncId(gameObjectId, asyncId)) return;
+          if (!instance) {
+            console.error(`GameObject:${changed.gameObject.name}'s Img resource load error`);
+            return;
+          }
+          this.imgs[gameObjectId].image = instance;
+          this.applySpriteLayout(changed.gameObject, component);
         }
-        this.imgs[changed.gameObject.id].image = instance;
       } else if (changed.type === OBSERVER_TYPE.REMOVE) {
-        this.increaseAsyncId(changed.gameObject.id);
-        const sprite = this.imgs[changed.gameObject.id];
+        this.increaseAsyncId(gameObjectId);
+        const sprite = this.imgs[gameObjectId];
         if (!sprite) return;
-        this.containerManager?.getContainer(changed.gameObject.id)?.removeChild(sprite.sprite);
+        this.containerManager?.getContainer(gameObjectId)?.removeChild(sprite.sprite);
         sprite.sprite.destroy({ children: true });
-        delete this.imgs[changed.gameObject.id];
+        delete this.imgs[gameObjectId];
       }
+    }
+  }
+  private applySpriteLayout(gameObject: GameObject, component?: ImgComponent) {
+    const sprite = this.imgs[gameObject.id];
+    if (!sprite) return;
+
+    const size = gameObject.transform?.size;
+    const width = component?.width ?? size?.width;
+    const height = component?.height ?? size?.height;
+    if (typeof width === 'number') {
+      sprite.sprite.width = width;
+    }
+    if (typeof height === 'number') {
+      sprite.sprite.height = height;
+    }
+    const anchor = component?.anchor;
+    if (anchor) {
+      sprite.sprite.anchor?.set?.(anchor.x, anchor.y);
     }
   }
   destroy(): void {

@@ -5,12 +5,14 @@ import { extensions } from 'pixi.js';
 
 sound.disableAutoPause = true;
 
-utils.extensions.push('aac');
-utils.validateFormats({
+utils?.extensions?.push?.('aac');
+utils?.validateFormats?.({
   aac: 'audio/aac',
 });
 
-extensions.add(soundAsset);
+if (soundAsset) {
+  extensions?.add?.(soundAsset);
+}
 
 interface SoundSystemParams {
   useLegacy?: boolean;
@@ -40,7 +42,7 @@ interface SoundSystemParams {
 })
 class SoundSystem extends System {
   /** 系统名称 */
-  static systemName = 'SoundSystem';
+  static systemName = 'Sound';
 
   /** 是否与游戏生命周期同步暂停和启动 */
   private autoPauseAndStart = true;
@@ -61,6 +63,8 @@ class SoundSystem extends System {
       sound.useLegacy = true;
     }
   }
+
+  init(_params?: unknown) {}
 
   /**
    * 恢复播放所有被暂停的音频
@@ -83,7 +87,7 @@ class SoundSystem extends System {
     sound.stopAll();
   }
 
-  update() {
+  update(_frame?: unknown) {
     const changes = this.componentObserver.clear();
     for (const changed of changes) {
       this.componentChanged(changed);
@@ -123,7 +127,7 @@ class SoundSystem extends System {
       component.onDestroy();
     });
     this.components = [];
-    sound.removeAll();
+    sound.removeAll?.();
   }
 
   async componentChanged(changed: ComponentChanged) {

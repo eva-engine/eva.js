@@ -81,15 +81,21 @@ export default class Transition extends Component<TransitionParams> {
   /** 待播放的动画队列 */
   private needPlay: { name: string; iteration?: number }[] = [];
 
+  constructor(params?: TransitionParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 初始化组件
    *
    * @param params - 初始化参数
    * @param params.group - 动画组配置对象
    */
-  init({ group } = { group: {} }) {
-    this.group = group;
-    this.tweenGroup = new Group();
+  init(params?: TransitionParams) {
+    this.group = params?.group ?? this.group ?? {};
+    this.tweenGroup = this.tweenGroup || new Group();
+    this.animations = this.animations || {};
   }
 
   awake() {

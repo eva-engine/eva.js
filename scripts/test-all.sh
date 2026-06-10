@@ -47,21 +47,10 @@ run_core_tests() {
 run_plugin_tests() {
   echo -e "${BLUE}🔌 运行插件测试...${NC}"
 
-  local plugins=(
-    "plugin-renderer"
-    "plugin-renderer-event"
-    "plugin-renderer-img"
-    "plugin-renderer-sprite"
-    "plugin-renderer-sprite-animation"
-    "plugin-renderer-text"
-    "plugin-renderer-graphics"
-    "plugin-renderer-mask"
-    "plugin-renderer-lottie"
-    "plugin-renderer-spine"
-    "plugin-sound"
-    "plugin-a11y"
-    "plugin-transition"
-  )
+  local plugins=()
+  while IFS= read -r test_dir; do
+    plugins+=("$(basename "$(dirname "$test_dir")")")
+  done < <(find packages -maxdepth 2 -path "packages/plugin-*/*" -type d -name "__tests__" | sort)
 
   for plugin in "${plugins[@]}"; do
     if [ -d "packages/$plugin/__tests__" ]; then
@@ -69,6 +58,16 @@ run_plugin_tests() {
       npx jest "packages/$plugin/__tests__" --silent || true
     fi
   done
+
+  echo -e "${YELLOW}  强制测试 behavior-script 生态...${NC}"
+  npx jest \
+    packages/plugin-behavior-script \
+    packages/plugin-signal-bus \
+    packages/plugin-input-action \
+    packages/plugin-state-machine \
+    packages/plugin-timer \
+    --runInBand \
+    --silent
 }
 
 # 渲染器测试

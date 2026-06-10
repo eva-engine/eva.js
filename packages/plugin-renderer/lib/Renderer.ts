@@ -50,7 +50,7 @@ export default class Renderer<T extends {} = {}> extends System<T> {
    * 每帧调用
    *
    * called by every loop
-   * @param _gameObject gameObject
+   * @param _gameObject - gameObject
    */
   rendererUpdate(_gameObject: GameObject) {}
 

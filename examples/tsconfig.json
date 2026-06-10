@@ -6,6 +6,7 @@
     "paths": {
       "@eva/eva.js": ["./packages/eva.js/lib"],
       "@eva/plugin-a11y": ["./packages/plugin-a11y/lib"],
+      "@eva/plugin-behavior-script": ["./packages/plugin-behavior-script/lib"],
       "@eva/plugin-evax": ["./packages/plugin-evax/lib"],
       "@eva/plugin-matterjs": ["./packages/plugin-matterjs/lib"],
       "@eva/plugin-renderer": ["./packages/plugin-renderer/lib"],

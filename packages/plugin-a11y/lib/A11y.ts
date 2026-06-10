@@ -1,4 +1,5 @@
 import { Component, type, step } from '@eva/eva.js';
+import { A11yActivate } from './constant';
 import { uuid } from './utils';
 
 export interface A11yParams {
@@ -6,11 +7,14 @@ export interface A11yParams {
   event?: Component;
   delay?: number;
   role?: string;
+  ariaLabel?: string;
+  tabIndex?: number;
+  activate?: A11yActivate;
   props?: object;
   state?: object;
   attr?: object;
   a11yId?: string;
-  [propName: string]: string | object | number;
+  [propName: string]: string | object | number | boolean;
 }
 
 /**
@@ -63,6 +67,15 @@ export default class A11y extends Component<A11yParams> {
   /** ARIA role 属性，定义元素的角色（如 button、link 等） */
   @type('string') role: string;
 
+  /** ARIA label 属性；未配置时使用 hint */
+  @type('string') ariaLabel: string;
+
+  /** 键盘导航顺序 */
+  @type('number') @step(1) tabIndex: number;
+
+  /** 组件激活模式 */
+  @type('number') activate: A11yActivate;
+
   /**
    * ARIA value 属性集合
    * @deprecated 已弃用，请将属性直接写在 component 上
@@ -92,14 +105,8 @@ export default class A11y extends Component<A11yParams> {
    * 构造无障碍组件
    *
    * @param param - 无障碍组件配置参数
-   * @param param.hint - 屏幕阅读器朗读文本
-   * @param param.interactive - 是否可交互，默认 false
-   * @param param.role - ARIA 角色属性
-   * @param param.event - 关联的事件组件（已弃用）
-   * @param param.delay - DOM 延迟加载时间（毫秒）
-   * @param param.props - ARIA value 属性（已弃用）
-   * @param param.state - ARIA state 属性（已弃用）
-   * @param param.attr - 自定义属性（已弃用）
+   *
+   * 配置项包括 hint、interactive、role、event、delay、props、state、attr 等字段。
    *
    * @example
    * ```typescript
@@ -126,14 +133,33 @@ export default class A11y extends Component<A11yParams> {
   constructor(param: A11yParams) {
     super();
     Object.assign(this, param);
-    const { hint = '', event, delay = 0, attr = {}, role = '', props = {}, state = {} } = param;
+    const {
+      hint = '',
+      event,
+      delay = 0,
+      attr = {},
+      role = '',
+      ariaLabel = hint,
+      tabIndex = -1,
+      activate = A11yActivate.touchend,
+      props = {},
+      state = {},
+    } = param;
     this.hint = hint;
     this.event = event;
     this.delay = delay;
     this.attr = attr;
     this.role = role;
+    this.ariaLabel = ariaLabel;
+    this.tabIndex = tabIndex;
+    this.activate = activate;
     this.props = props;
     this.state = state;
     this.a11yId = `_${uuid(6)}`;
+  }
+
+  destroy() {
+    this.onDestroy?.();
+    this.removeAllListeners();
   }
 }

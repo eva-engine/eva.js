@@ -1,6 +1,5 @@
 import { System, decorators, ComponentChanged, Transform, OBSERVER_TYPE } from '@eva/eva.js';
 import type { GameObject } from '@eva/eva.js';
-import { RendererSystem } from '@eva/plugin-renderer';
 import EE from 'eventemitter3';
 
 import A11y from './A11y';
@@ -23,7 +22,27 @@ interface SystemParam {
   checkA11yOpen?: () => Promise<boolean>;
 }
 
-const notAttr = ['hint', 'event', 'delay', 'attr', 'role', 'props', 'state', 'a11yId', 'name'];
+interface RendererLikeSystem {
+  params?: {
+    width?: number;
+    height?: number;
+  };
+}
+
+const notAttr = [
+  'hint',
+  'event',
+  'delay',
+  'attr',
+  'role',
+  'ariaLabel',
+  'tabIndex',
+  'activate',
+  'props',
+  'state',
+  'a11yId',
+  'name',
+];
 
 const getEventFunc = function (event: EE, gameObject: GameObject, e: MouseEvent) {
   ['touchstart', 'touchend', 'tap'].forEach(name => {
@@ -109,11 +128,8 @@ export default class A11ySystem extends System {
    * 构造无障碍系统
    *
    * @param opt - 系统配置选项
-   * @param opt.debug - 是否开启调试模式，默认 false
-   * @param opt.activate - 无障碍功能开关模式，默认 CHECK（自动检测）
-   * @param opt.delay - DOM 元素延迟创建时间（毫秒），默认 100
-   * @param opt.zIndex - 覆盖层的 z-index，默认 10000
-   * @param opt.checkA11yOpen - 自定义检测无障碍功能是否开启的函数
+   *
+   * 配置项包括 debug、activate、delay、zIndex、checkA11yOpen 等字段。
    *
    * @example
    * ```typescript
@@ -206,7 +222,8 @@ export default class A11ySystem extends System {
     }
   }
   getRenderRect() {
-    const { params = { width: 300, height: 300 } } = this.game.getSystem(RendererSystem);
+    const renderer = this.game.getSystem('Renderer') as RendererLikeSystem | undefined;
+    const { params = { width: 300, height: 300 } } = renderer || {};
     const { height: renderHeight, width: renderWidth } = params;
     return { renderWidth, renderHeight };
   }
@@ -248,7 +265,7 @@ export default class A11ySystem extends System {
   /**
    * 监听插件更新
    */
-  async update() {
+  async update(_frame?: unknown) {
     const changes = this.componentObserver.clear();
     if (!this.activate) {
       return;
@@ -290,7 +307,7 @@ export default class A11ySystem extends System {
 
   /**
    * 监听组件被添加至游戏对象
-   * @param changed 改变的组件
+   * @param changed - 改变的组件
    */
   add(changed: ComponentChanged) {
     if (!this.activate) return;
@@ -342,9 +359,9 @@ export default class A11ySystem extends System {
 
   /**
    * 为无障碍组件设置监听事件
-   * @param element DOM 元素
-   * @param event 事件组件对象
-   * @param gameObject 游戏对象
+   * @param element - DOM 元素
+   * @param event - 事件组件对象
+   * @param gameObject - 游戏对象
    */
   setEvent(element: HTMLElement, event: EE, gameObject: GameObject, id) {
     if (!event) {
@@ -378,15 +395,17 @@ export default class A11ySystem extends System {
 
   /**
    * 设置无障碍属性标签
-   * @param element DOM 元素
-   * @param hint 无障碍朗读文字
-   * @param interactive 是否可交互
+   * @param element - DOM 元素
+   * @param component - 无障碍组件
    */
   setA11yAttr(element: HTMLElement, component: A11y) {
-    const { hint, props = {}, state = {}, role, a11yId: id } = component;
+    const { hint, props = {}, state = {}, role, ariaLabel, tabIndex, a11yId: id } = component;
     const realRole = role || 'text';
     element.setAttribute('role', realRole);
-    element.setAttribute('aria-label', hint);
+    element.setAttribute('aria-label', ariaLabel || hint);
+    if (typeof tabIndex === 'number' && tabIndex >= 0) {
+      element.setAttribute('tabindex', `${tabIndex}`);
+    }
     element.id = id;
 
     // 这里兼容
@@ -408,8 +427,8 @@ export default class A11ySystem extends System {
 
   /**
    * 将无障碍元素设置到对应的位置
-   * @param element DOM 元素
-   * @param transform 位置属性
+   * @param element - DOM 元素
+   * @param transform - 位置属性
    */
   setPosition(element: HTMLElement, transform: Transform) {
     // 相对画布定位
@@ -432,7 +451,9 @@ export default class A11ySystem extends System {
     setTransform(element, transform, this.ratioX, this.ratioY);
   }
   onDestroy() {
-    this.div.parentElement.removeChild(this.div);
+    if (this.div?.parentElement) {
+      this.div.parentElement.removeChild(this.div);
+    }
     this.cache = null;
     this.eventCache = null;
     this.div = null;

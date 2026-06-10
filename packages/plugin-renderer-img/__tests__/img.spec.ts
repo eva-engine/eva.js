@@ -1,20 +1,64 @@
 import { Img, ImgSystem } from '../lib';
-import { Sprite, Texture } from 'pixi.js';
 
 // Mock PixiJS
-jest.mock('pixi.js', () => ({
-  Sprite: jest.fn().mockImplementation(() => ({
-    texture: null,
-    anchor: { set: jest.fn() },
-    position: { x: 0, y: 0 },
-    scale: { x: 1, y: 1 },
-    destroy: jest.fn(),
-  })),
-  Texture: {
-    from: jest.fn(),
-    EMPTY: {},
-  },
-}));
+jest.mock('pixi.js', () => {
+  class Container {
+    position = { x: 0, y: 0, set: jest.fn() };
+    scale = { x: 1, y: 1, set: jest.fn() };
+    pivot = { x: 0, y: 0, set: jest.fn() };
+    anchor = { x: 0, y: 0, set: jest.fn() };
+    width = 0;
+    height = 0;
+    children: any[] = [];
+    addChildAt = jest.fn();
+    removeChild = jest.fn();
+    destroy = jest.fn();
+  }
+  class Texture {
+    static EMPTY = new Texture();
+    static from = jest.fn(() => new Texture());
+    destroy = jest.fn();
+  }
+  class Sprite extends Container {
+    static from = jest.fn(() => new Sprite(Texture.from()));
+    texture: Texture | null;
+    constructor(texture: Texture | null = Texture.EMPTY) {
+      super();
+      this.texture = texture;
+    }
+  }
+  class Text extends Container {
+    text = '';
+    style = {};
+  }
+  class BitmapText extends Text {}
+  class HTMLText extends Text {}
+  class TilingSprite extends Sprite {}
+  class NineSliceSprite extends Sprite {}
+  class AnimatedSprite extends Sprite {}
+  class Graphics extends Container {}
+  class FillGradient {}
+  class Color {}
+  class TextStyle {}
+  class Application extends Container {}
+
+  return {
+    Container,
+    Sprite,
+    Texture,
+    Text,
+    BitmapText,
+    HTMLText,
+    TilingSprite,
+    NineSliceSprite,
+    AnimatedSprite,
+    Graphics,
+    FillGradient,
+    Color,
+    TextStyle,
+    Application,
+  };
+});
 
 describe('Img Plugin - 图片渲染', () => {
   let imgSystem: ImgSystem;

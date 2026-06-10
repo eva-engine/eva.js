@@ -1,21 +1,6 @@
-import {
-  GameObject,
-  decorators,
-  resource,
-  ComponentChanged,
-  OBSERVER_TYPE,
-} from '@eva/eva.js';
+import { GameObject, decorators, resource, ComponentChanged, OBSERVER_TYPE } from '@eva/eva.js';
 import { RendererManager, ContainerManager, RendererSystem, Renderer } from '@eva/plugin-renderer';
-import {
-  RenderTexture as PixiRenderTexture,
-  Sprite,
-  Texture,
-  Container,
-  Graphics,
-  Text,
-  Rectangle,
-  ColorMatrixFilter,
-} from 'pixi.js';
+import { RenderTexture as PixiRenderTexture, Sprite, Texture, Container, Graphics, Text } from 'pixi.js';
 import RenderTextureComponent, { RenderTextureOp } from './component';
 
 interface RenderTextureRecord {
@@ -89,15 +74,9 @@ export default class RenderTextureSystem extends Renderer {
       if (!record) return;
       record.component = component;
       // Resize when width/height changed
-      if (
-        record.rt.width !== component.width ||
-        record.rt.height !== component.height
-      ) {
+      if (record.rt.width !== component.width || record.rt.height !== component.height) {
         try {
-          (record.rt as any).resize?.(
-            Math.max(1, component.width),
-            Math.max(1, component.height),
-          );
+          (record.rt as any).resize?.(Math.max(1, component.width), Math.max(1, component.height));
         } catch (e) {
           // ignore
         }
@@ -220,7 +199,11 @@ export default class RenderTextureSystem extends Renderer {
       // Defer destroy to next microtask so the GPU has time to consume.
       // Some Pixi v8 builds upload the geometry lazily.
       Promise.resolve().then(() => {
-        try { stage.destroy({ children: true }); } catch { /* noop */ }
+        try {
+          stage.destroy({ children: true });
+        } catch {
+          /* noop */
+        }
       });
     }
   }

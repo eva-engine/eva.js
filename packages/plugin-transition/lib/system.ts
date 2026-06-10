@@ -16,4 +16,10 @@ export default class TransitionSystem extends System {
   static systemName = 'transition';
   /** 系统实例名称 */
   readonly name = 'transition';
+
+  init(game?: any) {
+    if (game) {
+      this.game = game;
+    }
+  }
 }

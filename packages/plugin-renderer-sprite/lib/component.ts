@@ -33,16 +33,33 @@ export default class Sprite extends Component<SpriteParams> {
   /** 精灵图集中的子图名称 */
   @type('string') spriteName: string = '';
 
+  constructor(params?: SpriteParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 初始化组件
    * @param obj - 初始化参数
-   * @param obj.resource - 资源名称
-   * @param obj.spriteName - 精灵名称
+   *
+   * 配置项包括 resource 和 spriteName。
    */
   init(obj?: SpriteParams) {
     if (obj && obj.resource) {
       this.resource = obj.resource;
       this.spriteName = obj.spriteName;
     }
+  }
+
+  /**
+   * 切换当前精灵图集帧。
+   *
+   * SpriteSystem 会监听 spriteName 变化并刷新渲染纹理。
+   *
+   * @param spriteName - 精灵图集中的子图名称
+   */
+  setSprite(spriteName: string) {
+    this.spriteName = spriteName;
+    return this;
   }
 }

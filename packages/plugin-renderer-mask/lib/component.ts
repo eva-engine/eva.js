@@ -11,8 +11,10 @@ export enum MASK_TYPE {
   Sprite = 'Sprite',
 }
 
+export type MaskTypeValue = MASK_TYPE | 'circle' | 'ellipse' | 'rect' | 'roundedRect' | 'polygon' | 'img' | 'sprite';
+
 export interface MaskParams {
-  type: MASK_TYPE;
+  type: MaskTypeValue;
   style?: {
     x?: number;
     y?: number;
@@ -21,8 +23,15 @@ export interface MaskParams {
     height?: number;
     paths?: number[];
   };
+  x?: number;
+  y?: number;
+  radius?: number;
+  width?: number;
+  height?: number;
+  paths?: number[];
   resource?: string;
   spriteName?: string;
+  enabled?: boolean;
 }
 
 /**
@@ -77,15 +86,22 @@ export default class Mask extends Component<MaskParams> {
   static componentName: string = 'Mask';
 
   /** 上一次的遮罩类型 */
-  _lastType: MaskParams['type'];
+  _lastType: MaskTypeValue;
 
   /** 遮罩类型 */
   // @decorators.IDEProp 复杂编辑后续添加
-  type: MaskParams['type'];
+  type: MaskTypeValue = MASK_TYPE.Rect;
 
   /** 遮罩样式配置 */
   // @decorators.IDEProp 复杂编辑后续添加
   style?: MaskParams['style'] = {};
+
+  @type('number') x: number = 0;
+  @type('number') y: number = 0;
+  @type('number') radius?: number;
+  @type('number') width?: number;
+  @type('number') height?: number;
+  paths?: number[];
 
   /** 遮罩图片资源名称（用于 Img 类型） */
   @type('string') resource?: string = '';
@@ -93,15 +109,41 @@ export default class Mask extends Component<MaskParams> {
   /** 遮罩精灵名称（用于 Sprite 类型） */
   @type('string') spriteName?: string = '';
 
+  /** 是否启用遮罩 */
+  @type('boolean') enabled: boolean = true;
+
+  constructor(params?: MaskParams) {
+    super(params);
+    this.init(params);
+  }
+
   /**
    * 初始化组件
    * @param obj - 初始化参数
-   * @param obj.type - 遮罩类型
-   * @param obj.style - 遮罩样式
-   * @param obj.resource - 遮罩资源（可选）
-   * @param obj.spriteName - 精灵名称（可选）
    */
   init(obj?: MaskParams) {
-    Object.assign(this, obj);
+    if (!obj) return;
+    const { style, ...rest } = obj;
+    Object.assign(this, rest);
+    this.style = {
+      ...this.style,
+      ...style,
+      x: obj.x ?? style?.x ?? this.style?.x ?? this.x,
+      y: obj.y ?? style?.y ?? this.style?.y ?? this.y,
+      radius: obj.radius ?? style?.radius ?? this.style?.radius,
+      width: obj.width ?? style?.width ?? this.style?.width,
+      height: obj.height ?? style?.height ?? this.style?.height,
+      paths: obj.paths ?? style?.paths ?? this.style?.paths,
+    };
+    this.x = this.style.x ?? 0;
+    this.y = this.style.y ?? 0;
+    this.radius = this.style.radius;
+    this.width = this.style.width;
+    this.height = this.style.height;
+    this.paths = this.style.paths;
+  }
+
+  destroy() {
+    return this;
   }
 }

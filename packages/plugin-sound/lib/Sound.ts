@@ -72,20 +72,28 @@ class Sound extends Component<SoundParams> {
   /** PixiJS Sound 缓冲区 */
   private buffer: PIXISound;
 
+  constructor(params?: SoundParams) {
+    super(params);
+    this.init(params);
+  }
+
   get muted(): boolean {
-    return this.buffer?.muted || false;
+    return this.buffer?.muted ?? this.config.muted ?? false;
   }
 
   set muted(v: boolean) {
+    this.config.muted = v;
     if (this.buffer) this.buffer.muted = v;
   }
 
   get volume(): number {
-    return this.buffer?.volume || 0;
+    return this.buffer?.volume ?? this.config.volume ?? 1;
   }
 
   set volume(v: number) {
-    if (this.buffer) this.buffer.volume = v;
+    const nextVolume = Math.max(0, Math.min(1, Number.isFinite(v) ? v : 1));
+    this.config.volume = nextVolume;
+    if (this.buffer) this.buffer.volume = nextVolume;
   }
 
   init(obj?: SoundParams) {
@@ -93,6 +101,7 @@ class Sound extends Component<SoundParams> {
       return;
     }
     Object.assign(this.config, obj);
+    this.config.volume = Math.max(0, Math.min(1, this.config.volume ?? 1));
     if (this.config.autoplay) {
       this.actionQueue.push(this.play.bind(this));
     }
@@ -102,23 +111,35 @@ class Sound extends Component<SoundParams> {
     if (this.state !== 'loaded') {
       this.actionQueue.push(this.play.bind(this));
     }
-    if (!this.buffer) return;
-    this.startTime = this.systemContext.currentTime;
+    if (!this.buffer) {
+      sound.play?.(this.config.resource);
+      return;
+    }
+    this.startTime = this.systemContext?.currentTime ?? 0;
     this.buffer.play();
   }
 
   resume() {
-    if (!this.buffer) return;
+    if (!this.buffer) {
+      sound.resume?.(this.config.resource);
+      return;
+    }
     this.buffer.resume();
   }
 
   pause() {
-    if (!this.buffer) return;
+    if (!this.buffer) {
+      sound.pause?.(this.config.resource);
+      return;
+    }
     this.buffer.pause();
   }
 
   stop() {
-    if (!this.buffer) return;
+    if (!this.buffer) {
+      sound.stop?.(this.config.resource);
+      return;
+    }
     this.buffer.stop();
   }
 

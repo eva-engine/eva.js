@@ -53,6 +53,16 @@ describe('Sprite Plugin - 精灵渲染', () => {
       expect(() => {
         sprite.setSprite('frame2');
       }).not.toThrow();
+      expect(sprite.spriteName).toBe('frame2');
+    });
+
+    it('setSprite 应该返回当前组件以支持链式调用', () => {
+      const sprite = new Sprite({
+        resource: 'atlas',
+        spriteName: 'frame1',
+      });
+
+      expect(sprite.setSprite('frame2')).toBe(sprite);
     });
   });
 

@@ -1,44 +1,75 @@
 import { RenderTexture, RenderTextureSystem } from '../lib';
 
 jest.mock('pixi.js', () => {
+  const pixi = jest.requireActual('../../eva.js/__tests__/__mocks__/pixi.js');
   class FakeContainer {
     children: any[] = [];
-    addChild(c: any) { this.children.push(c); return c; }
-    addChildAt(c: any, _i: number) { this.children.push(c); return c; }
-    removeChild(c: any) { this.children = this.children.filter(x => x !== c); }
+    addChild(c: any) {
+      this.children.push(c);
+      return c;
+    }
+    addChildAt(c: any, _i: number) {
+      this.children.push(c);
+      return c;
+    }
+    removeChild(c: any) {
+      this.children = this.children.filter(x => x !== c);
+    }
     destroy() {}
   }
   class FakeGraphics extends FakeContainer {
-    rect() { return this; }
-    fill() { return this; }
+    rect() {
+      return this;
+    }
+    fill() {
+      return this;
+    }
   }
   class FakeSprite extends FakeContainer {
-    width = 1; height = 1; alpha = 1; tint = 0xffffff; rotation = 0;
+    width = 1;
+    height = 1;
+    alpha = 1;
+    tint = 0xffffff;
+    rotation = 0;
     anchor = { set: jest.fn() };
     scale = { set: jest.fn() };
-    x = 0; y = 0;
-    constructor(public texture?: any) { super(); }
+    x = 0;
+    y = 0;
+    constructor(public texture?: any) {
+      super();
+    }
   }
   class FakeText extends FakeContainer {
-    x = 0; y = 0;
-    constructor(public opts?: any) { super(); }
+    x = 0;
+    y = 0;
+    constructor(public opts?: any) {
+      super();
+    }
   }
   class FakeRT {
-    width = 0; height = 0;
-    constructor(opts: any) { this.width = opts.width; this.height = opts.height; }
-    static create(opts: any) { return new FakeRT(opts); }
+    width = 0;
+    height = 0;
+    constructor(opts: any) {
+      this.width = opts.width;
+      this.height = opts.height;
+    }
+    static create(opts: any) {
+      return new FakeRT(opts);
+    }
     destroy() {}
-    resize(w: number, h: number) { this.width = w; this.height = h; }
+    resize(w: number, h: number) {
+      this.width = w;
+      this.height = h;
+    }
   }
   return {
+    ...pixi,
     RenderTexture: FakeRT,
     Sprite: FakeSprite,
-    Texture: class FakeTexture {},
+    Texture: pixi.Texture,
     Container: FakeContainer,
     Graphics: FakeGraphics,
     Text: FakeText,
-    Rectangle: class {},
-    ColorMatrixFilter: class {},
   };
 });
 
