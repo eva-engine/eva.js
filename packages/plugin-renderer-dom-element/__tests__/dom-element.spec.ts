@@ -45,5 +45,63 @@ describe('DOMElement Plugin', () => {
       expect(sys).toBeDefined();
       expect(sys.name).toBe('DOMElement');
     });
+
+    describe('onPause / onResume', () => {
+      let sys: any;
+      let rafSpy: jest.SpyInstance;
+      let cancelSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        sys = new DOMElementSystem();
+        rafSpy = jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(() => 42 as any);
+        cancelSpy = jest.spyOn(globalThis, 'cancelAnimationFrame').mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        rafSpy.mockRestore();
+        cancelSpy.mockRestore();
+      });
+
+      it('onPause 取消未完成的 syncRafId 并置 0', () => {
+        sys.domLayer = {} as any;
+        sys.syncRafId = 7;
+        sys.onPause();
+        expect(cancelSpy).toHaveBeenCalledWith(7);
+        expect(sys.syncRafId).toBe(0);
+      });
+
+      it('onPause 后 startLayerSyncLoop 是空操作,不再发起 RAF', () => {
+        sys.domLayer = {} as any;
+        sys.onPause();
+        rafSpy.mockClear();
+        sys.startLayerSyncLoop();
+        expect(rafSpy).not.toHaveBeenCalled();
+        expect(sys.syncRafId).toBe(0);
+      });
+
+      it('onResume 在 domLayer 存在时重启 sync loop', () => {
+        sys.domLayer = {} as any;
+        sys.onPause();
+        rafSpy.mockClear();
+        sys.onResume();
+        expect(rafSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('onResume 在 domLayer 缺失时不发起 RAF(避免空启动)', () => {
+        sys.onPause();
+        rafSpy.mockClear();
+        sys.onResume();
+        expect(rafSpy).not.toHaveBeenCalled();
+      });
+
+      it('多次 onPause 幂等,不会反复 cancel 已清零的 id', () => {
+        sys.domLayer = {} as any;
+        sys.syncRafId = 11;
+        sys.onPause();
+        sys.onPause();
+        // 第二次 syncRafId 已为 0,守卫确保不 cancel
+        expect(cancelSpy).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 });

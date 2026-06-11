@@ -99,14 +99,37 @@ export default class DOMElementSystem extends Renderer {
     return layer;
   }
 
+  /** 暂停标志:Game.pause()/onPause 期间停掉 layer-sync RAF,避免空跑。 */
+  private syncPaused = false;
+
   private startLayerSyncLoop() {
-    if (this.syncRafId || typeof requestAnimationFrame === 'undefined') return;
+    if (this.syncRafId || this.syncPaused || typeof requestAnimationFrame === 'undefined') return;
     const loop = () => {
-      if (!this.domLayer) { this.syncRafId = 0; return; }
+      if (!this.domLayer || this.syncPaused) { this.syncRafId = 0; return; }
       this.syncLayerToCanvas();
       this.syncRafId = requestAnimationFrame(loop);
     };
     this.syncRafId = requestAnimationFrame(loop);
+  }
+
+  /**
+   * Game.pause() 时停掉 layer-sync RAF。
+   * 没有它,canvas 在编辑器/暂停态空跑会每帧读 offsetLeft/Top 触发 forced layout。
+   */
+  onPause() {
+    this.syncPaused = true;
+    if (this.syncRafId && typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(this.syncRafId);
+    }
+    this.syncRafId = 0;
+  }
+
+  /** Game.resume() 时恢复 layer-sync。仅当之前确实有 layer 时才重启。 */
+  onResume() {
+    this.syncPaused = false;
+    if (this.domLayer) {
+      this.startLayerSyncLoop();
+    }
   }
 
   /**

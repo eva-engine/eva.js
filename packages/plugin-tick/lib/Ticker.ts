@@ -33,10 +33,88 @@ export class Ticker {
   private started = false;
   private mode: 'raf' | 'wall' = 'raf';
 
+  /**
+   * Ref-count 表:Game.pause() 时让 owner 进入 paused 状态,
+   * 仅当所有 owner 都 pause 或 release 后,RAF 真正停掉。
+   *
+   * 这是为了既保留\"GLOBAL_TICKER 跨多 Game / 编辑器热重载共享\"的语义,
+   * 又能让单 Game 暂停时不再空跑 60Hz。
+   */
+  private refs: Map<object, { paused: boolean }> = new Map();
+
   /** 单帧 dt 上限,单位 ms */
   static readonly MAX_DT = 50;
   /** WallTick 间隔,单位 ms */
   static readonly WALL_INTERVAL = 16;
+
+  /**
+   * 注册一个使用方(通常是 TickerSystem 实例),与 ticker 的生命周期挂钩。
+   * 第一次 addRef 会自动 start();后续 owner pause/resume 由 ref-count 决定 RAF 走停。
+   */
+  addRef(owner: object): void {
+    if (!this.refs.has(owner)) {
+      this.refs.set(owner, { paused: false });
+    } else {
+      // owner 已存在:把它从 paused 拉回 active,等价于 resumeRef
+      const ref = this.refs.get(owner)!;
+      ref.paused = false;
+    }
+    this.reconcileLoop();
+  }
+
+  /** 把 owner 标记为 paused;若还有其他 active owner,RAF 继续跑。 */
+  pauseRef(owner: object): void {
+    const ref = this.refs.get(owner);
+    if (!ref) return;
+    ref.paused = true;
+    this.reconcileLoop();
+  }
+
+  /** 把 owner 拉回 active。若 RAF 处于停态会重新启动。 */
+  resumeRef(owner: object): void {
+    const ref = this.refs.get(owner);
+    if (!ref) return;
+    ref.paused = false;
+    this.reconcileLoop();
+  }
+
+  /** 释放 owner;若是最后一个 active owner 释放,RAF 停掉。 */
+  release(owner: object): void {
+    if (!this.refs.delete(owner)) return;
+    this.reconcileLoop();
+  }
+
+  /**
+   * 根据当前 ref 表决定 RAF 应该开还是停:
+   * - 至少一个 owner active → ensure started
+   * - 全部 paused 或没有 owner → stop
+   *
+   * 显式调用 start()/stop() 仍然可用,作为不依赖 ref-count 的兜底。
+   */
+  private reconcileLoop(): void {
+    const hasActive = this.hasActiveRef();
+    if (hasActive && !this.started) {
+      this.start();
+    } else if (!hasActive && this.started) {
+      this.stop();
+    }
+  }
+
+  private hasActiveRef(): boolean {
+    for (const ref of this.refs.values()) {
+      if (!ref.paused) return true;
+    }
+    return false;
+  }
+
+  /** 测试/调试用:返回当前 ref 总数与 active 数量。 */
+  getRefStats(): { total: number; active: number } {
+    let active = 0;
+    for (const ref of this.refs.values()) {
+      if (!ref.paused) active += 1;
+    }
+    return { total: this.refs.size, active };
+  }
 
   start() {
     if (this.started) return;

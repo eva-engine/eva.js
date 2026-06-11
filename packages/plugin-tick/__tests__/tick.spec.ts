@@ -1,4 +1,4 @@
-import { Ticker, TickerSystem, getTickerSystem } from '../lib';
+import { Ticker, TickerSystem, getTickerSystem, __resetGlobalTickerForTests } from '../lib';
 
 describe('plugin-tick — 帧调度器', () => {
   describe('Ticker.add / dispose', () => {
@@ -118,11 +118,114 @@ describe('plugin-tick — 帧调度器', () => {
   });
 
   describe('TickerSystem', () => {
+    afterEach(() => {
+      __resetGlobalTickerForTests();
+    });
+
     it('init 后能拿到全局 ticker;getTickerSystem 也返回同实例', () => {
       const sys = new TickerSystem();
       sys.init();
       expect(sys.ticker).toBeDefined();
       expect(sys.ticker).toBe(getTickerSystem());
+    });
+
+    it('init 把自己注册成 ref,ticker 处于 active 状态', () => {
+      const sys = new TickerSystem();
+      sys.init();
+      const stats = sys.ticker.getRefStats();
+      // standalone(getTickerSystem) + sys 自己,可能存在 0 或 1 个 standalone
+      expect(stats.total).toBeGreaterThanOrEqual(1);
+      expect(stats.active).toBeGreaterThanOrEqual(1);
+      expect((sys.ticker as any).started).toBe(true);
+    });
+
+    it('单 system + 无 standalone:onPause 把 RAF 停掉', () => {
+      const sys = new TickerSystem();
+      sys.init();
+      // 用例隔离:把 standalone owner 释放,确保 sys 是唯一 owner
+      const ticker: any = sys.ticker;
+      // 找出非 sys 的 owner 强制 release(主要是 STANDALONE_OWNER)
+      for (const owner of [...(ticker.refs as Map<object, any>).keys()]) {
+        if (owner !== sys) ticker.release(owner);
+      }
+      expect(ticker.started).toBe(true);
+      sys.onPause();
+      expect(ticker.started).toBe(false);
+      expect(ticker.getRefStats()).toEqual({ total: 1, active: 0 });
+    });
+
+    it('多 system pause 一个,另一个仍 active,RAF 不停', () => {
+      const a = new TickerSystem();
+      const b = new TickerSystem();
+      a.init();
+      b.init();
+      const ticker: any = a.ticker;
+      // 清理 standalone owner
+      for (const owner of [...(ticker.refs as Map<object, any>).keys()]) {
+        if (owner !== a && owner !== b) ticker.release(owner);
+      }
+      a.onPause();
+      expect(ticker.started).toBe(true);
+      expect(ticker.getRefStats()).toEqual({ total: 2, active: 1 });
+      b.onPause();
+      expect(ticker.started).toBe(false);
+    });
+
+    it('onResume 把 paused owner 拉回 active,重新 start RAF', () => {
+      const sys = new TickerSystem();
+      sys.init();
+      const ticker: any = sys.ticker;
+      for (const owner of [...(ticker.refs as Map<object, any>).keys()]) {
+        if (owner !== sys) ticker.release(owner);
+      }
+      sys.onPause();
+      expect(ticker.started).toBe(false);
+      sys.onResume();
+      expect(ticker.started).toBe(true);
+      expect(ticker.getRefStats()).toEqual({ total: 1, active: 1 });
+    });
+
+    it('onDestroy release ref;最后一个 release 后 ticker 停', () => {
+      const sys = new TickerSystem();
+      sys.init();
+      const ticker: any = sys.ticker;
+      for (const owner of [...(ticker.refs as Map<object, any>).keys()]) {
+        if (owner !== sys) ticker.release(owner);
+      }
+      sys.onDestroy();
+      expect(ticker.started).toBe(false);
+      expect(ticker.getRefStats()).toEqual({ total: 0, active: 0 });
+    });
+
+    it('getTickerSystem 单独使用时拿到 active ticker(不被某个 Game pause 影响)', () => {
+      // 模拟:editor 内嵌 standalone 消费 + 一个 Game 暂停
+      const standalone = getTickerSystem();
+      const game = new TickerSystem();
+      game.init();
+      game.onPause();
+      // standalone owner 仍 active,所以 ticker 不停
+      expect((standalone as any).started).toBe(true);
+    });
+
+    it('多次 addRef 同一 owner 幂等,不会膨胀 ref 数', () => {
+      const ticker = new Ticker();
+      const owner = {};
+      ticker.addRef(owner);
+      ticker.addRef(owner);
+      ticker.addRef(owner);
+      expect(ticker.getRefStats()).toEqual({ total: 1, active: 1 });
+      ticker.stop();
+    });
+
+    it('addRef 把已 paused 的 owner 拉回 active', () => {
+      const ticker = new Ticker();
+      const owner = {};
+      ticker.addRef(owner);
+      ticker.pauseRef(owner);
+      expect(ticker.getRefStats().active).toBe(0);
+      ticker.addRef(owner);
+      expect(ticker.getRefStats().active).toBe(1);
+      ticker.stop();
     });
   });
 });
