@@ -36,3 +36,6 @@ vite-test/dist
 examples/spine36.html
 examples/loader.html
 package-lock.json
+
+# tools
+.playwright-mcp/
