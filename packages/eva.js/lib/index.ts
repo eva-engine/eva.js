@@ -41,6 +41,14 @@ export type { ObserverInfo } from './decorators/system';
 export type { FieldMetadata, FieldOptions, ClassType } from './decorators/inspector';
 export type { ResourceBase } from './loader/Resource';
 export type { SystemConstructor } from './core/System';
+export type {
+  PerfFrame,
+  PerfBudget,
+  PerfProbeOptions,
+  PerfProbesHandle,
+  PerfViolation,
+} from './game/perf-probes';
+export { installPerfProbes } from './game/perf-probes';
 
 const version = '__VERSION__';
 console.log(`Eva.js version: ${version}`);

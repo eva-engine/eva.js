@@ -36,6 +36,15 @@ export class Pool extends Component<PoolParams> {
   private free: GameObject[] = [];
   private inUse = new Set<GameObject>();
 
+  /** 累计 acquire 次数(包括复用 + 新建) */
+  acquireCount = 0;
+  /** acquire 命中 free pool 的次数 */
+  hitCount = 0;
+  /** acquire 走 factory() 新建的次数 */
+  missCount = 0;
+  /** 实际归还到 pool 的次数(no-op release 不计) */
+  releaseCount = 0;
+
   init(params?: PoolParams) {
     if (!params) return;
     this.name = params.name;
@@ -79,8 +88,14 @@ export class Pool extends Component<PoolParams> {
       console.warn(`[plugin-pool] pool "${this.name}" has no factory`);
       return null;
     }
+    this.acquireCount += 1;
     let go = this.free.pop();
-    if (!go) go = this.factory();
+    if (go) {
+      this.hitCount += 1;
+    } else {
+      go = this.factory();
+      this.missCount += 1;
+    }
     this.inUse.add(go);
     if (this.activateFn) this.activateFn(go);
     return go;
@@ -90,6 +105,7 @@ export class Pool extends Component<PoolParams> {
   release(go: GameObject): void {
     if (!this.inUse.has(go)) return;
     this.inUse.delete(go);
+    this.releaseCount += 1;
     if (this.resetFn) this.resetFn(go);
     if (this.free.length >= this.maxSize) {
       // 超出容量直接销毁
@@ -109,10 +125,19 @@ export class Pool extends Component<PoolParams> {
   get usedCount(): number {
     return this.inUse.size;
   }
+  /** 命中率 = hitCount / acquireCount,无 acquire 时 0 */
+  get hitRate(): number {
+    return this.acquireCount === 0 ? 0 : this.hitCount / this.acquireCount;
+  }
 
   /** 全局查 */
   static get(name: string): Pool | undefined {
     return registry.get(name);
+  }
+
+  /** 列出所有命名池(供 perf-probes / 监控用) */
+  static all(): Pool[] {
+    return Array.from(registry.values());
   }
 
   onDestroy() {
