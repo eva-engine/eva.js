@@ -182,31 +182,43 @@ export default class Text extends Renderer {
       delete processed.strokeThickness;
     }
 
-    // dropShadow* -> dropShadow: { color, distance, angle, alpha, blur }
-    if (processed.dropShadow) {
-      const dropShadowConfig: Record<string, any> = {};
+    // dropShadow*(v7 平铺 alias) -> dropShadow: { color, distance, angle, alpha, blur }
+    // 关键:只有当存在任何 v7 平铺 alias 时才合并;否则保留 v8 嵌套对象(以及
+    // dropShadow: true / false 这种纯开关)原样透传。否则上一种情况会用空对象
+    // 把 DSL 已经写好的 angle/blur/distance/... 整个覆盖。
+    const hasFlatDropShadowAlias =
+      processed.dropShadowColor != null ||
+      processed.dropShadowDistance != null ||
+      processed.dropShadowAngle != null ||
+      processed.dropShadowAlpha != null ||
+      processed.dropShadowBlur != null;
+    if (processed.dropShadow && hasFlatDropShadowAlias) {
+      const base =
+        processed.dropShadow && typeof processed.dropShadow === 'object' && !Array.isArray(processed.dropShadow)
+          ? { ...(processed.dropShadow as Record<string, any>) }
+          : {};
       if (processed.dropShadowColor != null) {
-        dropShadowConfig.color = processed.dropShadowColor;
+        base.color = processed.dropShadowColor;
       }
       if (processed.dropShadowDistance != null) {
-        dropShadowConfig.distance = processed.dropShadowDistance;
+        base.distance = processed.dropShadowDistance;
       }
       if (processed.dropShadowAngle != null) {
-        dropShadowConfig.angle = processed.dropShadowAngle;
+        base.angle = processed.dropShadowAngle;
       }
       if (processed.dropShadowAlpha != null) {
-        dropShadowConfig.alpha = processed.dropShadowAlpha;
+        base.alpha = processed.dropShadowAlpha;
       }
       if (processed.dropShadowBlur != null) {
-        dropShadowConfig.blur = processed.dropShadowBlur;
+        base.blur = processed.dropShadowBlur;
       }
-      processed.dropShadow = dropShadowConfig;
-      delete processed.dropShadowColor;
-      delete processed.dropShadowDistance;
-      delete processed.dropShadowAngle;
-      delete processed.dropShadowAlpha;
-      delete processed.dropShadowBlur;
+      processed.dropShadow = base;
     }
+    delete processed.dropShadowColor;
+    delete processed.dropShadowDistance;
+    delete processed.dropShadowAngle;
+    delete processed.dropShadowAlpha;
+    delete processed.dropShadowBlur;
 
     // fill 数组 -> 取第一个值 (deprecated)
     if (Array.isArray(processed.fill)) {

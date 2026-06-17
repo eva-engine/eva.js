@@ -1,5 +1,20 @@
 import * as PIXIImport from 'pixi.js';
 
+// PixiJS v8 移除了 DisplayObject.setTransform,dragonbones runtime 还在用,
+// 给 Container 原型打回 polyfill,行为对齐 v7。
+if (PIXIImport.Container && !PIXIImport.Container.prototype.setTransform) {
+  PIXIImport.Container.prototype.setTransform = function (
+    x, y, scaleX, scaleY, rotation, skewX, skewY, pivotX, pivotY,
+  ) {
+    if (x !== undefined) this.position.set(x, y || 0);
+    if (scaleX !== undefined) this.scale.set(scaleX, scaleY === undefined ? scaleX : scaleY);
+    if (rotation !== undefined) this.rotation = rotation;
+    if (skewX !== undefined && this.skew) this.skew.set(skewX, skewY || 0);
+    if (pivotX !== undefined) this.pivot.set(pivotX, pivotY || 0);
+    return this;
+  };
+}
+
 const PIXI = {
   Texture: PIXIImport.Texture,
   Rectangle: PIXIImport.Rectangle,
@@ -16,7 +31,25 @@ const PIXI = {
     OVERLAY: 'overlay',
     SCREEN: 'screen',
   },
-  mesh: PIXIImport.mesh || {},
+  // PixiJS v8 不再导出 mesh / ticker namespace,这里给 dragonbones runtime
+  // 提供一个最小 stub:把 Mesh 用 Container 替身(无 skinned mesh 变形,但
+  // 大部分骨骼动画走 Sprite 渲染,fallback 到 Sprite 也可见效果)。
+  mesh: (PIXIImport.mesh) || {
+    Mesh: /** @class */ (function () {
+      // PixiJS v8 不再有 mesh.Mesh,这里只为让 dragonbones runtime 不爆错
+      // 提供 vertices/uvs/indices 数组占位。无真实 skinned mesh 渲染,
+      // 但 sprite-only 的 dragonbones 资源仍能正常显示。
+      function MeshStub() {
+        var s = new PIXIImport.Sprite();
+        s.vertices = [];
+        s.uvs = [];
+        s.indices = [];
+        return s;
+      }
+      MeshStub.DRAW_MODES = { TRIANGLES: 4, TRIANGLE_STRIP: 5, TRIANGLE_FAN: 6 };
+      return MeshStub;
+    })(),
+  },
   ticker: PIXIImport.ticker || {},
 };
 var dragonBones;
@@ -16095,7 +16128,9 @@ if (!Date.now) {
   var PixiArmatureDisplay = /** @class */ (function (_super) {
     __extends(PixiArmatureDisplay, _super);
     function PixiArmatureDisplay() {
-      var _this = (_super !== null && _super.apply(this, arguments)) || this;
+      // PixiJS v8 把 Sprite 改为 ES class,不能用 _super.apply(this, ...)。
+      // 改用 Reflect.construct 在 _super 上构造一个新实例,再把当前 prototype 链挂回去。
+      var _this = (_super !== null && Reflect.construct(_super, arguments, this.constructor)) || this;
       /**
        * @private
        */

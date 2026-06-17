@@ -1,5 +1,21 @@
-import type { TextStyleFontStyle, TextStyleFontWeight } from 'pixi.js';
 import { Component, Field, type } from '@eva/eva.js';
+
+// PixiJS v8 移除了这些字面量类型,本地重新定义
+type TextStyleFontStyle = 'normal' | 'italic' | 'oblique';
+type TextStyleFontWeight =
+  | 'normal'
+  | 'bold'
+  | 'bolder'
+  | 'lighter'
+  | '100'
+  | '200'
+  | '300'
+  | '400'
+  | '500'
+  | '600'
+  | '700'
+  | '800'
+  | '900';
 
 export interface BitmapTextStyleOptions {
   fontFamily?: string | string[];

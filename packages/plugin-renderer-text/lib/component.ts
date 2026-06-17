@@ -1,13 +1,26 @@
-import {
-  TextStyle,
-  TextStyleAlign,
-  TextStyleFontStyle,
-  TextStyleFontVariant,
-  TextStyleFontWeight,
-  TextStyleTextBaseline,
-  TextStyleWhiteSpace,
-} from 'pixi.js';
+import { TextStyle } from 'pixi.js';
 import { Component, Field, type } from '@eva/eva.js';
+
+// PixiJS v8 移除了这些字符串字面量类型,本地重新定义以保持组件 schema 兼容
+type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
+type TextStyleFontStyle = 'normal' | 'italic' | 'oblique';
+type TextStyleFontVariant = 'normal' | 'small-caps';
+type TextStyleFontWeight =
+  | 'normal'
+  | 'bold'
+  | 'bolder'
+  | 'lighter'
+  | '100'
+  | '200'
+  | '300'
+  | '400'
+  | '500'
+  | '600'
+  | '700'
+  | '800'
+  | '900';
+type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' | 'ideographic' | 'bottom';
+type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 export interface TextParams {
   text: string;

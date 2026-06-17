@@ -34,7 +34,8 @@ export const init = async (canvas: HTMLCanvasElement) => {
     opacity: .5
   });
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,

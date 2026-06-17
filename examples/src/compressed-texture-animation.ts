@@ -14,7 +14,8 @@ let game: Game;
 export async function init(canvas: HTMLCanvasElement) {
 
   canvas.style.height = '133vw';
-  game = new Game({
+  game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,
@@ -70,7 +71,7 @@ async function loadBackground() {
 
 
   const res = await resource.getResource('back')
-  console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+  console.log(res.name, res.src?.image?.type, res.src?.image?.url, res.data?.image);
 }
 function loadTitle(title: string, x: number, y: number) {
   let go = new GameObject('title', {
@@ -187,7 +188,7 @@ async function loadSpriteAnimation() {
 
     game.scene.addChild(cut);
     const res = await resource.getResource('fruit')
-    console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+    console.log(res.name, res.src?.image?.type, res.src?.image?.url, res.data?.image);
 
   }
   {
@@ -209,7 +210,7 @@ async function loadSpriteAnimation() {
 
     game.scene.addChild(cut);
     const res = await resource.getResource('fruit1')
-    console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+    console.log(res.name, res.src?.image?.type, res.src?.image?.url, res.data?.image);
 
   }
   // const res = await resource.getResource('fruit');
@@ -269,7 +270,7 @@ async function loadSpine() {
   game.scene.addChild(gameObject);
 
   const res = await resource.getResource('anim');
-  console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+  console.log(res.name, res.src?.image?.type, res.src?.image?.url, res.data?.image);
 }
 
 async function loadDragonbone() {
@@ -330,5 +331,5 @@ async function loadDragonbone() {
   db.play('newAnimation');
   game.scene.addChild(dragonBone);
   const res = await resource.getResource('dragonbone');
-  console.log(res.name, res.src.image.type, res.src.image.url, res.data.image);
+  console.log(res.name, res.src?.image?.type, res.src?.image?.url, res.data?.image);
 }

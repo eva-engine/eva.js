@@ -33,7 +33,8 @@ export async function init(canvas: HTMLCanvasElement) {
       preload: false,
     }
   ]);
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       //@ts-ignore
       new RendererSystem({

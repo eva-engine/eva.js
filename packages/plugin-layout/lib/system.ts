@@ -1,7 +1,7 @@
 import { System, decorators } from '@eva/eva.js';
 import Layout from './layout';
 import LayoutChild from './layoutChild';
-import { Padding } from './types';
+import type { Padding } from './types';
 
 interface LayoutNode {
   gameObject: any;

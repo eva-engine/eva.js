@@ -85,7 +85,8 @@ export async function init(canvas: HTMLCanvasElement) {
       preload: false,
     }
   ]);
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         width: window.innerWidth,

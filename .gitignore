@@ -39,3 +39,5 @@ package-lock.json
 
 # tools
 .playwright-mcp/
+
+**/production/session-logs/

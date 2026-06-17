@@ -1,3 +1,18 @@
+// 这是被 worker.ts 通过 ?worker import 的 OffscreenCanvas worker bundle,
+// 不应通过 examples 列表页直接打开。提供一个 init 占位避免列表页崩溃。
+export const name = 'worker2 (worker bundle, 用 worker.ts 入口)';
+export async function init(canvas: HTMLCanvasElement) {
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#101418';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#f0ad4e';
+    ctx.font = '20px monospace';
+    ctx.fillText('worker2.ts is a worker bundle.', 30, 60);
+    ctx.fillText('Open #./src/worker.ts to see it in action.', 30, 90);
+  }
+}
+
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Component, Game, GameObject, RESOURCE_TYPE, UpdateParams, resource } from '@eva/eva.js';
 import { Img, ImgSystem } from '@eva/plugin-renderer-img';

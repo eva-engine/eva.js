@@ -11,18 +11,33 @@
       window.global = window;
     </script>
     <style>
-      html {
+      body {
+        margin: 0;
+      }
+      html.demo-mode,
+      html.demo-mode body {
+        width: 100vw;
         height: 100vh;
         overflow: hidden;
       }
-      body {
+      html.demo-mode #canvas {
         width: 100vw;
         height: 100vh;
-        margin: 0;
       }
-      #canvas {
-        width: 100vw;
-        height: 100vh;
+      ul.examples-list {
+        list-style: none;
+        margin: 0;
+        padding: 16px 24px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      ul.examples-list a {
+        color: #1677ff;
+        text-decoration: none;
+      }
+      ul.examples-list a:hover {
+        text-decoration: underline;
       }
     </style>
   </head>

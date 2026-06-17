@@ -26,7 +26,8 @@ export async function init(canvas) {
     },
   ]);
 
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         canvas,

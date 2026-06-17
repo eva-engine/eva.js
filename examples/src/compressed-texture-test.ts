@@ -7,7 +7,8 @@ import { Text, TextSystem } from "@eva/plugin-renderer-text";
 import { EventSystem, Event } from "@eva/plugin-renderer-event";
 
 export const init = async (canvas: HTMLCanvasElement) => {
-  const game = new Game({
+  const game = new Game();
+  await game.init({
     systems: [
       new RendererSystem({
         width: 750,

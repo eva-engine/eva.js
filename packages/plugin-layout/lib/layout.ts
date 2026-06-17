@@ -1,5 +1,6 @@
 import { Component, Field, step, type } from '@eva/eva.js';
-import { Padding, normalizePadding } from './types';
+import { normalizePadding } from './types';
+import type { Padding } from './types';
 
 /**
  * Layout 组件参数

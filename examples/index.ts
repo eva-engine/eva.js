@@ -13,6 +13,7 @@ window.addEventListener('hashchange', () => {
 
 const path = location.hash.replace('#', '');
 if (modules[path]) {
+  document.documentElement.classList.add('demo-mode');
   (async () => {
     const canvas = document.createElement('canvas');
     canvas.id = 'canvas';
@@ -26,6 +27,7 @@ if (modules[path]) {
   }
 } else {
   const ul = document.createElement('ul');
+  ul.className = 'examples-list';
   Object.keys(modules).forEach(url => {
     const li = document.createElement('li');
     ul.appendChild(li);
