@@ -65,6 +65,7 @@ async function buildAll(targets) {
     const p = build(target).catch(e => {
       console.error(chalk.red(`\nFailed to build ${target}:`));
       console.error(e.message || e);
+      process.exitCode = 1;
     });
     ret.push(p);
     executing.add(p);
@@ -115,46 +116,50 @@ async function build(target) {
   if (buildTypes && pkg.types) {
     console.log();
     console.log(chalk.bold(chalk.yellow(`Rolling up type definitions for ${target}...`)));
-    // build types
-    const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
-
     const extractorConfigPath = path.resolve(pkgDir, 'api-extractor.json');
-    const extractorConfig = ExtractorConfig.loadFileAndPrepare(extractorConfigPath);
-    const extractorResult = Extractor.invoke(extractorConfig, {
-      localBuild: true,
-      showVerboseMessages: true,
-    });
+    if (await fs.exists(extractorConfigPath)) {
+      // build types
+      const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
 
-    if (extractorResult.succeeded) {
-      // @deprecated 曾经联合代码的功能，重设打包路径后此段代码无效
-      // concat additional d.ts to rolled-up dts
-      // const typesDir = path.resolve(pkgDir, 'types');
-      // if (await fs.exists(typesDir)) {
-      //   const dtsPath = path.resolve(pkgDir, pkg.types);
-      //   const existing = await fs.readFile(dtsPath, 'utf-8');
-      //   const typeFiles = await fs.readdir(typesDir);
-      //   const toAdd = await Promise.all(
-      //     typeFiles.map(file => {
-      //       return fs.readFile(path.resolve(typesDir, file), 'utf-8');
-      //     }),
-      //   );
-      //   await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
-      // }
-      const globalPath = path.resolve(pkgDir, 'global.d.ts');
-      if (await fs.exists(globalPath)) {
-        const dtsPath = path.resolve(pkgDir, pkg.types);
-        const existing = await fs.readFile(dtsPath, 'utf-8');
-        await fs.writeFile(dtsPath, '/// <reference path="./global.d.ts"/>' + '\n' + existing);
-        await fs.copyFile(globalPath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
+      const extractorConfig = ExtractorConfig.loadFileAndPrepare(extractorConfigPath);
+      const extractorResult = Extractor.invoke(extractorConfig, {
+        localBuild: true,
+        showVerboseMessages: true,
+      });
+
+      if (extractorResult.succeeded) {
+        // @deprecated 曾经联合代码的功能，重设打包路径后此段代码无效
+        // concat additional d.ts to rolled-up dts
+        // const typesDir = path.resolve(pkgDir, 'types');
+        // if (await fs.exists(typesDir)) {
+        //   const dtsPath = path.resolve(pkgDir, pkg.types);
+        //   const existing = await fs.readFile(dtsPath, 'utf-8');
+        //   const typeFiles = await fs.readdir(typesDir);
+        //   const toAdd = await Promise.all(
+        //     typeFiles.map(file => {
+        //       return fs.readFile(path.resolve(typesDir, file), 'utf-8');
+        //     }),
+        //   );
+        //   await fs.writeFile(dtsPath, existing + '\n' + toAdd.join('\n'));
+        // }
+        const globalPath = path.resolve(pkgDir, 'global.d.ts');
+        if (await fs.exists(globalPath)) {
+          const dtsPath = path.resolve(pkgDir, pkg.types);
+          const existing = await fs.readFile(dtsPath, 'utf-8');
+          await fs.writeFile(dtsPath, '/// <reference path="./global.d.ts"/>' + '\n' + existing);
+          await fs.copyFile(globalPath, path.resolve(pkgDir, pkg.types, '../global.d.ts'));
+        }
+
+        console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));
+      } else {
+        console.error(
+          `API Extractor completed with ${extractorResult.errorCount} errors` +
+            ` and ${extractorResult.warningCount} warnings`,
+        );
+        process.exitCode = 1;
       }
-
-      console.log(chalk.bold(chalk.green('API Extractor completed successfully.')));
     } else {
-      console.error(
-        `API Extractor completed with ${extractorResult.errorCount} errors` +
-          ` and ${extractorResult.warningCount} warnings`,
-      );
-      process.exitCode = 1;
+      console.log(chalk.yellow(`Skipping API Extractor for ${target}: api-extractor.json not found.`));
     }
 
     await fs.remove(`${pkgDir}/dist/packages`);

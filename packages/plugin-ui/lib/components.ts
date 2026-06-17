@@ -8,7 +8,9 @@
  */
 
 import {
-  Button as PixiButton,
+  // 注意:@pixi/ui 的 Button 不继承 Container,无法直接挂到 PIXI stage。
+  // 我们用 ButtonContainer(同样事件 API + 继承 Container)作为 Button wrapper 的 PIXI 实例。
+  ButtonContainer as PixiButton,
   FancyButton as PixiFancyButton,
   CheckBox as PixiCheckBox,
   Switcher as PixiSwitcher,
@@ -28,6 +30,7 @@ import {
   defineUiComponent,
   type ComponentDefinition,
   type FieldSpec,
+  type UiComponentClass,
 } from './component-factory';
 import type { ViewRef } from './internal/view-resolver';
 
@@ -347,26 +350,28 @@ const SLIDER_DEF: ComponentDefinition<SliderParams> = {
 };
 
 /**
- * @pixi/ui SliderBase 默认只在 thumb 是 Sprite 时调用 anchor.set(0.5)。
- * 我们的 inline-color thumb 是 Graphics,需手动设 pivot 到几何中心,
- * 让 SliderBase 的 `slider.x = slider.width / 2` + `container.y = bg.height / 2`
- * 这套定位和 thumb 几何中心对齐 — 否则视觉看起来"偏下偏右"。
+ * @pixi/ui Slider 的 update 逻辑:
+ *   slider.x = (bg.width/100 * progress) - (slider.width / 2)   // x 已居中
+ *   slider.y = bg.height / 2                                    // y 未居中(bug)
+ *
+ * 因 y 维度 @pixi/ui 假设 thumb anchor / pivot 在中心(对 Sprite 自动 anchor.set(0.5),
+ * 但 Graphics 没 anchor),Graphics 渲染时左上角对齐 bg 中线,thumb 中心落到中线下方。
+ *
+ * 修法:只设 pivot.y = h/2 让 thumb 沿 y 居中。pivot.x 保持 0(x 在 update
+ * 里已用 -width/2 居中过,再设 pivot.x 会双倍偏移)。
  */
 function centerThumbPivot(thumb: any): void {
   if (!thumb) return;
-  if ((thumb as any).anchor) return; // Sprite,@pixi/ui 自己处理
-  let w = 0;
+  if ((thumb as any).anchor) return; // Sprite — @pixi/ui 自己 anchor.set(0.5)
   let h = 0;
   try {
     const b = thumb.getBounds?.();
-    w = b?.width ?? thumb.width ?? 0;
     h = b?.height ?? thumb.height ?? 0;
   } catch (_) {
-    w = thumb.width ?? 0;
     h = thumb.height ?? 0;
   }
-  if (w > 0 && h > 0 && thumb.pivot) {
-    thumb.pivot.set(w / 2, h / 2);
+  if (h > 0 && thumb.pivot) {
+    thumb.pivot.set(0, h / 2);
   }
 }
 
@@ -699,20 +704,20 @@ const MASKED_FRAME_DEF: ComponentDefinition<MaskedFrameParams> = {
 // Generate 14 Component classes
 // ============================================================
 
-export const Button = defineUiComponent(BUTTON_DEF);
-export const FancyButton = defineUiComponent(FANCY_BUTTON_DEF);
-export const CheckBox = defineUiComponent(CHECKBOX_DEF);
-export const Switcher = defineUiComponent(SWITCHER_DEF);
-export const Slider = defineUiComponent(SLIDER_DEF);
-export const DoubleSlider = defineUiComponent(DOUBLE_SLIDER_DEF);
-export const ProgressBar = defineUiComponent(PROGRESS_BAR_DEF);
-export const CircularProgressBar = defineUiComponent(CIRCULAR_PROGRESS_BAR_DEF);
-export const Input = defineUiComponent(INPUT_DEF);
-export const List = defineUiComponent(LIST_DEF);
-export const ScrollBox = defineUiComponent(SCROLL_BOX_DEF);
-export const Select = defineUiComponent(SELECT_DEF);
-export const Dialog = defineUiComponent(DIALOG_DEF);
-export const MaskedFrame = defineUiComponent(MASKED_FRAME_DEF);
+export const Button: UiComponentClass<ButtonParams> = defineUiComponent(BUTTON_DEF);
+export const FancyButton: UiComponentClass<FancyButtonParams> = defineUiComponent(FANCY_BUTTON_DEF);
+export const CheckBox: UiComponentClass<CheckBoxParams> = defineUiComponent(CHECKBOX_DEF);
+export const Switcher: UiComponentClass<SwitcherParams> = defineUiComponent(SWITCHER_DEF);
+export const Slider: UiComponentClass<SliderParams> = defineUiComponent(SLIDER_DEF);
+export const DoubleSlider: UiComponentClass<DoubleSliderParams> = defineUiComponent(DOUBLE_SLIDER_DEF);
+export const ProgressBar: UiComponentClass<ProgressBarParams> = defineUiComponent(PROGRESS_BAR_DEF);
+export const CircularProgressBar: UiComponentClass<CircularProgressBarParams> = defineUiComponent(CIRCULAR_PROGRESS_BAR_DEF);
+export const Input: UiComponentClass<InputParams> = defineUiComponent(INPUT_DEF);
+export const List: UiComponentClass<ListParams> = defineUiComponent(LIST_DEF);
+export const ScrollBox: UiComponentClass<ScrollBoxParams> = defineUiComponent(SCROLL_BOX_DEF);
+export const Select: UiComponentClass<SelectParams> = defineUiComponent(SELECT_DEF);
+export const Dialog: UiComponentClass<DialogParams> = defineUiComponent(DIALOG_DEF);
+export const MaskedFrame: UiComponentClass<MaskedFrameParams> = defineUiComponent(MASKED_FRAME_DEF);
 
 // 暴露 metadata 表给 system.ts(generic handler 路由)
 export const COMPONENT_DEFINITIONS: Record<string, ComponentDefinition> = {

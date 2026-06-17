@@ -82,7 +82,7 @@ export async function init(canvas: HTMLCanvasElement) {
   game.scene.addChild(makeLabel('5. Switcher — 多 view 切换器(替代 Switch)', 410));
   game.scene.addChild(makeSwitcher('sw', 32, 440, true));
 
-  // 6. RadioGroup(子 CheckBox 互斥)
+  // 6. RadioGroup
   game.scene.addChild(makeLabel('6. RadioGroup(简单 / 普通 / 困难)', 490));
   game.scene.addChild(makeRadioGroup('diff', 32, 520));
 
@@ -96,18 +96,14 @@ export async function init(canvas: HTMLCanvasElement) {
   game.scene.addChild(makeSlider('vol', 32, 720, 320, 70));
   game.scene.addChild(makeDoubleSlider('range', 380, 720, 320, 25, 75));
 
-  // 9. Input(替代 InputField)
-  game.scene.addChild(makeLabel('9. Input — PIXI-pure 文本输入(替代 InputField)', 780));
-  game.scene.addChild(makeInput('name-input', 32, 810, 320, 48));
-
-  // 10. List + ScrollBox
-  game.scene.addChild(makeLabel('10. List + ScrollBox — 自动布局 + 滚动容器', 880));
-  game.scene.addChild(makeList('list-demo', 32, 910, 320, 200));
-  game.scene.addChild(makeScrollBox('scroll-demo', 380, 910, 320, 200));
-
-  // 11. Select
-  game.scene.addChild(makeLabel('11. Select — 下拉选择', 1130));
-  game.scene.addChild(makeSelect('difficulty', 32, 1160, 200, 36));
+  // === DEBUG: 注释 9~11 测哪个触发 RenderGroup 错 ===
+  // game.scene.addChild(makeLabel('9. Input', 780));
+  // game.scene.addChild(makeInput('name-input', 32, 810, 320, 48));
+  // game.scene.addChild(makeLabel('10. List + ScrollBox', 880));
+  // game.scene.addChild(makeList('list-demo', 32, 910, 320, 200));
+  // game.scene.addChild(makeScrollBox('scroll-demo', 380, 910, 320, 200));
+  // game.scene.addChild(makeLabel('11. Select', 1130));
+  // game.scene.addChild(makeSelect('difficulty', 32, 1160, 200, 36));
 
   // 12. MaskedFrame(暂时跳过 — @pixi/ui MaskedFrame 在 PIXI v8.18+ 与 RenderGroup 嵌套有兼容问题)
   game.scene.addChild(makeLabel('12. MaskedFrame — 任意形状遮罩裁剪(详见独立 demo)', 1220));

@@ -76,11 +76,13 @@ export type { RadioGroupParams } from './radio-group';
 export {
   defineUiComponent,
   PixiUiComponent,
-  type ComponentDefinition,
-  type FieldKind,
-  type FieldSpec,
-  type ViewSchema,
-  type ResolvedViews,
+} from './component-factory';
+export type {
+  ComponentDefinition,
+  FieldKind,
+  FieldSpec,
+  ViewSchema,
+  ResolvedViews,
 } from './component-factory';
 
 // === ViewRef DSL schema ===

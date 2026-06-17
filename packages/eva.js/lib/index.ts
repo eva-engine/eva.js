@@ -16,10 +16,23 @@ import {
   step,
   type,
 } from './decorators/inspector';
+import type { ClassType } from './decorators/inspector';
 import { resource, LOAD_EVENT, RESOURCE_TYPE } from './loader/Resource';
 
+interface DecoratorsUtil {
+  IDEProp: typeof IDEProp;
+  componentObserver: typeof componentObserver;
+  ExecuteInEditMode: typeof ExecuteInEditMode;
+  Field: typeof Field;
+  getPropertiesOf: typeof getPropertiesOf;
+  inspectorField: typeof inspectorField;
+  shouldExecuteInEditMode: (target: ClassType<any>) => boolean;
+  step: typeof step;
+  type: typeof type;
+}
+
 /** Decorators util */
-const decorators = {
+const decorators: DecoratorsUtil = {
   IDEProp,
   componentObserver,
   ExecuteInEditMode,

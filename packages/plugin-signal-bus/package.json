@@ -1,6 +1,7 @@
 {
   "name": "@eva/plugin-signal-bus",
   "version": "2.1.0-beta.0",
+  "bundle": "EVA.plugin.signalBus",
   "description": "Named-signal bus for Eva.js — replaces ad-hoc EventBus.ts in every game with a single typed signals registry.",
   "main": "lib/index.ts",
   "module": "lib/index.ts",

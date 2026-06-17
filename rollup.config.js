@@ -24,6 +24,16 @@ const packageOptions = pkg.buildOptions || {};
 const packages = fs
   .readdirSync(path.resolve(__dirname, 'packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
+const evaPackageGlobals = packages.reduce((globals, packageName) => {
+  const packageJsonPath = path.resolve(packagesDir, packageName, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) return globals;
+
+  const packageJson = require(packageJsonPath);
+  if (packageJson.name && packageJson.bundle) {
+    globals[packageJson.name] = packageJson.bundle;
+  }
+  return globals;
+}, {});
 
 const IIFE_PREFIX = '_EVA_IIFE_';
 const split = str => {
@@ -48,9 +58,10 @@ const getInsert = str => {
   return [banners.join(`;\n`), footers.join(`;\n`)];
 };
 
-const sliteName = split(pkg.bundle);
-const iifeName = IIFE_PREFIX + sliteName[sliteName.length - 1];
-const insert = getInsert(pkg.bundle);
+const hasIifeBundle = typeof pkg.bundle === 'string' && pkg.bundle.length > 0;
+const sliteName = hasIifeBundle ? split(pkg.bundle) : [];
+const iifeName = hasIifeBundle ? IIFE_PREFIX + sliteName[sliteName.length - 1] : '';
+const insert = hasIifeBundle ? getInsert(pkg.bundle) : ['', ''];
 
 const outputConfigs = {
   esm: {
@@ -61,13 +72,15 @@ const outputConfigs = {
     file: resolve(`dist/${name}.cjs.js`),
     format: 'cjs',
   },
-  iife: {
-    name: iifeName,
-    file: resolve(`dist/${pkg.bundle}.js`),
-    format: 'iife',
-    banner: insert[0],
-    footer: insert[1],
-  },
+  iife: hasIifeBundle
+    ? {
+        name: iifeName,
+        file: resolve(`dist/${pkg.bundle}.js`),
+        format: 'iife',
+        banner: insert[0],
+        footer: insert[1],
+      }
+    : null,
 };
 
 // ts检查优化
@@ -180,9 +193,7 @@ function createConfig(format, output, plugins1 = [], plugins2 = []) {
       ...output,
       globals: {
         'pixi.js': 'PIXI',
-        '@eva/eva.js': 'EVA',
-        '@eva/plugin-renderer': 'EVA.plugin.renderer',
-        '@eva/renderer-adapter': 'EVA.rendererAdapter',
+        ...evaPackageGlobals,
       },
     },
     external,
