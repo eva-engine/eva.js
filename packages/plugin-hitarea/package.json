@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-hitarea",
-  "version": "2.1.0-beta.0",
+  "version": "2.1.0-beta.1",
   "description": "Godot Area2D 等价物 — 无物理碰撞域。circle/rect/polygon shape + layer/mask + signalEnter/Exit。",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.0",
-    "@eva/plugin-signal-bus": "2.1.0-beta.0"
+    "@eva/eva.js": "2.1.0-beta.1",
+    "@eva/plugin-signal-bus": "2.1.0-beta.1"
   }
 }

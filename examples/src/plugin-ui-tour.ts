@@ -96,21 +96,26 @@ export async function init(canvas: HTMLCanvasElement) {
   game.scene.addChild(makeSlider('vol', 32, 720, 320, 70));
   game.scene.addChild(makeDoubleSlider('range', 380, 720, 320, 25, 75));
 
-  // === DEBUG: 注释 9~11 测哪个触发 RenderGroup 错 ===
-  // game.scene.addChild(makeLabel('9. Input', 780));
-  // game.scene.addChild(makeInput('name-input', 32, 810, 320, 48));
-  // game.scene.addChild(makeLabel('10. List + ScrollBox', 880));
-  // game.scene.addChild(makeList('list-demo', 32, 910, 320, 200));
-  // game.scene.addChild(makeScrollBox('scroll-demo', 380, 910, 320, 200));
-  // game.scene.addChild(makeLabel('11. Select', 1130));
-  // game.scene.addChild(makeSelect('difficulty', 32, 1160, 200, 36));
+  // 9. Input(替代 InputField)
+  game.scene.addChild(makeLabel('9. Input — PIXI-pure 文本输入(替代 InputField)', 780));
+  game.scene.addChild(makeInput('name-input', 32, 810, 320, 48));
 
-  // 12. MaskedFrame(暂时跳过 — @pixi/ui MaskedFrame 在 PIXI v8.18+ 与 RenderGroup 嵌套有兼容问题)
-  game.scene.addChild(makeLabel('12. MaskedFrame — 任意形状遮罩裁剪(详见独立 demo)', 1220));
+  // 10. List + ScrollBox
+  game.scene.addChild(makeLabel('10. List + ScrollBox — 自动布局 + 滚动容器', 880));
+  game.scene.addChild(makeList('list-demo', 32, 910, 320, 200));
+  game.scene.addChild(makeScrollBox('scroll-demo', 380, 910, 320, 200));
 
-  // 13. Dialog(默认关闭;Dialog 内部 RenderGroup 在 PIXI v8.18 直接 stage 上有兼容问题,
-  //   生产用法应放在独立 scene 顶层 / 配合 backdrop)
-  game.scene.addChild(makeLabel('13. Dialog — 模态弹窗(详见 hud demo 的 Ultimate Ready 场景)', 1350));
+  // 11. Select
+  game.scene.addChild(makeLabel('11. Select — 下拉选择', 1130));
+  game.scene.addChild(makeSelect('difficulty', 32, 1160, 200, 36));
+
+  // 12. MaskedFrame
+  game.scene.addChild(makeLabel('12. MaskedFrame — 任意形状遮罩裁剪', 1220));
+  game.scene.addChild(makeMaskedFrame('masked', 32, 1250, 80, 80));
+
+  // 13. Dialog(默认 open=false;改 open:true 触发显示)
+  game.scene.addChild(makeLabel('13. Dialog — 模态弹窗(默认 open=false)', 1350));
+  game.scene.addChild(makeDialog('dialog', 32, 1380, 320, 160));
 
   console.log('plugin-ui-tour 就绪 — 16 个 @pixi/ui wrapper 全部加载,UISystem 驱动');
 }

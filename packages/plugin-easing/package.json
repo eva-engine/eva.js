@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-easing",
-  "version": "2.1.0-beta.0",
+  "version": "2.1.0-beta.1",
   "description": "Easing 函数库 — 16 个常用 ease 曲线,可被 tween/animation-track/path-follow 共享。",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
