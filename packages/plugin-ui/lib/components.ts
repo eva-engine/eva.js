@@ -348,27 +348,27 @@ const SLIDER_DEF: ComponentDefinition<SliderParams> = {
 
 /**
  * @pixi/ui SliderBase 默认只在 thumb 是 Sprite 时调用 anchor.set(0.5);
- * Graphics 没 anchor 字段,thumb 视觉重心是左上角(0,0),叠加 SliderBase
- * `container.y = bg.height/2` 后看起来"偏下偏右"。这里手动设 pivot 把
- * Graphics 的视觉中心移到几何中心,让 SliderBase 的 container 定位真正居中。
+ * Graphics 没 anchor 字段,thumb 视觉重心是左上角(0,0)。
+ *
+ * SliderBase 内部已有横向居中处理(`slider.x = slider.width / 2`),
+ * 所以**只需要把 pivot 沿垂直方向移到中心**(y = h/2),让 thumb 视觉中心
+ * 对齐 SliderBase 的 `container.y = bg.height/2` 放置点。
+ *
+ * pivot.x 保持 0:SliderBase 已经把 slider.x 加了 width/2,我们再加 pivot.x
+ * 会双倍偏移。
  */
 function centerThumbPivot(thumb: any): void {
   if (!thumb) return;
-  // 已经是 Sprite,SliderBase 会自己设 anchor — 跳过
-  if ((thumb as any).anchor) return;
-  // 用 getBounds 比 .width/.height 更准(Graphics 路径绘制完成后)
-  let w = 0;
+  if ((thumb as any).anchor) return; // Sprite,@pixi/ui 自己处理
   let h = 0;
   try {
     const b = thumb.getBounds?.();
-    w = b?.width ?? thumb.width ?? 0;
     h = b?.height ?? thumb.height ?? 0;
   } catch (_) {
-    w = thumb.width ?? 0;
     h = thumb.height ?? 0;
   }
-  if (w > 0 && h > 0 && thumb.pivot) {
-    thumb.pivot.set(w / 2, h / 2);
+  if (h > 0 && thumb.pivot) {
+    thumb.pivot.set(0, h / 2);
   }
 }
 
