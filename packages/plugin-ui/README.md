@@ -1,14 +1,14 @@
 # @eva/plugin-ui
 
-Vector UI shape plugin for Eva.js. Provides a `UI` Component that draws
+Vector shape plugin for Eva.js. Provides a `Shape` Component that draws
 rect / circle / ellipse / roundedRect with solid color or `linear-gradient`
 fill + stroke, backed by `@eva/plugin-renderer-graphics`.
 
 ```ts
-import { UI, UISystem, UIShapeType } from '@eva/plugin-ui';
+import { Shape, UISystem, ShapeType } from '@eva/plugin-ui';
 
-new UI({
-  type: UIShapeType.ROUNDED_RECT,
+new Shape({
+  type: ShapeType.ROUNDED_RECT,
   style: {
     width: 200,
     height: 80,
