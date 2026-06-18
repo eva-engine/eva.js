@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-filter",
-  "version": "2.1.0-beta.1",
+  "version": "2.1.0-beta.2",
   "description": "@eva/plugin-renderer-filter — wraps PixiJS built-in 2D filters (Blur/ColorMatrix/Displacement/Noise/Alpha) as Eva.js components.",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
@@ -13,9 +13,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.1",
+    "@eva/eva.js": "2.1.0-beta.2",
     "@eva/inspector-decorator": "^2.0.0-beta.0",
-    "@eva/plugin-renderer": "2.1.0-beta.1",
+    "@eva/plugin-renderer": "2.1.0-beta.2",
     "pixi.js": "^8.17.0"
   }
 }

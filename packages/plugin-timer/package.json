@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-timer",
-  "version": "2.1.0-beta.1",
+  "version": "2.1.0-beta.2",
   "description": "Godot Timer 等价物 — DSL 可声明 wait/oneShot/autostart/signal,基于 plugin-tick 的 dt 累加,emit timer:timeout / timer:tick。",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
@@ -16,8 +16,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.1",
-    "@eva/plugin-tick": "2.1.0-beta.1",
-    "@eva/plugin-signal-bus": "2.1.0-beta.1"
+    "@eva/eva.js": "2.1.0-beta.2",
+    "@eva/plugin-tick": "2.1.0-beta.2",
+    "@eva/plugin-signal-bus": "2.1.0-beta.2"
   }
 }

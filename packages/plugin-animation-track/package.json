@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-animation-track",
-  "version": "2.1.0-beta.1",
+  "version": "2.1.0-beta.2",
   "description": "Animation track — 关键帧时间轴,支持多 track 并行,每条 track 绑定一个字段路径,DSL 描述 keyframes + easing。",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
@@ -16,8 +16,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.1",
-    "@eva/plugin-easing": "2.1.0-beta.1",
-    "@eva/plugin-signal-bus": "2.1.0-beta.1"
+    "@eva/eva.js": "2.1.0-beta.2",
+    "@eva/plugin-easing": "2.1.0-beta.2",
+    "@eva/plugin-signal-bus": "2.1.0-beta.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-behavior-script",
-  "version": "2.1.0-beta.1",
+  "version": "2.1.0-beta.2",
   "bundle": "EVA.plugin.behaviorScript",
   "description": "First-class behavior script host for Eva.js: lifecycle, input, signals, diagnostics, and hot reload.",
   "main": "lib/index.ts",
@@ -20,7 +20,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.1",
-    "@eva/plugin-signal-bus": "2.1.0-beta.1"
+    "@eva/eva.js": "2.1.0-beta.2",
+    "@eva/plugin-signal-bus": "2.1.0-beta.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-camera2d",
-  "version": "2.1.0-beta.1",
+  "version": "2.1.0-beta.2",
   "description": "Camera2D — DSL 配置 follow target、deadzone、limits、shake,运行时按 transform 移动整个世界根。",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.1",
-    "@eva/plugin-signal-bus": "2.1.0-beta.1"
+    "@eva/eva.js": "2.1.0-beta.2",
+    "@eva/plugin-signal-bus": "2.1.0-beta.2"
   }
 }

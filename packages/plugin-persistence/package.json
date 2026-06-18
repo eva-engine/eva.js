@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-persistence",
-  "version": "2.1.0-beta.1",
+  "version": "2.1.0-beta.2",
   "description": "Persistence — DSL 声明 store keys 自动 localStorage 持久化,组件提供手动 save / load / clear API。",
   "main": "lib/index.ts",
   "module": "lib/index.ts",
@@ -16,7 +16,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.1",
-    "@eva/plugin-signal-bus": "2.1.0-beta.1"
+    "@eva/eva.js": "2.1.0-beta.2",
+    "@eva/plugin-signal-bus": "2.1.0-beta.2"
   }
 }
