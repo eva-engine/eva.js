@@ -1,12 +1,17 @@
-import { Game, GameObject } from '@eva/eva.js';
+import {
+  Game,
+  GameObject } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { GraphicsSystem } from '@eva/plugin-renderer-graphics';
-import { TextSystem, Text } from '@eva/plugin-renderer-text';
-import { EventSystem, Event, HIT_AREA_TYPE } from '@eva/plugin-renderer-event';
+import { TextSystem,
+  Text } from '@eva/plugin-renderer-text';
+import { EventSystem,
+  Event,
+  HIT_AREA_TYPE } from '@eva/plugin-renderer-event';
 import { RenderSystem } from '@eva/plugin-renderer-render';
 import {
-  UI,
-  UIShapeType,
+  Shape,
+  ShapeType,
   UISystem,
   FancyButton,
   ProgressBar,
@@ -46,7 +51,7 @@ export async function init(canvas: HTMLCanvasElement) {
 
   // 场景背景
   const bg = new GameObject('bg', { position: { x: 0, y: 0 }, size: { width: CW, height: CH } });
-  bg.addComponent(new UI({ shapes: [{ type: UIShapeType.RECT, style: { x: 0, y: 0, width: CW, height: CH, fill: '#0b1220' } as any }] }));
+  bg.addComponent(new Shape({ shapes: [{ type: ShapeType.RECT, style: { x: 0, y: 0, width: CW, height: CH, fill: '#0b1220' } as any }] }));
   game.scene.addChild(bg);
 
   const banner = new GameObject('banner', { position: { x: 32, y: 24 }, size: { width: 686, height: 40 } });
@@ -64,7 +69,7 @@ function makeHpPanel(x: number, y: number): GameObject {
   const w = 280;
   const h = 120;
   const root = new GameObject('panel-hp', { position: { x, y }, size: { width: w, height: h } });
-  root.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 12, fill: '#111827', stroke: '#374151', lineWidth: 1, alpha: 0.85 } as any }] }));
+  root.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 12, fill: '#111827', stroke: '#374151', lineWidth: 1, alpha: 0.85 } as any }] }));
 
   const hpLabel = new GameObject('hp-label', { position: { x: 12, y: 8 }, size: { width: w - 24, height: 18 } });
   hpLabel.addComponent(new Text({ text: 'HP 60 / 100', style: { fontSize: 13, fill: '#e5e7eb' } as any }));
@@ -106,7 +111,7 @@ function makeSkillPanel(x: number, y: number): GameObject {
   const w = 286;
   const h = 120;
   const root = new GameObject('panel-skill', { position: { x, y }, size: { width: w, height: h } });
-  root.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 14, fill: '#111827', stroke: '#fbbf24', lineWidth: 2 } as any }] }));
+  root.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 14, fill: '#111827', stroke: '#fbbf24', lineWidth: 2 } as any }] }));
 
   const label = new GameObject('skill-label', { position: { x: 12, y: 8 }, size: { width: w - 24, height: 18 } });
   label.addComponent(new Text({ text: 'SKILL CHARGE', style: { fontSize: 12, fill: '#94a3b8' } as any }));
@@ -142,7 +147,7 @@ function makeCombatLog(x: number, y: number): GameObject {
   const w = 360;
   const h = 280;
   const root = new GameObject('panel-log', { position: { x, y }, size: { width: w, height: h } });
-  root.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 10, fill: '#0f172a', stroke: '#334155', lineWidth: 1, alpha: 0.85 } as any }] }));
+  root.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 10, fill: '#0f172a', stroke: '#334155', lineWidth: 1, alpha: 0.85 } as any }] }));
 
   const title = new GameObject('log-title', { position: { x: 12, y: 8 }, size: { width: w - 24, height: 24 } });
   title.addComponent(new Text({ text: 'COMBAT LOG', style: { fontSize: 12, fill: '#94a3b8' } as any }));
@@ -150,7 +155,7 @@ function makeCombatLog(x: number, y: number): GameObject {
 
   const scroll = new GameObject('log-scroll', { position: { x: 8, y: 36 }, size: { width: w - 16, height: h - 44 } });
   scroll.addComponent(new ScrollBox({
-    width: w - 16, height: h - 44, direction: 'vertical',
+    direction: 'vertical',
     background: '#0b1220', radius: 6,
     elementsMargin: 4, padding: 8,
   } as any));
@@ -169,7 +174,7 @@ function makeCombatLog(x: number, y: number): GameObject {
   ];
   lines.forEach((line, i) => {
     const row = new GameObject(`log-${i}`, { position: { x: 0, y: i * 28 }, size: { width: w - 32, height: 24 } });
-    row.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w - 32, height: 24, radius: 4, fill: '#1e293b' } as any }] }));
+    row.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w - 32, height: 24, radius: 4, fill: '#1e293b' } as any }] }));
     const t = new GameObject('text', { position: { x: 8, y: 4 }, size: { width: w - 48, height: 18 } });
     t.addComponent(new Text({ text: line.text, style: { fontSize: 12, fill: line.color } as any }));
     row.addChild(t);
@@ -184,7 +189,7 @@ function makeSettingsPanel(x: number, y: number): GameObject {
   const w = 306;
   const h = 280;
   const root = new GameObject('panel-settings', { position: { x, y }, size: { width: w, height: h } });
-  root.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 12, fill: '#111827', stroke: '#475569', lineWidth: 1 } as any }] }));
+  root.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius: 12, fill: '#111827', stroke: '#475569', lineWidth: 1 } as any }] }));
 
   const title = new GameObject('settings-title', { position: { x: 12, y: 12 }, size: { width: w - 24, height: 24 } });
   title.addComponent(new Text({ text: 'SETTINGS', style: { fontSize: 14, fill: '#94a3b8' } as any }));

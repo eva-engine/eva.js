@@ -12,16 +12,20 @@ interface InspectorFieldMetadata {
   label?: unknown;
 }
 
-/** UI 形状类型枚举 */
-export enum UIShapeType {
+/** Shape primitive type enum */
+export enum ShapeType {
   RECT = 'rect',
   CIRCLE = 'circle',
   ELLIPSE = 'ellipse',
   ROUNDED_RECT = 'roundedRect',
 }
 
-/** UI 基础样式 */
-export interface UIStyle {
+/** Backward-compatible enum value alias for existing TypeScript consumers. */
+export const UIShapeType = ShapeType;
+export type UIShapeType = ShapeType;
+
+/** Shape base style */
+export interface ShapeStyle {
   /** 填充颜色,支持 #RRGGBB / rgb()/rgba() / linear-gradient(...) */
   fill?: string;
   /** 描边颜色 */
@@ -32,8 +36,10 @@ export interface UIStyle {
   alpha?: number;
 }
 
+export type UIStyle = ShapeStyle;
+
 /** 矩形样式 */
-export interface RectStyle extends UIStyle {
+export interface RectStyle extends ShapeStyle {
   x?: number;
   y?: number;
   width: number;
@@ -41,14 +47,14 @@ export interface RectStyle extends UIStyle {
 }
 
 /** 圆形样式 */
-export interface CircleStyle extends UIStyle {
+export interface CircleStyle extends ShapeStyle {
   x?: number;
   y?: number;
   radius: number;
 }
 
 /** 椭圆样式 */
-export interface EllipseStyle extends UIStyle {
+export interface EllipseStyle extends ShapeStyle {
   x?: number;
   y?: number;
   width: number;
@@ -56,7 +62,7 @@ export interface EllipseStyle extends UIStyle {
 }
 
 /** 圆角矩形样式 */
-export interface RoundedRectStyle extends UIStyle {
+export interface RoundedRectStyle extends ShapeStyle {
   x?: number;
   y?: number;
   width: number;
@@ -65,22 +71,25 @@ export interface RoundedRectStyle extends UIStyle {
 }
 
 /** 单个 shape 描述 */
-export interface UIShape {
-  type: UIShapeType;
+export interface ShapeDefinition {
+  type: ShapeType;
   style: RectStyle | CircleStyle | EllipseStyle | RoundedRectStyle;
 }
 
-/** UI 组件参数接口 */
-export interface UIParams {
+export type UIShape = ShapeDefinition;
+
+/** Shape component params */
+export interface ShapeParams {
   componentName?: string;
-  shapes?: UIShape[];
+  shapes?: ShapeDefinition[];
   /** 单形状简化用法:type + style */
-  type?: UIShapeType;
+  type?: ShapeType;
   style?: RectStyle | CircleStyle | EllipseStyle | RoundedRectStyle;
 }
 
-/** 兼容别名:历史代码中沿用的 UIComponentParams */
-export type UIComponentParams = UIParams;
+/** Backward-compatible aliases kept for existing TS imports. */
+export type UIParams = ShapeParams;
+export type UIComponentParams = ShapeParams;
 
 /** 渐变色标 */
 interface GradientColorStop {
@@ -89,20 +98,20 @@ interface GradientColorStop {
 }
 
 /**
- * UI 组件
+ * Shape 组件
  *
  * 基于 `@eva/plugin-renderer-graphics` 实现 rect/circle/ellipse/roundedRect 的
  * 矢量绘制,支持纯色 / linear-gradient 填充与描边。`shapes` 数组允许在同一个
  * GameObject 上层叠多个形状。
  */
-export default class UI extends Component<UIParams> {
+export default class Shape extends Component<ShapeParams> {
   /** 组件名称 */
-  static override componentName = 'UI';
+  static override componentName = 'Shape';
 
   /** 实例侧 componentName,DSL 序列化时使用 */
-  componentName?: string = 'UI';
+  componentName?: string = 'Shape';
 
-  private shapes: UIShape[] = [];
+  private shapes: ShapeDefinition[] = [];
 
   /** 编辑器 Inspector 元数据,主仓 ComponentInspector 通过静态方法读取 */
   static getInspectorMetadata(): InspectorFieldMetadata {
@@ -119,7 +128,7 @@ export default class UI extends Component<UIParams> {
     ];
 
     return {
-      name: UI.componentName,
+      name: Shape.componentName,
       type: 'object',
       isArray: false,
       isFolder: true,
@@ -140,7 +149,7 @@ export default class UI extends Component<UIParams> {
     };
   }
 
-  override init(params?: UIParams) {
+  override init(params?: ShapeParams) {
     if (!params) return;
 
     this.componentName = params.componentName ?? this.componentName;
@@ -264,17 +273,17 @@ export default class UI extends Component<UIParams> {
   }
 
   /** 计算形状包围盒,供渐变坐标使用 */
-  private getShapeBounds(type: UIShapeType, style: any): { width: number; height: number; x: number; y: number } {
+  private getShapeBounds(type: ShapeType, style: any): { width: number; height: number; x: number; y: number } {
     const x = style.x || 0;
     const y = style.y || 0;
 
     switch (type) {
-      case UIShapeType.RECT:
-      case UIShapeType.ROUNDED_RECT:
+      case ShapeType.RECT:
+      case ShapeType.ROUNDED_RECT:
         return { width: style.width, height: style.height, x, y };
-      case UIShapeType.CIRCLE:
+      case ShapeType.CIRCLE:
         return { width: style.radius * 2, height: style.radius * 2, x, y };
-      case UIShapeType.ELLIPSE:
+      case ShapeType.ELLIPSE:
         return { width: style.width, height: style.height, x, y };
       default:
         return { width: 100, height: 100, x, y };
@@ -303,35 +312,29 @@ export default class UI extends Component<UIParams> {
   }
 
   /** 绘制单个形状 */
-  private drawShape(graphics: any, type: UIShapeType, style: any): void {
+  private drawShape(graphics: any, type: ShapeType, style: any): void {
     if (style.alpha !== undefined) {
       graphics.alpha = style.alpha;
     }
 
-    if (style.stroke && style.lineWidth !== undefined) {
-      graphics.setStrokeStyle({ color: style.stroke, width: style.lineWidth });
-    } else if (style.stroke) {
-      graphics.setStrokeStyle({ color: style.stroke, width: 1 });
-    }
-
     switch (type) {
-      case UIShapeType.RECT:
+      case ShapeType.RECT:
         this.drawRect(graphics, style as RectStyle);
         break;
-      case UIShapeType.CIRCLE:
+      case ShapeType.CIRCLE:
         this.drawCircle(graphics, style as CircleStyle);
         break;
-      case UIShapeType.ELLIPSE:
+      case ShapeType.ELLIPSE:
         this.drawEllipse(graphics, style as EllipseStyle);
         break;
-      case UIShapeType.ROUNDED_RECT:
+      case ShapeType.ROUNDED_RECT:
         this.drawRoundedRect(graphics, style as RoundedRectStyle);
         break;
       default:
         console.warn(`Unknown shape type: ${type}`);
     }
 
-    if (style.fill) {
+    if (style.fill !== undefined) {
       if (typeof style.fill === 'string' && style.fill.includes('linear-gradient')) {
         const gradientInfo = this.parseLinearGradient(style.fill);
         if (gradientInfo) {
@@ -352,6 +355,13 @@ export default class UI extends Component<UIParams> {
       } else {
         graphics.fill(style.fill);
       }
+    }
+
+    if (style.stroke !== undefined) {
+      graphics.stroke({
+        color: style.stroke,
+        width: style.lineWidth ?? 1,
+      });
     }
   }
 
@@ -381,7 +391,7 @@ export default class UI extends Component<UIParams> {
   }
 
   /** 追加一个形状 */
-  public addShape(type: UIShapeType, style: RectStyle | CircleStyle | EllipseStyle | RoundedRectStyle): void {
+  public addShape(type: ShapeType, style: RectStyle | CircleStyle | EllipseStyle | RoundedRectStyle): void {
     this.shapes.push({ type, style });
     this.redraw();
   }
@@ -395,7 +405,7 @@ export default class UI extends Component<UIParams> {
   /** 更新指定索引的形状 */
   public updateShape(
     index: number,
-    type: UIShapeType,
+    type: ShapeType,
     style: RectStyle | CircleStyle | EllipseStyle | RoundedRectStyle,
   ): void {
     if (index >= 0 && index < this.shapes.length) {
@@ -418,7 +428,7 @@ export default class UI extends Component<UIParams> {
   }
 
   /** 获取指定索引的形状(只读视图) */
-  public getShape(index: number): UIShape | null {
+  public getShape(index: number): ShapeDefinition | null {
     if (index >= 0 && index < this.shapes.length) {
       return this.shapes[index];
     }
@@ -450,3 +460,5 @@ export default class UI extends Component<UIParams> {
     this.redraw();
   }
 }
+
+export { Shape as UI };

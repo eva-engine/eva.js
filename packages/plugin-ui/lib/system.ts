@@ -1,7 +1,7 @@
 /**
  * UISystem - generic handler driven by COMPONENT_DEFINITIONS metadata.
  *
- * 16 个 ECS 组件(UI 自渲染 + 14 个 @pixi/ui factory wrapper + RadioGroup 独立)由本 system 统一驱动。
+ * 16 个 ECS 组件(Shape 自渲染 + 14 个 @pixi/ui factory wrapper + RadioGroup 独立)由本 system 统一驱动。
  * 不再为每个组件写独立 handler 方法 - 14 个 @pixi/ui 组件走 handleGeneric,RadioGroup 单独处理。
  */
 
@@ -9,7 +9,7 @@ import { System, decorators, OBSERVER_TYPE, type ComponentChanged } from '@eva/e
 import { CheckBox as PixiCheckBox, RadioGroup as PixiRadioGroup } from '@pixi/ui';
 import { Container as PixiContainer } from 'pixi.js';
 
-import UI from './component';
+import Shape from './component';
 import RadioGroup from './radio-group';
 import { COMPONENT_DEFINITIONS } from './components';
 import {
@@ -24,11 +24,21 @@ import {
   getEvaContainer,
 } from './internal/attach-helper';
 import { bridgeSignals } from './internal/signal-bridge';
+import {
+  applyRuntimeSize,
+  applyTransformSizeToInstance,
+  hasExplicitRenderSize,
+  readTransformRenderSize,
+  relayoutRuntimeInstance,
+} from './internal/size-sync';
 
 // observer schema:把 COMPONENT_DEFINITIONS.fields 转成 componentObserver decorator 参数
 function buildObserverSchema(): Record<string, Array<{ prop: string[]; deep: boolean }>> {
   const out: Record<string, Array<{ prop: string[]; deep: boolean }>> = {
+    Transform: [{ prop: ['size'], deep: true }],
+    Shape: [{ prop: ['shapes'], deep: true }],
     UI: [{ prop: ['shapes'], deep: true }],
+    UIComponent: [{ prop: ['shapes'], deep: true }],
     RadioGroup: [
       { prop: ['selectedId'], deep: false },
       { prop: ['direction'], deep: false },
@@ -46,6 +56,10 @@ function buildObserverSchema(): Record<string, Array<{ prop: string[]; deep: boo
   return out;
 }
 
+function isShapeComponentName(name: string): boolean {
+  return name === 'Shape' || name === 'UI' || name === 'UIComponent';
+}
+
 @decorators.componentObserver(buildObserverSchema())
 export default class UISystem extends System {
   static systemName = 'UISystem';
@@ -54,6 +68,7 @@ export default class UISystem extends System {
   /** componentName -> instance map(generic 共享一份) */
   private instances: Map<string, Map<number, any>> = new Map();
   private signalCleanups = new Map<number, Array<() => void>>();
+  private transformSizeAuthorities = new Set<number>();
   /** 给 RadioGroup 反查 PixiCheckBox 实例用 */
   private get checkBoxInstances(): Map<number, PixiCheckBox> {
     let m = this.instances.get('CheckBox');
@@ -74,19 +89,20 @@ export default class UISystem extends System {
 
   componentChanged(changed: ComponentChanged): void {
     const name = changed.componentName;
-    if (name === 'UI') return this.handleUI(changed);
+    if (name === 'Transform') return this.handleTransformSizeChanged(changed);
+    if (isShapeComponentName(name)) return this.handleShape(changed);
     if (name === 'RadioGroup') return this.handleRadioGroup(changed);
     const def = COMPONENT_DEFINITIONS[name];
     if (def) return this.handleGeneric(def, changed);
   }
 
   // ============================================================
-  // UI(自渲染,无 @pixi/ui 实例)
+  // Shape(自渲染,无 @pixi/ui 实例)
   // ============================================================
-  private handleUI(changed: ComponentChanged): void {
+  private handleShape(changed: ComponentChanged): void {
     if (changed.type === OBSERVER_TYPE.ADD || changed.type === OBSERVER_TYPE.CHANGE) {
-      const ui = changed.component as UI;
-      if (typeof ui.redraw === 'function') ui.redraw();
+      const shape = changed.component as Shape;
+      if (typeof shape.redraw === 'function') shape.redraw();
     }
   }
 
@@ -109,6 +125,9 @@ export default class UISystem extends System {
         return;
       }
       def.syncOnChange?.(inst, c);
+      if (this.transformSizeAuthorities.has(go.id)) {
+        applyTransformSizeToInstance(def, inst, c, go, 'component-change');
+      }
     } else if (changed.type === OBSERVER_TYPE.REMOVE) {
       this.detachGeneric(go.id, instMap, go);
     }
@@ -131,9 +150,16 @@ export default class UISystem extends System {
     if (def.name === 'List' || def.name === 'ScrollBox') {
       const childName = def.name === 'List' ? c.itemsChildName : c.contentChildName;
       c.__resolved_items = collectChildContainers(game, go, childName);
+      const expectedCount = getCollectedChildCount(go, childName);
+      if (expectedCount > 0 && c.__resolved_items.length < expectedCount && (c.__collect_retry ?? 0) < 10) {
+        c.__collect_retry = (c.__collect_retry ?? 0) + 1;
+        requestAnimationFrame(() => this.attachGeneric(def, c, go, instMap));
+        return;
+      }
     }
 
     // 4) 构造 PIXI 实例
+    const restoreTransientSize = this.applyTransientTransformSize(c, go);
     const built = def.optionsBuilder(c, views ?? {});
     const inst = def.positional
       ? new (def.pixiClass as any)(...(built as any[]))
@@ -141,6 +167,13 @@ export default class UISystem extends System {
 
     // 5) postCreate(enabled / selected tint 等)
     def.postCreate?.(inst, c);
+
+    // 5.5) 新 DSL 以 Transform.size 作为 plugin-ui 渲染尺寸来源。
+    // 历史 DSL 若显式写了组件 width/height,初次 attach 保持旧行为;之后 Transform.size change 会接管。
+    if (this.transformSizeAuthorities.has(go.id) || !hasExplicitRenderSize(c)) {
+      const applied = applyTransformSizeToInstance(def, inst, c, go, 'initial-transform');
+      if (applied) this.transformSizeAuthorities.add(go.id);
+    }
 
     // 6) 注册 + attach
     instMap.set(go.id, inst);
@@ -167,6 +200,7 @@ export default class UISystem extends System {
     }
 
     def.onAttachedExtra?.(inst, c, go, game);
+    restoreTransientSize();
   }
 
   private detachGeneric(id: number, instMap: Map<number, any>, go: any): void {
@@ -228,6 +262,10 @@ export default class UISystem extends System {
       items, type: typeMap[c.direction] ?? 'vertical',
       elementsMargin: c.elementsMargin, selectedItem: initialIndex,
     });
+    if (this.transformSizeAuthorities.has(go.id)) {
+      const size = readTransformRenderSize(go, { allowZero: true });
+      if (size) applyRuntimeSize(inst, size);
+    }
     this.radioGroupInstances.set(go.id, inst);
     attachToGameObject(game, go, inst as any);
     const offs = bridgeSignals(inst, { go, prefix: 'radiogroup' }, {
@@ -259,6 +297,69 @@ export default class UISystem extends System {
     }
     return null;
   }
+
+  // ============================================================
+  // Transform.size -> plugin-ui runtime size
+  // ============================================================
+  private handleTransformSizeChanged(changed: ComponentChanged): void {
+    if (changed.type !== OBSERVER_TYPE.CHANGE) return;
+    const transform: any = changed.component;
+    const go: any = changed.gameObject ?? transform?.gameObject;
+    if (!go) return;
+
+    let applied = false;
+    for (const [componentName, def] of Object.entries(COMPONENT_DEFINITIONS)) {
+      const inst = this.instances.get(componentName)?.get(go.id);
+      if (!inst) continue;
+      const component = getComponentSafe(go, componentName);
+      if (applyTransformSizeToInstance(def, inst, component, go, 'transform-change')) {
+        applied = true;
+      }
+    }
+
+    const radioGroup = this.radioGroupInstances.get(go.id);
+    if (radioGroup) {
+      const size = readTransformRenderSize(go, { allowZero: true });
+      if (size) {
+        applyRuntimeSize(radioGroup, size);
+        applied = true;
+      }
+    }
+
+    if (applied) this.transformSizeAuthorities.add(go.id);
+    this.relayoutLayoutInstances();
+  }
+
+  private relayoutLayoutInstances(): void {
+    for (const name of ['List', 'ScrollBox']) {
+      const instMap = this.instances.get(name);
+      if (!instMap) continue;
+      for (const inst of instMap.values()) {
+        relayoutRuntimeInstance(inst);
+      }
+    }
+  }
+
+  private applyTransientTransformSize(c: any, go: any): () => void {
+    if (hasExplicitRenderSize(c)) return () => {};
+    const size = readTransformRenderSize(go);
+    if (!size) return () => {};
+
+    const hadWidth = Object.prototype.hasOwnProperty.call(c, 'width');
+    const hadHeight = Object.prototype.hasOwnProperty.call(c, 'height');
+    const prevWidth = c.width;
+    const prevHeight = c.height;
+
+    if (size.width !== undefined) c.width = size.width;
+    if (size.height !== undefined) c.height = size.height;
+
+    return () => {
+      if (hadWidth) c.width = prevWidth;
+      else delete c.width;
+      if (hadHeight) c.height = prevHeight;
+      else delete c.height;
+    };
+  }
 }
 
 // ============================================================
@@ -279,6 +380,8 @@ function inlineResolveSpecialViews(name: string, c: any, game: any, go: any): vo
     case 'ProgressBar':
       c.__resolved_bg = resolveViewRef(game, go, c.bgView);
       c.__resolved_fill = resolveViewRef(game, go, c.fillView);
+      c.__resolved_bg_view = c.nineSliceSprite && c.bgView && 'texture' in c.bgView ? c.bgView.texture : c.__resolved_bg;
+      c.__resolved_fill_view = c.nineSliceSprite && c.fillView && 'texture' in c.fillView ? c.fillView.texture : c.__resolved_fill;
       break;
     case 'Select':
       c.__resolved_closedView = resolveViewRef(game, go, c.closedView);
@@ -287,10 +390,15 @@ function inlineResolveSpecialViews(name: string, c: any, game: any, go: any): vo
     case 'Dialog':
       c.__resolved_backdropView = resolveViewRef(game, go, c.backdropView);
       c.__resolved_backgroundView = resolveViewRef(game, go, c.backgroundView);
+      c.__resolved_background_view = c.nineSliceSprite && c.backgroundView && 'texture' in c.backgroundView
+        ? c.backgroundView.texture
+        : c.__resolved_backgroundView;
       break;
     case 'MaskedFrame':
       c.__resolved_targetView = resolveViewRef(game, go, c.targetView);
       c.__resolved_maskView = resolveViewRef(game, go, c.maskView);
+      c.__resolved_target_view = c.targetView && 'texture' in c.targetView ? c.targetView.texture : c.__resolved_targetView;
+      c.__resolved_mask_view = c.maskView && 'texture' in c.maskView ? c.maskView.texture : c.__resolved_maskView;
       break;
   }
 }
@@ -299,14 +407,14 @@ function inlineResolveSpecialViews(name: string, c: any, game: any, go: any): vo
 function validateInlineResolved(name: string, c: any): boolean {
   switch (name) {
     case 'ProgressBar':
-      return !!(c.__resolved_bg && c.__resolved_fill);
+      return !!(c.__resolved_bg_view && c.__resolved_fill_view);
     case 'Select':
       return !!(c.__resolved_closedView && c.__resolved_openView);
     case 'Dialog':
       // backgroundView 可 fallback PixiContainer,backdropView 也可 null
       return true;
     case 'MaskedFrame':
-      return !!(c.__resolved_targetView && c.__resolved_maskView);
+      return !!(c.__resolved_target_view && c.__resolved_mask_view);
     default:
       return true;
   }
@@ -322,11 +430,45 @@ function collectChildContainers(game: any, go: any, childName: string): PixiCont
     if (!child) continue;
     const childContainer = getEvaContainer(game, child);
     if (childContainer) {
+      if ((childContainer as any).width <= 0 || (childContainer as any).height <= 0) continue;
       try { (childContainer as any).parent?.removeChild?.(childContainer); } catch (_) {}
-      result.push(childContainer as any);
+      result.push(wrapLayoutItem(childContainer as any, child));
     }
   }
   return result;
+}
+
+function wrapLayoutItem(
+  childContainer: PixiContainer,
+  child?: any,
+): PixiContainer {
+  const wrapper = new PixiContainer();
+  const childName = child?.name;
+  (wrapper as any).label = childName ? `${childName}:layout-item` : 'plugin-ui-layout-item';
+  wrapper.addChild(childContainer);
+  Object.defineProperty(wrapper, 'width', {
+    get: () => resolveLayoutItemSize(child, childContainer, 'width'),
+    set: () => {},
+    configurable: true,
+  });
+  Object.defineProperty(wrapper, 'height', {
+    get: () => resolveLayoutItemSize(child, childContainer, 'height'),
+    set: () => {},
+    configurable: true,
+  });
+  return wrapper;
+}
+
+function resolveLayoutItemSize(child: any, childContainer: PixiContainer, key: 'width' | 'height'): number {
+  const transformSize = Number(child?.transform?.size?.[key]);
+  if (Number.isFinite(transformSize) && transformSize > 0) return transformSize;
+  const containerSize = Number((childContainer as any)?.[key]);
+  return Number.isFinite(containerSize) ? containerSize : 0;
+}
+
+function getCollectedChildCount(go: any, childName: string): number {
+  const contentChild = findChildEntity(go, childName);
+  return contentChild?.transform?.children?.length ?? 0;
 }
 
 function findChildEntity(go: any, name: string): any | null {
@@ -339,4 +481,8 @@ function findChildEntity(go: any, name: string): any | null {
     if (tf?.gameObject?.name === name) return tf.gameObject;
   }
   return null;
+}
+
+function getComponentSafe(go: any, componentName: string): any | undefined {
+  try { return go?.getComponent?.(componentName); } catch (_) { return undefined; }
 }

@@ -96,6 +96,13 @@ export interface ComponentDefinition<TParams = any, TInstance = any> {
   ) => Record<string, true | ((...args: any[]) => Record<string, any>)>;
   /** CHANGE 事件触发,把字段写回 PIXI 实例 */
   syncOnChange?: (instance: TInstance, component: TParams & Record<string, any>) => void;
+  /** Transform.size -> @pixi/ui 实例尺寸同步。未提供时由 UISystem 使用通用 setSize/width/height 策略。 */
+  applySize?: (
+    instance: TInstance,
+    size: UiRenderSize,
+    component: TParams & Record<string, any>,
+    context: UiSizeSyncContext,
+  ) => void;
   /** ADD 完成后跑(Dialog 挂 content / MaskedFrame 挂 border)*/
   onAttachedExtra?: (
     instance: TInstance,
@@ -105,6 +112,18 @@ export interface ComponentDefinition<TParams = any, TInstance = any> {
   ) => void;
   /** 实例方法 mixin(注入到 wrapper class.prototype) */
   mixin?: Record<string, Function>;
+}
+
+export interface UiRenderSize {
+  width?: number;
+  height?: number;
+}
+
+export interface UiSizeSyncContext {
+  componentName: string;
+  component?: Record<string, any>;
+  gameObject?: any;
+  source: 'initial-transform' | 'transform-change' | 'component-change';
 }
 
 // ============================================================
@@ -120,12 +139,20 @@ export class PixiUiComponent<TParams = any> extends Component<TParams> {
   /** runtime 计数,供 spec / debug 验证(toggleCount / pressCount / hoverCount / ...)*/
   toggleCount = 0;
   pressCount = 0;
+  downCount = 0;
+  upCount = 0;
   hoverCount = 0;
+  outCount = 0;
+  upOutCount = 0;
   changeCount = 0;
   updateCount = 0;
   selectCount = 0;
+  lastSignal = 'idle';
+  visualState = 'default';
   /** Input 私有 focused */
   focused = false;
+  /** DSL/constructor 中显式传入过的字段,用于区分 metadata default 与用户配置。 */
+  __evaExplicitFields = new Set<string>();
   /** 由 factory 通过 metadata 注入的动态字段(views / value / checked / ...)*/
   [key: string]: any;
 
@@ -145,6 +172,7 @@ export class PixiUiComponent<TParams = any> extends Component<TParams> {
       if (!(name in p)) continue;
       const v = (p as any)[name];
       if (v === undefined) continue;
+      this.__evaExplicitFields.add(name);
       switch (spec.kind) {
         case 'scalar':
           (this as any)[name] = v;

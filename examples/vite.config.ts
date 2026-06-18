@@ -44,7 +44,8 @@ export default defineConfig({
   base: './',
   root: './examples',
   resolve: {
-    alias
+    alias,
+    dedupe: ['pixi.js', '@pixi/ui'],
   },
   optimizeDeps: {
     exclude: ['pixi-spine', 'pixi-spine36', 'poly-decomp']

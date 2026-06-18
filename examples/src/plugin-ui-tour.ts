@@ -1,12 +1,17 @@
-import { Game, GameObject } from '@eva/eva.js';
+import {
+  Game,
+  GameObject } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { GraphicsSystem } from '@eva/plugin-renderer-graphics';
-import { TextSystem, Text } from '@eva/plugin-renderer-text';
-import { EventSystem, Event, HIT_AREA_TYPE } from '@eva/plugin-renderer-event';
+import { TextSystem,
+  Text } from '@eva/plugin-renderer-text';
+import { EventSystem,
+  Event,
+  HIT_AREA_TYPE } from '@eva/plugin-renderer-event';
 import { RenderSystem } from '@eva/plugin-renderer-render';
 import {
-  UI,
-  UIShapeType,
+  Shape,
+  ShapeType,
   UISystem,
   Button,
   FancyButton,
@@ -54,14 +59,14 @@ export async function init(canvas: HTMLCanvasElement) {
 
   // 场景背景
   const bg = new GameObject('bg', { position: { x: 0, y: 0 }, size: { width: CW, height: CH } });
-  bg.addComponent(new UI({ shapes: [{ type: UIShapeType.RECT, style: { x: 0, y: 0, width: CW, height: CH, fill: '#0b1220' } as any }] }));
+  bg.addComponent(new Shape({ shapes: [{ type: ShapeType.RECT, style: { x: 0, y: 0, width: CW, height: CH, fill: '#0b1220' } as any }] }));
   game.scene.addChild(bg);
 
   // 标题
   game.scene.addChild(makeText('title', 32, 24, 686, 40, 'plugin-ui v2 — 16 components based on @pixi/ui', 22, '#f8fafc', '700'));
 
-  // 1. UI shapes
-  game.scene.addChild(makeLabel('1. UI shapes (rect / roundedRect / circle / linear-gradient)', 80));
+  // 1. Shape layers
+  game.scene.addChild(makeLabel('1. Shape layers (rect / roundedRect / circle / linear-gradient)', 80));
   game.scene.addChild(makeUIRect('ui-rect', 32, 110, 200, 40, 12, '#3b82f6'));
   game.scene.addChild(makeUIGradient('ui-grad', 248, 110, 200, 40));
   game.scene.addChild(makeUICircle('ui-circle', 472, 110, 40));
@@ -136,15 +141,15 @@ function makeLabel(label: string, y: number): GameObject {
 
 function makeUIRect(name: string, x: number, y: number, w: number, h: number, radius: number, fill: string): GameObject {
   const go = new GameObject(name, { position: { x, y }, size: { width: w, height: h } });
-  go.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius, fill } as any }] }));
+  go.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w, height: h, radius, fill } as any }] }));
   return go;
 }
 
 function makeUIGradient(name: string, x: number, y: number, w: number, h: number): GameObject {
   const go = new GameObject(name, { position: { x, y }, size: { width: w, height: h } });
-  go.addComponent(new UI({
+  go.addComponent(new Shape({
     shapes: [{
-      type: UIShapeType.ROUNDED_RECT,
+      type: ShapeType.ROUNDED_RECT,
       style: { x: 0, y: 0, width: w, height: h, radius: 12, fill: 'linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%)' } as any,
     }],
   }));
@@ -153,7 +158,7 @@ function makeUIGradient(name: string, x: number, y: number, w: number, h: number
 
 function makeUICircle(name: string, x: number, y: number, size: number): GameObject {
   const go = new GameObject(name, { position: { x, y }, size: { width: size, height: size } });
-  go.addComponent(new UI({ shapes: [{ type: UIShapeType.CIRCLE, style: { x: size / 2, y: size / 2, radius: size / 2, fill: '#22c55e' } as any }] }));
+  go.addComponent(new Shape({ shapes: [{ type: ShapeType.CIRCLE, style: { x: size / 2, y: size / 2, radius: size / 2, fill: '#22c55e' } as any }] }));
   return go;
 }
 
@@ -294,7 +299,7 @@ function makeList(name: string, x: number, y: number, w: number, h: number): Gam
   for (let i = 0; i < 4; i++) {
     const item = new GameObject(`li-${i}`, { position: { x: 0, y: 0 }, size: { width: w - 16, height: 36 } });
     const colors = ['#22c55e', '#0ea5e9', '#a78bfa', '#fbbf24'];
-    item.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w - 16, height: 36, radius: 4, fill: colors[i] } as any }] }));
+    item.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w - 16, height: 36, radius: 4, fill: colors[i] } as any }] }));
     items.addChild(item);
   }
   go.addChild(items);
@@ -304,7 +309,7 @@ function makeList(name: string, x: number, y: number, w: number, h: number): Gam
 function makeScrollBox(name: string, x: number, y: number, w: number, h: number): GameObject {
   const go = new GameObject(name, { position: { x, y }, size: { width: w, height: h } });
   go.addComponent(new ScrollBox({
-    width: w, height: h, direction: 'vertical',
+    direction: 'vertical',
     background: '#1e293b', radius: 8,
     elementsMargin: 4, padding: 8,
   } as any));
@@ -312,7 +317,7 @@ function makeScrollBox(name: string, x: number, y: number, w: number, h: number)
   const content = new GameObject('content', { position: { x: 0, y: 0 }, size: { width: w, height: 600 } });
   for (let i = 0; i < 8; i++) {
     const row = new GameObject(`row-${i}`, { position: { x: 0, y: 0 }, size: { width: w - 16, height: 32 } });
-    row.addComponent(new UI({ shapes: [{ type: UIShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w - 16, height: 32, radius: 4, fill: '#374151' } as any }] }));
+    row.addComponent(new Shape({ shapes: [{ type: ShapeType.ROUNDED_RECT, style: { x: 0, y: 0, width: w - 16, height: 32, radius: 4, fill: '#374151' } as any }] }));
     content.addChild(row);
   }
   go.addChild(content);
@@ -345,7 +350,7 @@ function makeDialog(name: string, x: number, y: number, w: number, h: number): G
   go.addComponent(new Dialog({
     open: false,
     title: '确认操作',
-    width: w, height: h, padding: 16,
+    padding: 16,
     backdropAlpha: 0.5, closeOnBackdropClick: true,
     backgroundView: { color: '#1f2937', width: w, height: h, radius: 12 },
   } as any));

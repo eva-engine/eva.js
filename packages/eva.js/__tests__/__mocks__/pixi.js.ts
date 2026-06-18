@@ -107,6 +107,9 @@ export class BitmapText extends Text {
     super(options);
   }
 }
+export const BitmapFontManager = {
+  install: jest.fn(),
+};
 export class HTMLText extends Text {}
 export class TilingSprite extends Sprite {}
 export class NineSliceSprite extends Sprite {}
@@ -219,6 +222,7 @@ export default {
   Sprite,
   Text,
   BitmapText,
+  BitmapFontManager,
   HTMLText,
   TilingSprite,
   NineSliceSprite,

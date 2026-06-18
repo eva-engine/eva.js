@@ -1,17 +1,20 @@
 // @eva/plugin-ui v2 — based on @pixi/ui v2.x
 //
 // 16 个 ECS Component:
-//   - UI(基础形状,@pixi/ui 无对应,自渲染走 @eva/plugin-renderer-graphics)
+//   - Shape(基础形状,@pixi/ui 无对应,自渲染走 @eva/plugin-renderer-graphics)
 //   - 14 个 @pixi/ui factory wrapper(metadata-driven,from ./components):
 //       Button / FancyButton / CheckBox / Switcher
 //       ProgressBar / CircularProgressBar / Slider / DoubleSlider
 //       Input / List / ScrollBox / Select / Dialog / MaskedFrame
 //   - RadioGroup(独立保留,跨实体协调)
 
-// === UI(基础形状)===
-export { default as UI } from './component';
-export { UIShapeType } from './component';
+// === Shape(基础形状)===
+export { default as Shape, UI } from './component';
+export { ShapeType, UIShapeType } from './component';
 export type {
+  ShapeDefinition,
+  ShapeParams,
+  ShapeStyle,
   UIParams,
   UIComponentParams,
   UIStyle,

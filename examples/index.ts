@@ -20,7 +20,9 @@ if (modules[path]) {
     document.body.appendChild(canvas);
     const module = await modules[path]();
     document.title = module.name;
-    module.init(canvas);
+    (window as any).__EVA_EXAMPLE_READY__ = false;
+    (window as any).__EVA_EXAMPLE_GAME__ = await module.init(canvas);
+    (window as any).__EVA_EXAMPLE_READY__ = true;
   })();
   if (/android|phone|mobile|ipad/i.test(navigator.userAgent) && location.search.length < 1) {
     new VConsole();

@@ -8,7 +8,7 @@ import { getEvaContainer } from './attach-helper';
  * - { entityName: "background" }  — 引用同 GameObject 的子 entity 的 PIXI.Container,
  *   这个 child entity 必须先 ADD,然后我们把它的 Container "借走" 交给 @pixi/ui 实例。
  *   原 child entity 仍然存在(Transform/逻辑组件还在),只是 PIXI 显示对象被重新 parent。
- * - { ui: { type, style } }  — 内联 UI shape,生成一个新的 PIXI.Graphics(临时,与 plugin-ui-graphics 不同源)
+ * - { shape: { type, style } } — 内联 shape,生成一个新的 PIXI.Graphics(临时,与 Shape 组件不同源)
  * - { texture: "loading.png" } — 从已加载的 Eva 资源池查 texture,生成 PIXI.Sprite
  * - { color: 0xRRGGBB, width, height }  — 生成纯色矩形 Graphics
  * - { fallback: <ViewRef> } — 当主 ref 解析失败时使用
@@ -16,6 +16,7 @@ import { getEvaContainer } from './attach-helper';
 
 export type ViewRef =
   | { entityName: string; fallback?: ViewRef }
+  | { shape: InlineShape; fallback?: ViewRef }
   | { ui: InlineShape; fallback?: ViewRef }
   | { texture: string; fallback?: ViewRef }
   | { color: number | string; width: number; height: number; radius?: number; fallback?: ViewRef };
@@ -54,11 +55,15 @@ export function resolveViewRef(game: Game | undefined, go: GameObject, ref: View
             (childContainer as any).parent.removeChild(childContainer);
           }
         } catch (_) {}
-        return childContainer;
+        return wrapBorrowedEntityView(childContainer, child.name);
       }
     }
     if (ref.fallback) return resolveViewRef(game, go, ref.fallback);
     return null;
+  }
+
+  if ('shape' in ref) {
+    return drawInlineShape(ref.shape) ?? (ref.fallback ? resolveViewRef(game, go, ref.fallback) : null);
   }
 
   if ('ui' in ref) {
@@ -91,6 +96,13 @@ export function resolveViewRef(game: Game | undefined, go: GameObject, ref: View
   return null;
 }
 
+function wrapBorrowedEntityView(childContainer: Container, childName?: string): Container {
+  const wrapper = new Container();
+  (wrapper as any).label = childName ? `${childName}:view-ref` : 'plugin-ui-view-ref';
+  wrapper.addChild(childContainer);
+  return wrapper;
+}
+
 /** 把 ViewRef 解析为已存在的 Texture(用于 ProgressBar/Slider/Input 的 nineSlice 路径) */
 export function resolveTexture(game: Game | undefined, key: string): Texture | null {
   // 1) Eva resource pool
@@ -102,7 +114,7 @@ export function resolveTexture(game: Game | undefined, key: string): Texture | n
   }
   // 2) global asset cache (Texture.from)
   try {
-    return Texture.from(key);
+    return Texture.from(key) ?? null;
   } catch (_) {
     return null;
   }
@@ -131,10 +143,17 @@ function drawInlineShape(shape: InlineShape): Graphics | null {
   }
   if (style.fill !== undefined) g.fill(style.fill as any);
   if (style.stroke !== undefined && style.lineWidth !== undefined) {
-    g.setStrokeStyle({ color: style.stroke as any, width: style.lineWidth });
-    g.stroke();
+    g.stroke({ color: style.stroke as any, width: style.lineWidth });
+  } else if (style.stroke !== undefined) {
+    g.stroke({ color: style.stroke as any, width: 1 });
   }
   if (style.alpha !== undefined) g.alpha = style.alpha;
+  try {
+    Object.defineProperty(g, 'clone', {
+      value: () => drawInlineShape(shape) ?? new Graphics(),
+      configurable: true,
+    });
+  } catch (_) {}
   return g;
 }
 

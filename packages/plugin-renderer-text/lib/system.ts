@@ -67,7 +67,7 @@ export default class Text extends Renderer {
     const component = changed.component as TextComponent;
 
     // 创建文本样式副本，先不设置 fontFamily
-    const styleWithoutFont = { ...component.style };
+    const styleWithoutFont = this.processStyle(component.style as any);
     const fontFamily = styleWithoutFont.fontFamily;
     delete styleWithoutFont.fontFamily;
     const initialText = fontFamily ? '' : component.text;
@@ -90,7 +90,7 @@ export default class Text extends Renderer {
     const component = changed.component as HTMLTextComponent;
 
     // 创建样式副本，先不设置 fontFamily
-    const styleWithoutFont = { ...component.style };
+    const styleWithoutFont = this.processStyle(component.style as any);
     const fontFamily = styleWithoutFont.fontFamily;
     delete styleWithoutFont.fontFamily;
     const initialText = fontFamily ? '' : component.text;
@@ -116,7 +116,7 @@ export default class Text extends Renderer {
     const component = changed.component as BitmapTextComponent;
 
     // 创建样式副本，先不设置 fontFamily
-    const styleWithoutFont = { ...component.style };
+    const styleWithoutFont = this.processStyle(component.style as any);
     const fontFamily = styleWithoutFont.fontFamily;
     delete styleWithoutFont.fontFamily;
     const initialText = fontFamily ? '' : component.text;
