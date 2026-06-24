@@ -2,11 +2,12 @@
   "name": "@eva/plugin-camera2d",
   "version": "2.1.0-beta.2",
   "description": "Camera2D — DSL 配置 follow target、deadzone、limits、shake,运行时按 transform 移动整个世界根。",
-  "main": "lib/index.ts",
-  "module": "lib/index.ts",
-  "types": "lib/index.ts",
+  "main": "index.js",
+  "module": "dist/plugin-camera2d.esm.js",
+  "types": "dist/plugin-camera2d.d.ts",
   "files": [
-    "lib"
+    "index.js",
+    "dist"
   ],
   "keywords": [
     "eva.js",

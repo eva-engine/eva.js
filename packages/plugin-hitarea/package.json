@@ -2,11 +2,12 @@
   "name": "@eva/plugin-hitarea",
   "version": "2.1.0-beta.2",
   "description": "Godot Area2D 等价物 — 无物理碰撞域。circle/rect/polygon shape + layer/mask + signalEnter/Exit。",
-  "main": "lib/index.ts",
-  "module": "lib/index.ts",
-  "types": "lib/index.ts",
+  "main": "index.js",
+  "module": "dist/plugin-hitarea.esm.js",
+  "types": "dist/plugin-hitarea.d.ts",
   "files": [
-    "lib"
+    "index.js",
+    "dist"
   ],
   "keywords": [
     "eva.js",

@@ -2,11 +2,12 @@
   "name": "@eva/plugin-path-follow",
   "version": "2.1.0-beta.2",
   "description": "Path follow — DSL 配置 waypoints + speed,组件每帧沿路径前进,支持 loop / pingpong,可配合 Tween 做曲线。",
-  "main": "lib/index.ts",
-  "module": "lib/index.ts",
-  "types": "lib/index.ts",
+  "main": "index.js",
+  "module": "dist/plugin-path-follow.esm.js",
+  "types": "dist/plugin-path-follow.d.ts",
   "files": [
-    "lib"
+    "index.js",
+    "dist"
   ],
   "keywords": [
     "eva.js",
