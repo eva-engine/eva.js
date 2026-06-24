@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-parallax",
-  "version": "2.1.0-beta.2",
+  "version": "2.1.0-beta.3",
   "description": "Parallax — DSL 配置 layer scrollSpeed,组件每帧按 camera/world 偏移产生视差,可循环平铺。",
   "main": "index.js",
   "module": "dist/plugin-parallax.esm.js",
@@ -16,6 +16,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.2"
+    "@eva/eva.js": "2.1.0-beta.3"
   }
 }

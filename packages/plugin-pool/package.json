@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-pool",
-  "version": "2.1.0-beta.2",
+  "version": "2.1.0-beta.3",
   "description": "Object pool — DSL 配置 prefab + initialSize + maxSize,运行时 acquire/release,避免 GameObject 频繁创建/销毁。",
   "main": "index.js",
   "module": "dist/plugin-pool.esm.js",
@@ -17,6 +17,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.2"
+    "@eva/eva.js": "2.1.0-beta.3"
   }
 }

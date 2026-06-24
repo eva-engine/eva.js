@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-path-follow",
-  "version": "2.1.0-beta.2",
+  "version": "2.1.0-beta.3",
   "description": "Path follow — DSL 配置 waypoints + speed,组件每帧沿路径前进,支持 loop / pingpong,可配合 Tween 做曲线。",
   "main": "index.js",
   "module": "dist/plugin-path-follow.esm.js",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.2",
-    "@eva/plugin-signal-bus": "2.1.0-beta.2"
+    "@eva/eva.js": "2.1.0-beta.3",
+    "@eva/plugin-signal-bus": "2.1.0-beta.3"
   }
 }

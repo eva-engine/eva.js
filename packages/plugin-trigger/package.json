@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-trigger",
-  "version": "2.1.0-beta.2",
+  "version": "2.1.0-beta.3",
   "description": "Trigger — 信号 → DSL 动作的执行器,DSL 配置 \"on signal\" + \"do actions\",emit/setStore/transitionState/playSound 等。",
   "main": "index.js",
   "module": "dist/plugin-trigger.esm.js",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.2",
-    "@eva/plugin-signal-bus": "2.1.0-beta.2"
+    "@eva/eva.js": "2.1.0-beta.3",
+    "@eva/plugin-signal-bus": "2.1.0-beta.3"
   }
 }
