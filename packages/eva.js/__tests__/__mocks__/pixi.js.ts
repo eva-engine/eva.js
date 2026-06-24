@@ -138,11 +138,65 @@ export class AnimatedSprite extends Sprite {
   }
 }
 export class Graphics extends Container {
-  rect() {
+  private __bounds = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+  private __hasBounds = false;
+
+  private setShapeBounds(x: number, y: number, width: number, height: number) {
+    const next = { minX: x, minY: y, maxX: x + width, maxY: y + height };
+    if (!this.__hasBounds) {
+      this.__bounds = next;
+      this.__hasBounds = true;
+    } else {
+      this.__bounds = {
+        minX: Math.min(this.__bounds.minX, next.minX),
+        minY: Math.min(this.__bounds.minY, next.minY),
+        maxX: Math.max(this.__bounds.maxX, next.maxX),
+        maxY: Math.max(this.__bounds.maxY, next.maxY),
+      };
+    }
+    this.width = this.__bounds.maxX - this.__bounds.minX;
+    this.height = this.__bounds.maxY - this.__bounds.minY;
+  }
+
+  private expandShapeBounds(amount: number) {
+    if (!this.__hasBounds || amount <= 0) return;
+    this.__bounds = {
+      minX: this.__bounds.minX - amount,
+      minY: this.__bounds.minY - amount,
+      maxX: this.__bounds.maxX + amount,
+      maxY: this.__bounds.maxY + amount,
+    };
+    this.width = this.__bounds.maxX - this.__bounds.minX;
+    this.height = this.__bounds.maxY - this.__bounds.minY;
+  }
+
+  rect(x = 0, y = 0, width = 0, height = 0) {
+    this.setShapeBounds(x, y, width, height);
     return this;
   }
-  circle() {
+  drawRect(x = 0, y = 0, width = 0, height = 0) {
+    return this.rect(x, y, width, height);
+  }
+  roundRect(x = 0, y = 0, width = 0, height = 0) {
+    this.setShapeBounds(x, y, width, height);
     return this;
+  }
+  drawRoundedRect(x = 0, y = 0, width = 0, height = 0) {
+    return this.roundRect(x, y, width, height);
+  }
+  circle(x = 0, y = 0, radius = 0) {
+    this.setShapeBounds(x - radius, y - radius, radius * 2, radius * 2);
+    return this;
+  }
+  drawCircle(x = 0, y = 0, radius = 0) {
+    return this.circle(x, y, radius);
+  }
+  ellipse(x = 0, y = 0, halfWidth = 0, halfHeight = 0) {
+    this.setShapeBounds(x - halfWidth, y - halfHeight, halfWidth * 2, halfHeight * 2);
+    return this;
+  }
+  drawEllipse(x = 0, y = 0, halfWidth = 0, halfHeight = 0) {
+    return this.ellipse(x, y, halfWidth, halfHeight);
   }
   poly() {
     return this;
@@ -156,11 +210,23 @@ export class Graphics extends Container {
   fill() {
     return this;
   }
-  stroke() {
+  stroke(options?: number | { width?: number }) {
+    const width = typeof options === 'number' ? options : options?.width;
+    this.expandShapeBounds((width ?? 1) / 2);
     return this;
   }
   clear() {
+    this.__bounds = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+    this.__hasBounds = false;
+    this.width = 0;
+    this.height = 0;
     return this;
+  }
+  getLocalBounds() {
+    return { ...this.__bounds };
+  }
+  getBounds() {
+    return this.getLocalBounds();
   }
 }
 export class FillGradient {

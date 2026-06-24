@@ -24,6 +24,8 @@ export type ViewRef =
 export interface InlineShape {
   type: 'rect' | 'roundedRect' | 'circle' | 'ellipse';
   style: {
+    x?: number;
+    y?: number;
     width?: number;
     height?: number;
     radius?: number;
@@ -32,6 +34,13 @@ export interface InlineShape {
     lineWidth?: number;
     alpha?: number;
   };
+}
+
+export interface ViewRefPaddings {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
 }
 
 /**
@@ -96,6 +105,59 @@ export function resolveViewRef(game: Game | undefined, go: GameObject, ref: View
   return null;
 }
 
+/**
+ * @pixi/ui ProgressBar 的非 nine-slice fillPaddings 只移动 fill.x/y,
+ * 不会自动把 fill view 缩成内层尺寸。DSL 常用的 inline color/shape
+ * 需要先扣除 padding,否则 fill 会向下或向右溢出,造成上下层偏差。
+ */
+export function normalizeProgressFillViewRef(
+  ref: ViewRef | undefined,
+  fillPaddings?: ViewRefPaddings,
+  fallbackSize?: { width?: number; height?: number },
+): ViewRef | undefined {
+  if (!ref) return ref;
+
+  const paddings = normalizePaddings(fillPaddings);
+  if (paddings.top === 0 && paddings.right === 0 && paddings.bottom === 0 && paddings.left === 0) {
+    return ref;
+  }
+
+  const fallback = ref.fallback
+    ? normalizeProgressFillViewRef(ref.fallback, paddings, fallbackSize)
+    : undefined;
+
+  if ('color' in ref) {
+    const width = shrinkSize(ref.width, paddings.left + paddings.right);
+    const height = shrinkSize(ref.height, paddings.top + paddings.bottom);
+    return {
+      ...ref,
+      width,
+      height,
+      radius: shrinkRadius(ref.radius, width, height),
+      ...(fallback ? { fallback } : {}),
+    };
+  }
+
+  if ('shape' in ref) {
+    return {
+      ...ref,
+      shape: shrinkInlineShape(ref.shape, paddings, fallbackSize),
+      ...(fallback ? { fallback } : {}),
+    };
+  }
+
+  if ('ui' in ref) {
+    return {
+      ...ref,
+      ui: shrinkInlineShape(ref.ui, paddings, fallbackSize),
+      ...(fallback ? { fallback } : {}),
+    };
+  }
+
+  if (fallback) return { ...ref, fallback };
+  return ref;
+}
+
 function wrapBorrowedEntityView(childContainer: Container, childName?: string): Container {
   const wrapper = new Container();
   (wrapper as any).label = childName ? `${childName}:view-ref` : 'plugin-ui-view-ref';
@@ -124,21 +186,23 @@ function drawInlineShape(shape: InlineShape): Graphics | null {
   if (!shape || !shape.type) return null;
   const g = new Graphics();
   const { style } = shape;
+  const x = style.x ?? 0;
+  const y = style.y ?? 0;
   const w = style.width ?? 0;
   const h = style.height ?? 0;
   const r = style.radius ?? 0;
   switch (shape.type) {
     case 'rect':
-      g.rect(0, 0, w, h);
+      drawRect(g, x, y, w, h);
       break;
     case 'roundedRect':
-      g.roundRect(0, 0, w, h, r);
+      drawRoundedRect(g, x, y, w, h, r);
       break;
     case 'circle':
-      g.circle(r, r, r);
+      drawCircle(g, x + r, y + r, r);
       break;
     case 'ellipse':
-      g.ellipse(w / 2, h / 2, w / 2, h / 2);
+      drawEllipse(g, x + w / 2, y + h / 2, w / 2, h / 2);
       break;
   }
   if (style.fill !== undefined) g.fill(style.fill as any);
@@ -155,6 +219,94 @@ function drawInlineShape(shape: InlineShape): Graphics | null {
     });
   } catch (_) {}
   return g;
+}
+
+function drawRect(g: Graphics, x: number, y: number, width: number, height: number): void {
+  const anyGraphics = g as any;
+  if (typeof anyGraphics.rect === 'function') {
+    anyGraphics.rect(x, y, width, height);
+    return;
+  }
+  anyGraphics.drawRect(x, y, width, height);
+}
+
+function drawRoundedRect(g: Graphics, x: number, y: number, width: number, height: number, radius: number): void {
+  const anyGraphics = g as any;
+  if (typeof anyGraphics.roundRect === 'function') {
+    anyGraphics.roundRect(x, y, width, height, radius);
+    return;
+  }
+  anyGraphics.drawRoundedRect(x, y, width, height, radius);
+}
+
+function drawCircle(g: Graphics, x: number, y: number, radius: number): void {
+  const anyGraphics = g as any;
+  if (typeof anyGraphics.circle === 'function') {
+    anyGraphics.circle(x, y, radius);
+    return;
+  }
+  anyGraphics.drawCircle(x, y, radius);
+}
+
+function drawEllipse(g: Graphics, x: number, y: number, halfWidth: number, halfHeight: number): void {
+  const anyGraphics = g as any;
+  if (typeof anyGraphics.ellipse === 'function') {
+    anyGraphics.ellipse(x, y, halfWidth, halfHeight);
+    return;
+  }
+  anyGraphics.drawEllipse(x, y, halfWidth, halfHeight);
+}
+
+function normalizePaddings(fillPaddings?: ViewRefPaddings): Required<ViewRefPaddings> {
+  return {
+    top: readPadding(fillPaddings?.top),
+    right: readPadding(fillPaddings?.right),
+    bottom: readPadding(fillPaddings?.bottom),
+    left: readPadding(fillPaddings?.left),
+  };
+}
+
+function readPadding(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
+  return Math.max(0, value);
+}
+
+function shrinkSize(value: number, inset: number): number {
+  return Math.max(0, value - inset);
+}
+
+function shrinkOptionalSize(value: number | undefined, fallback: number | undefined, inset: number): number | undefined {
+  if (typeof value === 'number') return shrinkSize(value, inset);
+  if (typeof fallback === 'number') return shrinkSize(fallback, inset);
+  return value;
+}
+
+function shrinkRadius(radius: number | undefined, width?: number, height?: number): number | undefined {
+  if (typeof radius !== 'number' || !Number.isFinite(radius)) return radius;
+  const limits = [radius];
+  if (typeof width === 'number') limits.push(width / 2);
+  if (typeof height === 'number') limits.push(height / 2);
+  return Math.max(0, Math.min(...limits));
+}
+
+function shrinkInlineShape(
+  shape: InlineShape,
+  paddings: Required<ViewRefPaddings>,
+  fallbackSize?: { width?: number; height?: number },
+): InlineShape {
+  const style = shape.style ?? {};
+  const width = shrinkOptionalSize(style.width, fallbackSize?.width, paddings.left + paddings.right);
+  const height = shrinkOptionalSize(style.height, fallbackSize?.height, paddings.top + paddings.bottom);
+  const radius = shrinkRadius(style.radius, width, height);
+  return {
+    ...shape,
+    style: {
+      ...style,
+      ...(width !== undefined ? { width } : {}),
+      ...(height !== undefined ? { height } : {}),
+      ...(radius !== undefined ? { radius } : {}),
+    },
+  };
 }
 
 /**

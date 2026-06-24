@@ -16,7 +16,7 @@ import {
   resolveViewsBySchema,
   type ComponentDefinition,
 } from './component-factory';
-import { resolveViewRef } from './internal/view-resolver';
+import { normalizeProgressFillViewRef, resolveViewRef } from './internal/view-resolver';
 import {
   attachToGameObject,
   detachFromGameObject,
@@ -377,12 +377,16 @@ export default class UISystem extends System {
  */
 function inlineResolveSpecialViews(name: string, c: any, game: any, go: any): void {
   switch (name) {
-    case 'ProgressBar':
+    case 'ProgressBar': {
+      const fillView = c.nineSliceSprite
+        ? c.fillView
+        : normalizeProgressFillViewRef(c.fillView, c.fillPaddings, { width: c.width, height: c.height });
       c.__resolved_bg = resolveViewRef(game, go, c.bgView);
-      c.__resolved_fill = resolveViewRef(game, go, c.fillView);
+      c.__resolved_fill = resolveViewRef(game, go, fillView);
       c.__resolved_bg_view = c.nineSliceSprite && c.bgView && 'texture' in c.bgView ? c.bgView.texture : c.__resolved_bg;
       c.__resolved_fill_view = c.nineSliceSprite && c.fillView && 'texture' in c.fillView ? c.fillView.texture : c.__resolved_fill;
       break;
+    }
     case 'Select':
       c.__resolved_closedView = resolveViewRef(game, go, c.closedView);
       c.__resolved_openView = resolveViewRef(game, go, c.openView);

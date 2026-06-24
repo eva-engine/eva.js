@@ -7,7 +7,7 @@ import {
 } from '../lib';
 import { COMPONENT_DEFINITIONS } from '../lib/components';
 import { hasExplicitRenderSize } from '../lib/internal/size-sync';
-import { resolveViewRef } from '../lib/internal/view-resolver';
+import { normalizeProgressFillViewRef, resolveViewRef } from '../lib/internal/view-resolver';
 
 describe('plugin-ui (v2 - 完整封装 @pixi/ui v2.x)', () => {
   describe('Shape component (基础形状,保留 Graphics 直绘)', () => {
@@ -333,6 +333,31 @@ describe('plugin-ui (v2 - 完整封装 @pixi/ui v2.x)', () => {
       expect(pb.fillPaddings.top).toBe(4);
       expect(pb.width).toBe(490);
       expect(pb.height).toBe(38);
+    });
+
+    it('shrinks inline fillView by fillPaddings before passing it to @pixi/ui', () => {
+      const normalized = normalizeProgressFillViewRef(
+        { color: '#22c55e', width: 308, height: 24, radius: 12 },
+        { top: 2, right: 2, bottom: 2, left: 2 },
+      ) as any;
+
+      expect(normalized).toEqual({ color: '#22c55e', width: 304, height: 20, radius: 10 });
+    });
+
+    it('honors inline shape x/y so stroked graphics stay inside the transform box', () => {
+      const host = new GameObject('host');
+      const view = resolveViewRef(undefined, host, {
+        shape: {
+          type: 'roundedRect',
+          style: { x: 1.5, y: 1.5, width: 305, height: 21, radius: 10.5, fill: '#e91e63', stroke: '#ffffff', lineWidth: 3 },
+        },
+      }) as any;
+
+      const bounds = view.getLocalBounds();
+      expect(bounds.minX).toBe(0);
+      expect(bounds.minY).toBe(0);
+      expect(bounds.maxX).toBe(308);
+      expect(bounds.maxY).toBe(24);
     });
   });
 
