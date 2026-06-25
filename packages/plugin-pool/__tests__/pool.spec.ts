@@ -10,7 +10,7 @@ describe('plugin-pool — 对象池', () => {
   describe('init 与 registry', () => {
     it('init 解析参数 + 全局注册', () => {
       const p = new Pool();
-      p.init({ name: 'rocket', initialSize: 4, maxSize: 10 });
+      p.init({ name: 'rocket', initialSize: 4, maxSize: 10, scope: 'game' });
       expect(p.name).toBe('rocket');
       expect(Pool.get('rocket')).toBe(p);
     });
@@ -29,7 +29,7 @@ describe('plugin-pool — 对象池', () => {
     let p: Pool;
     beforeEach(() => {
       p = new Pool();
-      p.init({ name: `t-${Math.random()}`, initialSize: 3, maxSize: 5 });
+      p.init({ name: `t-${Math.random()}`, initialSize: 3, maxSize: 5, scope: 'game' });
       p.setFactory(makeFactory());
     });
 
@@ -76,7 +76,7 @@ describe('plugin-pool — 对象池', () => {
 
     it('maxSize 超出后释放对象被销毁(模拟 destroy)', () => {
       const small = new Pool();
-      small.init({ name: 't-max', initialSize: 0, maxSize: 1 });
+      small.init({ name: 't-max', initialSize: 0, maxSize: 1, scope: 'game' });
       let destroyed = 0;
       small.setFactory(() => {
         const go = new GameObject('x') as any;
@@ -95,13 +95,13 @@ describe('plugin-pool — 对象池', () => {
   describe('Pool.get / onDestroy', () => {
     it('Pool.get 拿到同一实例', () => {
       const p = new Pool();
-      p.init({ name: 'unique-x', initialSize: 0 });
+      p.init({ name: 'unique-x', initialSize: 0, scope: 'game' });
       expect(Pool.get('unique-x')).toBe(p);
     });
 
     it('onDestroy 清理 registry', () => {
       const p = new Pool();
-      p.init({ name: 'unique-y', initialSize: 0 });
+      p.init({ name: 'unique-y', initialSize: 0, scope: 'game' });
       p.onDestroy();
       expect(Pool.get('unique-y')).toBeUndefined();
     });

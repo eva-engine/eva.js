@@ -369,6 +369,130 @@ describe('plugin-signal-bus — 命名信号总线', () => {
   });
 
   // -----------------------------------------------------------------
+  // P0-3: owner 绑定 + disposeByOwner
+  // -----------------------------------------------------------------
+  describe('P0-3: owner 绑定 + disposeByOwner', () => {
+    it('disposeByOwner 取消该 owner 全部订阅', () => {
+      const bus = new SignalBus();
+      const owner = {};
+      const a = jest.fn();
+      const b = jest.fn();
+      bus.on('x', a, { owner });
+      bus.on('y', b, { owner });
+      bus.disposeByOwner(owner);
+      bus.emit('x');
+      bus.emit('y');
+      expect(a).not.toHaveBeenCalled();
+      expect(b).not.toHaveBeenCalled();
+    });
+
+    it('disposeByOwner 不影响其他 owner', () => {
+      const bus = new SignalBus();
+      const ownerA = {};
+      const ownerB = {};
+      const fnA = jest.fn();
+      const fnB = jest.fn();
+      bus.on('s', fnA, { owner: ownerA });
+      bus.on('s', fnB, { owner: ownerB });
+      bus.disposeByOwner(ownerA);
+      bus.emit('s');
+      expect(fnA).not.toHaveBeenCalled();
+      expect(fnB).toHaveBeenCalledTimes(1);
+    });
+
+    it('handle.dispose 后从 ownerMap 中移除,不影响后续 disposeByOwner', () => {
+      const bus = new SignalBus();
+      const owner = {};
+      const fn = jest.fn();
+      const h = bus.on('z', fn, { owner });
+      h.dispose();
+      // owner 已无残留 handle,disposeByOwner no-op,不抛错
+      expect(() => bus.disposeByOwner(owner)).not.toThrow();
+      bus.emit('z');
+      expect(fn).not.toHaveBeenCalled();
+    });
+
+    it('disposeByOwner 对未注册过的 owner 是 no-op', () => {
+      const bus = new SignalBus();
+      expect(() => bus.disposeByOwner({})).not.toThrow();
+    });
+
+    it('owner + scope:scene 共存 — disposeByOwner / disposeSceneScoped 各管各', () => {
+      const bus = new SignalBus();
+      const owner = {};
+      const fn = jest.fn();
+      bus.on('e', fn, { owner, scope: 'scene' });
+      // 先按 owner 清,scope 集合内残留的 handle 已 dispose;再 disposeSceneScoped 不应崩
+      bus.disposeByOwner(owner);
+      expect(() => bus.disposeSceneScoped()).not.toThrow();
+      bus.emit('e');
+      expect(fn).not.toHaveBeenCalled();
+    });
+
+    it('transport 模式下 owner 绑定同样生效', () => {
+      const t: SignalTransport = {
+        emit: jest.fn(),
+        on: jest.fn(),
+        off: jest.fn(),
+      };
+      const bus = new SignalBus({ transport: t });
+      const owner = {};
+      const fn = jest.fn();
+      bus.on('fire', fn, { owner });
+      bus.disposeByOwner(owner);
+      expect(t.off).toHaveBeenCalledWith('fire', expect.any(Function));
+    });
+
+    it('transport 模式同一 fn 二次 on 不会泄漏旧 wrapped', () => {
+      // 隐藏炸弹回归:wrappedMap.set 静默覆盖旧 wrapped → 旧 listener 永不 off
+      const t: SignalTransport = {
+        emit: jest.fn(),
+        on: jest.fn(),
+        off: jest.fn(),
+      };
+      const bus = new SignalBus({ transport: t });
+      const fn = jest.fn();
+      bus.on('fire', fn);
+      bus.on('fire', fn); // 二次 on 同一 fn → 内部应先 off 旧 wrapped
+      expect(t.off).toHaveBeenCalledTimes(1);
+      // off 调用的 wrapped 与第一次 on 注册的 wrapped 是同一个
+      const firstWrapped = (t.on as jest.Mock).mock.calls[0][1];
+      const offWrapped = (t.off as jest.Mock).mock.calls[0][1];
+      expect(offWrapped).toBe(firstWrapped);
+      // ADR-0016 P2-7:同 fn 二次 on 触发 dev-mode 双订阅 warn(不影响行为,仅 leak 提示)
+      expect('duplicate subscription detected (transport mode)').toHaveBeenWarned();
+    });
+  });
+
+  // -----------------------------------------------------------------
+  // ADR-0016 P2-7: dev-mode 双订阅检测
+  // -----------------------------------------------------------------
+  describe('Phase 3.5: dev-mode double subscription warn', () => {
+    it('test_signal_bus_local_same_fn_double_on_warns', () => {
+      // Arrange
+      const bus = new SignalBus();
+      const fn = jest.fn();
+      // Act
+      bus.on('fire', fn);
+      bus.on('fire', fn); // 同 fn 同 name 二次订阅
+      // Assert
+      expect('duplicate subscription detected').toHaveBeenWarned();
+      // 行为不变:Set dedup,listenerCount 仍 1
+      expect(bus.__getDebugSnapshot().signals.find((s) => s.name === 'fire')!.listenerCount).toBe(1);
+    });
+
+    it('test_signal_bus_different_fn_no_warn', () => {
+      // Arrange
+      const bus = new SignalBus();
+      // Act:不同闭包 fn,不警告
+      bus.on('fire', () => {});
+      bus.on('fire', () => {});
+      // Assert:无 warn(setupJestEnv afterEach 会校验)
+      expect(bus.__getDebugSnapshot().signals.find((s) => s.name === 'fire')!.listenerCount).toBe(2);
+    });
+  });
+
+  // -----------------------------------------------------------------
   // Phase 4: Debug 钩子契约
   // -----------------------------------------------------------------
   describe('Phase 4: __getDebugSnapshot internal API', () => {

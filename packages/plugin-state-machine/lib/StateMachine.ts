@@ -1,6 +1,9 @@
 import { Component, decorators } from '@eva/eva.js';
 import { getSignalBus, SignalHandle } from '@eva/plugin-signal-bus';
-import type { StateMachineParams, StateConfig } from './types';
+import type { StateMachineParams, StateConfig, GotoOptions, FsmResetPayload } from './types';
+
+/** 全局信号名:任意 reset() 都会 emit,供观测与跨实例联动 */
+export const FSM_RESET_SIGNAL = 'fsm:reset';
 
 /**
  * StateMachine 组件 — 简易有限状态机。
@@ -52,18 +55,27 @@ export class StateMachine extends Component<StateMachineParams> {
     this.signalChange = params.signalChange;
     this.ctx = params.context ?? {};
     if (params.initial && this.states[params.initial]) {
+      this.initialState = params.initial;
       this.enter(params.initial, '__init__');
     }
   }
 
-  /** 主动迁移(代码侧也能调) */
-  goto(to: string, reason: string = 'manual') {
+  /**
+   * 主动迁移(代码侧也能调)。
+   *
+   * 第二参向后兼容两种形式:
+   * - `goto('idle', 'manual')` 旧签名,等价于 `{ reason: 'manual' }`
+   * - `goto('idle', { reason: 'manual', force: true })` 新签名,`force:true` 时
+   *   即便 `current === to` 也走 exit→enter,用于"重入同 state 重新初始化定时器/订阅"
+   */
+  goto(to: string, opts: string | GotoOptions = 'manual') {
+    const { reason, force } = this.normalizeGotoOpts(opts);
     if (!this.states[to]) {
       // eslint-disable-next-line no-console
       console.warn(`[plugin-state-machine] no such state: ${to}`);
       return;
     }
-    if (this.current === to) return;
+    if (this.current === to && !force) return;
     const from = this.current;
     if (from && this.states[from]?.onExit) {
       getSignalBus().emit(this.states[from].onExit!, { from, to, reason });
@@ -71,6 +83,65 @@ export class StateMachine extends Component<StateMachineParams> {
     this.cleanupSubs();
     this.enter(to, reason);
   }
+
+  private normalizeGotoOpts(opts: string | GotoOptions): {
+    reason: string;
+    force: boolean;
+  } {
+    if (typeof opts === 'string') return { reason: opts, force: false };
+    return {
+      reason: opts.reason ?? 'manual',
+      force: opts.force === true,
+    };
+  }
+
+  /**
+   * 显式 reset:强制回到 initial 并重发 onEnter,清掉所有挂在旧 state 上的订阅。
+   *
+   * 为什么独立于 goto:
+   * - 跨 scene 切换时,挂在 globalEntities 上的 FSM 实例不会被销毁;
+   *   `current` 保留旧值,旧 state 的 signal subs 仍生效,业务想"重置到 initial
+   *   重发 onEnter"时用 `goto(initial)` 会被 short-circuit。
+   * - `reset()` 走的是 `current = '' → enter(initial)`,绕过 short-circuit,
+   *   并 emit `'fsm:reset'` 让消费方观测。
+   * - 如果原 state 配了 `onExit`,会先 emit 一次再清订阅。
+   *
+   * 框架不会自动调 reset —— 跨 scene 是否要 reset 是消费方语义。
+   * StateMachineSystem 只在 sceneChanged 时 emit `'fsm:scene-switch'` 提醒。
+   */
+  reset(payload?: any) {
+    const initial = this.initialState;
+    if (!initial) {
+      // eslint-disable-next-line no-console
+      console.warn('[plugin-state-machine] reset() called but no valid initial state');
+      return;
+    }
+    const fromState = this.current;
+    // 1. 先发 onExit(如果当前 state 有)
+    if (fromState && this.states[fromState]?.onExit) {
+      getSignalBus().emit(this.states[fromState].onExit!, {
+        from: fromState,
+        to: initial,
+        reason: 'reset',
+      });
+    }
+    // 2. 清订阅 + 把 current 拉回空串,让 enter() 不被 short-circuit
+    this.cleanupSubs();
+    this.current = '';
+    // 3. 重发 onEnter(走 enter() 标准路径)
+    this.enter(initial, 'reset');
+    // 4. emit 全局观测信号
+    const resetPayload: FsmResetPayload = {
+      entityId: this.gameObject?.name,
+      fsmName: StateMachine.componentName,
+      fromState,
+      payload,
+    };
+    getSignalBus().emit(FSM_RESET_SIGNAL, resetPayload);
+  }
+
+  /** reset() 用的 initial state 引用;init 时缓存一次,后续不变 */
+  private initialState: string = '';
 
   get state(): string {
     return this.current;

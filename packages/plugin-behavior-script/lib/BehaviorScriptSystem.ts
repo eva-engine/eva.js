@@ -14,6 +14,7 @@ import type {
   BehaviorEventListener,
   BehaviorEventTarget,
   BehaviorInputEvent,
+  BehaviorSceneSwitchContext,
   BehaviorScriptCatalog,
   BehaviorScriptDiagnostic,
   BehaviorScriptFactory,
@@ -115,6 +116,8 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
   private runMode: BehaviorScriptRunMode = 'play';
   private paused = false;
   private defaultPauseMode: BehaviorScriptSystemPauseMode = 'stop';
+  private sceneChangedListener?: (payload: { scene?: any; fromSceneId?: any; toSceneId?: any }) => void;
+  private lastKnownSceneId?: string;
 
   diagnostics: BehaviorScriptDiagnostic[] = [];
 
@@ -138,6 +141,54 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
     }
     if (params?.scriptModules) {
       this.registerModules(params.scriptModules);
+    }
+
+    this.bindSceneSwitchListener();
+  }
+
+  /**
+   * Subscribe to `game.on('dsl:scene-switch', ...)` so global-entity behavior
+   * scripts (gameDirector / metaFlowFsm / bulletSpawner) can react to scene
+   * boundaries without each writing its own SignalBus glue.
+   *
+   * **不监听 plugin-renderer 的 `'sceneChanged'`**:那是 LOAD_SCENE_MODE 协议事件,
+   * mode 严格只 `SINGLE/MULTI_CANVAS`;DSL runtime emit 的是 `'dsl:scene-switch'`
+   * 私有协议(参见 GlobalEntitiesManager.switchScene)。
+   *
+   * Resolution of `fromSceneId` / `toSceneId`:
+   *   1. Prefer explicit `payload.fromSceneId` / `payload.toSceneId` from
+   *      `GlobalEntitiesManager.switchScene(scene, ctx)`.
+   *   2. Otherwise fall back to introspecting the scene GameObject — DSL
+   *      runtime stamps `__evaDslSceneId` on the scene root in
+   *      SceneManager.createScene, so the inferred toSceneId is the new scene.
+   *   3. The very first boot has no previous scene, so fromSceneId remains
+   *      `undefined`. This matches the documented BehaviorSceneSwitchContext.
+   */
+  private bindSceneSwitchListener(): void {
+    if (!this.game || typeof (this.game as any).on !== 'function') return;
+
+    this.sceneChangedListener = (payload: { scene?: any; fromSceneId?: any; toSceneId?: any }) => {
+      const inferredToId =
+        typeof payload?.toSceneId === 'string'
+          ? payload.toSceneId
+          : typeof payload?.scene?.__evaDslSceneId === 'string'
+          ? payload.scene.__evaDslSceneId
+          : undefined;
+      const ctx: BehaviorSceneSwitchContext = {
+        fromSceneId:
+          typeof payload?.fromSceneId === 'string' ? payload.fromSceneId : this.lastKnownSceneId,
+        toSceneId: inferredToId,
+      };
+      this.lastKnownSceneId = inferredToId ?? this.lastKnownSceneId;
+      this.dispatchSceneSwitch(ctx);
+    };
+
+    (this.game as any).on('dsl:scene-switch', this.sceneChangedListener);
+  }
+
+  private dispatchSceneSwitch(ctx: BehaviorSceneSwitchContext): void {
+    for (const record of this.getOrderedRecords()) {
+      this.run(record, 'sceneSwitch', () => record.instance.onSceneSwitch?.(ctx));
     }
   }
 
@@ -565,6 +616,10 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
   onDestroy() {
     this.registryChangeHandle?.dispose();
     this.registryChangeHandle = undefined;
+    if (this.sceneChangedListener && this.game && typeof (this.game as any).off === 'function') {
+      (this.game as any).off('dsl:scene-switch', this.sceneChangedListener);
+    }
+    this.sceneChangedListener = undefined;
     for (const component of Array.from(this.records.keys())) {
       this.detach(component);
     }

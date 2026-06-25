@@ -38,6 +38,16 @@ export class SignalBus {
    * SignalBusSystem.awake 内 hook game.on('sceneChanged') 调用 disposeSceneScoped()。
    */
   private sceneScopedHandles: Set<SignalHandle> = new Set();
+  /**
+   * owner → 该 owner 的所有订阅 handle。
+   *
+   * 用 WeakMap 持有 owner key,不阻止 GC;owner 被回收后 Set 失效,
+   * 内存可自然释放。
+   *
+   * Component / GameObject 在 onDestroy 时调用 `disposeByOwner(this)`
+   * 即可一把清空,解决"业务代码裸 on 不存 handle"的泄漏。
+   */
+  private ownerMap: WeakMap<object, Set<SignalHandle>> = new WeakMap();
 
   constructor(opts: SignalBusOptions = {}) {
     this.transport = opts.transport ?? null;
@@ -60,15 +70,32 @@ export class SignalBus {
     opts?: SignalSubscribeOptions,
   ): SignalHandle {
     let handle: SignalHandle;
+    const owner = opts?.owner;
+    // ADR-0016 P2-7: dev-mode 双订阅检测。同一 fn 引用第二次 on(同 name)是
+    // 90% 概率是 leak — 业务忘了 dispose 或 onAwake 被重入(scene 切换 / hot reload)。
+    // 同 owner 同 name 不同 fn 也警告 — 大概率是 closure 重复创建。
+    // prod 构建被 dead-code-eliminated。
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      this._devDoubleSubscriptionWarn(name, fn as SignalListener, owner);
+    }
     if (this.transport) {
+      // 隐藏炸弹修复:同一 fn 第二次 on 时,wrappedMap.set 会静默覆盖旧 wrapped,
+      // 导致老 wrapped 永远没法 transport.off,泄漏在外部总线里。先把旧 wrapped
+      // 从 transport 注销,再注册新 wrapped。
+      const prev = this.wrappedMap.get(fn as SignalListener);
+      if (prev) this.transport.off(name, prev);
       const wrapped: AnyListener = (payload) => fn(payload as T);
       this.wrappedMap.set(fn as SignalListener, wrapped);
       this.transport.on(name, wrapped);
       handle = {
         dispose: () => {
           this.transport?.off(name, wrapped);
-          this.wrappedMap.delete(fn as SignalListener);
+          // 仅当 wrappedMap 当前仍指向 wrapped 时才 delete,避免误清后续重新 on 的映射
+          if (this.wrappedMap.get(fn as SignalListener) === wrapped) {
+            this.wrappedMap.delete(fn as SignalListener);
+          }
           this.sceneScopedHandles.delete(handle);
+          if (owner) this._removeOwnerHandle(owner, handle);
         },
       };
     } else {
@@ -83,11 +110,120 @@ export class SignalBus {
           const s = this.listeners.get(name);
           if (s) s.delete(fn as SignalListener);
           this.sceneScopedHandles.delete(handle);
+          if (owner) this._removeOwnerHandle(owner, handle);
         },
       };
     }
     if (opts?.scope === 'scene') this.sceneScopedHandles.add(handle);
+    if (owner) {
+      let set = this.ownerMap.get(owner);
+      if (!set) {
+        set = new Set();
+        this.ownerMap.set(owner, set);
+      }
+      set.add(handle);
+    }
     return handle;
+  }
+
+  /** 内部:从 ownerMap 中清理一个 handle(handle.dispose 调) */
+  private _removeOwnerHandle(owner: object, handle: SignalHandle) {
+    const set = this.ownerMap.get(owner);
+    if (!set) return;
+    set.delete(handle);
+    if (set.size === 0) this.ownerMap.delete(owner);
+  }
+
+  /**
+   * 内部:dev-mode 双订阅检测。**仅在 `__DEV__` 构建下被调用**,prod 走 DCE。
+   *
+   * 三种 case:
+   * 1. 同 fn 引用第二次 on(同 name)— 90% leak,警告
+   * 2. 同 owner 同 name 不同 fn — 大概率是 closure 重复创建,警告
+   * 3. 不同 owner 同 name 不同 fn — 正常,不警告
+   *
+   * 仅 console.warn,不 throw,不影响订阅本身。
+   */
+  private _devDoubleSubscriptionWarn(name: string, fn: SignalListener, owner: object | undefined) {
+    // case 1: 同 fn 同 name 已存在
+    if (this.transport) {
+      if (this.wrappedMap.has(fn)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[plugin-signal-bus] duplicate subscription detected (transport mode): same fn reference on '${name}'. ` +
+            `Likely a leak — old wrapper will be auto-unregistered. Pass { owner } and call disposeByOwner on cleanup.`,
+        );
+        return;
+      }
+    } else {
+      const existing = this.listeners.get(name);
+      if (existing && existing.has(fn)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[plugin-signal-bus] duplicate subscription detected: same fn reference on '${name}'. ` +
+            `Set has dedup'd silently — old handle still alive. Likely a leak.`,
+        );
+        return;
+      }
+    }
+    // case 2: 同 owner 同 name 已订阅(不同 fn,closure 重建嫌疑)
+    if (owner) {
+      const ownerSet = this.ownerMap.get(owner);
+      if (ownerSet && ownerSet.size > 0) {
+        // 探测 ownerSet 中是否已有针对同名 signal 的 handle — 当前 SignalHandle
+        // 设计没保存 name,无法精确判断;退化为"同 owner 已有 N 个订阅"的弱信号。
+        // 阈值 8:正常 Component 不会订阅 8 个以上 signal,超过通常是 leak。
+        if (ownerSet.size >= 8) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `[plugin-signal-bus] owner has ${ownerSet.size} active subscriptions before adding '${name}'. ` +
+              `Did you forget disposeByOwner() between scene switches or onAwake re-entries?`,
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * 批量取消某个 owner 注册过的所有订阅。
+   *
+   * Component / GameObject 在 `onDestroy` 时调用即可一次性清空泄漏,
+   * 不再需要业务代码逐个 handle.dispose 或维护 disposer 数组。
+   *
+   * 没有任何订阅的 owner 调用此方法是 no-op,不会抛错。
+   *
+   * @example
+   *   class Foo extends Component {
+   *     onAwake() {
+   *       getSignalBus().on('a', this.onA, { owner: this });
+   *       getSignalBus().on('b', this.onB, { owner: this });
+   *     }
+   *     onDestroy() {
+   *       // 一行清空所有订阅
+   *       getSignalBus().disposeByOwner(this);
+   *     }
+   *   }
+   */
+  disposeByOwner(owner: object): void {
+    if (!owner) return;
+    const set = this.ownerMap.get(owner);
+    if (!set || set.size === 0) {
+      this.ownerMap.delete(owner);
+      return;
+    }
+    // 先快照后清空,避免 handle.dispose 内回调再 mutate ownerMap 引发遍历崩溃
+    const snap = Array.from(set);
+    this.ownerMap.delete(owner);
+    for (const h of snap) {
+      try {
+        h.dispose();
+      } catch (err) {
+        if (this.logErrors) {
+          // eslint-disable-next-line no-console
+          console.error('[plugin-signal-bus] handle.dispose threw in disposeByOwner', err);
+        }
+      }
+    }
   }
 
   once<T = any>(

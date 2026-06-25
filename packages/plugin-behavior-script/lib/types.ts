@@ -61,9 +61,24 @@ export type BehaviorScriptPhase =
   | 'pause'
   | 'resume'
   | 'cleanup'
+  | 'sceneSwitch'
   | 'serializeState'
   | 'exitTree'
   | 'destroy';
+
+/**
+ * Context passed to `onSceneSwitch` when DSL switches the active scene.
+ *
+ * `fromSceneId` / `toSceneId` may both be undefined during the very first
+ * `createScene` boot, where there is no previous scene yet. Scripts living
+ * on `globalEntities` (e.g. `gameDirector`, `metaFlowFsm`, `bulletSpawner`)
+ * should use this hook to drop per-scene caches / counters before the new
+ * scene's children come online.
+ */
+export interface BehaviorSceneSwitchContext {
+  fromSceneId?: string;
+  toSceneId?: string;
+}
 
 export interface BehaviorScriptDiagnostic {
   id: string;
@@ -202,6 +217,7 @@ export interface EvaBehaviorScript<Props extends Record<string, any> = Record<st
   enabledChanged?(enabled: boolean, previousEnabled: boolean): BehaviorScriptAsyncResult;
   pause?(): BehaviorScriptAsyncResult;
   resume?(): BehaviorScriptAsyncResult;
+  onSceneSwitch?(ctx: BehaviorSceneSwitchContext): BehaviorScriptAsyncResult;
   exitTree?(): BehaviorScriptAsyncResult;
   destroy?(): BehaviorScriptAsyncResult;
   serializeState?(): State;

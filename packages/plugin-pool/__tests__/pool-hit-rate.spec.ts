@@ -14,7 +14,7 @@ function makeFactory(): () => GameObject {
 describe('Pool — 命中率统计字段', () => {
   it('初始计数全部为 0,hitRate=0', () => {
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 0 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 0, scope: 'game' });
     expect(p.acquireCount).toBe(0);
     expect(p.hitCount).toBe(0);
     expect(p.missCount).toBe(0);
@@ -24,7 +24,7 @@ describe('Pool — 命中率统计字段', () => {
 
   it('首次 acquire 没有 free → missCount=1', () => {
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 0 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 0, scope: 'game' });
     p.setFactory(makeFactory());
 
     const a = p.acquire();
@@ -37,7 +37,7 @@ describe('Pool — 命中率统计字段', () => {
 
   it('release 后再 acquire 走复用 → hitCount=1', () => {
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 0, maxSize: 10 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 0, maxSize: 10, scope: 'game' });
     p.setFactory(makeFactory());
 
     const a = p.acquire()!; // miss
@@ -54,7 +54,7 @@ describe('Pool — 命中率统计字段', () => {
 
   it('warmup 后 acquire 直接 hit', () => {
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 3, maxSize: 10 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 3, maxSize: 10, scope: 'game' });
     p.setFactory(makeFactory());
     p.warmup(); // free=3,这里不计 acquire/miss(warmup 不走 acquire)
 
@@ -70,7 +70,7 @@ describe('Pool — 命中率统计字段', () => {
 
   it('release 一个未 acquire 的对象不计 releaseCount', () => {
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 0, maxSize: 10 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 0, maxSize: 10, scope: 'game' });
     p.setFactory(makeFactory());
 
     const stranger = new GameObject('stranger');
@@ -81,7 +81,7 @@ describe('Pool — 命中率统计字段', () => {
   it('factory 缺失时 acquire 返回 null,不增加任何计数', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 0 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 0, scope: 'game' });
     expect(p.acquire()).toBeNull();
     expect(p.acquireCount).toBe(0);
     expect(p.missCount).toBe(0);
@@ -91,7 +91,7 @@ describe('Pool — 命中率统计字段', () => {
 
   it('多次 acquire/release 计数累加正确', () => {
     const p = new Pool();
-    p.init({ name: `hr-${Math.random()}`, initialSize: 0, maxSize: 10 });
+    p.init({ name: `hr-${Math.random()}`, initialSize: 0, maxSize: 10, scope: 'game' });
     p.setFactory(makeFactory());
 
     // 第一轮:全 miss

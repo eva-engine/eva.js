@@ -40,6 +40,29 @@ export type SignalScope = 'game' | 'scene';
 
 export interface SignalSubscribeOptions {
   scope?: SignalScope;
+  /**
+   * 订阅所有者(通常是 Component / GameObject / 自定义对象)。
+   *
+   * 传入 owner 后,该订阅会被记入内部 `WeakMap<object, Set<SignalHandle>>`,
+   * 之后调用 `bus.disposeByOwner(owner)` 可批量取消该 owner 的所有订阅。
+   *
+   * 用途:解决业务代码裸用 `getSignalBus().on()` 不存 handle 导致 entity
+   * 销毁后 listener 仍然驻留的泄漏问题。BehaviorScript / Component 在
+   * `onDestroy` 时主动调 `disposeByOwner(this)` 即可一把清空。
+   *
+   * owner 用 WeakMap 持有,**不会** prevent GC,owner 被回收后内部 Set 自动失效。
+   *
+   * @example
+   *   class Foo extends Component {
+   *     onAwake() {
+   *       getSignalBus().on('fire', this.onFire, { owner: this });
+   *     }
+   *     onDestroy() {
+   *       getSignalBus().disposeByOwner(this);
+   *     }
+   *   }
+   */
+  owner?: object;
 }
 
 /**
