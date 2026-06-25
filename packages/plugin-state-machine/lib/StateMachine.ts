@@ -140,6 +140,37 @@ export class StateMachine extends Component<StateMachineParams> {
     getSignalBus().emit(FSM_RESET_SIGNAL, resetPayload);
   }
 
+  /**
+   * 重发当前状态的 onEnter 信号(不 exit、不改 current、不重新订阅 transitions)。
+   *
+   * 用于 scene 切换 / restartScene 之后:globalEntities 上的 StateMachine 实例不销毁、
+   * 不发生状态转换,所以不会重发 onEnter;但本 scene 重建出的新 controller(如依赖
+   * `meta:fsm:enter:PLAYING` 激活的 cannon)需要这个信号才能 active。restartScene
+   * 完成后由 GlobalEntitiesManager 对 global StateMachine 调 reenterCurrent(),让新
+   * controller 收到 enter 信号(ADR-0017 选项 D)。
+   *
+   * 与 reset() 区别:reset 回 initial 并清订阅;reenterCurrent 保持当前状态,只补发
+   * onEnter(+ signalChange),订阅不动。
+   * 与 goto(current, {force}) 区别:force 会先 emit onExit 再重新订阅;reenterCurrent
+   * 不 exit、不重订阅(订阅还活着),更轻,适合 scene 切换后补发。
+   *
+   * 当前没进入任何状态(init 前)时是 no-op。
+   */
+  reenterCurrent(payload?: any) {
+    if (!this.current) return;
+    const cfg = this.states[this.current];
+    if (!cfg) return;
+    const from = this.current;
+    const to = this.current;
+    const bus = getSignalBus();
+    if (cfg.onEnter) {
+      bus.emit(cfg.onEnter, { from, to, reason: 'reenter', ...(payload || {}) });
+    }
+    if (this.signalChange) {
+      bus.emit(this.signalChange, { from, to, reason: 'reenter' });
+    }
+  }
+
   /** reset() 用的 initial state 引用;init 时缓存一次,后续不变 */
   private initialState: string = '';
 

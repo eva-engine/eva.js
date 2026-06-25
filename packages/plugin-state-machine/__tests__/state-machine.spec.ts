@@ -157,6 +157,55 @@ describe('plugin-state-machine — 有限状态机', () => {
     expect(sm.state).toBe('a');
   });
 
+  it('reenterCurrent 重发当前状态 onEnter 信号,不改 current、不重新订阅', () => {
+    const enter = jest.fn();
+    const change = jest.fn();
+    getSignalBus().on('on:a', enter);
+    getSignalBus().on('change', change);
+
+    const sm = new StateMachine();
+    sm.init({
+      initial: 'a',
+      signalChange: 'change',
+      states: {
+        a: { onEnter: 'on:a', transitions: [{ on: 'go', to: 'b' }] },
+        b: {},
+      },
+    });
+    expect(enter).toHaveBeenCalledTimes(1);
+    expect(change).toHaveBeenCalledTimes(1);
+
+    // 调 reenterCurrent:再发一次 onEnter + signalChange,但 current 不变
+    sm.reenterCurrent();
+    expect(sm.state).toBe('a');
+    expect(enter).toHaveBeenCalledTimes(2);
+    expect(change).toHaveBeenCalledTimes(2);
+    expect(enter.mock.calls[1][0]).toMatchObject({ from: 'a', to: 'a', reason: 'reenter' });
+    expect(change.mock.calls[1][0]).toMatchObject({ from: 'a', to: 'a', reason: 'reenter' });
+
+    // 订阅没有被重新建立或清理:原 transition 信号仍生效(只触发一次)
+    getSignalBus().emit('go');
+    expect(sm.state).toBe('b');
+    // reenterCurrent 不重订阅:不会产生重复订阅
+    getSignalBus().emit('go');
+    expect(sm.state).toBe('b');
+  });
+
+  it('reenterCurrent 在未 enter 前(init 前)是 no-op', () => {
+    const enter = jest.fn();
+    const change = jest.fn();
+    getSignalBus().on('on:a', enter);
+    getSignalBus().on('change', change);
+
+    const sm = new StateMachine();
+    // 不调 init,current 仍是 ''
+    expect(sm.state).toBe('');
+    expect(() => sm.reenterCurrent()).not.toThrow();
+    expect(enter).not.toHaveBeenCalled();
+    expect(change).not.toHaveBeenCalled();
+    expect(sm.state).toBe('');
+  });
+
   describe('StateMachineSystem', () => {
     it('能实例化且名字正确', () => {
       const sys = new StateMachineSystem();

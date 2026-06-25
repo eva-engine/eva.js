@@ -109,6 +109,17 @@ export default class Renderer extends System<RendererSystemParams> {
         case LOAD_SCENE_MODE.MULTI_CANVAS:
           application = await this.createMultiApplication({ params });
           break;
+        default:
+          console.warn('[Renderer] sceneChanged skipped: unsupported mode', mode);
+          return;
+      }
+      if (!scene || !application) {
+        console.warn('[Renderer] sceneChanged skipped: missing scene/application', {
+          mode,
+          hasScene: !!scene,
+          hasApplication: !!application,
+        });
+        return;
       }
       scene.canvas = application.canvas;
       this.transform.emit('changeScene', {
