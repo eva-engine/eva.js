@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-canvas-layer",
-  "version": "2.1.0-beta.3",
+  "version": "2.1.0-beta.4",
   "description": "Canvas layer — DSL 声明 layer/zIndex/screen-space,框架自动调整渲染序与 transform.position 的 layer 偏移。",
   "main": "index.js",
   "module": "dist/plugin-canvas-layer.esm.js",
@@ -17,6 +17,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.3"
+    "@eva/eva.js": "2.1.0-beta.4"
   }
 }

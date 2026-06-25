@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-tween",
-  "version": "2.1.0-beta.3",
+  "version": "2.1.0-beta.4",
   "description": "Godot Tween 等价物 — 任意字段补间(transform / 自定义 Component / mx.store),支持 sequence/parallel/yoyo/loop。",
   "main": "index.js",
   "module": "dist/plugin-tween.esm.js",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.3",
-    "@eva/plugin-signal-bus": "2.1.0-beta.3"
+    "@eva/eva.js": "2.1.0-beta.4",
+    "@eva/plugin-signal-bus": "2.1.0-beta.4"
   }
 }
