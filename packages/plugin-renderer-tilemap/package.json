@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-tilemap",
-  "version": "2.1.0-beta.4",
+  "version": "2.1.0-beta.5",
   "description": "@eva/plugin-renderer-tilemap",
   "main": "index.js",
   "module": "dist/plugin-renderer-tilemap.esm.js",
@@ -20,8 +20,8 @@
   "homepage": "https://eva.js.org",
   "dependencies": {
     "@eva/inspector-decorator": "^2.0.0-beta.0",
-    "@eva/eva.js": "2.1.0-beta.4",
-    "@eva/plugin-renderer": "2.1.0-beta.4",
+    "@eva/eva.js": "2.1.0-beta.5",
+    "@eva/plugin-renderer": "2.1.0-beta.5",
     "pixi.js": "^8.6.3"
   }
 }

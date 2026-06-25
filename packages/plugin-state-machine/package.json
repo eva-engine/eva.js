@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-state-machine",
-  "version": "2.1.0-beta.4",
+  "version": "2.1.0-beta.5",
   "description": "Finite state machine — DSL 声明 states/transitions/timeouts/guards/actions,emit state-change 信号。",
   "main": "index.js",
   "module": "dist/plugin-state-machine.esm.js",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.4",
-    "@eva/plugin-signal-bus": "2.1.0-beta.4"
+    "@eva/eva.js": "2.1.0-beta.5",
+    "@eva/plugin-signal-bus": "2.1.0-beta.5"
   }
 }
