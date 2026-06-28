@@ -211,5 +211,93 @@ describe('plugin-state-machine — 有限状态机', () => {
       const sys = new StateMachineSystem();
       expect(sys.name).toBe('StateMachine');
     });
+
+    /**
+     * ADR-0024B — autoResetOnSceneSwitch params。默认 false 不破坏既有
+     * "framework 不自动 reset" 契约(ADR-0011/0017)。
+     */
+    it('autoResetOnSceneSwitch 默认 false: sceneChanged 不调 fsm.reset', () => {
+      const sys = new StateMachineSystem();
+      sys.init?.({});
+
+      // Mock game with one StateMachine on a gameObject
+      const sm: any = { reset: jest.fn(), constructor: { componentName: 'StateMachine' } };
+      const handlers: Record<string, Function[]> = {};
+      const mockGame: any = {
+        on: (ev: string, h: Function) => {
+          (handlers[ev] ??= []).push(h);
+        },
+        off: (ev: string, h: Function) => {
+          handlers[ev] = (handlers[ev] ?? []).filter((x) => x !== h);
+        },
+        gameObjects: [{ components: [sm] }],
+        scene: { gameObjects: [{ components: [sm] }] },
+      };
+      (sys as any).game = mockGame;
+      sys.awake();
+
+      // 触发 sceneChanged
+      (handlers['sceneChanged'] ?? []).forEach((h) => h({ scene: { id: 'next' } }));
+      expect(sm.reset).not.toHaveBeenCalled();
+    });
+
+    it('autoResetOnSceneSwitch=true: sceneChanged 调所有 StateMachine.reset', () => {
+      const sys = new StateMachineSystem();
+      sys.init?.({ autoResetOnSceneSwitch: true });
+
+      const sm1: any = { reset: jest.fn(), constructor: { componentName: 'StateMachine' } };
+      const sm2: any = { reset: jest.fn(), constructor: { componentName: 'StateMachine' } };
+      const unrelated: any = { reset: jest.fn(), constructor: { componentName: 'OtherComponent' } };
+      const handlers: Record<string, Function[]> = {};
+      const mockGame: any = {
+        on: (ev: string, h: Function) => {
+          (handlers[ev] ??= []).push(h);
+        },
+        off: () => {},
+        gameObjects: [
+          { components: [sm1, unrelated] },
+          { components: [sm2] },
+        ],
+        scene: { gameObjects: [] },
+      };
+      (sys as any).game = mockGame;
+      sys.awake();
+
+      (handlers['sceneChanged'] ?? []).forEach((h) => h({ scene: { id: 'next' } }));
+      expect(sm1.reset).toHaveBeenCalledTimes(1);
+      expect(sm2.reset).toHaveBeenCalledTimes(1);
+      expect(unrelated.reset).not.toHaveBeenCalled();
+    });
+
+    it('autoResetOnSceneSwitch=true 单个 fsm.reset 抛错时 swallow 不影响其他', () => {
+      const sys = new StateMachineSystem();
+      sys.init?.({ autoResetOnSceneSwitch: true });
+
+      const sm1: any = {
+        reset: jest.fn(() => { throw new Error('boom'); }),
+        constructor: { componentName: 'StateMachine' },
+      };
+      const sm2: any = { reset: jest.fn(), constructor: { componentName: 'StateMachine' } };
+
+      const handlers: Record<string, Function[]> = {};
+      const mockGame: any = {
+        on: (ev: string, h: Function) => {
+          (handlers[ev] ??= []).push(h);
+        },
+        off: () => {},
+        gameObjects: [{ components: [sm1] }, { components: [sm2] }],
+        scene: { gameObjects: [] },
+      };
+      (sys as any).game = mockGame;
+
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      sys.awake();
+      expect(() =>
+        (handlers['sceneChanged'] ?? []).forEach((h) => h({ scene: { id: 'next' } })),
+      ).not.toThrow();
+      expect(sm1.reset).toHaveBeenCalledTimes(1);
+      expect(sm2.reset).toHaveBeenCalledTimes(1); // 不被 sm1 异常打断
+      warnSpy.mockRestore();
+    });
   });
 });

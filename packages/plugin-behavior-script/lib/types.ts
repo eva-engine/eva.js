@@ -197,6 +197,59 @@ export interface BehaviorContext<Props extends Record<string, any> = Record<stri
   setTimeout(listener: () => void, delay: number): BehaviorCleanupHandle;
   setInterval(listener: () => void, delay: number): BehaviorCleanupHandle;
   reportDiagnostic(diagnostic: Omit<BehaviorScriptDiagnostic, 'id' | 'timestamp' | 'componentName'>): void;
+  /**
+   * ADR-0024B — 跨 plugin 直链 API:在 BehaviorScript factory 内一行
+   * "attach 到指定 entity 的 StateMachine"。
+   *
+   * Replace 旧 alert-chase.json 类 Trigger callMethod 模板的 8 条配置(状态切
+   * BehaviorScript.enabled 的 hidden broken state)— 一行 ctx.fsm.attach 即可。
+   */
+  fsm: BehaviorFsmBridge;
+}
+
+/**
+ * ADR-0024B — BehaviorScript ↔ StateMachine 直链桥接。
+ *
+ * 通过 attach 把当前脚本 instance 绑定到指定 entity 上的 StateMachine,
+ * 返回 handle:
+ *   - `detach()`            — 取消绑定(`onDestroy` 时自动调用,user 通常不用手动调)
+ *   - `getFsm()`            — 取真实 StateMachine 实例(查不到时返回 null)
+ *   - `reset()`             — 主动调 fsm.reset()
+ *   - `goto(to, opts)`      — 主动调 fsm.goto()
+ *
+ * attach 时机:setup / ready hook 内调用,framework 通过 `record.cleanupHandles`
+ * 在 detach 时自动 dispose(避免泄漏)。
+ */
+export interface BehaviorFsmBridge {
+  attach(
+    entityName: string,
+    fsmName?: string,
+    options?: BehaviorFsmAttachOptions,
+  ): BehaviorFsmAttachHandle;
+}
+
+export interface BehaviorFsmAttachOptions {
+  /**
+   * 目标实体 / FSM 不存在时的行为(ADR-0024B):
+   *   - `'wait'`  — attach 返回延迟 handle,FSM 出现前不抛错;getFsm() 返回 null
+   *   - `'warn'`  — 立即 console.warn 一次(默认行为,兼容性最好)
+   *   - `'throw'` — 立即抛 Error(strict 模式,适合开发期严格检查)
+   *
+   * 默认 'warn'。
+   */
+  onMissing?: 'wait' | 'warn' | 'throw';
+  /**
+   * 同 entity 同 componentName 多 StateMachine 实例时的实例区分符
+   * (复用 ADR-0021 BehaviorScript `ref` 字段命名约定)。
+   */
+  ref?: string;
+}
+
+export interface BehaviorFsmAttachHandle {
+  getFsm(): any | null;
+  reset(payload?: any): void;
+  goto(to: string, opts?: string | Record<string, any>): void;
+  detach(): void;
 }
 
 export interface EvaBehaviorScript<Props extends Record<string, any> = Record<string, any>, State = any> {

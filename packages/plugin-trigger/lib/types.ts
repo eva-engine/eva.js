@@ -4,7 +4,25 @@ export type TriggerAction =
   | { type: 'setStore'; key: string; value: any }
   | { type: 'incStore'; key: string; delta?: number }
   | { type: 'log'; message: string }
-  | { type: 'callMethod'; entity: string; component: string; method: string; args?: any[] };
+  | {
+      type: 'callMethod';
+      entity: string;
+      component: string;
+      method: string;
+      args?: any[];
+      /**
+       * 同 entity 上同 componentName 多实例时的实例区分符(ADR-0024B / ADR-0015)。
+       *
+       * 默认按 `(entity, componentName)` 二元组定位 — 同名多实例时取首个命中。
+       * 设 `ref` 后按 `(entity, componentName, ref)` 三元组定位,匹配
+       * `BehaviorScript` 的 ADR-0021 `ref` 字段或自定义 Component 的 `name` /
+       * `static ref` 字段。
+       *
+       * 修复 alert-chase.json 模板"同 entity 多 BehaviorScript 静默 dedup"的
+       * hidden broken state。
+       */
+      ref?: string;
+    };
 
 export interface TriggerRule {
   /** 监听的信号名 */

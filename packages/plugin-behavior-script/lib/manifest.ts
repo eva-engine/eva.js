@@ -1,4 +1,9 @@
 import type { BehaviorInputEvent, BehaviorScriptFactory, BehaviorScriptPhase, BehaviorScriptSource } from './types';
+import {
+  assertScriptIdValid,
+  normalizePropsArrayToSchema,
+  type BehaviorPropsSchema,
+} from './props-schema';
 
 export type BehaviorValueType =
   | 'number'
@@ -82,11 +87,21 @@ export interface BehaviorLifecycleHint {
 export interface BehaviorScriptManifest {
   scriptId: string;
   displayName?: string;
-  description?: string;
+  description?: string | Record<string, string>;
   category?: string;
   version?: string;
   source?: BehaviorScriptSource;
+  /**
+   * Legacy prop hint array form. Authors should migrate to `propsSchema`;
+   * for back-compat we still accept this and synthesize `propsSchema` from it
+   * via `normalizePropsArrayToSchema`.
+   */
   props?: BehaviorPropertyHint[];
+  /**
+   * Canonical prop metadata — JSON-Schema-flavoured. Drives the
+   * MetadataDrivenInspector and is forwarded to the Editor catalog.
+   */
+  propsSchema?: BehaviorPropsSchema;
   inputs?: BehaviorInputHint[];
   signals?: BehaviorSignalHint[];
   events?: BehaviorEventHint[];
@@ -95,12 +110,61 @@ export interface BehaviorScriptManifest {
   resources?: BehaviorResourceHint[];
   lifecycle?: BehaviorLifecycleHint[];
   tags?: string[];
+  singleton?: boolean;
+  addable?: boolean;
+  requires?: ReadonlyArray<{ componentName: string; severity?: 'error' | 'warning' }>;
 }
 
-export interface BehaviorScriptDefinition<Props extends Record<string, any> = Record<string, any>, State = any> {
+/**
+ * Legacy call shape: `defineBehaviorScript({ manifest, factory })`.
+ */
+export interface BehaviorScriptLegacyDefinition<
+  Props extends Record<string, any> = Record<string, any>,
+  State = any,
+> {
   manifest: BehaviorScriptManifest;
   factory: BehaviorScriptFactory<Props, State>;
 }
+
+/**
+ * New canonical call shape: `defineBehaviorScript({ id, propsSchema, factory })`.
+ * `id` becomes both the scriptId AND the DSL `component.type` (when used as a
+ * first-class citizen, see ADR-0020). `propsSchema` is the JSON-Schema-flavoured
+ * metadata format consumed by the MetadataDrivenInspector.
+ */
+export interface BehaviorScriptFlatDefinition<
+  Props extends Record<string, any> = Record<string, any>,
+  State = any,
+> {
+  id: string;
+  displayName?: string;
+  description?: string | Record<string, string>;
+  category?: string;
+  tags?: string[];
+  version?: string;
+  source?: BehaviorScriptSource;
+  propsSchema?: BehaviorPropsSchema;
+  inputs?: BehaviorInputHint[];
+  signals?: BehaviorSignalHint[];
+  events?: BehaviorEventHint[];
+  groups?: BehaviorGroupHint[];
+  nodes?: BehaviorNodeHint[];
+  resources?: BehaviorResourceHint[];
+  lifecycle?: BehaviorLifecycleHint[];
+  singleton?: boolean;
+  addable?: boolean;
+  requires?: ReadonlyArray<{ componentName: string; severity?: 'error' | 'warning' }>;
+  factory: BehaviorScriptFactory<Props, State>;
+}
+
+/**
+ * Union — `defineBehaviorScript` accepts either form. Detection at runtime:
+ * `'manifest' in def` ⇒ legacy; `'id' in def` ⇒ flat.
+ */
+export type BehaviorScriptDefinition<
+  Props extends Record<string, any> = Record<string, any>,
+  State = any,
+> = BehaviorScriptLegacyDefinition<Props, State> | BehaviorScriptFlatDefinition<Props, State>;
 
 export interface BehaviorManifestIssue {
   path: string;
@@ -125,7 +189,38 @@ export const DEFAULT_BEHAVIOR_LIFECYCLE_HINTS: BehaviorLifecycleHint[] = [
 export function defineBehaviorScript<Props extends Record<string, any> = Record<string, any>, State = any>(
   definition: BehaviorScriptDefinition<Props, State>,
 ): BehaviorScriptFactory<Props, State> {
-  const manifest = normalizeBehaviorScriptManifest(definition.manifest);
+  const rawManifest: BehaviorScriptManifest = isFlatDefinition(definition)
+    ? {
+        scriptId: definition.id,
+        displayName: definition.displayName,
+        description: definition.description,
+        category: definition.category,
+        tags: definition.tags,
+        version: definition.version,
+        source: definition.source,
+        propsSchema: definition.propsSchema,
+        inputs: definition.inputs,
+        signals: definition.signals,
+        events: definition.events,
+        groups: definition.groups,
+        nodes: definition.nodes,
+        resources: definition.resources,
+        lifecycle: definition.lifecycle,
+        singleton: definition.singleton,
+        addable: definition.addable,
+        requires: definition.requires,
+      }
+    : { ...definition.manifest };
+
+  // Enforce scriptId shape + reserved-builtin blacklist BEFORE normalization.
+  // When scriptId is missing/empty we let the legacy validator flow raise its
+  // own "Invalid BehaviorScript manifest: scriptId is required" message
+  // (preserves the back-compat assertion contract used by 78+ existing specs).
+  if (typeof rawManifest.scriptId === 'string' && rawManifest.scriptId.trim().length > 0) {
+    assertScriptIdValid(rawManifest.scriptId);
+  }
+
+  const manifest = normalizeBehaviorScriptManifest(rawManifest);
   const issues = validateBehaviorScriptManifest(manifest);
   if (issues.length) {
     throw new Error(`Invalid BehaviorScript manifest: ${issues.map(issue => issue.message).join('; ')}`);
@@ -136,10 +231,23 @@ export function defineBehaviorScript<Props extends Record<string, any> = Record<
   return factory;
 }
 
+function isFlatDefinition<P extends Record<string, any>, S>(
+  def: BehaviorScriptDefinition<P, S>,
+): def is BehaviorScriptFlatDefinition<P, S> {
+  return typeof (def as BehaviorScriptFlatDefinition<P, S>).id === 'string';
+}
+
 export function normalizeBehaviorScriptManifest(manifest: BehaviorScriptManifest): BehaviorScriptManifest {
+  const normalizedProps = normalizeUniqueByName(manifest.props ?? [], 'props');
+  // If the author only supplied legacy `props[]`, synthesize a JSON-Schema
+  // `propsSchema` from it so downstream consumers (Inspector, validators,
+  // catalog exporter) can rely on a single canonical metadata shape.
+  const propsSchema =
+    manifest.propsSchema ?? normalizePropsArrayToSchema(normalizedProps as any);
   return {
     ...manifest,
-    props: normalizeUniqueByName(manifest.props ?? [], 'props'),
+    props: normalizedProps,
+    propsSchema,
     inputs: normalizeUniqueByName(manifest.inputs ?? [], 'inputs'),
     signals: normalizeUniqueByName(manifest.signals ?? [], 'signals'),
     events: normalizeUniqueEvents(manifest.events ?? []),

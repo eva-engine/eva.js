@@ -1,4 +1,34 @@
 export { BehaviorScript } from './BehaviorScript';
+export type { BehaviorScriptInitFlat } from './BehaviorScript';
+export {
+  assertScriptIdValid,
+  isScriptIdShapeValid,
+  normalizePropsArrayToSchema,
+  RESERVED_BUILTIN_COMPONENT_NAMES,
+  BehaviorScriptIdError,
+} from './props-schema';
+export type {
+  AssetRefSchema,
+  ArraySchema,
+  BehaviorPropSchema,
+  BehaviorPropsSchema,
+  BooleanSchema,
+  ColorSchema,
+  EntityRefSchema,
+  EnumSchema,
+  IntegerSchema,
+  NodeRefSchema,
+  NumberSchema,
+  ObjectSchema,
+  RefSchema,
+  SignalRefSchema,
+  StorePathSchema,
+  StringSchema,
+  UnionSchema,
+  Vec2Schema,
+} from './props-schema';
+export { exportScriptCatalog } from './catalog-export';
+export type { BehaviorScriptCatalogExport } from './catalog-export';
 export { BehaviorScriptSystem } from './BehaviorScriptSystem';
 export { createBehaviorScriptBinding, resolveBehaviorScriptProps, validateBehaviorScriptBinding } from './binding';
 export {
@@ -7,7 +37,8 @@ export {
   parseBehaviorScriptStackLocation,
   resolveBehaviorScriptDiagnosticSource,
 } from './diagnostics';
-export { createBehaviorScriptExtension } from './extension';
+export { createBehaviorScriptExtension, createBehaviorScriptDslExtension } from './extension';
+export type { BehaviorScriptDslExtensionConfig } from './extension';
 export { behaviorValueTypeToInspectorType, createBehaviorScriptInspectorMetadata } from './inspector';
 export {
   DEFAULT_BEHAVIOR_LIFECYCLE_HINTS,
@@ -52,6 +83,8 @@ export type {
   BehaviorPropertyHint,
   BehaviorResourceHint,
   BehaviorScriptDefinition,
+  BehaviorScriptFlatDefinition,
+  BehaviorScriptLegacyDefinition,
   BehaviorScriptManifest,
   BehaviorSignalHint,
   BehaviorValueType,

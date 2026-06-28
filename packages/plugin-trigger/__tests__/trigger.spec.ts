@@ -302,6 +302,123 @@ describe('plugin-trigger', () => {
     expect(() => getSignalBus().emit('sig')).not.toThrow();
   });
 
+  /**
+   * ADR-0024B — callMethod.ref 字段:同 entity 多 componentName 多实例时按
+   * (componentName, ref) 三元组定位。修复 alert-chase.json 类模板 hidden
+   * broken state。
+   */
+  it('callMethod 无 ref 时取首个 componentName 命中(legacy 行为)', () => {
+    const scene = makeSceneWithGame();
+    const target = new GameObject('Multi');
+    scene.addChild(target);
+
+    const a = new FooComponent();
+    (a as any).ref = 'aaa';
+    target.addComponent(a);
+    const b = new FooComponent();
+    (b as any).ref = 'bbb';
+    target.addComponent(b);
+
+    const aSpy = jest.spyOn(a, 'doSomething').mockImplementation(() => {});
+    const bSpy = jest.spyOn(b, 'doSomething').mockImplementation(() => {});
+
+    const trigger = new Trigger({
+      rules: [
+        {
+          on: 'sig',
+          do: [{ type: 'callMethod', entity: 'Multi', component: 'Foo', method: 'doSomething' }],
+        },
+      ],
+    });
+    attachTriggerOn(scene, trigger, 'Host');
+
+    getSignalBus().emit('sig');
+    // 首个命中(a)被调,后写胜出(componentMap dedup)情况下行为依赖 Eva.js 内部顺序
+    const totalCalls = aSpy.mock.calls.length + bSpy.mock.calls.length;
+    expect(totalCalls).toBe(1);
+    aSpy.mockRestore();
+    bSpy.mockRestore();
+  });
+
+  it('callMethod 带 ref 时按 (componentName, instance.ref) 精确定位', () => {
+    const scene = makeSceneWithGame();
+    const target = new GameObject('Multi');
+    scene.addChild(target);
+
+    // Eva.js _componentCache 按 componentName 去重(ADR-0015),addComponent
+    // 同名第二次是 no-op。本测试场景模拟 "componentMap dedup 之外多实例
+    // 真实场景"(例如 plugin-trigger.findComponentByRef 在 components 列表
+    // walk),直接绕过 _componentCache push 到 components 数组。
+    const a = new FooComponent();
+    (a as any).ref = 'patrol';
+    target.addComponent(a);
+    const b = new FooComponent();
+    (b as any).ref = 'chase';
+    (b as any).gameObject = target;
+    (target as any).components.push(b);
+
+    const aSpy = jest.spyOn(a, 'doSomething').mockImplementation(() => {});
+    const bSpy = jest.spyOn(b, 'doSomething').mockImplementation(() => {});
+
+    const trigger = new Trigger({
+      rules: [
+        {
+          on: 'sig',
+          do: [
+            {
+              type: 'callMethod',
+              entity: 'Multi',
+              component: 'Foo',
+              method: 'doSomething',
+              ref: 'chase',
+            },
+          ],
+        },
+      ],
+    });
+    attachTriggerOn(scene, trigger, 'Host');
+
+    getSignalBus().emit('sig');
+    expect(aSpy).not.toHaveBeenCalled();
+    expect(bSpy).toHaveBeenCalledTimes(1);
+    aSpy.mockRestore();
+    bSpy.mockRestore();
+  });
+
+  it('callMethod 带 ref 但实例 ref 不匹配时不调任何方法', () => {
+    const scene = makeSceneWithGame();
+    const target = new GameObject('Multi');
+    scene.addChild(target);
+
+    const a = new FooComponent();
+    (a as any).ref = 'patrol';
+    target.addComponent(a);
+
+    const aSpy = jest.spyOn(a, 'doSomething').mockImplementation(() => {});
+
+    const trigger = new Trigger({
+      rules: [
+        {
+          on: 'sig',
+          do: [
+            {
+              type: 'callMethod',
+              entity: 'Multi',
+              component: 'Foo',
+              method: 'doSomething',
+              ref: 'no-such-ref',
+            },
+          ],
+        },
+      ],
+    });
+    attachTriggerOn(scene, trigger, 'Host');
+
+    getSignalBus().emit('sig');
+    expect(aSpy).not.toHaveBeenCalled();
+    aSpy.mockRestore();
+  });
+
   it('guard 表达式可读 payload,假则跳过', () => {
     const downstream = jest.fn();
     getSignalBus().on('out', downstream);

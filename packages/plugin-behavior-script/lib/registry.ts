@@ -36,7 +36,11 @@ export class BehaviorScriptRegistry implements BehaviorScriptRegistryLike {
     sourceUri?: string,
   ): BehaviorScriptFactory<Props, State> {
     const factory = defineBehaviorScript(definition);
-    this.registerScript(definition.manifest.scriptId, factory, sourceUri);
+    // BehaviorScriptDefinition is a union of legacy {manifest, factory} and
+    // first-class flat {id, propsSchema, factory} since Phase 1 (ADR-0021).
+    // After defineBehaviorScript runs, factory.manifest is always present.
+    const scriptId = factory.manifest?.scriptId ?? (definition as any).id ?? (definition as any).manifest?.scriptId;
+    this.registerScript(scriptId, factory, sourceUri);
     return factory;
   }
 
@@ -68,6 +72,22 @@ export class BehaviorScriptRegistry implements BehaviorScriptRegistryLike {
 
   registerModules(modules: BehaviorScriptModule[]): BehaviorScriptModuleRegistration[] {
     return modules.map(module => this.registerModule(module));
+  }
+
+  /**
+   * Drop every script that was registered under the given `sourceUri`. Idempotent.
+   * Used by `ExtensionSetupHook.teardown()` to release factory refs cleanly.
+   */
+  unregisterModule(sourceUri: string): string[] {
+    if (!sourceUri) return [];
+    const dropped: string[] = [];
+    for (const [scriptId, record] of Array.from(this.records.entries())) {
+      if (record.sourceUri === sourceUri) {
+        dropped.push(scriptId);
+        this.unregisterScript(scriptId);
+      }
+    }
+    return dropped;
   }
 
   unregisterScript(scriptId: string) {

@@ -1,4 +1,5 @@
 import { TestSystem, TestComponent } from '@eva/plugin-renderer-test';
+import Component from '../lib/core/Component';
 import { GameObject, Transform } from '../lib';
 import {
   initObserver,
@@ -246,5 +247,81 @@ describe('observer', () => {
     system.componentObserver.clear();
     system.destroy();
     testUtils.clearLocal();
+  });
+});
+
+describe('observer inheritance fallback', () => {
+  // BehaviorScript needs one observer authored against the base class to cover
+  // every synthetic subclass. This is the regression net for that contract.
+  // A base class without a hard-coded `readonly name` (TestComponent has one,
+  // so it can't model the BehaviorScript subclass story).
+  class BaseHost extends Component {
+    static componentName = 'BaseHost';
+    size = [10, 10];
+  }
+  class SyntheticChild extends BaseHost {
+    static componentName = 'SyntheticChild';
+  }
+  class BaseHostSystem {
+    static systemName = 'BaseHostSystem';
+    static observerInfo = {
+      BaseHost: [{ prop: ['size'], deep: false }],
+    };
+    componentObserver = {
+      add: jest.fn(),
+      clear: jest.fn(),
+      getChanged: jest.fn(),
+    };
+    destroy() {}
+  }
+
+  let system: BaseHostSystem;
+  beforeEach(() => {
+    initObserver(BaseHostSystem as any);
+    system = new BaseHostSystem();
+    setSystemObserver(system as any, BaseHostSystem as any);
+  });
+  afterEach(() => {
+    testUtils.clearLocal();
+  });
+
+  it('observerAdded on a subclass instance fires the base observer', () => {
+    const child = new SyntheticChild();
+    expect(child.name).toBe('SyntheticChild');
+    observerAdded(child);
+    expect(system.componentObserver.add).toBeCalledTimes(1);
+    expect(system.componentObserver.add).toHaveBeenLastCalledWith({
+      component: child,
+      type: ObserverType.ADD,
+      componentName: 'SyntheticChild',
+    });
+  });
+
+  it('observer() on a subclass picks up base-class observed props', () => {
+    const child = new SyntheticChild();
+    const gameObj = new GameObject('gameObj');
+    gameObj.addComponent(child);
+    observer(child);
+    expect(child['_size']).toEqual([10, 10]);
+    // Mutating the subclass's `size` fires the base-class CHANGE observer.
+    child.size = [20, 20];
+    expect(system.componentObserver.add).toHaveBeenCalled();
+  });
+
+  it('explicit unrelated componentName still suppresses the fire', () => {
+    const child = new SyntheticChild();
+    observerAdded(child, 'Geometry');
+    expect(system.componentObserver.add).not.toBeCalled();
+  });
+
+  it('observerRemoved on a subclass instance fires the base observer', () => {
+    const child = new SyntheticChild();
+    observerRemoved(child);
+    expect(system.componentObserver.add).toBeCalledTimes(1);
+    expect(system.componentObserver.add).toHaveBeenLastCalledWith({
+      component: child,
+      type: ObserverType.REMOVE,
+      componentName: 'SyntheticChild',
+    });
   });
 });

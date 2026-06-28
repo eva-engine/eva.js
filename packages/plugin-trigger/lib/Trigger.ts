@@ -78,7 +78,7 @@ export class Trigger extends Component<TriggerParams> {
           console.log('[trigger]', action.message, payload);
           break;
         case 'callMethod':
-          this.callMethod(action.entity, action.component, action.method, action.args ?? []);
+          this.callMethod(action.entity, action.component, action.method, action.args ?? [], action.ref);
           break;
       }
     } catch (err) {
@@ -87,7 +87,17 @@ export class Trigger extends Component<TriggerParams> {
     }
   }
 
-  private callMethod(entity: string, compName: string, method: string, args: any[]) {
+  /**
+   * 按 (entity, componentName[, ref]) 查找并调用方法。
+   *
+   * ADR-0024B:加 `ref` 字段后修复 alert-chase.json 等模板"同 entity 多
+   * BehaviorScript / Trigger 静默 dedup"的 hidden broken state。匹配规则:
+   *   - 无 ref:按 `(entity, componentName)` 取首个命中(legacy 行为)
+   *   - 有 ref:按 `(entity, componentName, ref)` 三元组定位,匹配 instance.ref /
+   *           instance.name / constructor.ref 字段(优先 instance.ref,与
+   *           ADR-0021 BehaviorScript first-class 一致)
+   */
+  private callMethod(entity: string, compName: string, method: string, args: any[], ref?: string) {
     const game: any = (this as any).gameObject?.scene?.game;
     if (!game) return;
     const stack: any[] = [...(game.scene?.gameObjects ?? [])];
@@ -96,7 +106,7 @@ export class Trigger extends Component<TriggerParams> {
       if (!go) continue;
       if (go.name === entity) {
         const comps: any[] = go.components ?? [];
-        const c = comps.find((c) => c?.constructor?.componentName === compName);
+        const c = this.findComponentByRef(comps, compName, ref);
         if (c && typeof c[method] === 'function') {
           c[method](...args);
         }
@@ -106,6 +116,32 @@ export class Trigger extends Component<TriggerParams> {
         for (const ch of go.transform.children) stack.push(ch.gameObject);
       }
     }
+  }
+
+  /**
+   * 从 comps 列表里取出符合 (componentName, ref) 的 Component 实例。
+   *
+   * `ref` 可选 - 未传时取首个 componentName 匹配的实例(legacy);传入时按
+   * 三元组定位,匹配优先级 instance.ref → instance.name → constructor.ref。
+   */
+  private findComponentByRef(
+    comps: any[],
+    componentName: string,
+    ref?: string,
+  ): any {
+    if (!ref) {
+      return comps.find((c) => c?.constructor?.componentName === componentName);
+    }
+    return comps.find((c) => {
+      if (c?.constructor?.componentName !== componentName) return false;
+      // 优先 instance.ref(ADR-0021 BehaviorScript first-class)
+      if (typeof c.ref === 'string' && c.ref === ref) return true;
+      // fallback:instance.name(自定义 Component 习惯字段)
+      if (typeof c.name === 'string' && c.name === ref) return true;
+      // fallback:constructor.ref(静态标签)
+      if (c?.constructor?.ref === ref) return true;
+      return false;
+    });
   }
 
   private evalGuard(guard: string, payload: any): boolean {

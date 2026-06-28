@@ -208,6 +208,19 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
     return modules.map(module => this.registerModule(module));
   }
 
+  /**
+   * Drop every script registered under the given `sourceUri`. Idempotent.
+   * Used by `ExtensionSetupHook.teardown` (ADR-0023) to clean up factory refs
+   * during HMR / engine destroy.
+   */
+  unregisterModule(sourceUri: string): string[] {
+    const reg: any = this.registry;
+    if (typeof reg.unregisterModule === 'function') {
+      return reg.unregisterModule(sourceUri);
+    }
+    return [];
+  }
+
   unregisterScript(scriptId: string) {
     this.registry.unregisterScript(scriptId);
   }
@@ -453,6 +466,12 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
           timestamp: Date.now(),
           componentName: 'BehaviorScript',
         });
+      },
+      // ADR-0024B — 跨 plugin 直链 API,内部用 record.cleanupHandles 注册
+      // detach 时自动 dispose attach handle。
+      fsm: {
+        attach: (entityName: string, fsmName?: string, options?: any) =>
+          this.attachFsm(record, entityName, fsmName, options),
       },
     };
 
@@ -1019,6 +1038,114 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
     const handle = createCleanupHandle(disposer);
     record.cleanupHandles.push(handle);
     return handle;
+  }
+
+  /**
+   * ADR-0024B `ctx.fsm.attach` 实现。
+   *
+   * 在 BehaviorScript factory 内一行 attach 到指定 entity 上的 StateMachine,
+   * 返回 handle 提供 detach / reset / goto / getFsm。framework 通过
+   * `record.cleanupHandles` 在 component detach 时自动 dispose,避免泄漏。
+   *
+   * 实现走 duck-typed walk(避免硬依赖 @eva/plugin-state-machine):
+   *   - 在 game.gameObjects 递归找 `gameObject.name === entityName` 的实体
+   *   - 在其 components 列表里找 `constructor.componentName === fsmName`(默认 'StateMachine')
+   *   - 若设 options.ref,按 (componentName, ref) 三元组定位(与 plugin-trigger
+   *     ref 字段语义一致)
+   *
+   * onMissing 三模式:
+   *   - 'wait'  — 返回延迟 handle,getFsm() 持续重新 walk(适合 globalEntities
+   *               FSM 在 setup 阶段还没就位的场景)
+   *   - 'warn'  — 立即 console.warn 一次,handle.getFsm() 返回 null
+   *   - 'throw' — 立即抛 Error
+   *
+   * 默认 'warn'(兼容性最好;'wait' 模式预留给 ADR-0024B Phase 3+ scene-switch
+   * 路径优化)。
+   */
+  private attachFsm(
+    record: BoundBehaviorScript,
+    entityName: string,
+    fsmName?: string,
+    options?: { onMissing?: 'wait' | 'warn' | 'throw'; ref?: string },
+  ): any {
+    const componentName = fsmName ?? 'StateMachine';
+    const onMissing = options?.onMissing ?? 'warn';
+    const ref = options?.ref;
+
+    let cached: any = null;
+    let detached = false;
+
+    const findFsm = (): any => {
+      if (detached) return null;
+      const game: any = (this as any).game;
+      if (!game) return null;
+      const stack: any[] = [...(game.scene?.gameObjects ?? []), ...(game.gameObjects ?? [])];
+      while (stack.length) {
+        const go = stack.pop();
+        if (!go || typeof go !== 'object') continue;
+        if (go.name === entityName) {
+          const comps: any[] = go.components ?? [];
+          const c = comps.find((c: any) => {
+            if (c?.constructor?.componentName !== componentName) return false;
+            if (!ref) return true;
+            if (typeof c.ref === 'string' && c.ref === ref) return true;
+            if (typeof c.name === 'string' && c.name === ref) return true;
+            return false;
+          });
+          if (c) return c;
+        }
+        if (Array.isArray(go.transform?.children)) {
+          for (const ch of go.transform.children) stack.push(ch.gameObject);
+        }
+      }
+      return null;
+    };
+
+    const ensureFsm = (): any | null => {
+      if (detached) return null;
+      if (cached && !cached.destroyed) return cached;
+      cached = findFsm();
+      return cached;
+    };
+
+    // 首次 attach 时按 onMissing 处理 not-found
+    const firstAttempt = findFsm();
+    cached = firstAttempt;
+    if (!firstAttempt) {
+      const msg =
+        `[plugin-behavior-script] ctx.fsm.attach: ` +
+        `${componentName}${ref ? `[ref=${ref}]` : ''} not found on entity "${entityName}"` +
+        ` (script ${record.scriptId})`;
+      if (onMissing === 'throw') {
+        throw new Error(msg);
+      } else if (onMissing === 'warn') {
+        // eslint-disable-next-line no-console
+        console.warn(msg);
+      }
+      // 'wait' — silent,后续 getFsm() 持续重试
+    }
+
+    // 注册 cleanup,detach 时清空 cached + 标记 detached
+    const cleanup = this.addCleanup(record, () => {
+      detached = true;
+      cached = null;
+    });
+
+    return {
+      getFsm: () => ensureFsm(),
+      reset: (payload?: any) => {
+        const fsm = ensureFsm();
+        if (fsm && typeof fsm.reset === 'function') fsm.reset(payload);
+      },
+      goto: (to: string, opts?: string | Record<string, any>) => {
+        const fsm = ensureFsm();
+        if (fsm && typeof fsm.goto === 'function') fsm.goto(to, opts as any);
+      },
+      detach: () => {
+        if (detached) return;
+        cleanup.dispose();
+      },
+    };
   }
 
   private setManagedTimer(

@@ -12,6 +12,43 @@ export enum ObserverType {
 }
 
 /**
+ * Resolve every observer-table key a Component instance could match.
+ *
+ * Today's behaviour: a single `componentName` is compared against the keys
+ * declared on `@componentObserver({...})`. That fails for plugin-behavior-script's
+ * "one BehaviorScript host, N synthetic subclasses (cannon.controller, NianMover,
+ * …)" pattern — the synthetic subclass's `componentName` is the scriptId, but
+ * the observer was authored against the base `BehaviorScript` class.
+ *
+ * Fix without breaking the API: when the caller leaves `componentName` at its
+ * default (= `component.name`), walk the instance's prototype chain and collect
+ * every ancestor's static `componentName` so the lookup can fall back to a
+ * base-class entry. When the caller passes an explicit string that does not
+ * match `component.name`, we honour that string strictly (a deliberate override
+ * — see observer.spec.ts cases like `observerAdded(testComp, 'Transform')`).
+ */
+function collectObserverLookupKeys(component: Component, componentName: string): string[] {
+  const keys: string[] = [];
+  if (componentName) keys.push(componentName);
+  // Only expand to the inheritance chain when the caller didn't pass an
+  // explicit override (i.e. the name still matches the instance's own name).
+  const ownName = component && typeof (component as any).name === 'string' ? (component as any).name : undefined;
+  if (!componentName || componentName === ownName) {
+    let ctor: any = component?.constructor;
+    // Skip the leaf class — it's already represented by `componentName`.
+    if (ctor) ctor = Object.getPrototypeOf(ctor);
+    while (ctor && ctor !== Function.prototype) {
+      const ctorName = ctor.componentName;
+      if (typeof ctorName === 'string' && ctorName && !keys.includes(ctorName)) {
+        keys.push(ctorName);
+      }
+      ctor = Object.getPrototypeOf(ctor);
+    }
+  }
+  return keys;
+}
+
+/**
  * Observer property
  * @remarks
  * If `deep` is true then all descendants of `prop` will be observed
@@ -147,9 +184,13 @@ function pushToQueue({
   component: Component;
   componentName: string;
 }) {
+  const lookupKeys = collectObserverLookupKeys(component, componentName);
   for (const systemName in observerInfos) {
     const observerInfo = observerInfos[systemName] || {};
-    const info = observerInfo[componentName];
+    let info: PureObserverProp[] | undefined;
+    for (const key of lookupKeys) {
+      if (observerInfo[key]) { info = observerInfo[key]; break; }
+    }
     if (!info) continue;
 
     const index = info.findIndex(p => {
@@ -270,7 +311,13 @@ export function initObserver(Systems: SystemConstructor[] | SystemConstructor) {
  * @param {string} componentName - default value is `component.name`, it will be deprecated
  */
 export function observer(component: Component, componentName: string = component.name) {
-  if (!componentName || !componentProps[componentName]) {
+  const lookupKeys = collectObserverLookupKeys(component, componentName);
+  let resolvedName = '';
+  let propsList: PureObserverProp[] | undefined;
+  for (const key of lookupKeys) {
+    if (componentProps[key]) { resolvedName = key; propsList = componentProps[key]; break; }
+  }
+  if (!propsList) {
     return;
   }
 
@@ -282,14 +329,14 @@ export function observer(component: Component, componentName: string = component
     throw new Error('component should be add to a gameObject');
   }
 
-  for (const item of componentProps[componentName]) {
+  for (const item of propsList) {
     const { property, key } = getObjectCache(component, item.prop);
     defineProperty({
       obj: property,
       key,
       prop: item,
       component,
-      componentName,
+      componentName: resolvedName,
     });
   }
 }
@@ -300,10 +347,14 @@ export function observer(component: Component, componentName: string = component
  * @param componentName - default value is `component.name`, it will be deprecated
  */
 export function observerAdded(component: Component, componentName: string = component.name) {
+  const lookupKeys = collectObserverLookupKeys(component, componentName);
   for (const systemName in observerInfos) {
     const observerInfo = observerInfos[systemName] || {};
-    const info = observerInfo[componentName];
-    if (info) {
+    let hit = false;
+    for (const key of lookupKeys) {
+      if (observerInfo[key]) { hit = true; break; }
+    }
+    if (hit) {
       systemInstance[systemName]?.componentObserver?.add({
         component,
         type: ObserverType.ADD,
@@ -319,10 +370,14 @@ export function observerAdded(component: Component, componentName: string = comp
  * @param componentName - default value is `component.name`, it will be deprecated
  */
 export function observerRemoved(component: Component, componentName: string = component.name) {
+  const lookupKeys = collectObserverLookupKeys(component, componentName);
   for (const systemName in observerInfos) {
     const observerInfo = observerInfos[systemName] || {};
-    const info = observerInfo[componentName];
-    if (info) {
+    let hit = false;
+    for (const key of lookupKeys) {
+      if (observerInfo[key]) { hit = true; break; }
+    }
+    if (hit) {
       systemInstance[systemName]?.componentObserver?.add({
         component,
         type: ObserverType.REMOVE,

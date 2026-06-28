@@ -11,6 +11,32 @@ import type {
 import { createBehaviorScriptInspectorMetadata } from './inspector';
 import type { BehaviorScriptInspectorFieldMetadata } from './inspector';
 
+/**
+ * Flat-shape init params produced by SceneManager when DSL uses the new
+ * `type: <scriptId>, props: userProps, $bs?: {...}` first-class shape.
+ *
+ * User props live at the top level (so observer.deep watches user data as-is);
+ * the runtime wrapper fields ride along as non-enumerable `__bsScriptId` /
+ * `__bsWrapper`. This avoids name collisions between user props and engine
+ * housekeeping keys (a script declaring `enabled: number` would conflict with
+ * the legacy `params.enabled` boolean).
+ */
+export type BehaviorScriptInitFlat<Props extends Record<string, any> = Record<string, any>> =
+  Partial<Props> & {
+    __bsScriptId: string;
+    __bsWrapper?: {
+      source?: BehaviorScriptSource;
+      hotReload?: BehaviorScriptHotReloadOptions;
+      enabled?: boolean;
+      priority?: number;
+      pauseMode?: BehaviorScriptPauseMode;
+      groups?: string[];
+      nodes?: Record<string, string>;
+      resources?: Record<string, string>;
+      executeInEditMode?: boolean;
+    };
+  };
+
 @decorators.componentObserver({})
 export class BehaviorScript<Props extends Record<string, any> = Record<string, any>> extends Component<
   BehaviorScriptParams<Props>
@@ -36,19 +62,56 @@ export class BehaviorScript<Props extends Record<string, any> = Record<string, a
 
   private binding?: BehaviorScriptRuntimeBinding;
 
-  init(params?: BehaviorScriptParams<Props>) {
+  init(params?: BehaviorScriptParams<Props> | BehaviorScriptInitFlat<Props>) {
     if (!params) return;
-    this.scriptId = params.scriptId;
-    this.props = (params.props ?? {}) as Props;
-    this.source = params.source ?? {};
-    this.hotReload = { enabled: true, keepState: true, ...(params.hotReload ?? {}) };
-    this.enabled = params.enabled !== false;
-    this.priority = normalizePriority(params.priority);
-    this.groups = normalizeGroups(params.groups);
-    this.nodes = normalizeNodes(params.nodes);
-    this.resources = normalizeResources(params.resources);
-    this.executeInEditMode = Boolean(params.executeInEditMode);
-    this.pauseMode = params.pauseMode ?? 'inherit';
+
+    // Detect call shape:
+    //   - Flat (new): SceneManager.addComponent built `{...userProps, __bsScriptId, __bsWrapper?}`
+    //     because the DSL component had `type: <scriptId>, props: userProps`.
+    //   - Legacy: `{scriptId: "...", props: {...}, source, hotReload, ...}`,
+    //     either from old DSL (type:"BehaviorScript", props.scriptId, props.props)
+    //     or from programmatic entity.addComponent(BehaviorScript, params).
+    const flatScriptId =
+      typeof (params as BehaviorScriptInitFlat<Props>).__bsScriptId === 'string'
+        ? (params as BehaviorScriptInitFlat<Props>).__bsScriptId
+        : undefined;
+
+    if (flatScriptId) {
+      const flat = params as BehaviorScriptInitFlat<Props>;
+      const wrapper = flat.__bsWrapper ?? {};
+      // Strip out the non-enumerable runtime markers so user-facing props stay
+      // clean (in practice they're already non-enumerable but be defensive).
+      const userProps: Record<string, any> = {};
+      for (const key of Object.keys(flat)) {
+        if (key === '__bsScriptId' || key === '__bsWrapper') continue;
+        userProps[key] = (flat as any)[key];
+      }
+      this.scriptId = flatScriptId;
+      this.props = userProps as Props;
+      this.source = wrapper.source ?? {};
+      this.hotReload = { enabled: true, keepState: true, ...(wrapper.hotReload ?? {}) };
+      this.enabled = wrapper.enabled !== false;
+      this.priority = normalizePriority(wrapper.priority);
+      this.groups = normalizeGroups(wrapper.groups);
+      this.nodes = normalizeNodes(wrapper.nodes);
+      this.resources = normalizeResources(wrapper.resources);
+      this.executeInEditMode = Boolean(wrapper.executeInEditMode);
+      this.pauseMode = wrapper.pauseMode ?? 'inherit';
+      return;
+    }
+
+    const legacy = params as BehaviorScriptParams<Props>;
+    this.scriptId = legacy.scriptId;
+    this.props = (legacy.props ?? {}) as Props;
+    this.source = legacy.source ?? {};
+    this.hotReload = { enabled: true, keepState: true, ...(legacy.hotReload ?? {}) };
+    this.enabled = legacy.enabled !== false;
+    this.priority = normalizePriority(legacy.priority);
+    this.groups = normalizeGroups(legacy.groups);
+    this.nodes = normalizeNodes(legacy.nodes);
+    this.resources = normalizeResources(legacy.resources);
+    this.executeInEditMode = Boolean(legacy.executeInEditMode);
+    this.pauseMode = legacy.pauseMode ?? 'inherit';
   }
 
   get script(): EvaBehaviorScript | undefined {
