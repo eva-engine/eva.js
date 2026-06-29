@@ -171,7 +171,11 @@ export default class Renderer extends System<RendererSystemParams> {
     if (params.debugMode) {
       globalThis.__PIXI_APP__ = app;
     }
-    await app.init({ sharedTicker: true, ...params, hello: true });
+    // preserveDrawingBuffer: true 让 PIXI WebGL backbuffer 在 compositing 后仍可读取。
+    // 之前默认 false 会导致 ticker.pause 后 canvas getImageData 拿到 0 像素,
+    // edit 模式下 sprite/spine/tilemap 全部"看不见"。开 true 后 readPixels 与 screenshot
+    // 稳定,perf 影响约 1-2%(只在每帧 commit 多一次 copy),production 可以默认开。
+    await app.init({ sharedTicker: true, preserveDrawingBuffer: true, ...params, hello: true });
     if (params.enableScroll !== undefined) {
       params.enableScroll ? enableScroll(app.renderer) : disableScroll(app.renderer);
     }

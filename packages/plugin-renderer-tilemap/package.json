@@ -11,6 +11,10 @@
     "dist"
   ],
   "types": "dist/plugin-renderer-tilemap.d.ts",
+  "scripts": {
+    "build:prod": "node ../../scripts/build.js plugin-renderer-tilemap -p -t",
+    "prepublishOnly": "npm run build:prod"
+  },
   "keywords": [
     "eva.js",
     "eva-plugin-renderer-tilemap"

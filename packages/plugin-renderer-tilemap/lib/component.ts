@@ -4,6 +4,7 @@ import { type } from '@eva/inspector-decorator';
 /**
  * 单个 Tilemap layer 的描述。
  *
+ * Phaser-style 静态 tilemap(v1 老路径):
  * - `data` 为二维数组,行优先(row-major):data[row][col]。
  * - tile id `0` 表示空格,不渲染;> 0 的 id 会按 `(id - 1)` 索引到 tileset 的第 N 个 tile。
  * - `offsetX/offsetY` 在 layer 级别整体偏移(等价 Phaser createLayer(... ,x,y))。
@@ -22,44 +23,86 @@ export interface TilemapLayer {
   tint?: number;
 }
 
+/* ───────────────────────────────────────────────────────── v2 (chunked) ── */
+
+/**
+ * Chunked cell data。与 libs/dsl 的 ChunkedCellData 同形,但为避免反向依赖,
+ * 在这里独立声明接口(结构兼容 JSON shape)。
+ *
+ * Cell encoding (1 int32 per cell):
+ *   bits 0..7    sourceSlot     (1..255,0 = 空)
+ *   bits 8..15   col
+ *   bits 16..23  row
+ *   bits 24..28  altIdx
+ *   bit  29      flipH
+ *   bit  30      flipV
+ *   bit  31      transpose
+ */
+export interface ChunkedCellData {
+  kind: 'chunked';
+  chunkSize: 16;
+  stride: 1;
+  chunks: Record<string, { blob: string; nonEmpty: number }>;
+}
+
+export interface TileMapLayerV2 {
+  id: string;
+  name?: string;
+  enabled?: boolean;
+  visible?: boolean;
+  locked?: boolean;
+  modulate?: string;
+  opacity?: number;
+  zIndex?: number;
+  yOrigin?: 'topLeft' | 'center';
+  ySort?: boolean;
+  ySortOriginPx?: number;
+  collisionEnabled?: boolean;
+  navigationEnabled?: boolean;
+  animationEnabled?: boolean;
+  cellData: ChunkedCellData;
+}
+
 export interface TilemapParams {
+  // ─────── v1 (Phaser-style 兼容) ───────
   /** Tileset 图像资源 key(对应 DSL assets 中的 image 资源)。 */
-  tileset: string;
+  tileset?: string;
   /** 单个 tile 在 tileset 中的宽度。 */
-  tileWidth: number;
+  tileWidth?: number;
   /** 单个 tile 在 tileset 中的高度。 */
-  tileHeight: number;
-  /**
-   * Tileset 横向有几列 tile。Tileset 图像总宽 ≥ tilesetColumns * tileWidth。
-   * 如果不传,会使用 tileset 图实际尺寸 / tileWidth 推断。
-   */
+  tileHeight?: number;
   tilesetColumns?: number;
-  /** Tileset 内部 tile 之间的间距,默认 0。 */
   tilesetSpacing?: number;
-  /** Tileset 内部 tile 与图像边缘的 margin,默认 0。 */
   tilesetMargin?: number;
-  /** 渲染时的 tile 显示宽度;不传则与 tileWidth 一致(用于切片放大)。 */
   renderTileWidth?: number;
-  /** 渲染时的 tile 显示高度。 */
   renderTileHeight?: number;
-  /** 多个 layer。 */
-  layers: TilemapLayer[];
+  layers?: TilemapLayer[];
+
+  // ─────── v2 (Godot-style chunked) ───────
+  /** 当存在时,System 走 chunked 路径,忽略 tileset/layers 老字段。 */
+  tilemapRef?: string;
+  mapOrigin?: { x: number; y: number };
+  /** 单 cell 像素;默认从 tileset 文档的 tileSize 派生。 */
+  cellSize?: { width: number; height: number };
+  layersV2?: TileMapLayerV2[];
+  collisionEnabled?: boolean;
+  navigationEnabled?: boolean;
+  animationEnabled?: boolean;
+  renderStrategy?: 'sprite' | 'mesh' | 'auto';
 }
 
 /**
- * Phaser-style Static Tilemap 渲染组件(MVP)。
+ * Tilemap 渲染组件。
  *
- * 行为:
- * 1. 从 `tileset` 资源加载一张 spritesheet 纹理;
- * 2. 每个 layer 对应一个 PixiJS Container;
- * 3. layer 内每个非零 tile 都创建一个 Sprite,texture 由原 tileset 切片得到;
- * 4. tile 在 layer Container 内的位置:`(col * tileW + offsetX, row * tileH + offsetY)`。
+ * v1 (Phaser-style, 静态): 通过 `tileset` + `layers[].data[][]` 渲染。
+ * v2 (Godot-style, chunked): 通过 `tilemapRef` + `layersV2[].cellData.chunks` 渲染。
  *
- * 不支持(Phase 2 视情况增加):tile flipping、动态修改 API、iso/hex、physics 碰撞、camera。
+ * System 通过有无 `tilemapRef` 判断走哪条路径。两条路径不共存于同一实例。
  */
 export default class Tilemap extends Component<TilemapParams> {
   static componentName: string = 'Tilemap';
 
+  // v1 fields
   @type('string') tileset: string = '';
   @type('number') tileWidth: number = 32;
   @type('number') tileHeight: number = 32;
@@ -69,6 +112,16 @@ export default class Tilemap extends Component<TilemapParams> {
   renderTileWidth?: number;
   renderTileHeight?: number;
   layers: TilemapLayer[] = [];
+
+  // v2 fields
+  @type('string') tilemapRef: string = '';
+  mapOrigin?: { x: number; y: number };
+  cellSize?: { width: number; height: number };
+  layersV2?: TileMapLayerV2[];
+  collisionEnabled?: boolean;
+  navigationEnabled?: boolean;
+  animationEnabled?: boolean;
+  renderStrategy?: 'sprite' | 'mesh' | 'auto';
 
   init(obj?: TilemapParams) {
     if (obj) Object.assign(this, obj);
