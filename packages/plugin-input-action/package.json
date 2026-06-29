@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-input-action",
-  "version": "2.1.0-beta.5",
+  "version": "2.1.0-beta.6",
   "description": "Action map — DSL 把 keyboard/touch/click 映射为语义化 action,emit 到 SignalBus,游戏逻辑只关心 action。",
   "main": "index.js",
   "module": "dist/plugin-input-action.esm.js",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.5",
-    "@eva/plugin-signal-bus": "2.1.0-beta.5"
+    "@eva/eva.js": "2.1.0-beta.6",
+    "@eva/plugin-signal-bus": "2.1.0-beta.6"
   }
 }

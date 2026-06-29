@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-signal-bus",
-  "version": "2.1.0-beta.5",
+  "version": "2.1.0-beta.6",
   "bundle": "EVA.plugin.signalBus",
   "description": "Named-signal bus for Eva.js — replaces ad-hoc EventBus.ts in every game with a single typed signals registry.",
   "main": "index.js",
@@ -18,6 +18,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.5"
+    "@eva/eva.js": "2.1.0-beta.6"
   }
 }

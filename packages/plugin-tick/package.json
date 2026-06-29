@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-tick",
-  "version": "2.1.0-beta.5",
+  "version": "2.1.0-beta.6",
   "description": "Reliable game-tick scheduler for Eva.js — wraps Component.update with onTick/onFixedTick/onLateTick hooks and a setInterval fallback (WallTicker) for environments where RAF is throttled.",
   "main": "index.js",
   "module": "dist/plugin-tick.esm.js",
@@ -17,6 +17,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.5"
+    "@eva/eva.js": "2.1.0-beta.6"
   }
 }
