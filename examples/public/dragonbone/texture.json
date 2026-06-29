@@ -1,0 +1,20 @@
+{
+  "SubTexture": [
+    { "x": 1, "y": 1, "width": 546, "name": "蓝圆", "height": 546 },
+    { "x": 809, "y": 102, "width": 153, "name": "云1", "height": 63 },
+    { "x": 840, "y": 167, "width": 65, "name": "红2", "height": 14 },
+    { "x": 776, "y": 167, "width": 62, "name": "红1", "height": 18 },
+    { "x": 809, "y": 1, "width": 99, "name": "组_72", "height": 99 },
+    { "x": 791, "y": 136, "width": 11, "name": "眼睛1", "height": 27 },
+    { "x": 776, "y": 136, "width": 13, "name": "眼睛2", "height": 27 },
+    { "x": 910, "y": 55, "width": 51, "name": "嘴", "height": 23 },
+    { "x": 964, "y": 55, "width": 46, "name": "手臂1", "height": 65 },
+    { "x": 910, "y": 1, "width": 87, "name": "望远镜", "height": 52 },
+    { "x": 549, "y": 136, "width": 225, "name": "身体", "height": 137 },
+    { "x": 549, "y": 1, "width": 258, "name": "云2", "height": 133 }
+  ],
+  "width": 1024,
+  "name": "语音淘公仔动画",
+  "imagePath": "语音淘公仔动画_tex.png",
+  "height": 1024
+}

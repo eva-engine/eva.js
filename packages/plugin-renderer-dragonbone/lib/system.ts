@@ -22,7 +22,11 @@ const factory = dragonBones.PixiFactory.factory;
 resource.registerResourceType('DRAGONBONE');
 resource.registerInstance(RESOURCE_TYPE.DRAGONBONE, ({ data, name }) => {
   factory.parseDragonBonesData(data.ske, name);
-  factory.parseTextureAtlasData(data.tex, Texture.from(data.image), name);
+  // eva.js resource loader 走 pixi v8 Assets.load,image 字段已经是 Texture 实例;
+  // 老路径(直接传 ImageSource/URL string)留 fallback。pixi v8 的 Texture.from
+  // 不再接受 {type,url} 这种描述对象,所以必须先识别 Texture 实例。
+  const baseTexture = data.image instanceof Texture ? data.image : Texture.from(data.image);
+  factory.parseTextureAtlasData(data.tex, baseTexture, name);
 });
 resource.registerDestroy(RESOURCE_TYPE.DRAGONBONE, ({ name }) => {
   factory.removeDragonBonesData(name);
@@ -41,13 +45,24 @@ export default class DragonBone extends Renderer {
   rendererManager: RendererManager;
   containerManager: ContainerManager;
   private isRemovedMap: Map<Component, boolean> = new Map();
+  private _tickHandler = (ticker: any) => {
+    // pixi v8 把 ticker callback 的第一个参数从 deltaTime number 改成 Ticker 实例,
+    // dragonBones 内置的 PixiFactory._clockHandler 拿 number 来算 advanceTime,
+    // v8 下 number * Ticker 推出 NaN,动画停滞。这里直接以 ticker.deltaMS 推动
+    // dragonBones._dragonBonesInstance.advanceTime,绕开 v4 时代的 clock 公式。
+    const deltaMS = typeof ticker === 'number' ? ticker * 16.666 : (ticker?.deltaMS ?? 16.666);
+    const instance = (dragonBones.PixiFactory as any)._dragonBonesInstance;
+    if (instance) {
+      instance.advanceTime(deltaMS * 0.001);
+    }
+  };
   init() {
     this.renderSystem = this.game.getSystem(RendererSystem) as RendererSystem;
     this.renderSystem.rendererManager.register(this);
-    this.renderSystem.application.ticker.add(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
+    this.renderSystem.application.ticker.add(this._tickHandler, this);
   }
   onDestroy() {
-    this.renderSystem.application.ticker.remove(dragonBones.PixiFactory._clockHandler, dragonBones.PixiFactory);
+    this.renderSystem.application.ticker.remove(this._tickHandler, this);
   }
   async componentChanged(changed: ComponentChanged) {
     this.autoPlay[changed.gameObject.id] = (changed.component as DragonBoneComponent).autoPlay;

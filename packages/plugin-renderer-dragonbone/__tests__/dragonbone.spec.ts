@@ -209,7 +209,7 @@ describe('@eva/plugin-renderer-dragonbone — DragonBoneSystem', () => {
     expect(system.armatures).toEqual({});
   });
 
-  it('init() 期间会把 dragonBones._clockHandler 注册到 ticker 上(伪 game)', () => {
+  it('init() 期间会把自己的 tick handler 注册到 application.ticker 上(伪 game)', () => {
     // 伪造 RendererSystem 期望的最小形态
     const ticker = { add: jest.fn(), remove: jest.fn() };
     const fakeRenderSystem: any = {
@@ -224,10 +224,20 @@ describe('@eva/plugin-renderer-dragonbone — DragonBoneSystem', () => {
     system.init();
     expect(fakeRenderSystem.rendererManager.register).toHaveBeenCalledWith(system);
     expect(ticker.add).toHaveBeenCalledTimes(1);
+    // System 自己接管 tick → 注册的是 system._tickHandler,context=system 本身。
+    // (旧实现是 dragonBones.PixiFactory._clockHandler / PixiFactory,pixi v8
+    // 下 callback 第一参数从 number 变成 Ticker 对象,旧公式产出 NaN,所以这层
+    // 由 plugin 自接 ticker.deltaMS 推 advanceTime — 详见 system.ts:_tickHandler)
     expect(ticker.add).toHaveBeenCalledWith(
-      mockedDb.PixiFactory._clockHandler,
-      mockedDb.PixiFactory,
+      (system as any)._tickHandler,
+      system,
     );
+    // 调用 handler 后,dragonBones._dragonBonesInstance.advanceTime 应被推进
+    const advanceTimeSpy = jest.fn();
+    (mockedDb.PixiFactory as any)._dragonBonesInstance = { advanceTime: advanceTimeSpy };
+    (system as any)._tickHandler({ deltaMS: 33.3 });
+    expect(advanceTimeSpy).toHaveBeenCalledTimes(1);
+    expect(advanceTimeSpy.mock.calls[0][0]).toBeCloseTo(0.0333, 4);
   });
 
   it('componentChanged ADD 时拉资源 -> 建 armature -> 注册 9 种事件转发', async () => {

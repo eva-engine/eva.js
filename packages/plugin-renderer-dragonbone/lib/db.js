@@ -15,31 +15,90 @@ if (PIXIImport.Container && !PIXIImport.Container.prototype.setTransform) {
   };
 }
 
+// PixiJS v8 兼容性 polyfill
+// dragonBones runtime (db.js) 基于 pixi v4/v5 时代写成,直接引用了
+// PIXI.BLEND_MODES、PIXI.mesh.Mesh、PIXI.ticker.shared 这些 v8 已经移除的命名空间。
+// 这里在导入层做一次映射,把 v8 export 翻译回 dragonBones 期望的形状,
+// 让 IIFE 内部的代码不用动。
+//
+// v8 实际状况(已确认):
+// - PIXI.BLEND_MODES:不再是运行时 object,改为 TypeScript 字符串字面量联合;
+//   blendMode 赋值字符串 'normal' | 'add' | ... 即可。
+// - PIXI.mesh:整个 namespace 删除;Mesh 直接挂在顶层 PIXI.Mesh,
+//   不再有 Mesh.DRAW_MODES 这种静态常量(WebGPU/WebGL 抽象层重写)。
+//   且构造签名从 (geometry, shader, state, drawMode) 改成单 options 对象,
+//   dragonBones runtime 的 `new PIXI.mesh.Mesh(null, null, null, null, ...)`
+//   即使指向 v8 Mesh 也会 throw。退路是给一个 stub:返回 Sprite 实例,
+//   外加 vertices/uvs/indices 占位 — 这样 _buildSlot 不会爆,但 mesh slot
+//   的真实变形渲染走不到 (Sprite 不支持顶点变形)。绝大多数 dragonBones 资源
+//   是纯 image slot,这条退路够用;mesh slot 需要真实变形的资源会显示为
+//   未变形的 sprite — 可以接受,因为本来就没有 v8 mesh slot 路径可走。
+// - PIXI.ticker:不再是 namespace,Ticker 类直接挂顶层 PIXI.Ticker。
+//   PixiFactory._clockHandler 引用 PIXI.ticker.shared.elapsedMS 来算 delta,
+//   这里指到 PIXIImport.Ticker.shared 上,字段名 elapsedMS 在 v8 Ticker 仍保留。
+const _PIXI_TICKER_SHARED = (PIXIImport.Ticker && PIXIImport.Ticker.shared) || { elapsedMS: 16.666, deltaMS: 16.666 };
+
+// v8 Texture 构造从 (baseTexture, frame, orig, trim, rotate) 改成单 options 对象。
+// dragonBones runtime 在 PixiTextureAtlasData.renderTexture setter 里用 5 参数形式构造,
+// 不包装会立刻 throw。这里做一层 shim,识别旧式调用并翻译。
+const _RawTexture = PIXIImport.Texture;
+function _TextureShim(sourceOrOptions, frame, orig, trim, rotate) {
+  // 单参数且是普通 options 对象(非 Texture 实例)— 直接传给 v8 构造。
+  if (
+    arguments.length === 1 &&
+    sourceOrOptions &&
+    typeof sourceOrOptions === 'object' &&
+    !(sourceOrOptions instanceof _RawTexture) &&
+    !sourceOrOptions.baseTexture &&
+    (sourceOrOptions.source !== undefined || sourceOrOptions.dynamic !== undefined)
+  ) {
+    return new _RawTexture(sourceOrOptions);
+  }
+  // dragonBones 传入的 source 可能是另一张 Texture 实例,v8 需要 TextureSource。
+  var actualSource = sourceOrOptions;
+  if (sourceOrOptions instanceof _RawTexture) {
+    actualSource = sourceOrOptions.source || sourceOrOptions.baseTexture || sourceOrOptions;
+  }
+  return new _RawTexture({
+    source: actualSource,
+    frame: frame,
+    orig: orig,
+    trim: trim,
+    rotate: rotate ? 2 : 0,
+  });
+}
+// 把静态字段/原型挂回去,instanceof _TextureShim 也能命中真 Texture。
+_TextureShim.prototype = _RawTexture.prototype;
+Object.setPrototypeOf(_TextureShim, _RawTexture);
+
 const PIXI = {
-  Texture: PIXIImport.Texture,
+  Texture: _TextureShim,
   Rectangle: PIXIImport.Rectangle,
   Sprite: PIXIImport.Sprite,
   Graphics: PIXIImport.Graphics,
+  // v8 没有运行时 BLEND_MODES object,落到 fallback;
+  // 字符串值参考 v8 BLEND_MODES 类型 (rendering/renderers/shared/state/const)。
   BLEND_MODES: PIXIImport.BLEND_MODES || {
     NORMAL: 'normal',
     ADD: 'add',
-    DARKEN: 'darken',
-    DIFFERENCE: 'difference',
-    HARD_LIGHT: 'hard-light',
-    LIGHTEN: 'lighten',
     MULTIPLY: 'multiply',
-    OVERLAY: 'overlay',
     SCREEN: 'screen',
+    DARKEN: 'darken',
+    LIGHTEN: 'lighten',
+    OVERLAY: 'overlay',
+    HARD_LIGHT: 'hard-light',
+    DIFFERENCE: 'difference',
   },
-  // PixiJS v8 不再导出 mesh / ticker namespace,这里给 dragonbones runtime
-  // 提供一个最小 stub:把 Mesh 用 Container 替身(无 skinned mesh 变形,但
-  // 大部分骨骼动画走 Sprite 渲染,fallback 到 Sprite 也可见效果)。
-  mesh: (PIXIImport.mesh) || {
+  // v8 mesh namespace 消失,给一个 Sprite-based stub 让 _buildSlot 不爆。
+  // instanceof PIXI.mesh.Mesh 永远 false (stub 返回的是 Sprite 实例),
+  // 所以 _updateColor 中针对 mesh 的 tint 分支不会进入 — 但 Sprite 分支
+  // 已经处理了同样的 tint 路径,视觉上不丢什么。
+  mesh: PIXIImport.mesh || {
     Mesh: /** @class */ (function () {
-      // PixiJS v8 不再有 mesh.Mesh,这里只为让 dragonbones runtime 不爆错
-      // 提供 vertices/uvs/indices 数组占位。无真实 skinned mesh 渲染,
-      // 但 sprite-only 的 dragonbones 资源仍能正常显示。
       function MeshStub() {
+        // 用 Sprite 当 mesh 替身:可以加到 Container 树里,渲染时只显示 texture,
+        // 不做顶点变形。dragonBones runtime 设置 vertices/uvs/indices 后我们
+        // 只是把它们挂到 sprite 上当装饰字段,不会被 v8 渲染管线读到。
         var s = new PIXIImport.Sprite();
         s.vertices = [];
         s.uvs = [];
@@ -50,8 +109,18 @@ const PIXI = {
       return MeshStub;
     })(),
   },
-  ticker: PIXIImport.ticker || {},
+  // v8 把 ticker 拍平到 Ticker 顶层;dragonBones runtime 的 _clockHandler
+  // 每帧读 PIXI.ticker.shared.elapsedMS,这里桥接到 v8 的 Ticker.shared。
+  // 如果连 Ticker.shared 都没有(SSR/test 环境)走一个 16.666ms 假对象,
+  // dragonBones advanceTime 还能继续推帧而不至于 NPE。
+  ticker: PIXIImport.ticker || {
+    shared: _PIXI_TICKER_SHARED,
+  },
 };
+// 二次保险:即使 PIXIImport.ticker 存在但少 shared 字段,也兜底。
+if (!PIXI.ticker.shared) {
+  PIXI.ticker.shared = _PIXI_TICKER_SHARED;
+}
 var dragonBones;
 
 ('use strict');
