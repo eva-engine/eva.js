@@ -3008,4 +3008,33 @@ describe('plugin-behavior-script', () => {
     expect(result.ok).toBe(true);
     expect(restored).toHaveBeenCalledWith({ coins: 3 });
   });
+
+  it('test_onRegistryChange_fires_listener_on_register_and_unregister', () => {
+    const system = new BehaviorScriptSystem();
+    system.init();
+    const listener = jest.fn();
+    const handle = system.onRegistryChange(listener);
+
+    const factory = defineBehaviorScript({
+      id: 'rc.echo',
+      factory: () => ({}),
+    });
+    system.registerScript('rc.echo', factory);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'register', scriptId: 'rc.echo' }),
+    );
+
+    system.unregisterScript('rc.echo');
+    expect(listener).toHaveBeenCalledTimes(2);
+    expect(listener).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'unregister', scriptId: 'rc.echo' }),
+    );
+
+    handle.dispose();
+    const factory2 = defineBehaviorScript({ id: 'rc.echo.2', factory: () => ({}) });
+    system.registerScript('rc.echo.2', factory2);
+    // dispose 之后不再触发 listener
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
 });

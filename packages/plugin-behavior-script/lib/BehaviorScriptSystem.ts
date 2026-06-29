@@ -26,6 +26,7 @@ import type {
   BehaviorScriptReloadOptions,
   BehaviorScriptRegistryChange,
   BehaviorScriptRegistryChangeHandle,
+  BehaviorScriptRegistryChangeListener,
   BehaviorScriptRegistryLike,
   BehaviorScriptNodeResolution,
   BehaviorScriptResourceResolution,
@@ -126,7 +127,7 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
     this.registry = params?.registry ?? new BehaviorScriptRegistry();
     this.ownsRegistry = !params?.registry;
     if (params?.autoReload !== false) {
-      this.registryChangeHandle = this.registry.onDidChange?.(change => this.onRegistryChange(change));
+      this.registryChangeHandle = this.registry.onDidChange?.(change => this.handleRegistryChange(change));
     }
     this.failFast = Boolean(params?.failFast);
     this.onDiagnostic = params?.onDiagnostic;
@@ -255,6 +256,16 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
         })),
       }
     );
+  }
+
+  /**
+   * ADR-0021 Phase 2/6 — 暴露 registry change 订阅,让 editor ScriptCatalog
+   * 能跟随 hot reload / runtime registerModule 增量刷新。返回 dispose handle,
+   * 自定义 registry 不实现 onDidChange 时返回 no-op handle(语义同 vscode onDidX)。
+   */
+  onRegistryChange(listener: BehaviorScriptRegistryChangeListener): BehaviorScriptRegistryChangeHandle {
+    const handle = this.registry.onDidChange?.(listener);
+    return handle ?? { dispose: () => {} };
   }
 
   getBoundScripts(): BehaviorScript[] {
@@ -666,7 +677,7 @@ export class BehaviorScriptSystem extends System<BehaviorScriptSystemParams> {
     }
   }
 
-  private onRegistryChange(change: BehaviorScriptRegistryChange) {
+  private handleRegistryChange(change: BehaviorScriptRegistryChange) {
     if (this.suppressRegistryChange) return;
 
     if (change.type === 'register' && change.scriptId) {
