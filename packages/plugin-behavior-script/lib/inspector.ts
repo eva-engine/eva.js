@@ -1,5 +1,11 @@
 import type { BehaviorPropertyHint, BehaviorScriptManifest, BehaviorValueType } from './manifest';
 
+function resolveDescription(value: string | Record<string, string> | undefined): string | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'string') return value;
+  return value.en ?? value.default ?? Object.values(value)[0];
+}
+
 export interface BehaviorScriptInspectorFieldMetadata {
   name: string;
   type: string;
@@ -41,7 +47,7 @@ export function createBehaviorScriptInspectorMetadata(
       isArray: false,
       readonly: options.readonlyScriptId ?? Boolean(manifest?.scriptId),
       default: manifest?.scriptId,
-      description: manifest?.description ?? 'Stable behavior script id stored in DSL.',
+      description: resolveDescription(manifest?.description) ?? 'Stable behavior script id stored in DSL.',
     },
     createPropsMetadata(manifest),
   ];
@@ -144,7 +150,7 @@ export function createBehaviorScriptInspectorMetadata(
     group: 'Logic',
     isArray: false,
     isFolder: true,
-    description: manifest?.description ?? 'First-class gameplay behavior script binding.',
+    description: resolveDescription(manifest?.description) ?? 'First-class gameplay behavior script binding.',
     children,
   };
 }
