@@ -39,7 +39,9 @@ const sourceMap = args.sourcemap || args.s;
 const isRelease = args.release;
 const buildTypes = args.t || args.types || isRelease;
 const buildAllMatching = args.all || args.a;
-const commit = execa.sync('git', ['rev-parse', 'HEAD']).stdout.slice(0, 7);
+// 显式 cwd:在 publish 链下脚本会在 packages/<pkg>/ 子目录里跑,git 仍能解出
+// HEAD,但拿到的是外层 worktree 的 HEAD,不必然是 eva.js 仓库自己的。
+const commit = execa.sync('git', ['rev-parse', 'HEAD'], { cwd: path.resolve(__dirname, '..') }).stdout.slice(0, 7);
 
 run();
 
@@ -78,7 +80,7 @@ async function buildAll(targets) {
 }
 
 async function build(target) {
-  const pkgDir = path.resolve(`packages/${target}`);
+  const pkgDir = path.resolve(__dirname, '../packages', target);
   const pkg = require(`${pkgDir}/package.json`);
 
   // only build published packages for release
@@ -110,7 +112,10 @@ async function build(target) {
         .filter(Boolean)
         .join(','),
     ],
-    { stdio: 'inherit' },
+    // 显式锚 cwd 到 eva.js 仓库根。npm publish 会在 packages/<pkg>/ 子目录
+    // 触发 prepublishOnly -> build:prod,继承的 cwd 让 `rollup -c` 找不到
+    // 根目录的 rollup.config.js。这里强制回到 repo 根,与 utils.js 修复对齐。
+    { stdio: 'inherit', cwd: path.resolve(__dirname, '..') },
   );
 
   if (buildTypes && pkg.types) {
@@ -178,7 +183,7 @@ function checkAllSizes(targets) {
 }
 
 function checkSize(target) {
-  const pkgDir = path.resolve(`packages/${target}`);
+  const pkgDir = path.resolve(__dirname, '../packages', target);
   const pkg = require(`${pkgDir}/package.json`);
   checkFileSize(`${pkgDir}/dist/${pkg.bundle}.js`);
 }
