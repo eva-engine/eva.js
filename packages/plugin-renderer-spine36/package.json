@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-renderer-spine36",
-  "version": "2.1.0-beta.6",
+  "version": "2.1.0-beta.7",
   "description": "@eva/plugin-renderer-spine36",
   "main": "index.js",
   "module": "dist/plugin-renderer-spine36.esm.js",
@@ -18,10 +18,10 @@
   "license": "MIT",
   "homepage": "https://eva.js.org",
   "dependencies": {
-    "@eva/eva.js": "2.1.0-beta.6",
+    "@eva/eva.js": "2.1.0-beta.7",
     "@eva/inspector-decorator": "^2.0.0-beta.0",
-    "@eva/plugin-renderer": "2.1.0-beta.6",
-    "@eva/spine-base": "2.1.0-beta.6",
+    "@eva/plugin-renderer": "2.1.0-beta.7",
+    "@eva/spine-base": "2.1.0-beta.7",
     "pixi.js": "^8.17.0"
   }
 }
