@@ -117,7 +117,13 @@ export default class Tilemap extends Component<TilemapParams> {
   @type('string') tilemapRef: string = '';
   mapOrigin?: { x: number; y: number };
   cellSize?: { width: number; height: number };
-  layersV2?: TileMapLayerV2[];
+  // 显式 `= undefined`:被 TilemapSystem 的 @componentObserver 观察;
+  // init() 用 `Object.assign(this, obj)` 只 copy obj 里存在的 key,DSL v1 路径
+  // (tileset+layers) 不传 layersV2 时 own property 不存在,observer.ts:236 会打
+  // "prop layersV2 not in component: Tilemap, Can not observer" 并跳过响应式挂载,
+  // 后续赋值 tilemap.layersV2 也不会触发 System rebuild。加 `= undefined` 让 TS
+  // emit `this.layersV2 = void 0`,保证 own property 存在。
+  layersV2?: TileMapLayerV2[] = undefined;
   collisionEnabled?: boolean;
   navigationEnabled?: boolean;
   animationEnabled?: boolean;

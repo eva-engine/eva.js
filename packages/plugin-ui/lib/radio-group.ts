@@ -25,7 +25,12 @@ export default class RadioGroup extends Component<RadioGroupParams> {
   static override componentName = 'RadioGroup';
   componentName?: string = 'RadioGroup';
 
-  selectedId: string | undefined;
+  // 显式 `= undefined`:被 UISystem 的 `@componentObserver({ RadioGroup: ['selectedId', ...] })`
+  // 观察;applyParams 里 `if (typeof p.selectedId === 'string')` 是条件赋值,
+  // 默认 RadioGroup 无选中时 own property 不存在,observer.ts:236 会打
+  // "prop selectedId not in component: RadioGroup, Can not observer" 并跳过
+  // 响应式挂载,后续 `radioGroup.selectedId = 'xxx'` 也不会经 UISystem 同步子 CheckBox。
+  selectedId: string | undefined = undefined;
   childNames: string[] | undefined;
   direction: 'horizontal' | 'vertical' | 'bidirectional' = 'vertical';
   elementsMargin = 4;

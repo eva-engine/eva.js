@@ -79,9 +79,18 @@ export default class PerspectiveMesh extends Component<PerspectiveMeshParams> {
   /** 组件名称 */
   static componentName: string = 'PerspectiveMesh';
 
-  /** 纹理资源名称 */
+  /**
+   * 纹理资源名称。
+   *
+   * 显式初始化 `= ''`:被 MeshSystem 的 `@componentObserver({ PerspectiveMesh: ['resource', ...] })`
+   * 观察;init() 里 `if (obj && obj.resource) this.resource = obj.resource` 是
+   * 条件赋值,DSL 不传 resource 时 own property 不存在,observer.ts:236 会打
+   * "prop resource not in component: PerspectiveMesh, Can not observer" 并跳过
+   * 响应式挂载,后续切换 resource 也不会触发纹理重载。空串与业务上"未指定"
+   * 语义一致,与 Img/Sprite/Spine 的 resource 默认值约定对齐。
+   */
   @type('string')
-  resource: string;
+  resource: string = '';
 
   /** 横向顶点数量（网格密度） */
   @type('number') @step(1)
