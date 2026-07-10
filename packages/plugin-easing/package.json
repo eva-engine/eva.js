@@ -1,6 +1,6 @@
 {
   "name": "@eva/plugin-easing",
-  "version": "2.1.0-beta.7",
+  "version": "2.1.0-beta.8",
   "description": "Easing 函数库 — 16 个常用 ease 曲线,可被 tween/animation-track/path-follow 共享。",
   "main": "index.js",
   "module": "dist/plugin-easing.esm.js",
