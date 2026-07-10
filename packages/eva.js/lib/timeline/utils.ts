@@ -1,10 +1,14 @@
 export function createNowTime() {
-  let nowtime = null;
-  if (Date.now) {
-    nowtime = Date.now;
-  } else {
-    nowtime = () => new Date().getTime();
-  }
+  let lastTime = Number.NEGATIVE_INFINITY;
 
-  return nowtime;
+  return () => {
+    const currentTime =
+      typeof performance !== 'undefined' && typeof performance.now === 'function'
+        ? performance.now()
+        : Date.now
+        ? Date.now()
+        : new Date().getTime();
+    lastTime = Math.max(lastTime, currentTime);
+    return lastTime;
+  };
 }

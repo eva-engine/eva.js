@@ -2,10 +2,9 @@
  * Engine-level performance probes for {@link Game}.
  *
  * 设计:
- * - 不修改 Game.ts 源码,通过 monkey-patch 各 `system.update / lateUpdate`
- *   收集 systems 阶段时长;通过夹在 ticker._tickers 头尾的 prologue/epilogue
- *   hook 收集整帧时长,gameObjects 时长 = frameMs - sum(systems 时长)。
- * - 滑动窗口(sampleSize)给出真实 FPS / 平均帧 / average frame。
+ * - 不修改 Game.ts 源码,通过 monkey-patch 各 System 生命周期收集阶段时长。
+ * - 通过 Ticker 的物理帧 prologue/epilogue 收集整帧时长，每个 RAF 只产出一个样本。
+ * - 滑动窗口(sampleSize)给出 RAF FPS / 平均帧 / average frame。
  * - 每帧 budget 检查,连续 sustainedFrames 帧超标才告警(避免噪音)。
  * - 多次 install/uninstall 必须可重入,uninstall 必须把所有 patch 还原干净。
  * - headless(jest)友好:performance.now() 在 jsdom / Node 都有,不行才退到 Date.now。
@@ -15,32 +14,44 @@
 
 import type Game from './Game';
 import type System from '../core/System';
+import type { FrameParams } from './Ticker';
 
-/** Now() — 优先 performance.now(),否则 Date.now()。 */
-const now: () => number = (() => {
+/** Now() — 优先 performance.now(),否则 Date.now()。每次解析以支持运行时 clock instrumentation。 */
+const now = (): number => {
   const perf: { now?: () => number } | undefined = (globalThis as any).performance;
   if (perf && typeof perf.now === 'function') {
-    return perf.now.bind(perf) as () => number;
+    return perf.now();
   }
-  return () => Date.now();
-})();
+  return Date.now();
+};
 
 /**
  * 单帧采样数据。
  */
 export interface PerfFrame {
-  /** Ticker 给出的 frameCount */
+  /** Ticker 给出的物理帧计数 */
   frameCount: number;
-  /** 滑动窗口估算的真实 FPS(基于 frameMs 累计) */
+  /** 当前物理帧的 RAF FPS */
   fps: number;
   /** 本帧总耗时(systems update+lateUpdate + gameObjects 循环),毫秒 */
   frameMs: number;
-  /** 各 system 本帧的 update / lateUpdate 时长,毫秒 */
-  systems: { name: string; updateMs: number; lateUpdateMs: number }[];
+  /** 各 System 本帧的逻辑阶段与一次物理 frameUpdate 时长,毫秒 */
+  systems: {
+    name: string;
+    updateMs: number;
+    lateUpdateMs: number;
+    frameUpdateMs?: number;
+  }[];
+  /** 所有 System 的 frameUpdate 时长之和,毫秒 */
+  frameUpdateMs?: number;
   /** 本帧 gameObjects 循环耗时,毫秒(估算 = frameMs - sum(systems)) */
   gameObjectsMs: number;
   /** 本帧 game.gameObjects 数量 */
   gameObjectCount: number;
+  /** 当前 RAF 间隔；baseline 帧为 0 */
+  rafDeltaTime?: number;
+  /** 当前物理帧执行的固定逻辑更新次数 */
+  updatesThisFrame?: number;
 }
 
 /**
@@ -90,7 +101,7 @@ export interface PerfProbesHandle {
   onFrame(fn: (frame: PerfFrame) => void): () => void;
   /** 订阅 violation 触发,返回 dispose 句柄 */
   onViolation(fn: (v: PerfViolation) => void): () => void;
-  /** 卸载所有 hook,把 system update 和 ticker._tickers 还原 */
+  /** 卸载所有 hook，并按 ownership 还原 System 方法 */
   uninstall(): void;
 }
 
@@ -101,12 +112,24 @@ const DEFAULT_MIN_FPS = 30;
 const DEFAULT_SUSTAINED_FRAMES = 60;
 
 /** 单个 system 的 patch 记录。uninstall 时还原。 */
+type PatchedSystemMethodName = 'update' | 'lateUpdate' | 'frameStart' | 'frameUpdate';
+type TimedSystemMethodName = 'update' | 'lateUpdate' | 'frameUpdate';
+
+interface MethodPatchRecord {
+  original?: (...args: any[]) => any;
+  wrapper?: (...args: any[]) => any;
+  hadOwn: boolean;
+}
+
 interface SystemPatchRecord {
   system: System;
-  origUpdate?: System['update'];
-  origLateUpdate?: System['lateUpdate'];
-  hadOwnUpdate: boolean;
-  hadOwnLateUpdate: boolean;
+  methods: Record<PatchedSystemMethodName, MethodPatchRecord>;
+}
+
+interface SystemTimes {
+  updateMs: number;
+  lateUpdateMs: number;
+  frameUpdateMs: number;
 }
 
 /** Violation 状态机:每个 violation 字段独立追踪。 */
@@ -120,7 +143,7 @@ interface ViolationCounter {
  * 给一个 Game 实例装上性能探针。
  *
  * - 必须在 game 已经 init 之后调用(否则 game.ticker 还没有,会拒绝并打 warn)。
- * - install 之后再 addSystem 的 system,probes 会在每帧 epilogue 自动 patch。
+ * - install 之后再 addSystem 的 System 会在 systemAdded 事件中同步 patch；prologue 仍作兜底。
  * - 同一 game 多次 install:旧 handle 应先 uninstall;否则两套 hook 会串扰。
  * - uninstall 后 install 必须能正常工作。
  */
@@ -129,8 +152,7 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
   const warnOnViolation = options.warnOnViolation ?? true;
 
   // 预算字段填默认值(只补 maxFrameMs / minFps / sustainedFrames;system / gameObjects 不强制)
-  const budget: Required<Pick<PerfBudget, 'maxFrameMs' | 'minFps' | 'sustainedFrames'>> &
-    PerfBudget = {
+  const budget: Required<Pick<PerfBudget, 'maxFrameMs' | 'minFps' | 'sustainedFrames'>> & PerfBudget = {
     maxFrameMs: options.budget?.maxFrameMs ?? DEFAULT_MAX_FRAME_MS,
     minFps: options.budget?.minFps ?? DEFAULT_MIN_FPS,
     sustainedFrames: options.budget?.sustainedFrames ?? DEFAULT_SUSTAINED_FRAMES,
@@ -140,7 +162,7 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
 
   // ---------- 内部状态 ----------
   // 当前帧累计的 systems 时长(在 epilogue 中清零并组装成 PerfFrame)
-  const currentSystemTimes = new Map<System, { updateMs: number; lateUpdateMs: number }>();
+  const currentSystemTimes = new Map<System, SystemTimes>();
   // 当前帧的整帧开始时刻(prologue 写,epilogue 读)
   let frameStart = 0;
   // 滑动窗口
@@ -158,74 +180,73 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
 
   // ---------- system patch ----------
 
+  function getSystemTimes(system: System): SystemTimes {
+    let slot = currentSystemTimes.get(system);
+    if (!slot) {
+      slot = { updateMs: 0, lateUpdateMs: 0, frameUpdateMs: 0 };
+      currentSystemTimes.set(system, slot);
+    }
+    return slot;
+  }
+
+  function patchMethod(
+    system: System,
+    method: PatchedSystemMethodName,
+    timedMethod?: TimedSystemMethodName,
+  ): MethodPatchRecord {
+    const hadOwn = Object.prototype.hasOwnProperty.call(system, method);
+    const original = (system as any)[method];
+    if (typeof original !== 'function') {
+      return { original: undefined, wrapper: undefined, hadOwn };
+    }
+
+    const wrapper = function patchedSystemMethod(this: System, ...args: any[]) {
+      if (!timedMethod) {
+        return original.apply(this, args);
+      }
+      const t0 = now();
+      try {
+        return original.apply(this, args);
+      } finally {
+        const key = `${timedMethod}Ms` as keyof SystemTimes;
+        getSystemTimes(system)[key] += Math.max(0, now() - t0);
+      }
+    };
+    (system as any)[method] = wrapper;
+    return { original, wrapper, hadOwn };
+  }
+
   function patchSystem(system: System): void {
     if (patched.has(system)) return;
-    const proto = Object.getPrototypeOf(system) ?? {};
-    const hadOwnUpdate = Object.prototype.hasOwnProperty.call(system, 'update');
-    const hadOwnLateUpdate = Object.prototype.hasOwnProperty.call(system, 'lateUpdate');
-    const origUpdate = (system.update as System['update']) ?? (proto.update as System['update']);
-    const origLateUpdate =
-      (system.lateUpdate as System['lateUpdate']) ?? (proto.lateUpdate as System['lateUpdate']);
-
-    if (typeof origUpdate === 'function') {
-      const fn = origUpdate;
-      (system as any).update = function patchedUpdate(this: System, e: any) {
-        const t0 = now();
-        try {
-          return fn.call(this, e);
-        } finally {
-          const dt = now() - t0;
-          const slot = currentSystemTimes.get(system) ?? { updateMs: 0, lateUpdateMs: 0 };
-          slot.updateMs += dt;
-          currentSystemTimes.set(system, slot);
-        }
-      };
-    }
-
-    if (typeof origLateUpdate === 'function') {
-      const fn = origLateUpdate;
-      (system as any).lateUpdate = function patchedLateUpdate(this: System, e: any) {
-        const t0 = now();
-        try {
-          return fn.call(this, e);
-        } finally {
-          const dt = now() - t0;
-          const slot = currentSystemTimes.get(system) ?? { updateMs: 0, lateUpdateMs: 0 };
-          slot.lateUpdateMs += dt;
-          currentSystemTimes.set(system, slot);
-        }
-      };
-    }
-
     patched.set(system, {
       system,
-      origUpdate,
-      origLateUpdate,
-      hadOwnUpdate,
-      hadOwnLateUpdate,
+      methods: {
+        update: patchMethod(system, 'update', 'update'),
+        lateUpdate: patchMethod(system, 'lateUpdate', 'lateUpdate'),
+        // frameStart 仅用于透传和 ownership，不虚构 frameStartMs。
+        frameStart: patchMethod(system, 'frameStart'),
+        frameUpdate: patchMethod(system, 'frameUpdate', 'frameUpdate'),
+      },
     });
   }
 
   function unpatchSystem(record: SystemPatchRecord): void {
-    const { system, origUpdate, origLateUpdate, hadOwnUpdate, hadOwnLateUpdate } = record;
-    // 只有当 system 上当前的 update/lateUpdate 还是我们装的 patched 版本时才还原。
-    // 如果用户/其他 patch 在我们之上又包了一层,我们不强行覆盖。
-    // 简化策略:直接还原成原始引用(或 delete 我们自己写在实例上的属性,让原型链生效)。
-    if (typeof origUpdate === 'function') {
-      if (hadOwnUpdate) {
-        (system as any).update = origUpdate;
+    const { system, methods } = record;
+    for (const method of Object.keys(methods) as PatchedSystemMethodName[]) {
+      const { original, wrapper, hadOwn } = methods[method];
+      // 只回收仍由本探针持有的 wrapper；用户后装的方法必须原样保留。
+      if (!wrapper || (system as any)[method] !== wrapper) continue;
+      if (hadOwn) {
+        (system as any)[method] = original;
       } else {
-        delete (system as any).update;
-      }
-    }
-    if (typeof origLateUpdate === 'function') {
-      if (hadOwnLateUpdate) {
-        (system as any).lateUpdate = origLateUpdate;
-      } else {
-        delete (system as any).lateUpdate;
+        delete (system as any)[method];
       }
     }
   }
+
+  const systemAddedHook = (system: System) => {
+    if (!uninstalled) patchSystem(system);
+  };
 
   // ---------- ticker hook 安插 ----------
 
@@ -233,7 +254,7 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
    * Prologue:在每帧 ticker callback 开始时记录 frameStart。
    * Epilogue:结算 frameMs / gameObjectsMs,写入 lastFrame、滑动窗口、跑 violation 检测。
    */
-  const prologueHook = (_e?: any) => {
+  const prologueHook = (_frame: FrameParams) => {
     frameStart = now();
     // 清空当前帧累计
     currentSystemTimes.clear();
@@ -243,45 +264,46 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
     }
   };
 
-  const epilogueHook = (e?: any) => {
+  const epilogueHook = (frame: FrameParams) => {
     const frameEnd = now();
     const frameMs = Math.max(0, frameEnd - frameStart);
-    const systems = (game.systems ?? []).map((sys) => {
-      const slot = currentSystemTimes.get(sys) ?? { updateMs: 0, lateUpdateMs: 0 };
+    const systems = (game.systems ?? []).map(sys => {
+      const slot = currentSystemTimes.get(sys) ?? {
+        updateMs: 0,
+        lateUpdateMs: 0,
+        frameUpdateMs: 0,
+      };
       const sysName =
-        (sys as any).name ||
-        (sys as any).constructor?.systemName ||
-        (sys as any).constructor?.name ||
-        'UnknownSystem';
+        (sys as any).name || (sys as any).constructor?.systemName || (sys as any).constructor?.name || 'UnknownSystem';
       return {
         name: sysName as string,
         updateMs: slot.updateMs,
         lateUpdateMs: slot.lateUpdateMs,
+        frameUpdateMs: slot.frameUpdateMs,
       };
     });
-    const sysSum = systems.reduce((acc, s) => acc + s.updateMs + s.lateUpdateMs, 0);
+    const frameUpdateMs = systems.reduce((acc, s) => acc + (s.frameUpdateMs ?? 0), 0);
+    const sysSum = systems.reduce((acc, s) => acc + s.updateMs + s.lateUpdateMs + (s.frameUpdateMs ?? 0), 0);
     const gameObjectsMs = Math.max(0, frameMs - sysSum);
     const gameObjectCount = (game.gameObjects ?? []).length;
 
-    const frameCount = (e && typeof e.frameCount === 'number' ? e.frameCount : 0) as number;
+    const frameCount = frame && typeof frame.rafFrameCount === 'number' ? frame.rafFrameCount : 0;
+    const rafDeltaTime = frame && typeof frame.rafDeltaTime === 'number' ? frame.rafDeltaTime : 0;
+    const fps = rafDeltaTime > 0 ? (Number.isFinite(frame.rafFps) ? frame.rafFps : 1000 / rafDeltaTime) : 0;
 
-    // 滑动窗口先入,再算 fps
-    window.push({
+    const sample: PerfFrame = {
       frameCount,
-      fps: 0, // 占位,稍后 patch
+      fps,
       frameMs,
       systems,
+      frameUpdateMs,
       gameObjectsMs,
       gameObjectCount,
-    });
+      rafDeltaTime,
+      updatesThisFrame: frame?.updatesThisFrame ?? 0,
+    };
+    window.push(sample);
     if (window.length > sampleSize) window.shift();
-
-    // 真实 FPS = 1000 * windowSize / sum(frameMs);frameMs 极小时 clamp 到 1000Hz
-    const sumFrameMs = window.reduce((acc, f) => acc + f.frameMs, 0);
-    const fps =
-      sumFrameMs > 0 ? Math.min(1000, (1000 * window.length) / sumFrameMs) : 1000;
-    const sample = window[window.length - 1];
-    sample.fps = fps;
     lastFrame = sample;
 
     // 触发 onFrame(snapshot 后再调,避免回调内 dispose 改 Set)
@@ -313,7 +335,7 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
       });
     }
     // fps
-    if (typeof budget.minFps === 'number') {
+    if (typeof budget.minFps === 'number' && (sample.rafDeltaTime ?? 0) > 0) {
       checks.push({
         name: 'fps',
         actual: sample.fps,
@@ -336,7 +358,7 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
       for (const s of sample.systems) {
         const limit = budget.maxSystemMs[s.name];
         if (typeof limit === 'number') {
-          const total = s.updateMs + s.lateUpdateMs;
+          const total = s.updateMs + s.lateUpdateMs + (s.frameUpdateMs ?? 0);
           checks.push({
             name: `system:${s.name}`,
             actual: total,
@@ -368,9 +390,7 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
           if (warnOnViolation) {
             // eslint-disable-next-line no-console
             console.warn(
-              `[perf-probes] sustained violation ${c.name}: actual=${c.actual.toFixed(
-                2,
-              )} threshold=${c.threshold}`,
+              `[perf-probes] sustained violation ${c.name}: actual=${c.actual.toFixed(2)} threshold=${c.threshold}`,
             );
           }
           if (violationSubs.size) {
@@ -391,27 +411,13 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
   }
 
   // ---------- 安装 ticker hook ----------
-  // 我们要把 prologue 放第一个、epilogue 放最后一个,夹住 Game.initTicker 注册的主回调。
-  // 注意:Set 没有 add-to-front,只能 snapshot+clear+rebuild。
-
-  // 保存 ticker._tickers 的"原始顺序"以便 uninstall 还原。
-  const tickerSet: Set<unknown> | null = (() => {
-    const ticker: any = (game as any).ticker;
-    if (!ticker) return null;
-    return ticker._tickers as Set<unknown>;
-  })();
-
-  let originalTickerOrder: unknown[] = [];
-  if (tickerSet) {
-    originalTickerOrder = Array.from(tickerSet);
-    tickerSet.clear();
-    tickerSet.add(prologueHook);
-    for (const fn of originalTickerOrder) {
-      tickerSet.add(fn);
-    }
-    tickerSet.add(epilogueHook);
+  // 捕获安装时 ticker，避免 game.ticker 后续替换时卸载到错误实例。
+  const ticker = game.ticker;
+  if (ticker) {
+    ticker.addFrameStart(prologueHook, -Infinity);
+    ticker.addFrame(epilogueHook, Infinity);
   }
-  // tickerSet 为 null 时,允许 install — uninstall 仍能调通。
+  game.on('systemAdded', systemAddedHook);
 
   // 立即 patch 所有现有 systems
   for (const sys of game.systems ?? []) {
@@ -424,42 +430,78 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
     if (window.length === 0) return null;
     const n = window.length;
     let sumFrameMs = 0;
-    let sumFps = 0;
     let sumGoMs = 0;
     let sumGoCount = 0;
+    let sumFrameUpdateMs = 0;
+    let sumRafDeltaTime = 0;
+    let rafIntervalCount = 0;
+    let fallbackFps = 0;
+    let fallbackFpsCount = 0;
+    let sumUpdatesThisFrame = 0;
     let lastFrameCount = 0;
     // systems 平均:按 name 聚合(取最后一帧的 system 列表作为 schema,避免 system 注册不一致)
     const last = window[n - 1];
-    const sysAvg = new Map<string, { updateMs: number; lateUpdateMs: number; n: number }>();
+    const sysAvg = new Map<string, { updateMs: number; lateUpdateMs: number; frameUpdateMs: number; n: number }>();
     for (const f of window) {
       sumFrameMs += f.frameMs;
-      sumFps += f.fps;
       sumGoMs += f.gameObjectsMs;
       sumGoCount += f.gameObjectCount;
+      sumFrameUpdateMs += f.frameUpdateMs ?? 0;
+      sumUpdatesThisFrame += f.updatesThisFrame ?? 0;
       lastFrameCount = f.frameCount;
+      if (typeof f.rafDeltaTime === 'number') {
+        if (f.rafDeltaTime > 0) {
+          sumRafDeltaTime += f.rafDeltaTime;
+          rafIntervalCount++;
+        }
+      } else {
+        fallbackFps += f.fps;
+        fallbackFpsCount++;
+      }
       for (const s of f.systems) {
-        const slot = sysAvg.get(s.name) ?? { updateMs: 0, lateUpdateMs: 0, n: 0 };
+        const slot = sysAvg.get(s.name) ?? {
+          updateMs: 0,
+          lateUpdateMs: 0,
+          frameUpdateMs: 0,
+          n: 0,
+        };
         slot.updateMs += s.updateMs;
         slot.lateUpdateMs += s.lateUpdateMs;
+        slot.frameUpdateMs += s.frameUpdateMs ?? 0;
         slot.n += 1;
         sysAvg.set(s.name, slot);
       }
     }
-    const systems = last.systems.map((s) => {
-      const slot = sysAvg.get(s.name) ?? { updateMs: 0, lateUpdateMs: 0, n: 1 };
+    const systems = last.systems.map(s => {
+      const slot = sysAvg.get(s.name) ?? {
+        updateMs: 0,
+        lateUpdateMs: 0,
+        frameUpdateMs: 0,
+        n: 1,
+      };
       return {
         name: s.name,
         updateMs: slot.updateMs / slot.n,
         lateUpdateMs: slot.lateUpdateMs / slot.n,
+        frameUpdateMs: slot.frameUpdateMs / slot.n,
       };
     });
+    const fps =
+      rafIntervalCount > 0
+        ? (1000 * rafIntervalCount) / sumRafDeltaTime
+        : fallbackFpsCount > 0
+        ? fallbackFps / fallbackFpsCount
+        : 0;
     return {
       frameCount: lastFrameCount,
-      fps: sumFps / n,
+      fps,
       frameMs: sumFrameMs / n,
       systems,
+      frameUpdateMs: sumFrameUpdateMs / n,
       gameObjectsMs: sumGoMs / n,
       gameObjectCount: sumGoCount / n,
+      rafDeltaTime: sumRafDeltaTime / Math.max(1, rafIntervalCount),
+      updatesThisFrame: sumUpdatesThisFrame / n,
     };
   }
 
@@ -492,18 +534,11 @@ export function installPerfProbes(game: Game, options: PerfProbeOptions = {}): P
       if (uninstalled) return;
       uninstalled = true;
 
-      // 还原 ticker 顺序:只移除我们自己装的 prologue/epilogue,保留原顺序 +
-      // install 之后用户可能新加的 callback。简单做法是:把 set 全清,
-      // 按 [originalTickerOrder, *(set 当前 - prologue - epilogue - originalOrder)] 重 add。
-      if (tickerSet) {
-        const current = Array.from(tickerSet);
-        const additions = current.filter(
-          (x) => x !== prologueHook && x !== epilogueHook && !originalTickerOrder.includes(x),
-        );
-        tickerSet.clear();
-        for (const fn of originalTickerOrder) tickerSet.add(fn);
-        for (const fn of additions) tickerSet.add(fn);
+      if (ticker) {
+        ticker.removeFrameStart(prologueHook);
+        ticker.removeFrame(epilogueHook);
       }
+      game.off('systemAdded', systemAddedHook);
 
       // 还原 system patches
       for (const record of patched.values()) {

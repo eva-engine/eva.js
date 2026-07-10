@@ -1,4 +1,5 @@
 import { System, decorators, Game, LOAD_SCENE_MODE, GameObject } from '@eva/eva.js';
+import type { FrameParams, UpdateParams } from '@eva/eva.js';
 import { Application } from '@eva/renderer-adapter';
 import RendererManager from './manager/RendererManager';
 import ContainerManager from './manager/ContainerManager';
@@ -8,6 +9,7 @@ import type { GetBoundsOptions, RenderBounds } from './manager/ContainerManager'
 import type { ApplicationOptions } from 'pixi.js';
 import { Ticker } from 'pixi.js';
 import { SuportedCompressedTexture } from './compressedTexture/ability';
+import { TransformInterpolation } from './transform-interpolation';
 
 export interface RendererSystemParams extends Partial<ApplicationOptions> {
   canvas?: HTMLCanvasElement;
@@ -77,8 +79,14 @@ export default class Renderer extends System<RendererSystemParams> {
   multiApps: Application[] = [];
   suportedCompressedTextureFormats: SuportedCompressedTexture;
   private destroyed = false;
+  private transformInterpolation = new TransformInterpolation();
+  private fallbackLogicalFrameCount = 0;
+  private lastLogicalFrameCount: number | null = null;
   async init(params: Partial<RendererSystemParams> | RendererGameLike = {}) {
     this.destroyed = false;
+    this.transformInterpolation.clear();
+    this.fallbackLogicalFrameCount = 0;
+    this.lastLogicalFrameCount = null;
     const gameLike = !this.game && isRendererGameLike(params) ? params : undefined;
     if (gameLike) {
       this.game = gameLike as Game;
@@ -184,7 +192,7 @@ export default class Renderer extends System<RendererSystemParams> {
     return app;
   }
 
-  update() {
+  update(_e?: UpdateParams) {
     if (this.destroyed || !this.game || !this.containerManager || !this.rendererManager) return;
 
     const changes = this.componentObserver.clear();
@@ -193,23 +201,76 @@ export default class Renderer extends System<RendererSystemParams> {
     }
 
     for (const gameObject of this.game.gameObjects) {
-      this.containerManager.updateTransform({
-        name: gameObject.id,
-        transform: gameObject.transform,
-      });
       this.rendererManager.update(gameObject);
     }
   }
-  lateUpdate(e) {
-    if (this.destroyed || !this.transform || !this.application) return;
+  lateUpdate(e?: UpdateParams) {
+    if (this.destroyed || !this.transform || !this.application || !this.game) return;
 
     this.transform.update();
-    this.application.ticker.update(e.time);
+    const logicalFrameCount = Number.isFinite(e?.frameCount) ? e.frameCount : ++this.fallbackLogicalFrameCount;
+    this.lastLogicalFrameCount = logicalFrameCount;
+    this.captureTransforms(logicalFrameCount, this.game.gameObjects);
+  }
+  private captureTransforms(logicalFrameCount: number, gameObjects: GameObject[]) {
+    let activeCount = 0;
+    for (const gameObject of gameObjects) {
+      if (!gameObject || gameObject.destroyed || !gameObject.transform) continue;
+      activeCount++;
+      this.transformInterpolation.capture(gameObject.id, gameObject.transform, logicalFrameCount);
+    }
+
+    if (this.transformInterpolation.size > activeCount) {
+      const activeIds = new Set<number>();
+      for (const gameObject of gameObjects) {
+        if (!gameObject || gameObject.destroyed || !gameObject.transform) continue;
+        activeIds.add(gameObject.id);
+      }
+      this.transformInterpolation.prune(activeIds);
+    }
+  }
+  frameUpdate(frame: FrameParams) {
+    if (this.destroyed || !this.application || !this.containerManager || !this.game) return;
+
+    // Refresh current values without advancing history. LayoutSystem can make
+    // its first reorder after this System's logical lateUpdate, so this same-
+    // frame capture prevents that final layout write from being overwritten.
+    const gameObjects = this.game.gameObjects;
+    this.captureTransforms(this.lastLogicalFrameCount ?? 0, gameObjects);
+
+    for (const gameObject of gameObjects) {
+      if (!gameObject || gameObject.destroyed) continue;
+      this.transformInterpolation.present(gameObject.id, frame.interpolationAlpha);
+    }
+
+    for (const gameObject of gameObjects) {
+      if (!gameObject || gameObject.destroyed) continue;
+      const presented = this.transformInterpolation.getPresented(gameObject.id);
+      if (!presented) continue;
+      const parentPresented =
+        presented.parentId === null ? undefined : this.transformInterpolation.getPresented(presented.parentId);
+      const fallbackParentSize =
+        presented.parentId !== null &&
+        !parentPresented &&
+        gameObject.transform?.parent?.gameObject?.id === presented.parentId
+          ? gameObject.transform.parent.size
+          : undefined;
+      this.containerManager.updatePresentedTransform({
+        name: gameObject.id,
+        transform: presented,
+        parentTransform: parentPresented,
+        fallbackParentSize,
+      });
+    }
+
+    this.application.ticker.speed = frame.playbackRate;
+    this.application.ticker.update(frame.rafTime);
   }
   onDestroy() {
     if (this.destroyed) return;
 
     this.destroyed = true;
+    this.transformInterpolation.clear();
     this.application?.ticker?.stop?.();
     this.application?.destroy(false, { children: true, context: true });
     for (const app of this.multiApps) {

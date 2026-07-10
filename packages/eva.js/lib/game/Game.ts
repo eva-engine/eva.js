@@ -1,4 +1,5 @@
 import Ticker from './Ticker';
+import type { FrameParams } from './Ticker';
 import Scene from './Scene';
 import type { SystemConstructor } from '../core/System';
 import System from '../core/System';
@@ -108,6 +109,20 @@ const gameObjectLoop = (e, gameObjects = []) => {
       } catch (e) {
         console.error(`gameObject: ${gameObject.name} ${component.name} lateUpdate error`, e);
       }
+    }
+  }
+};
+
+const systemFrameLoop = (frame: FrameParams, systems: System[], hook: 'frameStart' | 'frameUpdate') => {
+  for (const system of systems) {
+    try {
+      const callback = system[hook];
+      if (!callback) continue;
+      triggerStart(system);
+      callback.call(system, frame);
+    } catch (e) {
+      // @ts-ignore
+      console.error(`${system.constructor.systemName} ${hook} error`, e);
     }
   }
 };
@@ -298,6 +313,7 @@ class Game extends EventEmitter {
     }
 
     this.systems.push(system);
+    this.emit('systemAdded', system);
     return system;
   }
 
@@ -372,6 +388,9 @@ class Game extends EventEmitter {
    * 4. call lastUpdate method on all system
    */
   initTicker() {
+    this.ticker.addFrameStart(frame => {
+      systemFrameLoop(frame, this.systems, 'frameStart');
+    });
     this.ticker.add(e => {
       this.scene && gameObjectLoop(e, this.gameObjects);
       for (const system of this.systems) {
@@ -391,6 +410,9 @@ class Game extends EventEmitter {
           console.error(`${system.constructor.systemName} lateUpdate error`, e);
         }
       }
+    });
+    this.ticker.addFrame(frame => {
+      systemFrameLoop(frame, this.systems, 'frameUpdate');
     });
   }
 

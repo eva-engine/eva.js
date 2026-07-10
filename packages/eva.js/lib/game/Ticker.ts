@@ -1,9 +1,28 @@
 import { UpdateParams } from '../core/Component';
-import Timeline from '../timeline/index';
+import { createNowTime } from '../timeline/utils';
 
 interface TickerOptions {
   autoStart?: boolean;
   frameRate?: number;
+}
+
+export interface FrameParams {
+  readonly rafTime: number;
+  readonly rafDeltaTime: number;
+  readonly rafFps: number;
+  readonly rafFrameCount: number;
+  readonly updatesThisFrame: number;
+  readonly interpolationAlpha: number;
+  readonly simulationTime: number;
+  readonly playbackRate: number;
+}
+
+export type FrameCallback = (frame: FrameParams) => void;
+
+interface FrameCallbackEntry {
+  fn: FrameCallback;
+  priority: number;
+  order: number;
 }
 
 /** Ticker 的默认配置选项 */
@@ -34,13 +53,10 @@ class Ticker {
   /** 是否自动启动时钟 */
   autoStart: boolean;
 
-  /** 目标帧率，表示每秒调用 RAF 的次数 */
+  /** 目标逻辑帧率 */
   frameRate: number;
 
-  /** 全局时间线管理器 */
-  private timeline: Timeline;
-
-  /** 两帧之间的时间间隔（毫秒） */
+  /** 固定逻辑步长（毫秒） */
   private _frameDuration: number;
 
   /** 每帧调用的回调函数集合 */
@@ -49,8 +65,37 @@ class Ticker {
   /** requestAnimationFrame 的句柄 ID */
   _requestId: number | null;
 
-  /** 上一帧的渲染时间 */
-  private _lastFrameTime: number;
+  /** 上一次物理帧时间；null 表示下一帧仅建立 baseline */
+  private _lastRafTime: number | null;
+
+  /** 尚未消费的缩放游戏时间 */
+  private _accumulator: number;
+
+  /** 已执行的固定逻辑时间 */
+  private _simulationTime: number;
+
+  /** 物理帧计数 */
+  private _rafFrameCount: number;
+
+  /** 配置的逻辑播放速率 */
+  private _playbackRate: number;
+
+  /** 手动 update() 使用的单调时钟 */
+  private _now: () => number;
+
+  private _frameStartCallbacks: Map<FrameCallback, FrameCallbackEntry>;
+
+  private _frameCallbacks: Map<FrameCallback, FrameCallbackEntry>;
+
+  private _frameStartSnapshot: FrameCallback[];
+
+  private _frameSnapshot: FrameCallback[];
+
+  private _frameStartSnapshotDirty: boolean;
+
+  private _frameSnapshotDirty: boolean;
+
+  private _frameCallbackOrder: number;
 
   /** 从时钟开始以来的帧计数 */
   private _frameCount: number;
@@ -74,20 +119,31 @@ class Ticker {
     options = Object.assign({}, defaultOptions, options);
 
     this._frameCount = 0;
+    this._rafFrameCount = 0;
     this._frameDuration = 1000 / options.frameRate;
     this.autoStart = options.autoStart;
     this.frameRate = options.frameRate;
-
-    this.timeline = new Timeline({ originTime: 0, playbackRate: 1.0 });
-    this._lastFrameTime = this.timeline.currentTime;
+    this._lastRafTime = null;
+    this._accumulator = 0;
+    this._simulationTime = 0;
+    this._playbackRate = 1;
+    this._now = createNowTime();
 
     this._tickers = new Set();
+    this._frameStartCallbacks = new Map();
+    this._frameCallbacks = new Map();
+    this._frameStartSnapshot = [];
+    this._frameSnapshot = [];
+    this._frameStartSnapshotDirty = false;
+    this._frameSnapshotDirty = false;
+    this._frameCallbackOrder = 0;
     this._requestId = null;
+    this._started = false;
 
-    this._ticker = () => {
+    this._ticker = (time?: number) => {
       if (this._started) {
         this._requestId = requestAnimationFrame(this._ticker);
-        this.update();
+        this.update(time);
       }
     };
 
@@ -103,21 +159,46 @@ class Ticker {
    * 确保在 RAF 被节流（如低电量模式）时游戏时间仍与真实时间同步。
    * 设置最大补帧数上限，避免长时间挂起后一次性执行过多更新。
    */
-  update() {
-    const currentTime = this.timeline.currentTime;
+  update(rafTime?: number) {
+    const measuredTime = rafTime === undefined ? this._now() : rafTime;
+    const currentRafTime = this._lastRafTime === null ? measuredTime : Math.max(this._lastRafTime, measuredTime);
+    const rafDeltaTime = this._lastRafTime === null ? 0 : currentRafTime - this._lastRafTime;
+    this._lastRafTime = currentRafTime;
+    this._rafFrameCount++;
 
-    // 限制单次 RAF 回调最多补帧数，避免长时间挂起后卡顿
-    const maxCatchUpFrames = 5;
-    let frames = 0;
+    this._accumulator += Math.max(0, rafDeltaTime * this._playbackRate);
+    const epsilon = this._frameDuration * 1e-9;
+    const availableUpdates = Math.floor((this._accumulator + epsilon) / this._frameDuration);
+    const updatesThisFrame = Math.min(availableUpdates, 5);
+    const droppedUpdates = availableUpdates - updatesThisFrame;
 
-    while (currentTime - this._lastFrameTime >= this._frameDuration && frames < maxCatchUpFrames) {
-      this._lastFrameTime += this._frameDuration;
-      frames++;
+    this._accumulator -= availableUpdates * this._frameDuration;
+    if (Math.abs(this._accumulator) < epsilon) {
+      this._accumulator = 0;
+    }
 
+    const frameBase = {
+      rafTime: currentRafTime,
+      rafDeltaTime,
+      rafFps: rafDeltaTime > 0 ? 1000 / rafDeltaTime : 0,
+      rafFrameCount: this._rafFrameCount,
+      updatesThisFrame,
+      interpolationAlpha: this._accumulator / this._frameDuration,
+      playbackRate: this._playbackRate,
+    };
+
+    const frameStart: FrameParams = {
+      ...frameBase,
+      simulationTime: this._simulationTime,
+    };
+    this._callFrameCallbacks(this._getFrameStartSnapshot(), frameStart);
+
+    for (let updateIndex = 0; updateIndex < updatesThisFrame; updateIndex++) {
+      this._simulationTime += this._frameDuration;
       const options: UpdateParams = {
         deltaTime: this._frameDuration,
-        time: this._lastFrameTime,
-        currentTime: this._lastFrameTime,
+        time: this._simulationTime,
+        currentTime: this._simulationTime,
         frameCount: ++this._frameCount,
         fps: this.frameRate,
       };
@@ -129,10 +210,13 @@ class Ticker {
       }
     }
 
-    // 如果补帧达到上限仍有剩余时间差，重新同步避免持续追帧
-    if (currentTime - this._lastFrameTime >= this._frameDuration) {
-      this._lastFrameTime = currentTime;
-    }
+    this._simulationTime += droppedUpdates * this._frameDuration;
+
+    const frame: FrameParams = {
+      ...frameBase,
+      simulationTime: this._simulationTime,
+    };
+    this._callFrameCallbacks(this._getFrameSnapshot(), frame);
   }
 
   /**
@@ -151,22 +235,81 @@ class Ticker {
     this._tickers.delete(fn);
   }
 
+  addFrameStart(fn: FrameCallback, priority = 0) {
+    this._addFrameCallback(this._frameStartCallbacks, fn, priority);
+    this._frameStartSnapshotDirty = true;
+  }
+
+  removeFrameStart(fn: FrameCallback) {
+    if (this._frameStartCallbacks.delete(fn)) {
+      this._frameStartSnapshotDirty = true;
+    }
+  }
+
+  addFrame(fn: FrameCallback, priority = 0) {
+    this._addFrameCallback(this._frameCallbacks, fn, priority);
+    this._frameSnapshotDirty = true;
+  }
+
+  removeFrame(fn: FrameCallback) {
+    if (this._frameCallbacks.delete(fn)) {
+      this._frameSnapshotDirty = true;
+    }
+  }
+
+  private _addFrameCallback(callbacks: Map<FrameCallback, FrameCallbackEntry>, fn: FrameCallback, priority: number) {
+    const existing = callbacks.get(fn);
+    if (existing) {
+      existing.priority = priority;
+      return;
+    }
+    callbacks.set(fn, { fn, priority, order: this._frameCallbackOrder++ });
+  }
+
+  private _getFrameStartSnapshot() {
+    if (this._frameStartSnapshotDirty) {
+      this._frameStartSnapshot = this._createFrameSnapshot(this._frameStartCallbacks);
+      this._frameStartSnapshotDirty = false;
+    }
+    return this._frameStartSnapshot;
+  }
+
+  private _getFrameSnapshot() {
+    if (this._frameSnapshotDirty) {
+      this._frameSnapshot = this._createFrameSnapshot(this._frameCallbacks);
+      this._frameSnapshotDirty = false;
+    }
+    return this._frameSnapshot;
+  }
+
+  private _createFrameSnapshot(callbacks: Map<FrameCallback, FrameCallbackEntry>) {
+    return Array.from(callbacks.values())
+      .sort((a, b) => a.priority - b.priority || a.order - b.order)
+      .map(entry => entry.fn);
+  }
+
+  private _callFrameCallbacks(callbacks: FrameCallback[], frame: FrameParams) {
+    for (const callback of callbacks) {
+      callback(frame);
+    }
+  }
+
   /**
    * 启动主循环
    *
-   * 如果已经启动则忽略。启动后时间线播放速率设为 1.0。
+   * 如果已经启动则忽略。恢复时下一物理帧重建墙钟 baseline。
    */
   start() {
     if (this._started) return;
     this._started = true;
-    this.timeline.playbackRate = 1.0;
+    this._lastRafTime = null;
     this._requestId = requestAnimationFrame(this._ticker);
   }
 
   /**
    * 暂停主循环
    *
-   * 将时间线播放速率设为 0，停止帧更新。
+   * 取消 RAF，但保留已配置的播放速率。
    */
   pause() {
     this._started = false;
@@ -174,15 +317,19 @@ class Ticker {
       cancelAnimationFrame(this._requestId);
       this._requestId = null;
     }
-    this.timeline.playbackRate = 0;
+    this._lastRafTime = null;
   }
 
   /**
    * 设置时间线播放速率
    * @param rate - 播放速率（1.0 为正常速度）
+   * @throws RangeError 当播放速率不是有限非负数时抛出
    */
   setPlaybackRate(rate: number) {
-    this.timeline.playbackRate = rate;
+    if (!Number.isFinite(rate) || rate < 0) {
+      throw new RangeError('playback rate must be a finite, non-negative number');
+    }
+    this._playbackRate = rate;
   }
 }
 

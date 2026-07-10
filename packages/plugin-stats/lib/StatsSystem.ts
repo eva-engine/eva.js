@@ -1,4 +1,5 @@
 import { System } from '@eva/eva.js';
+import type { FrameParams } from '@eva/eva.js';
 import type { RendererSystem } from '@eva/plugin-renderer';
 import type { Application } from '@eva/renderer-adapter';
 import StatsComponent from './StatsComponent';
@@ -43,8 +44,14 @@ export default class StatsSystem extends System {
     this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.dom);
   }
-  lateUpdate() {
+  frameStart(_frame: FrameParams) {
+    if (!this.show) return;
+    this.stats && this.stats.begin();
+  }
+  frameUpdate(_frame: FrameParams) {
     if (!this.show) return;
     this.stats && this.stats.end(this.hook);
   }
+  /** @deprecated Stats timing now follows frameStart/frameUpdate. */
+  lateUpdate() {}
 }

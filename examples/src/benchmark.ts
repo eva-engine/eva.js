@@ -1,6 +1,8 @@
 import { Game, GameObject, resource, RESOURCE_TYPE, Component } from '@eva/eva.js';
 import { RendererSystem } from '@eva/plugin-renderer';
 import { Sprite, SpriteSystem } from '@eva/plugin-renderer-sprite';
+import { createFrameRecorder, createRateMeter } from './benchmark-metrics';
+import type { BenchmarkFrame, FrameRecorderReport, RateSnapshot } from './benchmark-metrics';
 
 export const name = 'Benchmark - 多元素移动性能测试';
 
@@ -12,123 +14,9 @@ const SPRITE_SIZE = 100; // 精灵大小
 const SPEED_MIN = 60; // 最小移动速度（像素/秒）
 const SPEED_MAX = 180; // 最大移动速度（像素/秒）
 
-// Delta时间记录器
-const deltaRecorder = {
-  recording: false,
-  startTime: 0,
-  deltas: [] as Array<{ time: number; deltaTime: number; fps: number }>,
-  maxDuration: 60000, // 60秒
-  sampleInterval: 1, // 每帧都记录
-
-  start() {
-    this.recording = true;
-    this.startTime = performance.now();
-    this.deltas = [];
-    console.log('开始记录 delta 时间，持续 60 秒...');
-  },
-
-  record(deltaTime: number) {
-    if (!this.recording) return;
-
-    const elapsed = performance.now() - this.startTime;
-    if (elapsed > this.maxDuration) {
-      this.stop();
-      return;
-    }
-
-    // 只记录每N帧或者异常帧
-    if (this.deltas.length % this.sampleInterval === 0 || deltaTime > 20) {
-      this.deltas.push({
-        time: elapsed,
-        deltaTime: deltaTime,
-        fps: Math.round(1000 / deltaTime),
-      });
-    }
-  },
-
-  stop() {
-    if (!this.recording) return;
-    this.recording = false;
-
-    console.log('记录完成！共记录', this.deltas.length, '帧');
-
-    // 分析数据
-    const analysis = this.analyze();
-    console.log('===== Delta 时间分析 =====');
-    console.log('平均 deltaTime:', analysis.avgDelta.toFixed(2), 'ms');
-    console.log('最小 deltaTime:', analysis.minDelta.toFixed(2), 'ms');
-    console.log('最大 deltaTime:', analysis.maxDelta.toFixed(2), 'ms');
-    console.log('标准差:', analysis.stdDev.toFixed(2), 'ms');
-    console.log('大于 20ms 的帧数:', analysis.slowFrames, '个 (', ((analysis.slowFrames / this.deltas.length) * 100).toFixed(2), '%)');
-    console.log('大于 30ms 的帧数:', analysis.verySlowFrames, '个');
-
-    // 找出最慢的10帧
-    console.log('===== 最慢的 10 帧 =====');
-    const slowest = [...this.deltas].sort((a, b) => b.deltaTime - a.deltaTime).slice(0, 10);
-    slowest.forEach((frame, i) => {
-      console.log(`${i + 1}. 时间: ${frame.time.toFixed(0)}ms, deltaTime: ${frame.deltaTime.toFixed(2)}ms, FPS: ${frame.fps}`);
-    });
-
-    // 导出为CSV
-    console.log('===== 导出数据 (复制下面的CSV) =====');
-    const csv = this.exportCSV();
-    console.log(csv.substring(0, 500) + '...\n(数据已保存到 window.deltaData)');
-
-    // 保存到全局变量
-    (window as any).deltaData = {
-      raw: this.deltas,
-      analysis,
-      csv,
-    };
-  },
-
-  analyze() {
-    if (this.deltas.length === 0) {
-      return { avgDelta: 0, minDelta: 0, maxDelta: 0, stdDev: 0, slowFrames: 0, verySlowFrames: 0 };
-    }
-
-    const deltas = this.deltas.map((d) => d.deltaTime);
-    let sum = 0;
-    let minDelta = Infinity;
-    let maxDelta = -Infinity;
-    let slowFrames = 0;
-    let verySlowFrames = 0;
-
-    // 一次遍历完成所有计算
-    for (let i = 0; i < deltas.length; i++) {
-      const delta = deltas[i];
-      sum += delta;
-      if (delta < minDelta) minDelta = delta;
-      if (delta > maxDelta) maxDelta = delta;
-      if (delta > 20) slowFrames++;
-      if (delta > 30) verySlowFrames++;
-    }
-
-    const avgDelta = sum / deltas.length;
-
-    // 计算标准差
-    let varianceSum = 0;
-    for (let i = 0; i < deltas.length; i++) {
-      varianceSum += Math.pow(deltas[i] - avgDelta, 2);
-    }
-    const stdDev = Math.sqrt(varianceSum / deltas.length);
-
-    return { avgDelta, minDelta, maxDelta, stdDev, slowFrames, verySlowFrames };
-  },
-
-  exportCSV() {
-    let csv = 'Time(ms),DeltaTime(ms),FPS\n';
-    this.deltas.forEach((d) => {
-      csv += `${d.time.toFixed(2)},${d.deltaTime.toFixed(2)},${d.fps}\n`;
-    });
-    return csv;
-  },
-};
-
 // 移动组件
 class Movement extends Component<{ velocity: { x: number; y: number } }> {
   static componentName = 'Movement';
-  static isFirstUpdate = true;
 
   velocity = {
     x: 0,
@@ -142,12 +30,6 @@ class Movement extends Component<{ velocity: { x: number; y: number } }> {
   }
 
   update(e: { deltaTime: number }) {
-    // 只在第一个组件上记录（避免重复记录）
-    if (Movement.isFirstUpdate) {
-      deltaRecorder.record(e.deltaTime);
-      Movement.isFirstUpdate = false;
-    }
-
     const position = this.gameObject.transform.position;
     const deltaSeconds = e.deltaTime / 1000;
 
@@ -165,8 +47,6 @@ class Movement extends Component<{ velocity: { x: number; y: number } }> {
       this.velocity.y = -this.velocity.y;
       position.y = Math.max(0, Math.min(CANVAS_HEIGHT, position.y));
     }
-
-    Movement.isFirstUpdate = true;
   }
 }
 
@@ -206,6 +86,8 @@ export async function init(canvas: HTMLCanvasElement) {
       new SpriteSystem(),
     ],
   });
+
+  window.game = game;
 
   // 图集中可用的精灵名称
   const spriteNames = ['fu.png', 'lu.png', 'cai.png', 'xi.png', 'shou.png'];
@@ -267,33 +149,82 @@ export async function init(canvas: HTMLCanvasElement) {
   fpsText.style.zIndex = '1000';
   document.body.appendChild(fpsText);
 
-  // 性能统计
-  let frameCount = 0;
-  let lastTime = performance.now();
-  let fps = 0;
+  const rateMeter = createRateMeter();
+  const frameRecorder = createFrameRecorder();
+  let latestRateSnapshot: RateSnapshot | undefined;
+  let publishedReport: FrameRecorderReport | undefined;
 
-  // FPS 统计循环
-  game.ticker.add(() => {
-    frameCount++;
-    const currentTime = performance.now();
-    const elapsed = currentTime - lastTime;
-
-    if (elapsed >= 1000) {
-      fps = Math.round((frameCount * 1000) / elapsed);
-      frameCount = 0;
-      lastTime = currentTime;
-
-      // 只在 FPS 更新时才更新 DOM（减少 DOM 操作）
-      const spriteCount = game.scene.children.length;
-      fpsText.textContent = `FPS: ${fps} | 精灵: ${spriteCount} | 画布: ${CANVAS_WIDTH}x${CANVAS_HEIGHT}`;
-    }
-  });
-
-  // 更新显示的辅助函数
   const updateDisplay = () => {
     const spriteCount = game.scene.children.length;
-    fpsText.textContent = `FPS: ${fps} | 精灵: ${spriteCount} | 画布: ${CANVAS_WIDTH}x${CANVAS_HEIGHT}`;
+    const rafFps = latestRateSnapshot ? latestRateSnapshot.rafFps.toFixed(1) : '--';
+    const logicUps = latestRateSnapshot ? latestRateSnapshot.logicUps.toFixed(1) : '--';
+    const updateBins = latestRateSnapshot ? latestRateSnapshot.updatesPerRaf.join('/') : '0/0/0/0/0/0';
+    fpsText.textContent = `RAF FPS: ${rafFps} | Logic UPS: ${logicUps} | U/RAF [0..5]: ${updateBins} | 精灵: ${spriteCount} | 画布: ${CANVAS_WIDTH}x${CANVAS_HEIGHT}`;
   };
+
+  const publishReport = (report: FrameRecorderReport) => {
+    if (report === publishedReport) return;
+    publishedReport = report;
+    const { analysis } = report;
+    const slowPercent = analysis.sampleCount ? (analysis.slowFrames / analysis.sampleCount) * 100 : 0;
+
+    (window as any).deltaData = report;
+    console.log('记录完成！共记录', analysis.sampleCount, '个物理帧样本');
+    console.log('保留/覆盖样本:', analysis.retainedSampleCount, '/', analysis.droppedSampleCount);
+    console.log('===== RAF Delta 时间分析 =====');
+    console.log('平均 rafDeltaTime:', analysis.avgDelta.toFixed(2), 'ms');
+    console.log('最小 rafDeltaTime:', analysis.minDelta.toFixed(2), 'ms');
+    console.log('最大 rafDeltaTime:', analysis.maxDelta.toFixed(2), 'ms');
+    console.log('标准差:', analysis.stdDev.toFixed(2), 'ms');
+    console.log('大于 20ms 的物理帧:', analysis.slowFrames, '个 (', slowPercent.toFixed(2), '%)');
+    console.log('大于 30ms 的物理帧:', analysis.verySlowFrames, '个');
+    console.log('U/RAF [0..5]:', analysis.updatesPerRaf.join('/'));
+    console.log('===== 最慢的 10 个物理帧 =====');
+    analysis.slowestFrames.forEach((sample, index) => {
+      console.log(
+        `${index + 1}. 时间: ${sample.time.toFixed(0)}ms, rafDeltaTime: ${sample.deltaTime.toFixed(2)}ms, RAF FPS: ${
+          sample.fps
+        }, Updates: ${sample.updateCount}`,
+      );
+    });
+    console.log('原始有界样本和 CSV 可通过 window.deltaData.raw / window.deltaData.csv 按需读取');
+  };
+
+  const deltaRecorder = {
+    get recording() {
+      return frameRecorder.recording;
+    },
+    get capacity() {
+      return frameRecorder.capacity;
+    },
+    get sampleCount() {
+      return frameRecorder.sampleCount;
+    },
+    start() {
+      frameRecorder.start();
+      console.log('开始记录物理帧 delta，最长持续 60 秒...');
+    },
+    record(frame: BenchmarkFrame) {
+      const report = frameRecorder.record(frame);
+      if (report) publishReport(report);
+      return report;
+    },
+    stop() {
+      const report = frameRecorder.stop();
+      if (report) publishReport(report);
+      return report;
+    },
+  };
+
+  game.ticker.addFrame(frame => {
+    const snapshot = rateMeter.record(frame);
+    deltaRecorder.record(frame);
+    if (!snapshot) return;
+    latestRateSnapshot = snapshot;
+    updateDisplay();
+  });
+
+  updateDisplay();
 
   // 暴露到 window 用于调试
   // @ts-ignore
@@ -335,6 +266,6 @@ export async function init(canvas: HTMLCanvasElement) {
 
   // 自动开始记录
   setTimeout(() => {
-    deltaRecorder.start();
+    if (!deltaRecorder.recording) deltaRecorder.start();
   }, 2000);
 }

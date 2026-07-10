@@ -1,6 +1,7 @@
 import { GameObject, Transform } from '@eva/eva.js';
 import { Point, ObservablePoint } from 'pixi.js';
 import { Container } from '@eva/renderer-adapter';
+import type { TransformSample } from '../transform-interpolation';
 
 export type BoundsCoordinateSpace = 'world' | 'canvas' | 'design';
 
@@ -84,7 +85,12 @@ export default class ContainerManager {
     if (container?.getBounds) {
       try {
         const bounds = container.getBounds();
-        if (bounds && Number.isFinite(bounds.width) && Number.isFinite(bounds.height) && (bounds.width !== 0 || bounds.height !== 0)) {
+        if (
+          bounds &&
+          Number.isFinite(bounds.width) &&
+          Number.isFinite(bounds.height) &&
+          (bounds.width !== 0 || bounds.height !== 0)
+        ) {
           return toRenderBounds(bounds, coordinateSpace, 'pixi');
         }
       } catch (error) {
@@ -135,25 +141,60 @@ export default class ContainerManager {
   }
 
   updateTransform({ name, transform }: { name: number; transform: Transform }) {
-    const container = this.containerMap[name];
+    const parentSize = transform?.parent?.size;
+    this.applyTransform(name, transform, Boolean(transform?.parent), parentSize);
+  }
+
+  updatePresentedTransform({
+    name,
+    transform,
+    parentTransform,
+    fallbackParentSize,
+  }: {
+    name: number;
+    transform: TransformSample;
+    parentTransform?: TransformSample;
+    fallbackParentSize?: { width: number; height: number };
+  }) {
+    this.applyTransform(name, transform, transform.parentId !== null, parentTransform?.size ?? fallbackParentSize);
+  }
+
+  private applyTransform(
+    name: number,
+    transform: Pick<TransformSample, 'anchor' | 'origin' | 'position' | 'rotation' | 'scale' | 'size' | 'skew'>,
+    hasParent: boolean,
+    parentSize?: { width: number; height: number },
+  ) {
+    const container = this.containerMap[name] as any;
     if (!container || !transform) return;
     const { anchor, origin, position, rotation, scale, size, skew } = transform;
     container.rotation = rotation;
-    // @ts-ignore
-    container.scale = scale as Point;
-    container.pivot.x = size.width * origin.x;
-    container.pivot.y = size.height * origin.y;
-    // @ts-ignore
-    container.skew = skew as ObservablePoint;
+    this.copyPoint(container, 'scale', scale.x, scale.y);
+    this.copyPoint(container, 'pivot', size.width * origin.x, size.height * origin.y);
+    this.copyPoint(container, 'skew', skew.x, skew.y);
     let x = position.x;
     let y = position.y;
-    if (transform.parent) {
-      const parent = transform.parent;
-      x = x + parent.size.width * anchor.x;
-      y = y + parent.size.height * anchor.y;
+    if (hasParent && parentSize) {
+      x += parentSize.width * anchor.x;
+      y += parentSize.height * anchor.y;
     }
 
-    // @ts-ignore
-    container.position = { x, y } as Point;
+    this.copyPoint(container, 'position', x, y);
+  }
+
+  private copyPoint(container: any, property: string, x: number, y: number) {
+    const point = container[property] as Point | ObservablePoint;
+    if (point && typeof (point as any).set === 'function') {
+      (point as any).set(x, y);
+      // Keep lightweight renderer adapters and test doubles that expose a
+      // no-op set() synchronized without ever assigning the source object.
+      if (point.x !== x) point.x = x;
+      if (point.y !== y) point.y = y;
+    } else if (point) {
+      point.x = x;
+      point.y = y;
+    } else {
+      container[property] = { x, y };
+    }
   }
 }

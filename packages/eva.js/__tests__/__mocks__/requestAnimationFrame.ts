@@ -1,5 +1,6 @@
 class RequestAnimationFrameMockSession {
   handleCounter = 0;
+  currentTime = 0;
   queue = new Map();
   requestAnimationFrame(callback) {
     const handle = this.handleCounter++;
@@ -10,20 +11,35 @@ class RequestAnimationFrameMockSession {
     this.queue.delete(handle);
   }
   triggerNextAnimationFrame(time = performance.now()) {
+    this.currentTime = time;
     const nextEntry = this.queue.entries().next().value;
     if (nextEntry === undefined) return;
 
     const [nextHandle, nextCallback] = nextEntry;
 
-    nextCallback(time);
     this.queue.delete(nextHandle);
+    nextCallback(time);
+  }
+  stepTo(time: number) {
+    this.triggerNextAnimationFrame(time);
+  }
+  advanceBy(deltaTime: number) {
+    this.stepTo(this.currentTime + deltaTime);
   }
   triggerAllAnimationFrames(time = performance.now()) {
-    while (this.queue.size > 0) this.triggerNextAnimationFrame(time);
+    const pendingHandles = Array.from(this.queue.keys());
+    for (const handle of pendingHandles) {
+      const callback = this.queue.get(handle);
+      if (!callback) continue;
+      this.queue.delete(handle);
+      callback(time);
+    }
+    this.currentTime = time;
   }
   reset() {
     this.queue.clear();
     this.handleCounter = 0;
+    this.currentTime = 0;
   }
 }
 

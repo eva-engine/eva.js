@@ -1,4 +1,6 @@
 import { Stats, StatsSystem } from '../lib';
+import { Game } from '@eva/eva.js';
+import { requestAnimationFrameMock } from '../../eva.js/__tests__/__mocks__/requestAnimationFrame';
 import StatsClass from '../lib/Stats';
 import { BaseHooks } from '../lib/hooks/BaseHooks';
 import { GLHook } from '../lib/hooks/GLHook';
@@ -52,6 +54,8 @@ function makeMockRendererSystem(gl: any) {
     },
   };
 }
+
+function requireLegacyStatsSurface(_component: { update(): void }, _system: { lateUpdate(): void }) {}
 
 describe('plugin-stats', () => {
   // 隔离 dom,避免多个测试 stats panel 累积
@@ -227,22 +231,78 @@ describe('plugin-stats', () => {
       expect((c as any).name).toBe('Stats');
     });
 
-    it('update 没有 stats 时不抛', () => {
-      const c = new Stats();
-      expect(() => c.update()).not.toThrow();
-    });
-
-    it('update 在有 stats 时会调用 begin', () => {
+    it('不再通过逻辑 update 驱动 begin', () => {
       const c = new Stats();
       const begin = jest.fn();
       (c as any).stats = { begin };
+      expect(typeof c.update).toBe('function');
       c.update();
-      expect(begin).toHaveBeenCalled();
+      expect(begin).not.toHaveBeenCalled();
     });
   });
 
+  describe.each([0, 2, 5])('物理帧计时（%i 个逻辑更新）', updatesThisFrame => {
+    it('每个物理帧恰好调用一次 begin/end，旧逻辑路径没有副作用', () => {
+      const sys = new StatsSystem();
+      const component = new Stats();
+      const begin = jest.fn();
+      const end = jest.fn();
+      sys.show = true;
+      (sys as any).stats = { begin, end };
+      (component as any).stats = { begin };
+      const frame = { updatesThisFrame };
+
+      requireLegacyStatsSurface(component, sys);
+      expect(typeof component.update).toBe('function');
+      expect(typeof sys.lateUpdate).toBe('function');
+
+      (sys as any).frameStart?.(frame);
+      for (let update = 0; update < updatesThisFrame; update++) {
+        component.update();
+        sys.lateUpdate();
+      }
+      (sys as any).frameUpdate?.(frame);
+
+      expect(begin).toHaveBeenCalledTimes(1);
+      expect(end).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('真实 Game/Ticker 在 0/2/5 个逻辑更新时各调用一对 physical begin/end', async () => {
+    requestAnimationFrameMock.reset();
+    const begin = jest.fn();
+    const end = jest.fn();
+    class InstrumentedStatsSystem extends StatsSystem {
+      static systemName = 'InstrumentedStats';
+      init() {
+        this.show = true;
+        this.stats = { begin, end };
+      }
+      start() {}
+    }
+
+    const game = new Game();
+    await game.init({
+      systems: [new InstrumentedStatsSystem()],
+      autoStart: false,
+      needScene: false,
+    });
+    try {
+      game.start();
+      requestAnimationFrameMock.stepTo(0); // baseline: 0 updates
+      requestAnimationFrameMock.advanceBy(1); // 0 updates
+      requestAnimationFrameMock.advanceBy((1000 / 60) * 2); // 2 updates
+      requestAnimationFrameMock.advanceBy((1000 / 60) * 10); // capped at 5 updates
+
+      expect(begin).toHaveBeenCalledTimes(4);
+      expect(end).toHaveBeenCalledTimes(4);
+    } finally {
+      game.destroy();
+    }
+  });
+
   describe('show:false 时的生命周期保护', () => {
-    it('start/lateUpdate 在 show:false 时不创建 panel,不抛异常', () => {
+    it('start/frameStart/frameUpdate 在 show:false 时不创建 panel,不抛异常', () => {
       const sys = new StatsSystem();
       (sys as any).game = {
         getSystem: () => ({ application: undefined }),
@@ -252,12 +312,13 @@ describe('plugin-stats', () => {
       };
       sys.init({ show: false });
 
-      // start / lateUpdate 都受 show:false 短路保护
+      // start / physical hooks 都受 show:false 短路保护
       expect(() => sys.start()).not.toThrow();
       expect(sys.stats).toBeUndefined();
       expect((sys as any).game.scene.addComponent).not.toHaveBeenCalled();
 
-      expect(() => sys.lateUpdate()).not.toThrow();
+      expect(() => (sys as any).frameStart?.({ updatesThisFrame: 0 })).not.toThrow();
+      expect(() => (sys as any).frameUpdate?.({ updatesThisFrame: 0 })).not.toThrow();
     });
 
     it('show:true + 完整 mock 时 start 会向 scene 添加 StatsComponent 并挂 dom', () => {
@@ -282,8 +343,9 @@ describe('plugin-stats', () => {
       // dom 已挂入 body
       expect(document.body.contains(sys.stats.dom)).toBe(true);
 
-      // lateUpdate 正常调用 stats.end(hook)
-      expect(() => sys.lateUpdate()).not.toThrow();
+      // physical hooks 正常调用 stats.begin()/end(hook)
+      expect(() => (sys as any).frameStart?.({ updatesThisFrame: 0 })).not.toThrow();
+      expect(() => (sys as any).frameUpdate?.({ updatesThisFrame: 0 })).not.toThrow();
 
       // 释放 hook 还原 prototype
       (sys.hook as BaseHooks).release();

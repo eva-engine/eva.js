@@ -1,10 +1,13 @@
 import { mocked } from 'ts-jest/utils';
 import { Game, Scene, GameObject, System } from '../lib';
+import type { FrameParams } from '../lib';
 import Ticker from '../lib/game/Ticker';
 import { TestSystem, Test2System, TestComponent } from '@eva/plugin-renderer-test';
 
 const MockTicker = mocked(Ticker, true);
 const mockTickerAdd = jest.fn();
+const mockTickerAddFrameStart = jest.fn();
+const mockTickerAddFrame = jest.fn();
 const mockTickerUpdate = jest.fn();
 const mockTickerRemove = jest.fn();
 const mockTickerStart = jest.fn();
@@ -16,6 +19,8 @@ jest.mock('../lib/game/Ticker', () => {
   return jest.fn().mockImplementation(() => ({
     update: mockTickerUpdate,
     add: mockTickerAdd,
+    addFrameStart: mockTickerAddFrameStart,
+    addFrame: mockTickerAddFrame,
     remove: mockTickerRemove,
     start: mockTickerStart,
     pause: mockTickerPause,
@@ -29,6 +34,8 @@ describe('Game', () => {
   beforeEach(() => {
     MockTicker.mockClear();
     mockTickerAdd.mockClear();
+    mockTickerAddFrameStart.mockClear();
+    mockTickerAddFrame.mockClear();
     mockTickerUpdate.mockClear();
     mockTickerRemove.mockClear();
     mockTickerStart.mockClear();
@@ -284,6 +291,190 @@ describe('Game', () => {
     expect(mockTickerAdd).toBeCalledTimes(1);
   });
 
+  it('dispatches one frameStart, two logical updates, then one frameUpdate in strict order', async () => {
+    const trace: string[] = [];
+    class TraceSystem extends System {
+      static systemName = 'TraceSystem';
+      frameStart() {
+        trace.push('frameStart');
+      }
+      update() {
+        trace.push('update');
+      }
+      lateUpdate() {
+        trace.push('lateUpdate');
+      }
+      frameUpdate() {
+        trace.push('frameUpdate');
+      }
+    }
+
+    const game = new Game();
+    await game.init({ systems: [new TraceSystem()], autoStart: false, needScene: false });
+
+    const frame = { updatesThisFrame: 2 } as FrameParams;
+    mockTickerAddFrameStart.mock.calls[0][0](frame);
+    mockTickerAdd.mock.calls[0][0]({});
+    mockTickerAdd.mock.calls[0][0]({});
+    mockTickerAddFrame.mock.calls[0][0](frame);
+
+    expect(trace).toEqual(['frameStart', 'update', 'lateUpdate', 'update', 'lateUpdate', 'frameUpdate']);
+  });
+
+  it('dispatches both physical hooks when a frame has zero logical updates', async () => {
+    const trace: string[] = [];
+    class TraceSystem extends System {
+      static systemName = 'ZeroUpdateTraceSystem';
+      frameStart() {
+        trace.push('frameStart');
+      }
+      frameUpdate() {
+        trace.push('frameUpdate');
+      }
+    }
+
+    const game = new Game();
+    await game.init({ systems: [new TraceSystem()], autoStart: false, needScene: false });
+
+    const frame = { updatesThisFrame: 0 } as FrameParams;
+    mockTickerAddFrameStart.mock.calls[0][0](frame);
+    mockTickerAddFrame.mock.calls[0][0](frame);
+
+    expect(trace).toEqual(['frameStart', 'frameUpdate']);
+  });
+
+  it('does not start a legacy-only System on baseline or playback-rate-zero physical frames', async () => {
+    const trace: string[] = [];
+    class LegacySystem extends System {
+      static systemName = 'LegacyOnlySystem';
+      start() {
+        trace.push('start');
+      }
+      update() {
+        trace.push('update');
+      }
+    }
+
+    const game = new Game();
+    await game.init({ systems: [new LegacySystem()], autoStart: false, needScene: false });
+    const frozenFrame = { updatesThisFrame: 0, playbackRate: 0 } as FrameParams;
+
+    mockTickerAddFrameStart.mock.calls[0][0](frozenFrame);
+    mockTickerAddFrame.mock.calls[0][0](frozenFrame);
+    expect(trace).toEqual([]);
+
+    mockTickerAdd.mock.calls[0][0]({});
+    expect(trace).toEqual(['start', 'update']);
+  });
+
+  it('starts a frameUpdate-only System immediately before its first frameUpdate hook', async () => {
+    const trace: string[] = [];
+    class FrameUpdateOnlySystem extends System {
+      static systemName = 'FrameUpdateOnlySystem';
+      start() {
+        trace.push('start');
+      }
+      frameUpdate() {
+        trace.push('frameUpdate');
+      }
+    }
+
+    const game = new Game();
+    await game.init({
+      systems: [new FrameUpdateOnlySystem()],
+      autoStart: false,
+      needScene: false,
+    });
+    const frame = { updatesThisFrame: 0 } as FrameParams;
+
+    mockTickerAddFrameStart.mock.calls[0][0](frame);
+    expect(trace).toEqual([]);
+    mockTickerAddFrame.mock.calls[0][0](frame);
+    expect(trace).toEqual(['start', 'frameUpdate']);
+  });
+
+  it('starts every System before its first physical hook, including one added after frameStart', async () => {
+    const trace: string[] = [];
+    class InitialSystem extends System {
+      static systemName = 'InitialPhysicalSystem';
+      start() {
+        trace.push('initial:start');
+      }
+      frameStart() {
+        trace.push('initial:frameStart');
+      }
+      frameUpdate() {
+        trace.push('initial:frameUpdate');
+      }
+    }
+    class AddedSystem extends System {
+      static systemName = 'AddedPhysicalSystem';
+      start() {
+        trace.push('added:start');
+      }
+      frameUpdate() {
+        trace.push('added:frameUpdate');
+      }
+    }
+
+    const game = new Game();
+    await game.init({ systems: [new InitialSystem()], autoStart: false, needScene: false });
+    const frame = { updatesThisFrame: 0 } as FrameParams;
+
+    mockTickerAddFrameStart.mock.calls[0][0](frame);
+    await game.addSystem(new AddedSystem());
+    mockTickerAddFrame.mock.calls[0][0](frame);
+
+    expect(trace).toEqual([
+      'initial:start',
+      'initial:frameStart',
+      'initial:frameUpdate',
+      'added:start',
+      'added:frameUpdate',
+    ]);
+  });
+
+  it('isolates errors in both physical hooks so later Systems still run', async () => {
+    const trace: string[] = [];
+    class ThrowingSystem extends System {
+      static systemName = 'ThrowingPhysicalSystem';
+      frameStart() {
+        throw new Error('frameStart failed');
+      }
+      frameUpdate() {
+        throw new Error('frameUpdate failed');
+      }
+    }
+    class LaterSystem extends System {
+      static systemName = 'LaterPhysicalSystem';
+      frameStart() {
+        trace.push('later:frameStart');
+      }
+      frameUpdate() {
+        trace.push('later:frameUpdate');
+      }
+    }
+
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const game = new Game();
+      await game.init({
+        systems: [new ThrowingSystem(), new LaterSystem()],
+        autoStart: false,
+        needScene: false,
+      });
+      const frame = { updatesThisFrame: 0 } as FrameParams;
+
+      mockTickerAddFrameStart.mock.calls[0][0](frame);
+      mockTickerAddFrame.mock.calls[0][0](frame);
+
+      expect(trace).toEqual(['later:frameStart', 'later:frameUpdate']);
+      expect(errorSpy).toHaveBeenCalledTimes(2);
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
   it('destory System', async () => {
     const game = new Game();
     await game.init();
@@ -295,10 +486,11 @@ describe('Game', () => {
     expect(game.systems.length).toBe(0);
   });
 
-  it('destory', () => {
+  it('destory', async () => {
     const game = new Game();
-    game.addSystem(TestSystem);
-    game.addSystem(Test2System);
+    await game.init({ autoStart: false, needScene: false });
+    await game.addSystem(TestSystem);
+    await game.addSystem(Test2System);
     expect(game.systems.length).toBe(2);
 
     game.destroy();

@@ -2,6 +2,7 @@ import { PureObserverInfo } from './observer';
 import { UpdateParams } from './Component';
 import ComponentObserver from './ComponentObserver';
 import Game from '../game/Game';
+import type { FrameParams } from '../game/Ticker';
 
 export interface SystemConstructor<T extends System = System> {
   systemName: string;
@@ -136,6 +137,20 @@ class System<T extends {} = {}> {
    * @param e - 当前帧的时间信息
    */
   lateUpdate?(e: UpdateParams): void;
+
+  /**
+   * 每个物理 RAF 开始时调用一次，先于本帧的所有固定逻辑更新。
+   *
+   * @param frame - 当前物理帧的时间与逻辑步数信息
+   */
+  frameStart?(frame: FrameParams): void;
+
+  /**
+   * 每个物理 RAF 结束时调用一次，晚于本帧的所有固定逻辑更新。
+   *
+   * @param frame - 当前物理帧的时间与逻辑步数信息
+   */
+  frameUpdate?(frame: FrameParams): void;
 
   /**
    * 游戏开始运行前或游戏暂停后恢复时调用
